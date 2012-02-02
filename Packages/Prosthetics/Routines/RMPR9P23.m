@@ -33,5 +33,5 @@ PRI2 ;(c) These provisions shall apply to all contracts in which VA sensitive
 PRI3 ;(d) Clauses (a) and (b) shall apply to current and future contracts and
  ;acquisition vehicles including, but not limited to, job orders, task orders
  ;letter contracts, purchase orders, and modifications. Contracts do not include
- ;grants and cooperative agreements covered by 31 U.S.C. ง6301 et seq.
+ ;grants and cooperative agreements covered by 31 U.S.C. ยง6301 et seq.
  Q

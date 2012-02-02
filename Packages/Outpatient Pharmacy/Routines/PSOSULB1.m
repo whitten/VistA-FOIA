@@ -63,8 +63,8 @@ BAIMAIL     ;Send mail message
  ;condition.
  ;Input: REC = Pointer to Suspense file (#52.5)
  ;Returns: 1 or 0
- ;1 (one) if ¾ of days supply has elapsed.
- ;0 (zero) is returned if ¾ of days supply has not elapsed. 
+ ;1 (one) if Â¾ of days supply has elapsed.
+ ;0 (zero) is returned if Â¾ of days supply has not elapsed. 
  ;
 DSH(REC) ; ePharmacy - verify that 3/4 days supply has elapsed before printing from suspense
  N PSINSUR,PSARR,SHDT,DSHOLD,DSHDT,PS0,COMM,DIE,DA,DR,RXIEN,RFL,DAYSSUP,LSTFIL,PTDFN,IBINS,DRG
