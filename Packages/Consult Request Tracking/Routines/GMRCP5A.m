@@ -1,5 +1,5 @@
 GMRCP5A ;SLC/DCM,RJS,MA - Print Consult form 513 (Gather Data - TIU Results) ;4/18/01  10:29
- ;;3.0;CONSULT/REQUEST TRACKING;**4,13,12,15,21,22,53**;Dec 27, 1997;Build 3
+ ;;3.0;CONSULT/REQUEST TRACKING;**4,13,12,15,21,22**;Dec 27, 1997
  ; Patch #21 added PRNTAUDT to this routine.
  ;
 PRNT(GMRCIFN,TIUFLG,GMRCQUED,GMRCCPY,GMRCGUI,GMRCAUDT) ;
@@ -15,7 +15,6 @@ PRNT(GMRCIFN,TIUFLG,GMRCQUED,GMRCCPY,GMRCGUI,GMRCAUDT) ;
  ; ZTIO:      Output device when job is tasked
  ;
  N GMRCSIG,GMRCSDT,GMRCCSIG,GMRCSIGT,GMRCADDS
- I '+$G(IOM) S IOM=80
  ;
  I GMRCGUI D  Q
  . D FORMAT(80)
@@ -89,10 +88,9 @@ FORMAT(PAGEWID) ;
  .S GMRCRD(12)=$G(^GMR(123,GMRCIFN,12))
  .S GMRCRD(13)=$G(^GMR(123,GMRCIFN,13))
  .S GMRCIRL=$S($P(GMRCRD(12),U,5)="P":"Requesting facility",$P(GMRCRD(12),U,5)="F":"Consulting facility",1:"")
- ;Commented out following line to allow TIU doc to print based on ASU
- ;rules.
- ;I $P(GMRCRD,U,12)=2!(TIUFLG) D
- D PRINT^GMRCTIUP(GMRCIFN,0,0) ;Removed dot structure
+ ;
+ I $P(GMRCRD,U,12)=2!(TIUFLG) D
+ . D PRINT^GMRCTIUP(GMRCIFN,0,0)
  ;
  K GMRCSG I $D(^TMP("GMRCR",$J,"RES")) D
  .;

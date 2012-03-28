@@ -1,14 +1,28 @@
-VAUTOMA ;ALB/MLI - GENERIC ONE, MANY, ALL ROUTINE ; 03/26/2004
- ;;5.3;Registration;**111,568**;Aug 13, 1993
+VAUTOMA ;ALB/MLI - GENERIC ONE, MANY, ALL ROUTINE ; 15 APRIL 88 [ 10/19/2000  10:31 AM ]
+ ;;5.3;Registration;**111,1010**;Aug 13, 1993
+ ;IHS/ANMC/LJF  8/17/2000 added inactivation info to clinic choice list
+ ;             10/19/2000 removed N from DIC(0) so ?? in alpha order
+ ;cmi/anch/maw 05/15/2009 added code to pass in div name for DIC("B") when selecting division
+ ;
  ;;MAS VERSION 5.1;
-DIVISION S VAUTVB="VAUTD",DIC="^DG(40.8,",VAUTNI=2,VAUTSTR="division" G FIRST
-CLINIC S DIC="^SC(",DIC("S")="I $P(^(0),U,3)=""C""&'+$P($G(^(""OOS"")),U,1)&'+$P($G(^(""OOS"")),U,2)&$S(VAUTD:1,$D(VAUTD(+$P(^(0),U,15))):1,'+$P(^(0),U,15)&$D(VAUTD(+$O(^DG(40.8,0)))):1,1:0)",VAUTSTR="clinic",VAUTVB="VAUTC" G FIRST
+DIVISION ;-- cmi/maw PATCH 1010 modified to get division name
+ N VADIV,VADIVNM,VADICA
+ S VADIV=$$DIV^BSDU()
+ I $G(VADIV) S VADIVNM=$$DIVNM^BSDU(VADIV)
+ S VAUTVB="VAUTD",DIC="^DG(40.8,",VAUTNI=2,VAUTSTR="division",VAUTNALL=1,DIC("A")=$G(VADIVNM) G FIRST
+CLINIC ;S DIC="^SC(",DIC("S")="I $P(^(0),U,3)=""C""&'$G(^(""OOS""))&$S(VAUTD:1,$D(VAUTD(+$P(^(0),U,15))):1,'+$P(^(0),U,15)&$D(VAUTD(+$O(^DG(40.8,0)))):1,1:0)",VAUTSTR="clinic",VAUTVB="VAUTC" G FIRST ;IHS/ANMC/LJF 8/17/2000
+ S DIC="^SC(",DIC("S")="I $P(^(0),U,3)=""C""&'$G(^(""OOS""))&$S(VAUTD:1,$D(VAUTD(+$P(^(0),U,15))):1,'+$P(^(0),U,15)&$D(VAUTD(+$O(^DG(40.8,0)))):1,1:0)",VAUTSTR="clinic",VAUTVB="VAUTC"  ;IHS/ANMC/LJF 8/17/2000
+ S DIC("W")=$$INACTMSG^BSDU  ;IHS/ANMC/LJF 8/17/2000 added this line
+ G FIRST  ;IHS/ANMC/LJF 8/17/2000
  ;  DIC("S") modified in CLINIC call, to exclude Occasion of Service locations.  abr - 11/25/96
  ;
 PATIENT S DIC="^DPT(",VAUTSTR="patient",VAUTVB="VAUTN" G FIRST
 WARD S DIC="^DIC(42,",VAUTSTR="ward",VAUTVB="VAUTW",DIC("S")="I $S(VAUTD:1,$D(VAUTD(+$P(^(0),U,11))):1,'+$P(^(0),U,11)&$D(VAUTD(^DG(40.8,+$O(^DG(40.8,0)),0))):1,1:0)" G FIRST
 FIRST S DIC(0)="EQMNZ",DIC("A")="Select "_VAUTSTR_": " K @VAUTVB S (@VAUTVB,Y)=0
-REDO W !,DIC("A") W:'$D(VAUTNALL) "ALL// " R X:DTIME G ERR:(X="^")!'$T D:X["?" QQ I X="" G:$D(VAUTNALL) ERR S @VAUTVB=1 G QUIT
+ S DIC(0)="EQMZ"  ;IHS/ANMC/LJF 10/19/2000
+REDO ;cmi/maw 5/15/5009 added for default of division logged into
+ N VADICA S VADICA=$S($G(VADIVNM)]"":VADIVNM_"// ",'$D(VAUTNALL):"ALL// ",1:"") W !,DIC("A")_VADICA R X:DTIME G ERR:(X="^")!'$T D:X["?" QQ S X=$S(X=""&($G(VADIVNM)]""):VADIVNM,1:X) I X="" G:$D(VAUTNALL) ERR S @VAUTVB=1 G QUIT
+ ;W !,DIC("A") W:'$D(VAUTNALL) "ALL// " R X:DTIME G ERR:(X="^")!'$T D:X["?" QQ I X="" G:$D(VAUTNALL) ERR S @VAUTVB=1 G QUIT
  S DIC("A")="Select another "_VAUTSTR_": " D ^DIC G:Y'>0 FIRST D SET
  F VAI=1:0:19 W !,DIC("A") R X:DTIME G ERR:(X="^")!'$T K Y Q:X=""  D QQ:X["?" S:$E(X)="-" VAUTX=X,X=$E(VAUTX,2,999) D ^DIC I Y>0 D SET G:VAX REDO S:'VAERR VAI=VAI+1
  G QUIT

@@ -1,4 +1,5 @@
-XPAREDIT ;SLC/KCM - Simple Parameter Editor ;11:39 PM  12 May 1998
+XPAREDIT ;SLC/KCM - Simple Parameter Editor ;11:39 PM  12 May 1998 [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**1001**;APR 1, 2003         
  ;;7.3;TOOLKIT;**26**;Apr 25, 1995
  ;
 EN ; Enter here to select parameter, then entity

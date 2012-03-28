@@ -1,4 +1,5 @@
-XUTMR ;SEA/RDS - Taskman: Requeue Interface, Part One ;9/8/95  15:49
+XUTMR ;SEA/RDS - Taskman: Requeue Interface, Part One ;9/8/95  15:49 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**2**;Jul 10, 1995
  ;
 INIT ;Setup

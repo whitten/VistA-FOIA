@@ -1,7 +1,5 @@
-ORWPT ; SLC/KCM/REV - Patient Lookup Functions ;04/14/10  10:37
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,85,132,149,206,187,190,215,243,280**;Dec 17, 1997;Build 85
- ;
- ; Ref. to ^UTILITY via IA 10061
+ORWPT ; SLC/KCM/REV - Patient Lookup Functions ;25-JAN-1999 11:26:58 [3/23/04 11:28am]
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,85,132,149,206,187,190**;Dec 17, 1997
  ;
 IDINFO(REC,DFN) ; Return identifying information for a patient
  ; PID^DOB^SEX^VET^SC%^WARD^RM-BED^NAME
@@ -46,10 +44,9 @@ SELECT(REC,DFN) ; Selects patient & returns key information
  ; SC%^ICN^AGE^TS
  ;
  ; for CCOW (RV - 2/27/03)  name="-1", location=error message
- I '$D(^DPT(+DFN,0)) S REC="-1^^^^^Patient is unknown to CPRS." Q
+ I '$D(^DPT(DFN,0)) S REC="-1^^^^^Patient is unknown to CPRS." Q
  ;
  N X
- K ^TMP($J,"OC-OPOS") ; delete once per order session order checks
  K ^TMP("ORWPCE",$J) ; delete PCE 'cache' when switching patients
  S X=^DPT(DFN,0),REC=$P(X,U,1,3)_U_$P(X,U,9)_U_U_$G(^(.1))_U_$G(^(.101))
  S X=$P(REC,U,6) I $L(X) S $P(REC,U,5)=+$G(^DIC(42,+$O(^DIC(42,"B",X,0)),44))
@@ -57,7 +54,7 @@ SELECT(REC,DFN) ; Selects patient & returns key information
  ; I $P(REC,U,9) D EN2^ORQPT2(DFN)  ;update DG security log ; DG249
  S X=$G(^DPT(DFN,.105)) I X S $P(REC,U,10)=$P($G(^DGPM(X,0)),U)
  S:'$D(IOST) IOST="P-OTHER"
- S $P(REC,U,11)=0
+ S $P(REC,U,11)=$$OTF^OR3CONV(DFN,1)
  D ELIG^VADPT S $P(REC,U,12)=$G(VAEL(3)) ;two pieces: SC^SC%
  I $L($T(GETICN^MPIF001)) S X=+$$GETICN^MPIF001(DFN) S:X>0 $P(REC,U,14)=X
  S $P(REC,U,15)=$$AGE(DFN,$P(REC,U,3))
@@ -151,12 +148,11 @@ LISTALL(Y,FROM,DIR) ; Return a bolus of patient names.  From is either Name or I
  Q
 APPTLST(LST,DFN) ; return a list of appointments
  ; APPTTIME^LOCIEN^LOCNAME^EXTSTATUS
- N ERR,ERRMSG,VASD,VAERR K ^UTILITY("VASD",$J)  ;IA 10061
+ N VASD
  S VASD("F")=$$HTFM^XLFDT($H-30,1)
  S VASD("T")=$$HTFM^XLFDT($H+1,1)_".2359"
  S VASD("W")="123456789"
- D SDA^ORQRY01(.ERR,.ERRMSG)
- I ERR K ^UTILITY("VASD",$J) K LST S LST(1)=ERRMSG Q
+ D SDA^VADPT
  S I=0 F  S I=$O(^UTILITY("VASD",$J,I)) Q:'I  D
  . S LST(I)=$P(^UTILITY("VASD",$J,I,"I"),U,1,2)_U_$P(^("E"),U,2,3)
  K ^UTILITY("VASD",$J)
@@ -234,6 +230,5 @@ AGE(DFN,BEG) ; returns age based on date of birth and date of death (or DT)
  Q X
 ROK(X) ; Routine OK (in UCI) (NDBI)
  S X=$G(X) Q:'$L(X) 0  Q:$L(X)>8 0  X ^%ZOSF("TEST") Q:$T 1  Q 0
- ;
- ;NDBI(X) ; National Database Integration site 1 = yes  0 = no
- ; N R,G S X="A7RDUP" X ^%ZOSF("TEST") S R=$T,G=$S($D(^A7RCP):1,1:0),X=R+G,X=$S(X=2:1,1:0) Q X
+NDBI(X) ; National Database Integration site 1 = yes  0 = no
+ N R,G S X="A7RDUP" X ^%ZOSF("TEST") S R=$T,G=$S($D(^A7RCP):1,1:0),X=R+G,X=$S(X=2:1,1:0) Q X

@@ -1,4 +1,4 @@
-XLFNAME1 ;CIOFO-SF/TKW,MKO-Utilities for person name fields ;9:25 AM  29 Jan 2003
+XLFNAME1 ;CIOFO-SF/TKW,MKO-Utilities for person name fields ;9:25 AM  29 Jan 2003 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**134,240**;Jul 10, 1995
  ;
 REMDBL(X,S) ;For each char in S, remove double chars

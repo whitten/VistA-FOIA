@@ -1,10 +1,17 @@
-LRPXSXRL ; SLC/PKR - Build indexes for Lab. ;9/27/03  22:37
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXSXRL ;VA/SLC/PKR - Build indexes for Lab. ;9/27/03  22:37
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  Q
  ;===============================================================
 LAB ; this entry point is called to rebuild ALL Lab indexes in ^PXRMINDX(63
  ; dbia 4247
  ;Build the indexes for LAB DATA.
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
+ ;
  N DAE,DAS,DAT,DATE,DFN,DNODE,END,ENTRIES,ETEXT,GLOBAL,IND
  N LRDFN,LRDN,LRIDT,NE,NERROR
  N START,TEMP,TENP,TEST,TEXT
@@ -59,7 +66,7 @@ LAB ; this entry point is called to rebuild ALL Lab indexes in ^PXRMINDX(63
  .... S DAE=LRDFN_","_"""CH"""_","_LRIDT_","_LRDN
  .... S ETEXT=DAE_" No lab test"
  .... I $D(^TMP("LRPXTEST",$J,LRDN)) Q
- .... D ADDERROR^PXRMSXRM(GLOBAL,ETEXT,.NERROR) ; dbia 4113
+ .... ; D ADDERROR^PXRMSXRM(GLOBAL,ETEXT,.NERROR) ; dbia 4113   ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  .... S ^TMP("LRPXTEST",$J,LRDN)=""
  ... E  D
  .... D SLAB^LRPX(DFN,DATE,TEST,DAS)
@@ -68,18 +75,18 @@ LAB ; this entry point is called to rebuild ALL Lab indexes in ^PXRMINDX(63
  S TEXT=NE_" LAB DATA (CH) results indexed."
  D MES^XPDUTL(TEXT)
  S END=$H
- D DETIME^PXRMSXRM(START,END) ; dbia 4113
+ ; D DETIME^PXRMSXRM(START,END) ; dbia 4113                     ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  ;If there were errors send a message.
- I NERROR>0 D ERRMSG^PXRMSXRM(NERROR,GLOBAL) ; dbia 4113
+ ; I NERROR>0 D ERRMSG^PXRMSXRM(NERROR,GLOBAL) ; dbia 4113      ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  ;Send a MailMan message with the results.
- D COMMSG^PXRMSXRM(GLOBAL,START,END,NE,NERROR) ; dbia 4113
+ ; D COMMSG^PXRMSXRM(GLOBAL,START,END,NE,NERROR) ; dbia 4113    ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  ;
  D AP^LRPXSXRA
  D MICRO^LRPXSXRB
  Q
  ;
 FRESH ; deletes all Lab, Micro, and AP ^PXRMINDX(63 indexes
- K ^PXRMINDX(63) ; dbia 4114
+ ; K ^PXRMINDX(63) ; dbia 4114                                  ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  Q
  ;
 CLEANL ;
@@ -88,23 +95,43 @@ CLEANL ;
  Q
  ;
 RESETAP ; reindex AP
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  D BMES^XPDUTL("Reindex Anatomic Pathology Data")
  D REMOVE("A")
  D AP^LRPXSXRA
  Q
  ;
 RESETMI ; reindex Micro
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  D BMES^XPDUTL("Reindex Microbiology Data")
  D REMOVE("M")
  D MICRO^LRPXSXRB
  Q
  ;
 RESETAM ; reindex AP and Micro
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  D RESETAP
  D RESETMI
  Q
  ;
 REMOVE(TYPE) ; remove these types of indexes
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  N DATE,DFN,ITEM,REF,STOP
  S STOP=TYPE_"Z"
  S ITEM=TYPE

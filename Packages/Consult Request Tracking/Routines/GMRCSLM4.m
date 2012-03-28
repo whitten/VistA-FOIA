@@ -1,5 +1,7 @@
 GMRCSLM4 ;SLC/DCM - List Manager routine - Activity Log Detailed Display ;1/28/99 10:30
- ;;3.0;CONSULT/REQUEST TRACKING;**4,12,15,22,50,64,72**;DEC 27,1997;Build 10
+ ;;3.0;CONSULT/REQUEST TRACKING;**4,12,15,22**;DEC 27,1997
+ ;
+ ; This routine invokes IA #3138
  ;
 ACTLOG(GMRCO) ;Print activity log
  S ^TMP("GMRCR",$J,"DT",GMRCCT,0)="",GMRCCT=GMRCCT+1
@@ -16,7 +18,7 @@ ACTLOG(GMRCO) ;Print activity log
 BLDALN(GMRCO,GMRCDA) ;Build Activity Log Lines for an activity
  ; GMRCO=  consult internal entry number
  ; GMRCDA= activity internal entry number
- N GMRCACT,GMRCSLN,XDT1,XDT2,FLG,LN,LINE,DASH,X,GMRCX,GMRCDEV,GMRCISIT,GMRC3LN
+ N GMRCACT,GMRCSLN,XDT1,XDT2,FLG,LN,LINE,DASH,X,GMRCX,GMRCDEV,GMRCISIT
  S GMRCDA(0)=^GMR(123,+GMRCO,40,GMRCDA,0)
  S GMRCACT=$P(GMRCDA(0),"^",2)
  S GMRCDA(2)=$G(^GMR(123,+GMRCO,40,GMRCDA,2))
@@ -68,11 +70,10 @@ BLDLN2 ;SECOND line for activity
  . Q
  I GMRCX D
  . S X=$P(GMRCDA(0),"^",1) D REGDTM^GMRCU
- . ;S GMRCSLN=$E(GMRCSLN_TAB,1,15)_"(entered) "_X_$E(TAB)_$S($P(GMRCDA(2),"^",3)]"":$P(GMRCDA(2),"^",3),1:$E(TAB,1,3))
- . S GMRCSLN=$E(GMRCSLN_TAB,1,15)_"(entered) "_X_$E(TAB,1,4)
+ . S GMRCSLN=$E(GMRCSLN_TAB,1,15)_"(entered) "_X_$E(TAB)_$S($P(GMRCDA(2),"^",3)]"":$P(GMRCDA(2),"^",3),1:$E(TAB,1,3))
  . Q
  ;
- I $L($G(GMRCSLN)) D  S GMRCSLN=""
+ I $L(GMRCSLN) D  S GMRCSLN=""
  . S ^TMP("GMRCR",$J,"DT",GMRCCT,0)=GMRCSLN
  . S GMRCCT=GMRCCT+1
  . Q
@@ -100,21 +101,14 @@ BLDLN2 ;SECOND line for activity
  I GMRCACT=17 D
  . S GMRCX=$S(+$P(GMRCDA(0),"^",6):$P($G(^GMR(123.5,+$P(GMRCDA(0),"^",6),0)),"^"),$P(GMRCDA(3),"^")]"":$P(GMRCDA(3),"^"),1:" ??")
  . S GMRCSLN=$E(TAB,1,5)_GMRCX
- . I $P(GMRCDA(0),"^",7)'="" S GMRC3LN="Previous Attention:  "_$P($G(^VA(200,$P(GMRCDA(0),"^",7),0)),"^")
  I GMRCACT=25 D
  . S GMRCX=""
  . I $P(^GMR(123,+GMRCO,12),U,5)="F" D
  .. S GMRCX="Previous remote service name: "
  . S GMRCX=GMRCX_$S(+$P(GMRCDA(0),"^",6):$P($G(^GMR(123.5,+$P(GMRCDA(0),"^",6),0)),"^"),$P(GMRCDA(3),"^")]"":$P(GMRCDA(3),"^"),1:" ??")
  . S GMRCSLN=$E(TAB,1,5)_GMRCX
- . I $P(GMRCDA(0),"^",7)'="" S GMRC3LN="Previous Attention:  "_$P($G(^VA(200,$P(GMRCDA(0),"^",7),0)),"^")
- ;
- I $L($G(GMRCSLN)) D  S GMRCSLN=""
+ I $L(GMRCSLN) D
  . S ^TMP("GMRCR",$J,"DT",GMRCCT,0)=GMRCSLN
- . S GMRCCT=GMRCCT+1
- . Q
- I $D(GMRC3LN) D
- . S ^TMP("GMRCR",$J,"DT",GMRCCT,0)=GMRC3LN
  . S GMRCCT=GMRCCT+1
  . Q
  ;

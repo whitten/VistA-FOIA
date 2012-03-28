@@ -1,4 +1,6 @@
-LRULB ;AVAMC/REG - LAB LOG-BOOK ;2/18/93  12:48 ;
+LRULB ; IHS/DIR/FJE - LAB LOG-BOOK 2/18/93 12:48 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!?20,LRAA(1)," Log-Book" S Y=DT D LRAD
  W !!,"Accession list date:  ",LRH(0),"  OK " S %=1 D YN^LRU G:%<1 END

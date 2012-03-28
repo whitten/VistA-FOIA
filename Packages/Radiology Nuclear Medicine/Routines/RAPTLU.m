@@ -1,28 +1,20 @@
 RAPTLU ;HISC/CAH,FPT,GJC AISC/MJK,RMO-Patient's Exam Lookup ;11/13/00  09:13
- ;;5.0;Radiology/Nuclear Medicine;**2,8,15,23,56,47**;Mar 16, 1998;Build 21
- ;Supported EA #10001 DT^DIO2
- ;Supported IA #2378 ORCHK^GMRAOR
- ;Supported IA #10035 ^DPT(
- ;Supported IA #10040 ^SC(
- ;Private IA #1123 RACHK^GMRARAD, RADD^GMRARAD
+ ;;5.0;Radiology/Nuclear Medicine;**2,8,15,23**;Mar 16, 1998
  ;***********************************************************************
  ;                         <<< NOTE >>>
  ; 'RANOSCRN' is set in the entry actions of various options.
  ; If the variable exists, the screen is ignored.  Code is in line
  ; label PRT+0.
  ;***********************************************************************
-CASE ;
- N RAHDCNT S RAHDCNT=0 D SEL S:'RACNT X="^" G Q:X="^"!($D(RAF1)) F I=1:1:11 S @$P("RADFN^RADTI^RACNI^RANME^RASSN^RADATE^RADTE^RACN^RAPRC^RARPT^RAST","^",I)=$P(Y,"^",I)
+CASE D SEL S:'RACNT X="^" G Q:X="^"!($D(RAF1)) F I=1:1:11 S @$P("RADFN^RADTI^RACNI^RANME^RASSN^RADATE^RADTE^RACN^RAPRC^RARPT^RAST","^",I)=$P(Y,"^",I)
  S ^DISV($S($D(DUZ)#2:DUZ,1:0),"RA","CASE #")=RADFN_"^"_RADTI_"^"_RACNI,Y(0)=^RADPT(RADFN,"DT",RADTI,"P",RACNI,0)
 Q K RTESC,RTFL,RACNT,RAERR,RASTP,RAELOC,RADTPRT,^TMP("MAG",$J,"COL"),^TMP("MAG",$J,"ROW") Q
  ;
-SEL ;
- ;Q:'$D(^DPT(RADFN,0))  S RANME=^(0),RASSN=$$SSN^RAUTL,RANME=$P(RANME,"^") K ^TMP($J,"RAEX") D HOME^%ZIS D HD S X="",RACNT=0
- Q:'$D(^DPT(RADFN,0))  S RANME=^(0),RASSN=$$SSN^RAUTL,RANME=$P(RANME,"^") K ^TMP($J,"RAEX") D HOME^%ZIS S X="",RACNT=0
+SEL Q:'$D(^DPT(RADFN,0))  S RANME=^(0),RASSN=$$SSN^RAUTL,RANME=$P(RANME,"^") K ^TMP($J,"RAEX") D HOME^%ZIS D HD S X="",RACNT=0
  ;I $$IMAGE^RARIC1 D MED^MAGSET3,ERASE^MAGSET3 ;don't call MAG 111300
  S X=""
  F RADTI=0:0 Q:X="^"!(X>0)  S RADTI=$O(^RADPT(RADFN,"DT",RADTI)) Q:RADTI'>0  I $D(^(RADTI,0)) S RANODE=^(0),RADTE=+^(0) D SEL2 ;swm080398
- Q:X="^"!(X>0)  I 'RACNT W !?3,$C(7),"No matches found!" Q
+ Q:X="^"!(X>0)  I 'RACNT W !?3,*7,"No matches found!" Q
  ;**Next line commented out - was causing selection screen to disappear
  ;  and automatically go on to detailed screen if there was only one
  ;  case for the patient
@@ -49,31 +41,22 @@ PRT ; Screen only if entered through Rad/Nuc Med
  S:RAELOC="" RAELOC="* MISSING *"
  S RACNT=RACNT+1,^TMP($J,"RAEX",RACNT)=RADFN_"^"_RADTI_"^"_RACNI_"^"_RANME_"^"_RASSN_"^"_RADATE_"^"_RADTE_"^"_RACN_"^"_RAPRC_"^"_RARPT_"^"_RAST
  I $D(RAREPORT) D
+ . S RASTP=$S($D(^RARPT(RARPT,0)):$P(^(0),"^",5),1:"")
  . S RAIMGTYI=$$IMGTY^RAUTL12("e",RADFN,RADTI)
- . S RASTP=$E($$GET1^DIQ(74,+RARPT,5),1,16) ;get all possible Rpt Statuss
- . I RASTP="",RAIMGTYI'="" S RASTP=RASTP_$S($D(^RA(72,"AA",RAIMGTYI,0,+RAST)):" (Exam Dc'd)",1:"")
+ . S RASTP=$S(RASTP="V":"VERIFIED",RASTP="PD":"PROBLEM DRAFT",RASTP="D":"DRAFT",RASTP="R":"RELEASED/NOT VERIFIED",1:"None")
+ . I RASTP="None",RAIMGTYI'="" S RASTP=RASTP_$S($D(^RA(72,"AA",RAIMGTYI,0,+RAST)):" (Exam Dc'd)",1:"")
  . Q
  I '$D(RAREPORT) S RASTP=$S($D(^RA(72,RAST,0)):$P(^(0),"^"),1:"Unknown")
  ; D:$$IMAGE^RARIC1 DISPA^MAGRIC ;don't call MAG 111300
  N RAPRTSET,RAMEMLOW D EN1^RAUTL20
- N RASSAN,RACNDSP S RASSAN=$$SSANVAL^RAHLRU1(RADFN,RADTI,RACNI)
- S RACNDSP=$S((RASSAN'=""):RASSAN,1:RACN)
- ;
- D HD
- I $$USESSAN^RAHLRU1() W !,RACNT,?3,$S(RAMEMLOW:"+",RAPRTSET:".",1:" "),?4,RACNDSP,?19,$$IMGDISP(RARPT),?21,$E(RAPRC,1,26),?49,RADTPRT,?59,$E(RASTP,1,8),?68,$E(RAELOC,1,12)
- I '$$USESSAN^RAHLRU1() W !,RACNT,?5,$S(RAMEMLOW:"+",RAPRTSET:".",1:" "),?6,RACN,?11,$$IMGDISP(RARPT),?13,$E(RAPRC,1,26),?41,RADTPRT,?52,$E(RASTP,1,16),?69,$E(RAELOC,1,11)
+ W !,RACNT,?5,$S(RAMEMLOW:"+",RAPRTSET:".",1:" "),?6,RACN,?11,$$IMGDISP(RARPT),?13,$E(RAPRC,1,26),?41,RADTPRT,?52,$E(RASTP,1,16),?69,$E(RAELOC,1,11)
  I (($Y+6)>IOSL),($O(^RADPT(RADFN,"DT",RADTI,"P",RACNI))!($O(^RADPT(RADFN,"DT",RADTI)))) D ASK^RAUTL4 W @IOF
  Q
  ;
-HD ;
- Q:RAHDCNT>0
- S RAHDCNT=1
- I '$D(RTFL) W @IOF,?25,RAHEAD,!!,"Patient's Name: ",$E(RANME,1,20),"  ",RASSN,?55,"Run Date: " S Y=DT D DT^DIO2
+HD I '$D(RTFL) W @IOF,?25,RAHEAD,!!,"Patient's Name: ",$E(RANME,1,20),"  ",RASSN,?55,"Run Date: " S Y=DT D DT^DIO2
  I $D(RTFL) D ESC^RTRD:($Y+6)>IOSL Q:$D(RTESC)  W !!,"============================ Exam Procedure Profile =========================="
- I $$USESSAN^RAHLRU1() W !!?3,"Case No.",?21,"Procedure",?49,"Exam Dt",?59 W $S($D(RAREPORT):"Rpt",1:"Exam")," St",?68,"Imaging Loc"
- I $$USESSAN^RAHLRU1() W !?3,"--------",?21,"-------------",?49,"---------",?59,"--------",?68,"-----------" Q
- I '$$USESSAN^RAHLRU1() W !!?3,"Case No.",?13,"Procedure",?41,"Exam Date",?52,"Status of " W $S($D(RAREPORT):"Report",1:"Exam"),?69,"Imaging Loc"
- I '$$USESSAN^RAHLRU1() W !?3,"--------",?13,"-------------",?41,"---------",?52,"----------------",?69,"-----------" Q
+ W !!?3,"Case No.",?13,"Procedure",?41,"Exam Date",?52,"Status of " W $S($D(RAREPORT):"Report",1:"Exam"),?69,"Imaging Loc"
+ W !?3,"--------",?13,"-------------",?41,"---------",?52,"----------------",?69,"-----------" Q
  ;
 PTUPD ;Update Patient Info
  S DIC(0)="AEMQL" D ^RADPA K DIC,RAIC Q:Y<0  S DIE="^RADPT(",DA=+Y,DR=".04;1" D ^DIE

@@ -1,4 +1,5 @@
-XUGET ; SF/XAK - PACKAGE INTEGRITY CHECKER ;12/14/92  11:47 ;
+XUGET ; SF/XAK - PACKAGE INTEGRITY CHECKER ;12/14/92  11:47 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 1 W ! S DIR("A",1)="This answer is case sensitive.",DIR("A")="Select PACKAGE PREFIX",DIR(0)="FO^2:4"
  S DIR("?")="Prefix must be 2 to 4 characters in length.",DIR("??")="^D H^XUGET"

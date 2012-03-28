@@ -1,10 +1,17 @@
-TIUADD ; SLC/JER - Enter/Edit an addendum online ;2/13/02
- ;;1.0;TEXT INTEGRATION UTILITIES;**3,88,100,112**;Jun 20, 1997
+TIUADD ; SLC/JER - Enter/Edit an addendum online ;3/16/01
+ ;;1.0;TEXT INTEGRATION UTILITIES;**3,88,100**;Jun 20, 1997
  ; 2/3: Update TEXTEDIT from TIUEDIT to TIUEDI4
+ ;IHS/ITSC/LJF 02/21/2003 added code so user who cannot view a document, cannot add
+ ;                           addendum to it either
+ ;
 ADDENDUM(TIUDA,TIUADD,TIUCHNG,TIUNOASK) ; Control branching
  N TIUY,TIUEDIT,TIUDADD K ^TMP("TIUADD",$J)
  I '$D(TIUPRM0)!'$D(TIUPRM1) D SETPARM^TIULE
  S TIUCHNG("ADDM")=1
+ ;
+ I '$$CANDO^TIULP(TIUDA,"VIEW") D  Q  ;IHS/ITSC/LJF 02/21/2003
+ . D MSG^BTIUU(" You may not ADD AN ADDENDUM to a document you CANNOT VIEW",2,1,1),RETURN^BTIUU  ;IHS/ITSC/LJF 02/21/2003
+ ;
  ; -- Get list of existing addenda, edit existing one --
  D ADDLIST(.TIUY,TIUDA)
  I +$D(TIUY),+$D(@TIUY) D  G:$D(DIRUT) ADDENX
@@ -95,7 +102,6 @@ ADD(TIUDA,TIUCHNG) ;Add new addendum
  . W !!,"Adding ADDENDUM"
  . S DIE="^TIU(8925,"
  . S DR=".03////"_TIUDV_";.04////"_+$$ADDCLASS_";.05////3;.06////"_TIUDA
- . S DR=DR_";1405////^S X=$P(TIUD14,U,5)"
  . D ^DIE
  . S TIUTYP=+$G(^TIU(8925,+DA,0)),TIUT0=$G(^TIU(8925.1,+TIUTYP,0))
  . S TIUTYP(1)="1^"_+TIUTYP_U_$P(TIUT0,U,3)_U

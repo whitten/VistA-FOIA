@@ -1,4 +1,5 @@
-%ZOSV ;SFISC/AC,LL/DFH,sfisc/fyb ;10/31/95  10:04
+%ZOSV ;SFISC/AC,LL/DFH,sfisc/fyb ;10/31/95  10:04 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**13**;Jul 10, 1995
  ; ** For DataTree **
  ;

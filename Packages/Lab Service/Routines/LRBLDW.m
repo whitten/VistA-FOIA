@@ -1,6 +1,6 @@
-LRBLDW ;AVAMC/REG/CYM - BLOOD DONOR WORKLIST ;6/28/96  09:06 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDW ; IHS/DIR/AAB - BLOOD DONOR WORKLIST 6/28/96 09:06 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D V^LRU W !!?20,"BLOOD DONOR WORKLIST" K A,T
  I '$D(^LRE("AT")) W $C(7),!,"No tests pending",! Q
  F A=10:1:20 D FIELD^DID(65.54,A,"","LABEL","LRA") S LRA(A)=LRA("LABEL") W !,$J(A,3),") ",LRA(A)

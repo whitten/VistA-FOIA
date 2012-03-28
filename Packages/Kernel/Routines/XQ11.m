@@ -1,5 +1,5 @@
 XQ11 ;SEA/MJM - Menu Utilities ;1/08/2006
- ;;8.0;KERNEL;**155,372**;Jul 10, 1995;Build 3
+ ;;8.0;KERNEL;**155,372**;Jul 10, 1995;Build 5
  ;
 COPY ;Make a copy of a menu-type option
  S XQA=$S(DUZ(0)["@":1,$D(^XUSEC("XUMGR",DUZ)):1,$D(^XUSEC("XUPROGMODE",DUZ)):1,1:0)

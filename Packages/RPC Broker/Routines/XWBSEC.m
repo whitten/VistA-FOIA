@@ -1,5 +1,5 @@
 XWBSEC ;SFISC/VYD - RPC BROKER ;02/03/10  11:37
- ;;1.1;RPC BROKER;**3,6,10,35,53**;Mar 28, 1997;Build 4
+ ;;1.1;RPC BROKER;**3,6,10,35,53**;Mar 28, 1997;Build 5
 CHKPRMIT(XWBRP) ;checks to see if remote procedure is permited to run
  ;Input:  XWBRP - Remote procedure to check
  Q:$$KCHK^XUSRB("XUPROGMODE")

@@ -1,4 +1,6 @@
-LRAPJNC ;AVAMC/REG - INCOMPLETE PATH RPTS ;2/10/98  20:30 ;
+LRAPJNC ; IHS/DIR/AAB - INCOMPLETE PATH RPTS 2/10/98 20:30 ; [ 07/08/1998 9:57 AM ]
+ ;;5.2;LR;**1002,1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**72,201**;Sep 27, 1994
  D ^LRAP G:'$D(Y) END  W !!,LRO(68)," Incomplete Reports" D B^LRU G:Y<0 END
  S LRSDT=LRSDT-.01,LRLDT=LRLDT+.99
@@ -19,7 +21,8 @@ L Q:'$D(^LR(LRDFN,0))
  Q
 S D ^LRUP S M=$S('M:"",1:$P($G(^VA(200,+M,0)),U)) I M(2),$D(^VA(200,M(2),0)) S M(2)=$P(^(0),U)
  S LRDTEXT=$$Y2K^LRX(LRDTINT,"5D")
- S:'LRDTINT LRDTINT="?" S:Z="" Z="?" S ^TMP($J,$E(LRDTINT,1,3),Z)=LRDTEXT_"^"_LRP_"^"_SSN(1)_"^"_M(1)_"^"_M_"^"_M(2) Q
+ ;S:'LRDTINT LRDTINT="?" S:Z="" Z="?" S ^TMP($J,$E(LRDTINT,1,3),Z)=LRDTEXT_"^"_LRP_"^"_SSN(1)_"^"_M(1)_"^"_M_"^"_M(2) Q
+ S:'LRDTINT LRDTINT="?" S:Z="" Z="?" S ^TMP($J,$E(LRDTINT,1,3),Z)=LRDTEXT_"^"_LRP_"^"_HRCN_"^"_M(1)_"^"_M_"^"_M(2) Q  ;IHS/DIR TUC/AAB 7/8/98
 A S X=$G(^LR(LRDFN,"AU")) Q:$P($P(X,U,6)," ")'=LRABV  I '$P(X,U,3) S LRDTINT=$P(X,U),M(1)=$P(X,U,5),Z=+$P($P(X,U,6)," ",3),M=$P(X,U,10),M(2)=$P(X,U,7),X=^LR(LRDFN,0) D S
  Q
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")

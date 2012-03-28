@@ -1,5 +1,6 @@
-SCMCBK1 ;LB/SCK - Broker Utilities for multiple patient assignments;
- ;;5.3;Scheduling;**41,51,210,297**;AUG 13, 1993
+SCMCBK1 ;LB/SCK - Broker Utilities for multiple patient assignments; [ 12/06/2000  9:42 AM ]
+ ;;5.3;Scheduling;**41,51,210**;AUG 13, 1993
+ ;IHS/ANMC/LJF 12/06/2000 changed SSN to HRCN as Short Patient ID
  ;;1T1;;
  Q
  ;
@@ -64,10 +65,7 @@ PTCLEN(SCOK,SC) ;  Enroll patient in associated clinic for a position
  S SCADDFLD(1)=$G(SC("ADD1"),"O")
  S SCOK=0
  ;
- ;Enroll Patient in all associated clincs not entrolled in
- F SCCLN=0:0 S SCCLN=$O(^SCTM(404.57,SCPOS,5,SCCLN)) Q:'SCCLN  D
- .I $D(^DPT(SCDFN,"DE","B",SCCLN)) Q
- .S SCOK=$$ACPTCL^SCAPMC18(SCDFN,SCCLN,"SCADDFLD",SCDTVAR,"SCERMSG")
+ S SCOK=$$ACPTCL^SCAPMC18(SCDFN,SCCLN,"SCADDFLD",SCDTVAR,"SCERMSG")
  ;
  D CLRVAR
  Q
@@ -94,7 +92,6 @@ CHKPOS(SCOK,SC) ;  Check for primary care pratitioner and attending positions fo
 NOPCTM(SCOK,SC) ;  Build list of patients with a primary care assignment, but no primary care team;
  ;    ' SC BLD NOPC TM LIST '
  ;
- N I1
  D NEWVAR
  ;
  D CHK^SCUTBK
@@ -261,11 +258,13 @@ BAD(SCBAD,SCOLD,SCOK) ;
  N SCDFN,SCPARM,DIERR
  S SCDFN=0
  F  S SCDFN=$O(SCBAD(SCDFN)) Q:'SCDFN  D
- . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)
+ . ;S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)  ;IHS/ANMC/LJF 12/06/2000
+ . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$$HRCN^BDGF2(SCDFN,+$G(DUZ(2)))   ;IHS/ANMC/LJF 12/06/2000
  . D BLD^DIALOG(40442001.001,.SCPARM,"","SCOK","S")
  ;
  F  S SCDFN=$O(SCOLD(SCDFN)) Q:'SCDFN  D
- . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)
+ . ;S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)  ;IHS/ANMC/LJF 12/06/2000
+ . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$$HRCN^BDGF2(SCDFN,+$G(DUZ(2)))   ;IHS/ANMC/LJF 12/06/2000
  . D BLD^DIALOG(40442001.002,.SCPARM,"","SCOK","S")
  D HDREC^SCUTBK3(.SCOK,$G(DIERR),"Patient Assignment to Teams")
  Q
@@ -274,11 +273,13 @@ BAD2(SCBAD,SCOLD,SCOK) ;
  N SCDFN,SCPARM,DIERR
  S SCDFN=0
  F  S SCDFN=$O(SCBAD(SCDFN)) Q:'SCDFN  D
- . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)
+ . ;S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)  ;IHS/ANMC/LJF 12/06/2000
+ . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$$HRCN^BDGF2(SCDFN,+$G(DUZ(2)))  ;IHS/ANMC/LJF 12/06/2000
  . D BLD^DIALOG(40443001.001,.SCPARM,"","SCOK","S")
  ;
  F  S SCDFN=$O(SCOLD(SCDFN)) Q:'SCDFN  D
- . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)
+ . ;S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$P($G(^DPT(SCDFN,.36)),U,4)  ;IHS/ANMC/LJF 12/06/2000
+ . S SCPARM("PATIENT")=$P($G(^DPT(SCDFN,0)),U)_"   "_$$HRCN^BDGF2(SCDFN,+$G(DUZ(2)))   ;IHS/ANMC/LJF 12/06/2000
  . D BLD^DIALOG(40443001.002,.SCPARM,"","SCOK","S")
  D HDREC^SCUTBK3(.SCOK,$G(DIERR),"Patient Assignment to Positions")
  Q

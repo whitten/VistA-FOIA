@@ -1,5 +1,5 @@
 PXRMSEL ; SLC/PJH - PXRM Selection ;01/04/2001
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
+ ;;1.5;CLINICAL REMINDERS;**2**;Jun 19, 2000
  ;
  ;Selection screen for all dialog files
  ;

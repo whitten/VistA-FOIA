@@ -1,5 +1,5 @@
 LRCAPF ;DALISC/FHS-STUFF WKLD CODE INTO FILE 60 61.2 62.07 ETC ;5/2/91  09:03
- ;;5.2;LAB SERVICE;**221**;Sep 27, 1994
+ ;;5.2T9;LR;**221,1018**;Nov 17, 2004
 EN ;
  L +^LRO(61.2):1 I '$T W !,$C(7),"Someone else is editing ^LRO(61.2) file ",! Q
 DOC ;

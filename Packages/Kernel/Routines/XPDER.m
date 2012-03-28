@@ -1,4 +1,5 @@
-XPDER ;SFISC/RSD - Rollup Patches into Build ;09/13/96  09:04
+XPDER ;SFISC/RSD - Rollup Patches into Build ;09/13/96  09:04 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**44**;Jul 10, 1995
 EN1 ;rollup patches into new build
  N DIR,DIRUT,XPD,XPDA,XPDIT,XPDF,XPDFL,XPDJ,XPDNM,XPDVER,XPDPKG,XPDT,XPDY,X,Y,Z W !

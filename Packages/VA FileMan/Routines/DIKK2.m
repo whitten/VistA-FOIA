@@ -1,4 +1,5 @@
-DIKK2 ;SFISC/MKO-CHECK INPUT PARAMETERS TO INTEG^DIKK ;2:20 PM  15 Jul 1999
+DIKK2 ;SFISC/MKO-CHECK INPUT PARAMETERS TO INTEG^DIKK ;2:20 PM  15 Jul 1999 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**11**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;======

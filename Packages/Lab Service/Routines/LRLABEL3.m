@@ -1,4 +1,5 @@
 LRLABEL3 ;SLC/RWF - PRINTS MEDLAB LABELS ;2/6/91  08:06
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**161**;Sep 27, 1994
  ;For the 7 part MEDLAB label DPS-ML (time products) AT 16.5 CPI
 1 U IO S T=45,T1=23,X=136 X ^%ZOSF("RM") ; Set T=28, T1=14 for 10 cpi.

@@ -44,7 +44,7 @@ QUES(X) ;build XPDQUES array, X="INI","INIT","XPF","XPM"
  ;move INSTALL ANSWERS from file 9.7 to XPDQUES
  ;XPDQUES(X)=internal answer, XPDQUES(X,"A")=prompt, XPDQUES(X,"B")=external answer.
  N Y,Z K XPDQUES S Z=X
- F  S Z=$O(^XPD(9.7,XPDA,"QUES","B",Z)) Q:Z=""!($P(Z,X)]"")  S Y=$O(^(Z,0)) D
+ F  S Z=$O(^XPD(9.7,XPDA,"QUES","B",Z)) Q:Z=""!($P(Z,X)]"")  S Y=$O(^(Z,0))  D
  .Q:'$D(^XPD(9.7,XPDA,"QUES",Y,0))
  .S XPDQUES(Z)=$G(^(1)),XPDQUES(Z,"A")=$G(^("A")),XPDQUES(Z,"B")=$G(^("B")) ; ^(1) refer to prev line ^XPD(9.7,XPDA,"QUES","B",Z)
  Q

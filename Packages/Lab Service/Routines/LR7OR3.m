@@ -1,4 +1,5 @@
 LR7OR3 ;slc/dcm - Get Lab TEST parameters ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,187,245,256**;Sep 27, 1994
  ;Entry points:  TEST - to get all TEST parameters
  ;               COLL - to get collection sample & specimen parameters

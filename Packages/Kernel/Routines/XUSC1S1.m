@@ -1,4 +1,4 @@
-XUSC1S1 ;ISCSF/RWF - Read data ;04/01/2002  17:13
+XUSC1S1 ;ISCSF/RWF - Read data ;04/01/2002  17:13 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**283**;Jul 10, 1995
  Q
 DATA(ROOT,STAT) ;get Data

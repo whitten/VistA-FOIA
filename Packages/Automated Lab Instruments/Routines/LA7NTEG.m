@@ -1,4 +1,5 @@
-LA7NTEG ;ISC/XTSUMBLD KERNEL - Package checksum checker ;2960329.095717
+LA7NTEG ; IHS/DIR/FJE - KERNEL - Package checksum checker 2960329.095717 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;0.0;;**17**;
  ;;7.3;2960329.095717
  S XT4="I 1",X=$T(+3) W !!,"Checksum routine created on ",$P(X,";",4)," by KERNEL V",$P(X,";",3),!

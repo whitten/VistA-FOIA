@@ -1,6 +1,8 @@
-TIUEDITR ; SLC/JER - Enter/Edit a Document for Transcriber ;6/11/2002
- ;;1.0;TEXT INTEGRATION UTILITIES;**7,41,48,100,109,112**;Jun 20, 1997
+TIUEDITR ; SLC/JER - Enter/Edit a Document for Transcriber ;1/21/01
+ ;;1.0;TEXT INTEGRATION UTILITIES;**7,41,48,100,109**;Jun 20, 1997
  ; 2/2: Update DIE from TIUEDIT to TIUEDI4
+ ;IHS/ITSC/LJF 02/26/2003 added code to edit visit and update V Note file
+ ;
 MAIN(TIUCLASS) ; Control Branching
  N TIUPREF,TIUOUT,TIUAUTH
  ; --- Get user's preferences ---
@@ -21,8 +23,6 @@ MAIN(TIUCLASS) ; Control Branching
  . D DOCSPICK^TIULA2(.TIUTYP,TIUCLASS,"1A","LAST","","$P(^TIU(8925.1,+Y,0),U,7)'=13,+$$CANENTR^TIULP(+Y)")
  . I +$G(TIUTYP)'>0 S TIUOUT=1 Q
  . S TIUTYP=+$P($G(TIUTYP(1)),U,2)
- . ; --- Re-direct surgical reports ---
- . I +$$ISA^TIULX(TIUTYP,+$$CLASS^TIUSROI("SURGICAL REPORTS")) D ENTEROP^TIUSROI(DFN,TIUTYP) Q
  . ; --- Initialize document parameters ---
  . D DOCPRM^TIULC1(TIUTYP,.TIUDPRM)
  . ; --- If an ENTRY ACTION exists, execute it ---
@@ -47,6 +47,9 @@ MAIN(TIUCLASS) ; Control Branching
  . . W !,$C(7),"No Validation Method defined for "
  . . W $$PNAME^TIULC1(TIUTYP),".",!,"Please contact IRM..."
  . X TIUVMETH
+ . ;
+ . D VEDIT^BTIUED("")  ;IHS/ITSC/LJF 02/26/2003 added call to edit visit
+ . ;
  . I $D(TIU),+$G(TIUASK) D
  . . ;S DA=$$GETREC^TIUEDI1(DFN,.TIU,1,.TIUNEW,.TIUDPRM,1)
  . . S DA=$$GETRECNW^TIUEDI3(DFN,.TIU,TIUTYP(1),.TIUNEW,.TIUDPRM,1)
@@ -64,6 +67,10 @@ MAIN(TIUCLASS) ; Control Branching
  . . I +$G(TIUONCE) S TIUNDA(+$G(DA))=""
  . . I +$G(TIU("STOP")) D DEFER^TIUVSIT(DA,TIU("STOP")) I 1
  . . E  D QUE^TIUPXAP1
+ . . ;
+ . . ; --- Link PN to V Note file ---
+ . . D VNOTE^BTIUPCC(DA,+TIU("VISIT"),DFN,"ADD") ;IHS/ITSC/LJF 02/26/2003 call to update V Note file
+ . . ;
  . . ; --- Execute COMMIT procedure ---
  . . S TIUCMMTX=$$COMMIT^TIULC1(+$G(^TIU(8925,+DA,0)))
  . . I TIUCMMTX]"" X TIUCMMTX

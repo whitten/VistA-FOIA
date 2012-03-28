@@ -1,5 +1,5 @@
-LRVR3 ;DALOI/CJS/JAH - LAB ROUTINE DATA VERIFICATION ;8/10/04
- ;;5.2;LAB SERVICE;**42,121,153,286,291**;Sep 27, 1994
+LRVR3 ;VA/DALOI/CJS - LAB ROUTINE DATA VERIFICATION ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**42,121,153,286,1027**;NOV 01, 1997
  D V1
  I $D(LRLOCKER)#2 L -@(LRLOCKER) K LRLOCKER
  K LRSA,LRSB,LRNOVER,LRSBCOM,LRLKOK
@@ -19,11 +19,17 @@ V1 S LRTN=1
  N LRX
  S LRX=1
  F  S LRX=$O(^LAH(LRLL,1,LRSQ,LRX)) Q:LRX<1  D
+ . Q:LRX=9009027                       ; IHS/OIT/MKK LR*5.2*1027 - Skip E-SIG Entry
  . S LRSB(LRX)=^LAH(LRLL,1,LRSQ,LRX)
  . I $D(LRNOVER),$D(LRVTS(LRX)),$D(^TMP("LR",$J,"TMP",LRX)) S LRNOVER(LRX)=""
  ; Copy comments from LAH
  S LRX=0
- F  S LRX=$O(^LAH(LRLL,1,LRSQ,1,LRX)) Q:LRX=""  S LRSBCOM(LRX)=^(LRX)
+ ; F  S LRX=$O(^LAH(LRLL,1,LRSQ,1,LRX)) Q:LRX=""  S LRSBCOM(LRX)=^(LRX)
+ ;----- BEGIN IHS/OIT/MKK MODIFICATIONS LR*5.2*1027
+ F  S LRX=$O(^LAH(LRLL,1,LRSQ,1,LRX)) Q:LRX=""  D
+ . Q:LRX=9009027                       ; Skip E-SIG Entry
+ . S LRSBCOM(LRX)=^LAH(LRLL,1,LRSQ,1,LRX)
+ ;----- END IHS/OIT/MKK MODIFICATIONS LR*5.2*1027
  ;
 EDIT I $D(^LAH(LRLL,1,LRSQ,0)) D
  . N X
@@ -56,9 +62,7 @@ V11 ;Still locked from V1 L ^LR(LRDFN,LRSS,LRIDT)
  ;
  I $P($G(LRORU3),U,3),$O(LRSB(0)) D LRORU3^LRVER3
  ;
-A3 I +LRDPF=2&($G(LRSS)'="BB")&('$$CHKINP^LRBEBA4(LRDFN,LRODT)) D
- .D BAWRK^LRBEBA(LRODT,LRSN,1,.LRBEY,.LRBETST)
- D VER^LRVER3A ;unlocked in LRVER
+A3 D VER^LRVER3A ;unlocked in LRVER
  K LRSBCOM
  D:$P(LRPARAM,U,14)&($P($G(^LRO(68,LRAA,0)),U,16)) LOOK^LRCAPV1
  ; Check for LEDI tests not reviewed
@@ -82,8 +86,18 @@ ZAP ; from LRLLS3
  ;
 LINK ; Check and save link
  D LKCHK Q:$D(LRLKOK)  S X=$S($D(^LRO(68,+$P(LRLK,U,3),1,+$P(LRLK,U,4),1,+$P(LRLK,U,5),0)):+^(0),1:"") G LINKOK:+X=LRDFN
- S S1=PNM,S2=SSN,S3=LRDPF W !,$C(7),"WARNING - NO MATCHING ACCESSION WAS FOUND.",!,"You may need to Clear instrument/worklist data,",!,"or correctly identify the sample to the system."
- I X S LRDPF=$P(^LR(X,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,PNM,?30,SSN,!,$C(7) S PNM=S1,SSN=S2,LRDPF=S3
+ ; S S1=PNM,S2=SSN,S3=LRDPF W !,$C(7),"WARNING - NO MATCHING ACCESSION WAS FOUND.",!,"You may need to Clear instrument/worklist data,",!,"or correctly identify the sample to the system."
+ ; I X S LRDPF=$P(^LR(X,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,PNM,?30,SSN,!,$C(7) S PNM=S1,SSN=S2,LRDPF=S3
+ ;----- BEGIN IHS/OIT/MKK MODIFICATIONS LR*5.2*1027
+ S S1=PNM,S2=HRCN,S3=LRDPF
+ W !,$C(7),"WARNING - NO MATCHING ACCESSION WAS FOUND."
+ W !,"You may need to Clear instrument/worklist data,"
+ W !,"or correctly identify the sample to the system."
+ I X S LRDPF=$P(^LR(X,0),U,2),DFN=$P(^(0),U,3) D
+ . D PT^LRX
+ . W !,PNM,?30,HRCN,!,$C(7)
+ . S PNM=S1,HRCN=S2,LRDPF=S3
+ ;----- END IHS/OIT/MKK MODIFICATIONS LR*5.2*1027
  K S1,S2,S3 Q:$D(LRGVP)  W !,"ARE YOU SURE THIS IS THE CORRECT DATA" S %=2 D YN^DICN Q:%'=1
 LINKOK K:$P(LRLK,U,5) ^LAH(LRLL,1,"C",+$P(LRLK,U,5),LRSQ)
  S ^LAH(LRLL,1,"C",LRAN,LRSQ)="",$P(^LAH(LRLL,1,LRSQ,0),U,3,5)=LRAA_U_LRAD_U_LRAN,LRLKOK=1

@@ -1,4 +1,5 @@
-LRAPU ;AVAMC/REG - PATH UTILITY ;8/11/95  08:59 ;
+LRAPU ; IHS/DIR/AAB - PATH UTILITY 8/11/95 08:59 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  S (A,B)=0 F  S A=$O(^LRO(68,A)) Q:'A  I $P($G(^LRO(68,A,0)),"^",2)=LRSS,$G(^(3,DUZ(2),0)) S B=B+1,B(B)=A
  I B=0 S Y=-1 Q  ;W $C(7),!!,"There are no accession areas for ",LRSS,!,"Please have responsible person enter one in Accession File (#68)."

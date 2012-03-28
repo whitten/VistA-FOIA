@@ -1,29 +1,25 @@
-PSJDPT ;BIR/JLC - CENTRALIZED PATIENT LOOKUP FOR IPM ; 7/2/08 3:47pm
- ;;5.0; INPATIENT MEDICATIONS ;**53,124,166,160,198**;16 DEC 97;Build 7
- ;
+PSJDPT ;BIR/JLC - CENTRALIZED PATIENT LOOKUP FOR IPM ;29-Apr-2005 11:37;SM
+ ;;5.0; INPATIENT MEDICATIONS ;**53,1003**;16 DEC 97
  ; Reference to ^DPT is supported by DBIA 10035
  ; Reference to ^DGSEC4 is supported by DBIA 3027
  ; Reference to ^DIC is supported by DBIA 10006
  ; Reference to ^DICN is supported by DBIA 10009
- ; Reference to ^DPTLK is supported by DBIA 3787
  ; Reference to ^DPTLK1 is supported by DBIA 3266
- ; Reference to DISPPRF^DGPFAPI is supported by DBIA 4563
- ; Reference to GETACT^DGPFAPI is supported by DBIA 3860
- ; Reference to ^ORRDI1 is supported by DBIA 4659.
- ; Reference to ^XTMP("ORRDI" is supported by DBIA 4660.
  ;
-EN ; MAIN ENTRY POINT FOR PATIENT LOOKUP
- K DIC S DIC="^DPT(",DIC("W")="D DPT^PSJDPT",DIC(0)="QEMZ" D ^DPTLK K DIC
- I $$BADADR^DGUTL3(+Y) H 2
- N Y
- D
- . ;PSJ*5.0*198;GMZ;Don't print remote data msg on view profile only menu options
- . I $T(HAVEHDR^ORRDI1)]"",$$HAVEHDR^ORRDI1,$D(^XTMP("ORRDI","OUTAGE INFO","DOWN")),'$G(PSJNODIS) W !,"Remote data not available - Only local order checks processed." D PAUSE^PSJLMUT1
+ ; Modified - IHS/CIA/PLS - 12/05/03 - Line EN+1
+ ;                        - 03/18/05 - Line EN+7
+EN K DIC S DIC("W")="D DPT^PSJDPT",DIC="^DPT("
+ ; IHS/CIA/PLS - Next three lines commented out and lookup call
+ ;               modified to use IHS special lookup utility.
+ ;F Q=1:1:3 I X?@$P("1A4N^4N^9N","^",Q) Q
+ ;I  S D=$P("BS5^BS^SSN","^",Q),DIC(0)="EZI" D IX^DIC I Y>0 K DIC D CHK(.Y) Q
+ ;S DIC("W")="D DPT^PSJDPT",DIC(0)="QEMIZ" D ^DIC Q:Y'>0  K DIC
+ S DIC("W")="D DPT^PSJDPT",DIC(0)="QEMZ" D ^DIC Q:Y'>0  K DIC
+ ; IHS/CIA/PLS - 03/18/05 - Removed duplicate security check.
+ ;D CHK(.Y)
  Q
-CHK(Y,DISP,PAUSE) N RESULT,RES,CHKY,PSGTEMP
+CHK(Y,DISP,PAUSE) N RESULT,RES
  S DISP=$G(DISP),PAUSE=$G(PAUSE)
- I $G(XQY0)["PSJI COMPLETE",$$GETACT^DGPFAPI(+Y,"PSGTEMP") K PSGTEMP W @IOF,"PATIENT: ",$P(Y,U,2)
- S CHKY=Y D DISPPRF^DGPFAPI(Y) S Y=CHKY K CHKY
  D PTSEC^DGSEC4(.RESULT,$P(Y,"^"),1)
  I RESULT(1)'=0 D
  . W !! I DISP W ?(80-$L($P(Y,"^",2)))\2,$P(Y,"^",2),!

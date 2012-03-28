@@ -1,5 +1,5 @@
-GMTSOBE ; SLC/KER - HS Object - Export            ; 05/22/2008
- ;;2.7;Health Summary;**89**;Oct 20, 1995;Build 61
+GMTSOBE ; SLC/KER - HS Object - Export            ; 01/06/2003
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;                    
  ; External References
  ;
@@ -92,7 +92,6 @@ OBJ ; Export an Object
  D TL(("OBJ ; Health Summary Object")),TL((" ;"_GMTSON))
  S GMTSTMP=$G(^GMT(142.5,+GMTSO,0)),$P(GMTSTMP,"^",3)="",$P(GMTSTMP,"^",17)="",$P(GMTSTMP,"^",18)="",$P(GMTSTMP,"^",19)=""
  D TL((" ;0;"_GMTSTMP)) S GMTSRT="^GMT(142.5,"_+($G(GMTSO))_","
- S GMTSTMP=$G(^GMT(142.5,+GMTSO,2)) D TL((" ;2;"_GMTSTMP))
  S GMTSNN="^GMT(142.5,"_+($G(GMTSO))_",1)",GMTSNC="^GMT(142.5,"_+($G(GMTSO))_",1,"
  F  S GMTSNN=$Q(@GMTSNN) Q:GMTSNN=""!(GMTSNN'[GMTSNC)  D
  . S GMTSTR=$P($P(GMTSNN,GMTSRT,2),")",1),GMTSND=@GMTSNN D TL((" ;"_GMTSTR_";"_GMTSND))

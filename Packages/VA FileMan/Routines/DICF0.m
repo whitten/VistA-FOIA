@@ -1,4 +1,5 @@
-DICF0 ;SEA/TOAD,SF/TKW-VA FileMan: Finder, get alternate index ;2/8/00  11:11
+DICF0 ;SEA/TOAD,SF/TKW-VA FileMan: Finder, get alternate index ;2/8/00  11:11 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**28**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 ALTIDX(DINDEX,DIFILE,DIVALUE,DISCREEN,DINUMBER) ; Find alternate index when lookup value for first subscript is null.

@@ -1,4 +1,4 @@
-XUSC1 ;SFISC/RWF - Interface to Server services. ;10/09/2002  16:53
+XUSC1 ;SFISC/RWF - Interface to Server services. ;10/09/2002  16:53 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**283**;Jul 10, 1995
  ;XUSC("STAT") is used to pass subroutine status around.
  ;The entry points EN, OPEN, DATA, CLOSE are supported ref.

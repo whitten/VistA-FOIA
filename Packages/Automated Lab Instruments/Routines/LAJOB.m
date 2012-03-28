@@ -1,4 +1,5 @@
-LAJOB ;SLC/DCM - JOB AUTOMATED LAB ROUTINES ;4/27/89  09:41 ;
+LAJOB ; IHS/DIR/FJE - JOB AUTOMATED LAB ROUTINES 4/27/89 09:41 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
 INST S U="^",$P(LRDASH,"-",79)="" W !!,"This is an option to manually start automated Lab routines that "
  W !,"for some reason did not get started by the master lab program."

@@ -1,5 +1,5 @@
 RAPROD2 ;HIRMFO/GJC-Display Med & Radiopharm values for exams ;12/12/96  13:35
- ;;5.0;Radiology/Nuclear Medicine;**45**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
 PHARM(RADA) ; Display Pharmaceutical default data for Exam displays
  ; Input: RADA -> ien for the Examinations (50) multiple.
@@ -64,42 +64,3 @@ TRN1(X) ; Translate Radiopharmaceutical field name to a shorter length.
 HDR ; Pharmaceutical/Radiopharmaceutical Header
  W @IOF,!,RAHDR,! S RACNT=0
  Q
- ;
-CMHIST(RADFN,RADTI,RACNI) ;main body
- ;input: RADFN=DFN of the Rad/Nuc Med patient (file 2)
- ;       RADTI=exam date/time (inverse)
- ;       RACNI=ien of exam record (examinations sub-file 70.03)
- ;
- N X S RAHD="Contrast Media Edit History"
- S $P(RALINE,"-",(IOM+1))=""
- S RAPG=0 W:$E(IOST,1,2)="C-" @IOF ;clear screen
- D CMHDR S (RACMDT,RAXIT)=0
- ;$O down 'B' xref in ascending chronological order
- F  S RACMDT=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"AUD","B",RACMDT)) Q:'RACMDT  D  Q:RAXIT
- .S RAIEN=+$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"AUD","B",RACMDT,0))
- .;get_changed date/time, get_previous CM value, get_user
- .S RAY(0)=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"AUD",RAIEN,0))
- .S RAADT=$$FMTE^XLFDT($P(RAY(0),U),"1P"),RACMU=$P(RAY(0),U,2)
- .S:+$P(RAY(0),U,3) RAAU=$$GET1^DIQ(200,$P(RAY(0),U,3)_",",.01)
- .S X=$S($L(RACMU):$$CONTRAST^RACMHIS(RACMU),1:"")
- .I $Y>(IOSL-4) S RAXIT=$$EOS^RAUTL5() Q:RAXIT  D CMHDR
- .W !,RAADT,?40,$E($G(RAAU),1,35) W:X="" !
- .I $Y>(IOSL-4) S RAXIT=$$EOS^RAUTL5() Q:RAXIT  D CMHDR
- .I X'="" D  D ^DIWW K ^UTILITY($J,"W")
- ..S DIWL=3,DIWR=70,DIWF="W" D ^DIWP
- ..Q
- .Q
-EXIT ;clean up symbol table, message to user
- ;if there are no records to print, alert user
- W:'$D(RAY(0))#2 !,$$CJ^XLFSTR("*** No Records To Print ***",IOM)
- K RAADT,RAAU,RACH2,RACHNG2,RACMU,RAHD,RAIEN,RALINE,RAPG
- K RACMDT,RAY
- Q
- ;
-CMHDR ; print header
- W:RAPG @IOF S RAPG=RAPG+1
- W !,$$CJ^XLFSTR(RAHD,IOM)
- W !,"Date/Time Changed",?40,"User",!?2,"Contrast Media"
- W !,$$CJ^XLFSTR(RALINE,IOM)
- Q
- ;

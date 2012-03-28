@@ -1,9 +1,7 @@
 IBDFFV ;ALB/CMR - AICS FORM VALIDATION ; NOV 22,1995
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
  ; -- displays Form Definition values for validation
- ;
- W !,?4,"** This option is OUT OF ORDER **" QUIT   ;Code set Versioning
  ;
  N IBDFL,X,Y,I,POP,CALL
  W !!,"AICS Form Validation Report",!!

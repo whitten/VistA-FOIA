@@ -1,14 +1,12 @@
-RARTVER ;HISC/FPT,CAH AISC/MJK,RMO-On-line Verify Reports ;09/24/08  10:27
- ;;5.0;Radiology/Nuclear Medicine;**8,23,26,82,56,95**;Mar 16, 1998;Build 7
- ;Supported IA #10035 ^DPT(
- ;Supported IA #10060 ^VA(200
+RARTVER ;HISC/FPT,CAH AISC/MJK,RMO-On-line Verify Reports ;11/19/97  13:52
+ ;;5.0;Radiology/Nuclear Medicine;**8,23,26**;Mar 16, 1998
  D SET^RAPSET1 I $D(XQUIT) K XQUIT Q
  N RAVFIED,RAXIT S RAXIT=0
- K RAVER S:$D(^VA(200,DUZ,0)) RAVER=$P(^(0),"^") I '$D(RAVER) W !!,$C(7),"Your name must be defined in the NEW PERSON File to continue." G Q
- I '$D(^VA(200,"ARC","R",DUZ)),'$D(^VA(200,"ARC","S",DUZ)) W !!,$C(7),"This option is only available for Rad/Nuc Med Interpreting Physicians." G Q
+ K RAVER S:$D(^VA(200,DUZ,0)) RAVER=$P(^(0),"^") I '$D(RAVER) W !!,*7,"Your name must be defined in the NEW PERSON File to continue." G Q
+ I '$D(^VA(200,"ARC","R",DUZ)),'$D(^VA(200,"ARC","S",DUZ)) W !!,*7,"This option is only available for Rad/Nuc Med Interpreting Physicians." G Q
  I '$$CHKUSR^RAO7UTL(DUZ) D ERR^RARTVER2(DUZ) D Q QUIT
  I $D(^VA(200,"ARC","S",DUZ)) S RASTAFF=1 G 1
- I $P(RAMDV,"^",18)'=1 W !!,$C(7),"Interpreting Residents are not allowed to verify reports.",!! G Q
+ I $P(RAMDV,"^",18)'=1 W !!,*7,"Interpreting Residents are not allowed to verify reports.",!! G Q
 1 S RAONLINE="" W ! D ES^RASIGU G Q:'%
  I $D(RASTAFF),$P($G(^VA(200,DUZ,"RA")),U,2)'="y" S RARAD=DUZ,RAD="ASTF",RARESFLG="" G SRTRPT ;selected USER does NOT have ALLOW VERIFYING OF OTHERS
  I '$D(^VA(200,"ARC","S",DUZ)),$S('$P(RAMDV,"^",18):1,'$D(^VA(200,"ARC","R",DUZ)):1,'$D(^VA(200,DUZ,"RA")):1,$P(^VA(200,DUZ,"RA"),"^",2)'="y":1,1:0) S RARAD=DUZ,RAD="ARES",RARESFLG="" G SRTRPT
@@ -21,7 +19,7 @@ SRTRPT K ^TMP($J,"RA"),RA,RARPTX
  ;^rpt status at start of selection^/long CN^Pat.ien^Proc.ien
  F  S RARPT=$O(^RARPT(RAD,RARAD,RARPT)) Q:'RARPT  I $D(^RARPT(RARPT,0)) S RARTDT=$S($P(^(0),"^",6)="":9999999.9999,1:$P(^(0),"^",6)) D
  .Q:$$STUB^RAEDCN1(RARPT)  ;skip stub report 081500
- .Q:"^V^EF^X^"[("^"_$P($G(^RARPT(+RARPT,0)),"^",5)_"^")  ;skip V,EF,X
+ .Q:$P($G(^RARPT(+RARPT,0)),"^",5)="V"  ; skip if already verified
  .S Y=RARPT D RASET^RAUTL2 ;returns Y=radpt(radfn,"dt",radti,"p",-,0)
  .Q:'Y  ;record must be corrupt no zero node for ADC x-ref!!
  .S ^TMP($J,"RA","DT",RARTDT,RARPT)="^"_$P($G(^RARPT(+RARPT,0)),"^",5)_"^/"_$P(^(0),"^",1,2)_"^"_+$P(Y,U,2)
@@ -77,16 +75,14 @@ ASK Q:RAXIT  W ! S I="",$P(I,"=",80)="" W I K I
  D SET^RARD K RARD S RARDX=$E(X) I RARDX="^" L -^RARPT(RARPT) Q
  ; if user chose "T"op, the report will be displayed again from the top
  I "PT"[RARDX D PRTRPT^RARTVER2:RARDX="P",DISRPT^RARTVER2:RARDX="T" G ASK
- I RARDX="E" D EDTCHK^RARTVER2 I RARDX="E" W !!,"EDITING REPORT",!,"--------------",! D EDTRPT^RARTE1 D  K RAAB G ASK
- .; RAHLTCPB flag is inactive
- .N RAHLTCPB S RAHLTCPB=1 D:RACT="V" UPSTAT^RAUTL0 D:RACT'="V" UP1^RAUTL1
+ I RARDX="E" D EDTCHK^RARTVER2 I RARDX="E" W !!,"EDITING REPORT",!,"--------------",! D EDTRPT^RARTE1 D:RACT="V" UPSTAT^RAUTL0 D:RACT'="V" UP1^RAUTL1 K RAAB G ASK
  S RAPGM="GETRPT^RARTVER" G 31^RART ;goto Verify Report Only template
  ;
 MSG1 N I,J1,J2,J3 S I=$S($D(^TMP($J,"RA","DT",+$G(RARTDT),+$G(RARPT))):^(RARPT),$D(^TMP($J,"RA","XREF")):$G(RARPTX(RPTX)),1:"")
  S J1=$P(I,"/",2),J2=$P(J1,"^",2),J3=$P(J1,"^",3),J1=$P(J1,"^")
- W !!!?15,$C(7),"Since the time you selected this group of reports,",!?15,"another user has deleted this report for",!?15,$P($G(^DPT(J2,0)),"^"),"   case ",J1,!?15,"Procedure ",$P($G(^RAMIS(71,+J3,0)),U),".",!! G CONT Q
+ W !!!?15,*7,"Since the time you selected this group of reports,",!?15,"another user has deleted this report for",!?15,$P($G(^DPT(J2,0)),"^"),"   case ",J1,!?15,"Procedure ",$P($G(^RAMIS(71,+J3,0)),U),".",!! G CONT Q
 MSG2 N I,J S I=";"_$P(^RARPT(RARPT,0),"^",5)_":"
  S J=";"_$P(^DD(74,5,0),U,3)
- W !!!?15,$C(7),"Since the time you selected this group of reports,",!?15,"another user has changed this report's status to '",$P($P(J,I,2),";"),"'.",!! Q
+ W !!!?15,*7,"Since the time you selected this group of reports,",!?15,"another user has changed this report's status to '",$P($P(J,I,2),";"),"'.",!! Q
 CONT W !! S DIR(0)="FO",DIR("A")="Press return key to continue " D ^DIR
  Q

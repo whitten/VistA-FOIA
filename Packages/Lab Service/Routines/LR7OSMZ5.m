@@ -1,4 +1,5 @@
 LR7OSMZ5 ;slc/dcm - Silent Micro rpt - BACTERIA, ANTIBIOTICS ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,187,244**;Sep 27, 1994
 BACT ;from LR7OSMZ2
  Q:+$O(^LR(LRDFN,"MI",LRIDT,3,0))<1

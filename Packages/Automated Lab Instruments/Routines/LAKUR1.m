@@ -1,4 +1,5 @@
-LAKUR1 ;SLC/RWF - URINALYSIS Part 2 ; 9/19/87  18:36 ;
+LAKUR1 ; IHS/DIR/FJE - URINALYSIS Part 2 9/19/87 18:36 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  K TY S T3=0 D INIT F N1=0:0 S N1=$O(^TMP("LA",$J,N1)) Q:N1>30!(N1'>0)  S I3=^(N1,3),I4=^(4) I I3 S TYPE=I4 W ! D RESULT
  D HD1,HD4,HD2
@@ -34,7 +35,8 @@ EVAL D HD1
  Q
 STORE F T3=0:1:2 F I=0:0 S I=$O(^TMP($J,T3,I)) Q:I=""  S Y=^(I) I $D(TY(T3,Y)) S V=TY(T3,Y) X ^TMP("LA",$J,I,2) S @^TMP("LA",$J,I,1)=V
  Q
-HD1 W @IOF,!!,"Patient name: ",PNM,?45,"SSN: ",SSN Q
+HD1 ;W @IOF,!!,"Patient name: ",PNM,?45,"SSN: ",SSN Q
+ W @IOF,!!,"Patient name: ",PNM,?45,"HRCN: ",HRCN Q  ;IHS/ANMC/CLS 11/1/95
 HD2 W !,?10,"URINALYSIS  Screen ",$P("MAIN$CAST's$CRYSTAL's","$",T3+1)
  S LRDY=$Y W !,"'?'=DISPLAY, '!'=COMMENTS, '\'=MAIN, '['=CASTS, ']'=CRYSTALS, <RETURN>=EXIT" F I=1:1:T1 W !,"KEY",?7,T1(I),!,"TEST",?7,T2(I),!!
 HD3 S TYPE="?" D HELP Q

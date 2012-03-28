@@ -1,19 +1,5 @@
-GMRAUTL2 ;SLC/DAN - New style index utilities, update utility for 120.8 ;06/01/10  07:32
- ;;4.0;Adverse Reaction Tracking;**23,36,41,45**;Mar 29, 1996;Build 5
- ;DBIA Section
- ;%ZTLOAD    - 10063
- ;DIE        - 10018
- ;FILE^DIE   - 2053
- ;UPDATE^DIE - 2053
- ;DIQ        - 2056
- ;ORCHECK    - 4859
- ;ORKCHK     - 4135
- ;ORQOR2     - 3458
- ;ORX8       - 2467
- ;PSN50P41   - 4531
- ;PSN50P65   - 4543
- ;XLFDT      - 10103
- ;XTID       - 4631
+GMRAUTL2 ;SLC/DAN New style index utilities, update utility for 120.8 ;1/3/07  08:02
+ ;;4.0;Adverse Reaction Tracking;**23,36**;Mar 29, 1996;Build 9
  ;
  N GMRAI,GMRAC,ENTRY,UPDATED
  Q:$G(X1(1))=$G(X2(1))  ;Entry unchanged
@@ -56,7 +42,7 @@ ADD(TYPE,ALENT,SUBENT,GMRAS) ;Adds entry to appropriate multiple
  N FILE,FDA,EM
  S GMRAS=1
  I $D(^GMR(120.8,ALENT,$S(TYPE="I":2,1:3),"B",SUBENT)) S GMRAS=0 Q  ;Entry already exists
- L +^GMR(120.8,ALENT):20 I '$T Q
+ L +^GMR(120.8,ALENT)
  S FILE=$S(TYPE="I":120.802,1:120.803)
  S FDA(FILE,"+1,"_ALENT_",",.01)=SUBENT
  D UPDATE^DIE("","FDA",,"EM")
@@ -67,7 +53,7 @@ DEL(TYPE,ALENT,SUBENT,GMRAS) ;Delete entry from multiple
  N FILE,FDA,EM,ENTRY
  S GMRAS=1
  I '$D(^GMR(120.8,ALENT,$S(TYPE="I":2,1:3),"B",SUBENT)) S GMRAS=0 Q  ;No entry to delete
- L +^GMR(120.8,ALENT):20 I '$T Q
+ L +^GMR(120.8,ALENT)
  S ENTRY=$O(^GMR(120.8,ALENT,$S(TYPE="I":2,1:3),"B",SUBENT,0)) Q:'+ENTRY
  S FILE=$S(TYPE="I":120.802,1:120.803)
  S FDA(FILE,ENTRY_","_ALENT_",",.01)="@"
@@ -89,29 +75,27 @@ CHKORD ;Check for orders that are now in conflict with existing allergy data
  .D EN^ORKCHK(.GMRAOC,DFN,.GMRAORX,"ACCEPT")
  .S GI=0,CNT=0 F  S GI=$O(GMRAOC(GI)) Q:'+GI  D
  ..Q:$P(GMRAOC(GI),U,2)'=3  ;Quit if not allergy related
- ..;Q:$D(^OR(100,$P(GMRAOC(GI),U),9,"B",3))  ;Quit if existing allergy order check, can't be for this new information
- ..Q:$$ANYARTOC^GMRAUTL2($P(GMRAOC(GI),U))  ;Quit if existing allergy order check, can't be for this new information
+ ..Q:$D(^OR(100,$P(GMRAOC(GI),U),9,"B",3))  ;Quit if existing allergy order check, can't be for this new information
  ..S CNT=CNT+1,^TMP($J,"ERR",DFN,CNT)=$P($$STATUS^ORQOR2($P(GMRAOC(GI),U)),U,2)_" order for "_$P($$OI^ORX8($P(GMRAOC(GI),U)),U,2)_",order #"_$P(GMRAOC(GI),U)
  .K GMRAORX ;Remove previous list of orders
  D MAIL K ^TMP("ORR",$J),^TMP($J,"ERR")
  Q
  ;
-ANYARTOC(GMRAIFN) ;check order to see if there are any allergy order checks
- N GMRARET,GMRAI
- S GMRARET=0
- K ^TMP($J,"GMRAOC")
- D OCAPI^ORCHECK(+GMRAIFN,"GMRAOC")
- S GMRAI=0 F  S GMRAI=$O(^TMP($J,"GMRAOC",GMRAI)) Q:'GMRAI  I $G(^TMP($J,"GMRAOC",GMRAI,"OC NUMBER"))=3 S GMRARET=1
- K ^TMP($J,"GMRAOC")
- Q GMRARET
 ADDCOM ;Add comment to updated allergy indicating changes
- D ADDCOM^GMRAUTL3 ;41 Moved section due to space considerations
+ Q
+ N TYPE,ROOT,SUB2,DICR,DIEL,DL,DP,DM,DK,DIK,DC,DE,GLOB,DH,D,DQ,DR,DIC,DIE,DIA,DI,DG,DDH,DDER,DA,D0,D1
+ F GLOB="ING(""A"")","ING(""D"")","CLASS(""A"")","CLASS(""D"")" I $D(@GLOB) D
+ .S TYPE=$S(GLOB="ING(""A"")":1,GLOB="ING(""D"")":2,GLOB="CLASS(""A"")":3,1:4) ;Determines if we're adding or deleting ingredients or classes
+ .S COM="The following "_$S(TYPE=1!(TYPE=2):"ingredients",1:"drug classes")_" were "_$S(TYPE=2!(TYPE=4):"deleted",1:"added")_": "
+ .S ROOT=$S(TYPE=1:"ING(""A"")",TYPE=2:"ING(""D"")",TYPE=3:"CLASS(""A"")",1:"CLASS(""D"")")
+ .S SUB2=0 F  S SUB2=$O(@ROOT@(SUB2)) Q:'+SUB2  I @ROOT@(SUB2) S COM=COM_$S($P(COM,": ",2)'="":", ",1:"")_$S(TYPE=1!(TYPE=2):$$GET1^DIQ(50.416,SUB2_",",.01),1:$$GET1^DIQ(50.605,SUB2_",",.01))
+ .I $P(COM,": ",2)'="" L +^GMR(120.8,SUB) D ADCOM^GMRAFX(SUB,"O",COM) L -^GMR(120.8,SUB)
  Q
  ;
 MAIL ;Send message containing potential order checks to user.
  N XMSUB,XMTEXT,XMDUZ,XMY,XMZ,CNT,SUB,ERR,TYPE,NUM
  Q:'$D(^TMP($J,"ERR"))  ;Nothing to report
- K ^TMP($J,"TEXT"),^TMP($J,"GMRAINFO") ;41 Clear out storage area
+ K ^TMP($J,"TEXT")
  S XMDUZ="Allergy auto-update program"
  S XMY($G(DUZ,.5))="" ;Send to user who initiated change or postmaster
  S XMY("G.GMRA REQUEST NEW REACTANT")="" ;Include mail group to be sure someone gets this message
@@ -121,10 +105,7 @@ MAIL ;Send message containing potential order checks to user.
  F TYPE="GMRAI","GMRAC" D
  .I $D(@(TYPE)) D
  ..S ^TMP($J,"TEXT",CNT)=$S(TYPE="GMRAI":"Ingredients",1:"Classes")_": ",CNT=CNT+1
- ..S NUM=0 F  S NUM=$O(@TYPE@("A",NUM)) Q:'+NUM  S ^TMP($J,"TEXT",CNT)=$G(^TMP($J,"TEXT",CNT))_$S($L($G(^TMP($J,"TEXT",CNT))):",",1:"") D  ;41 added call for data in structure below
- ...I TYPE="GMRAI" D ZERO^PSN50P41(NUM,,$$DT^XLFDT,"GMRAINFO") ;41 ingredient call
- ...I TYPE="GMRAC" D C^PSN50P65(NUM,,"GMRAINFO") ;41 drug class call
- ...S ^TMP($J,"TEXT",CNT)=^TMP($J,"TEXT",CNT)_$G(^TMP($J,"GMRAINFO",NUM,.01)) ;41 add data
+ ..S NUM=0 F  S NUM=$O(@TYPE@("A",NUM)) Q:'+NUM  S ^TMP($J,"TEXT",CNT)=$G(^TMP($J,"TEXT",CNT))_$S($L($G(^TMP($J,"TEXT",CNT))):",",1:"")_$$GET1^DIQ($S(TYPE="GMRAI":50.416,1:50.605),NUM_",",.01)
  ..S CNT=CNT+1,^TMP($J,"TEXT",CNT)="",CNT=CNT+1
  S ^TMP($J,"TEXT",CNT)="As a result of the update the following patients have drug-allergy",CNT=CNT+1
  S ^TMP($J,"TEXT",CNT)="interactions that need to be reviewed to ensure the patient's safety.",CNT=CNT+1
@@ -176,7 +157,7 @@ REACT ;Update REACTANT field with name from 120.82.  Section added with patch 23
  .S DFN=$P(^GMR(120.8,IEN,0),U)
  .Q:$$DECEASED^GMRAFX(DFN)  ;Don't update if patient is deceased
  .Q:+$G(^GMR(120.8,IEN,"ER"))  ;Don't update if entered in error
- .L +^GMR(120.8,IEN):20 I '$T Q
+ .L +^GMR(120.8,IEN)
  .S FDA(120.8,IEN_",",.02)=NTERM
  .D FILE^DIE("","FDA","EM")
  .L -^GMR(120.8,IEN)

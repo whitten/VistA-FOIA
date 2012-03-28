@@ -1,4 +1,5 @@
-XPAR1 ;SLC/KCM - Supporting Calls - Validate;11:35 PM  12 May 1998
+XPAR1 ;SLC/KCM - Supporting Calls - Validate;11:35 PM  12 May 1998 [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**1001**;APR 1, 2003
  ;;7.3;TOOLKIT;**26**;Apr 25, 1995
  ;
 INTERN ;convert ENT, PAR, and INST to internal form - called from XPAR only

@@ -1,15 +1,15 @@
 DGJOPRT ;ALB/MAF - SORT/PRINT IRT ; JAN 28,1991@900
- ;;1.0;Incomplete Records Tracking;;Jun 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
 EN S DGJTDIR=1,DGJTSTAT="^"_$O(^DG(393.2,"B","INCOMPLETE",0))_"^" G OUT
 EN1 S (DGJTDIR,DGJTCK)=2
 OUT S (DGJFL,DGJTMESS)=0 W !!,"Sort output by: PATIENT// " D ZSET1 S X="" R X:DTIME G QUIT:X="^"!('$T) I X=""!("Pp"[X) S X="2"
  S X=$S("Ee"[X:1,"Dd"[X:3,"Ss"[X:4,1:X)
  I X="?" D ZSET1,HELP1 G OUT
- S DGJTSR=$E(X) D IN^DGJHELP W ! I %=-1 D ZSET1,HELP1 G OUT
+ S DGJTSR=$E(X) D IN^DGHELP W ! I %=-1 D ZSET1,HELP1 G OUT
 OUT1 S DGJFL=0 W !!,"Print report for: (I)Inpatients, (O)Outpatients, (B)Both//  " D ZSET2 S X="" R X:DTIME G QUIT:X="^"!('$T) I X=""!("Bb"[X) S X=3
  S X=$S("Ii"[X:1,"Oo"[X:2,1:X)
  I X="?" D ZSET2,HELP2 G OUT1
- S DGJTSR1=$E(X) D IN^DGJHELP W ! I %=-1 D ZSET2,HELP2 G OUT1
+ S DGJTSR1=$E(X) D IN^DGHELP W ! I %=-1 D ZSET2,HELP2 G OUT1
  I $D(^DG(43,1,"GL")) S DGJTMUL=$P(^DG(43,1,"GL"),"^",2)
  I DGJTDIR=2 D SEL G QUIT:$D(DUOUT)!$D(DTOUT)
  S DGJTL=$S(DGJTSR=1:"DAT",DGJTSR=2:"PAT",DGJTSR=3:"PHY",DGJTSR=4:"SER",1:"QUIT")

@@ -1,4 +1,6 @@
-LRLLS2 ;SLC/RWF/MILW/JMC- LOAD LIST FIX UP ;2/5/91  14:40 ;
+LRLLS2 ; IHS/DIR/FJE - LOAD LIST FIX UP 2/5/91 14:40 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;**116**;Sep 27, 1994
  ;MILW/JMC 4/16/93 Commented out line "DR2", inserted line at "DR2+1", prevent tests from being deleted fro accession file if control.
 SETONE ;from LRLLS
@@ -19,7 +21,8 @@ WHATEST ;from LRLLS
 SHOW ;from LRLLS
  S LRDFN=$S($D(^LRO(68,LRAA,1,LRAD,1,LRAN,0)):+^(0),1:-1) Q:LRDFN<1  S X=^LR(LRDFN,0)
 WHO ;from LRLLS
- S LRDPF=$P(X,U,2),DFN=$P(X,U,3) D PT^LRX W !,PNM,?40,SSN Q
+ ;S LRDPF=$P(X,U,2),DFN=$P(X,U,3) D PT^LRX W !,PNM,?40,SSN Q
+ S LRDPF=$P(X,U,2),DFN=$P(X,U,3) D PT^LRX W !,PNM,?40,HRCN Q  ;IHS/ANMC/CLS 08/18/96
  Q
 CURRENT ;from LRLLS
  S X=$S($D(^LRO(68.2,LRINST,1,LRTRAY,1,LRCUP,0)):^(0),1:""),%=0 W:X="" !,"NOTHING THERE" Q:X=""

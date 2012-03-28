@@ -1,16 +1,14 @@
-GMVRPCU ; HOIFO/DP - RPC for Vitals User ;3/18/04  12:49
- ;;5.0;GEN. MED. REC. - VITALS;**3**;Oct 31, 2002
+GMVRPCU ; HOIFO/DP - RPC for Vitals User
+ ;;5.0;GEN. MED. REC. - VITALS;;Oct 31, 2002
  ; Integration Agreements:
  ; IA# 10076 [Supported] XUSEC Calls
  ; IA# 2263 [Supported] XPAR Calls
  ; IA# 2541 [Supported] XUPARAM Calls
- ; IA# 10112 [Supported] VASITE calls
- ;
- ; This routine supports the following IAs:
- ; #4366 - GMV USER RPC is called at RPC (private)
+ ; IA# 10045 [Supported] XUSHSHP
+ ; IA# 2241 [Supported] XUSRB1 Call
  ;
 RPC(RESULTS,OPTION,DATA) ; [Procedure] Main RPC call tag
- ; RPC: [GMV USER]
+ ; RPC: [GMV MANAGER]
  ;
  ; Input parameters
  ;  1. RESULTS [Reference/Required] RPC Return array
@@ -49,6 +47,5 @@ SIGNON ; [Procedure] Returns sign-on information after Broker.Connected := True
  S @RESULTS@(7)=$$GET1^DIQ(200,DUZ_",",8)
  S @RESULTS@(8)=""
  S @RESULTS@(9)=$G(DTIME,300)
- S @RESULTS@(10)=$$SITE^VASITE()
  Q
  ;

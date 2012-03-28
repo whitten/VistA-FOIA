@@ -1,4 +1,6 @@
-LRAPBS2 ;AVAMC/REG - BLOCK/SLIDE DATA ENTRY ;2/6/92  19:19 ;
+LRAPBS2 ; IHS/DIR/FJE - BLOCK/SLIDE DATA ENTRY 2/6/92 19:19 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  ;put date stained/block prepared/gross cutting in lab data file
  I $D(LRF) D C Q

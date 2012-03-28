@@ -1,5 +1,5 @@
 IBDFUTL1 ;ALB/MAF - Maintenance Utility cont. - 4 20 95
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**32,23,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**32,23**;APR 24, 1997
  ;
  ;
 SETSTR(S,V,X,L) ; -- insert text(S) into variable(V)
@@ -63,10 +63,8 @@ SET ;  -- Loop thru to see if codes are valid
  .....;;----change to api cpt;dhh
  .....I $G(IBDFCODE)="CPT " N IBY,XX D
  ......S XX=$$CPT^ICPTCOD(X)
- ......;;S IBY=$S(+XX=-1:"",1:$P(XX,"^",3))
- ......S IBY=$S($P(XX,U,7)'=1:"",1:$P(XX,"^",3))
- .....;;I $G(IBDFCODE)="ICD-9 " N IBY S IBY=$P($G(^ICD9(X,0)),"^",3)
- .....I $G(IBDFCODE)="ICD-9 " N IBY S IBY=$P($$ICDDX^ICDCODE(X),U,4)
+ ......S IBY=$S(+XX=-1:"",1:$P(XX,"^",3))
+ .....I $G(IBDFCODE)="ICD-9 " N IBY S IBY=$P($G(^ICD9(X,0)),"^",3)
  .....I $G(IBDFCODE)="Type of Visit " N IBY S IBY=$P($G(^IBE(357.69,X,0)),"^",2)
  .....Q:'$D(VAUTJ(X))
  .....S ^TMP("UTIL",$J,IBDFNAME,IBDFX,$P(^IBE(357,IBDFORM,0),"^",1),$P(^IBE(357.1,IBDFBLK,0),"^",1),IBDFSEL)=IBDFORM_"^"_IBDFBLK_"^"_$S(IBY]"":IBY,1:"INVALID")_"^"_IBDFLST_"^"_IBDFSEL_"^"_$S($D(VAUTC):IBDFNAME,$D(VAUTG):IBDFCLNM,1:"")

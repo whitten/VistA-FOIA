@@ -1,5 +1,5 @@
 IBDF2F ;ALB/CJM - ENCOUNTER FORM - PRINT FORM(sends to printer) ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**3,25**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 LNPRINT(IBPFID) ;prints the form
  ;IBPFID is the id for form tracking
@@ -30,7 +30,6 @@ LNPRINT(IBPFID) ;prints the form
  ..I ((NXTTXT'="")!(NXTUL'="")) D
  ...D:IBDEVICE("GRAPHICS")&('IBDEVICE("PCL")) PGRPHCS(.STARTY,CURY)
  ...D:IBDEVICE("PCL") DRAW(.STARTY,CURY),WHITEOUT
- ...W:$G(IBDEVICE("TCP")) ! ;if TCP device must use ! to get to TOF
  ...W:'$G(IBDEVICE("TCP")) @IOF
  ...S PAGE=PAGE+1
  ...D REGISTER^IBDF2F1(PAGE)
@@ -88,7 +87,7 @@ PGRPHCS(STARTY,LASTY) ;print graphics - only for raster devices
  Q
  ;
 DRAW(STARTY,LASTY) ; draws the objects needing HP-GL/2 
- N ROW,COL,BLK,NODE,WIDTH,HT,IEN,PRNTTYPE,PWPARAM,FIPARAM
+ N ROW,COL,BLK,NODE,WIDTH,HT,IEN,PRNTTYPE
  W $C(27),"*p0x0Y"
  W $C(27),"*c5760x7200Y"
  W $C(27),"*c0T"
@@ -98,35 +97,23 @@ DRAW(STARTY,LASTY) ; draws the objects needing HP-GL/2
  W "AD3,16.6;" ;sets the alternate font for the labels
  ;
  ;draw bubbles
- ;W "PW.12;" ;set pen width to .12 mm, patch 3 value
- ;W "SV1,25;" ;set fill to 25%, patch 3 value
- S PWPARAM=$P($G(^IBD(357.09,1,0)),"^",13)
- I PWPARAM="" S PWPARAM=12
- S FIPARAM=$P($G(^IBD(357.09,1,0)),"^",14)
- I FIPARAM="" S FIPARAM=25
- W "PW."_PWPARAM_";" ;set pen width param to file value
- W "SV1,"_FIPARAM_";" ;set the fill to file value
- ;
+ W "SV1,30;" ;set fill to 30%
+ W "PW.15;" ;set pen width to .15 mm
  S ROW=STARTY
  F  S ROW=$O(@IBARRAY("BUBBLES")@(ROW)) Q:(ROW="")!($G(LASTY)&(ROW'<LASTY))  S COL="" F  S COL=$O(@IBARRAY("BUBBLES")@(ROW,COL)) Q:COL=""  D DRWBBL(ROW#PERPAGE,COL)
  ;
  ;draw boxes
  W "PW.4;" ;set pen width to .4 mm
- W "SV1,100;"  ;set the fill to 100%
+ ;set the fill to 100%
+ W "SV1,100;"
  S ROW=STARTY
  F  S ROW=$O(@IBARRAY("BOXES")@(ROW)) Q:(ROW="")!($G(LASTY)&(ROW'<(LASTY)))  S COL="" F  S COL=$O(@IBARRAY("BOXES")@(ROW,COL)) Q:COL=""  S BLK=0 F  S BLK=$O(@IBARRAY("BOXES")@(ROW,COL,BLK)) Q:'BLK  D
  .S NODE=$G(@IBARRAY("BOXES")@(ROW,COL,BLK)) S WIDTH=$P(NODE,"^"),HT=$P(NODE,"^",2) D DRWBOX(ROW#PERPAGE,COL,WIDTH,HT)
  ;
  ;draw hand print fields
- ;W "PW.12;" ;set pen width to .12 mm, patch 3 value
- ;W "SV1,25;" ;set the fill to 25%, patch 3 value
- S PWPARAM=$P($G(^IBD(357.09,1,0)),"^",13)
- I PWPARAM="" S PWPARAM=12
- S FIPARAM=$P($G(^IBD(357.09,1,0)),"^",14)
- I FIPARAM="" S FIPARAM=25
- W "PW."_PWPARAM_";" ;set pen width param to file value
- W "SV1,"_FIPARAM_";" ;set the fill to file value
- ;
+ W "PW.15;" ;set pen width to .1 mm
+ ;set the fill to 40%
+ W "SV1,30;"
  S ROW=STARTY
  F  S ROW=$O(@IBARRAY("HAND_PRINT")@(ROW)) Q:(ROW="")!($G(LASTY)&(ROW'<LASTY))  S COL="" F  S COL=$O(@IBARRAY("HAND_PRINT")@(ROW,COL)) Q:COL=""  S IEN=0 F  S IEN=$O(@IBARRAY("HAND_PRINT")@(ROW,COL,IEN)) Q:'IEN  D
  .S NODE=$G(@IBARRAY("HAND_PRINT")@(ROW,COL,IEN)),WIDTH=+$P(NODE,"^",3),PRNTTYPE=$P(NODE,"^",14) Q:('WIDTH)!('PRNTTYPE)
@@ -137,35 +124,29 @@ DRAW(STARTY,LASTY) ; draws the objects needing HP-GL/2
  Q
  ;
 DRWBBL(Y,X) ;
- ; -- position is in terms of col,row - change to decipoints
+ ;position is in terms of col,row - change to decipoints
  S Y=(Y*IBDEVICE("ROW_HT"))+$S(IBFORM("WIDTH")>96:20,IBFORM("WIDTH")>80:30,1:40),X=(X+$S(IBFORM("WIDTH")>96:.5,IBFORM("WIDTH")>80:.75,1:1))*IBDEVICE("COL_WIDTH")
- ;
- ; -- position the pen
- W "PA"_(X)_","_(Y)_";"
- ;
- ; -- draw the bubble (a little box)
- W "EA"_(X+87)_","_(Y+45)_";"
- Q
- ;
-DRWBOX(Y,X,WIDTH,HT) ;
- ; -- position is in terms of col,row - change to decipoints
- S Y=((Y+.75)*IBDEVICE("ROW_HT"))+15,X=(X+.5)*IBDEVICE("COL_WIDTH")
  ;
  ;position the pen
  W "PA"_(X)_","_(Y)_";"
- ;
+ ;draw the bubble (a little box)
+ W "EA"_(X+87)_","_(Y+45)_";"
+ Q
+DRWBOX(Y,X,WIDTH,HT) ;
+ ;position is in terms of col,row - change to decipoints
+ S Y=((Y+.75)*IBDEVICE("ROW_HT"))+15,X=(X+.5)*IBDEVICE("COL_WIDTH")
+ ;position the pen
+ W "PA"_(X)_","_(Y)_";"
  ;draw the box
  W "EA"_(X+((WIDTH-1)*IBDEVICE("COL_WIDTH")))_","_(Y+((HT-1.7)*IBDEVICE("ROW_HT")))_";"
  Q
- ;
 HANDPRNT(Y,X,WIDTH,LINES,PRNTTYPE,TYPEDATA) ; draw hand print area
- ; -- FORMAT - contains overlay for the field
- ; -- UNIT - label to print on the right of print area
- ; -- PRNTTYPE = could be for ICR (print comb) or not ICR (no comb, different size)
+ ;FORMAT - contains overlay for the field
+ ;UNIT - label to print on the right of print area
+ ;PRNTTYPE = could be for ICR (print comb) or not ICR (no comb, different size)
  N CHAR,FORMAT,UNIT,NODE
  S NODE=""
  I $G(TYPEDATA) S NODE=$G(^IBE(359.1,TYPEDATA,0))
- ;S FORMAT=$$FRMT(NODE,$G(IBAPPT)),UNIT=$P(NODE,"^",11) ;don't use frmt here, cause pre-slugging of data and read when scanning
  S FORMAT=$P(NODE,"^",5),UNIT=$P(NODE,"^",11)
  S:LINES'>0 LINES=1
  I PRNTTYPE=2 D
@@ -194,32 +175,24 @@ HANDPRNT(Y,X,WIDTH,LINES,PRNTTYPE,TYPEDATA) ; draw hand print area
  .W "EA"_(X+(103.6593*WIDTH))_","_(Y+(IBDEVICE("ROW_HT")*LINES))_";"
  Q
  ;
-FRMT(ND,ADT) ; -- function returns piece 5 on entries from 359.1
- ; -- reformats the Checkout/date format for y2k
- ; -- input    nd  := zero node from 359.1 for entry
- ;            adt  := alternate date (appointment date, when known)
- N FRMT
- S FRMT=$P(ND,"^",5)
- I $P(ND,"^")="CHECKOUT DATE@TIME" S $E(FRMT,5)=$S($G(ADT):$E(ADT,2),1:$E(DT,2))
- Q FRMT
+WHITEOUT ;puts white space around the anchors - helps insure that the anchors can be located
  ;
-WHITEOUT ; -- puts white space around the anchors
- ;            helps insure that the anchors can be located
+ ;if the form isn't scannable there are no anchor marks
+ Q:'IBFORM("SCAN")
  ;
- Q:'IBFORM("SCAN")  ;if the form isn't scannable there are no anchors
- ;
- W $C(27),"&a0v0H",! ;set top margin to top of page
+ W $C(27),"&a0v0H",!
+ ;set top margin to top of page
  W $C(27),"&l0E"
- ;
- ; -- top left corner (ANCHOR 1)
+ ;top left corner (ANCHOR 1)
  W $C(27),"&a354v4H",$C(27),"*c200h60v1P"
- ;
- ; -- bottom left (ANCHOR 2)
+ ;top middle (ANCHOR 2)
+ W $C(27),"&a354v2676H",$C(27),"*c400h60v1P"
+ ;bottom left (ANCHOR 4)
  W $C(27),"&a7505v4H",$C(27),"*c200h60v1P"
- ;
- ; -- top right (ANCHOR 3)
+ ;top right (ANCHOR 3)
  W $C(27),"&a354v5450H",$C(27),"*c400h60v1P"
- ;
- ; -- bottom right (ANCHOR 4)
+ ;bottom middle (ANCHOR 5)
+ W $C(27),"&a7505v2676H",$C(27),"*c400h60v1P"
+ ;bottom right (ANCHOR 6)
  W $C(27),"&a7505v5450H",$C(27),"*c400h60v1P"
  Q

@@ -1,5 +1,5 @@
 LROR6 ;SLC/DCM - EDIT LAB ORDERS FOR OE/RR ;8/11/97
- ;;5.2;LAB SERVICE;**100,121,202**;Sep 27, 1994
+ ;;5.2;LR;**100,121,202,1018,1019**;MAR 25, 2005
 DC(REQ,STAT) ;DC reason
  ;REQ=1 to require a response
  ;STAT=1 to set the variable LRMSTATI for sending status back to OE/RR.
@@ -26,7 +26,10 @@ NEW(REQ) ;Get Nature of order
  ;REQ=1 to require a response
  I $$VER^LR7OU1<3 Q  ;OE/RR 2.5 Check
  N DEF,X
- S DEF=$P($G(^LAB(69.9,1,"OR")),"^"),X=$$NA^ORX1(DEF,+$G(REQ),"B","Nature of Order/Change"),LRNATURE=$S(X:$P(X,"^",1,2)_"^99ORN",1:-1)
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1019 -- Patient Chart mod
+ ; S DEF=$P($G(^LAB(69.9,1,"OR")),"^"),X=$$NA^ORX1(DEF,+$G(REQ),"B","Nature of Order/Change"),LRNATURE=$S(X:$P(X,"^",1,2)_"^99ORN",1:-1)
+ S DEF=$P($G(^LAB(69.9,1,"OR")),"^"),X=$S($G(BLRGUI):"1^WRITTEN^W",1:$$NA^ORX1(DEF,+$G(REQ),"B","Nature of Order/Change")),LRNATURE=$S(X:$P(X,"^",1,2)_"^99ORN",1:-1)
+ ;----- END IHS MODIFICATIONS LR*5.2*1019 -- Patient Chart mod
  Q
 NEW1(NATURE) ;Set HL7 String for Nature of Order
  ;NATURE=ptr to Nature of Order (100.02)

@@ -1,11 +1,11 @@
 PSANDF1 ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**58**; 10/24/97
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  ;This routine provides the extended help for calls in PSANDF.
  ;
-NDC ;Extended help for entering NDC ;*58 11 characters
- W !?5,"The NDC must be 11-digits. If the NDC does not contain",!?5,"11 numbers, zero fill the section of the NDC that is missing."
- W !!?5,"The NDC contains three sections separated by dashes.",!?5,"It contains 5 digits, a dash, 4 digits, a dash, then 2 digits."
- W !!?5,"For Example: If the NDC is 12345-123-1, enter 12345012301.",!?5,"             If the NDC is 12345-123-12, enter 12345012312."
+NDC ;Extended help for entering NDC
+ W !?5,"The NDC must be 12-digits. If the NDC does not contain",!?5,"12 numbers, zero fill the section of the NDC that is missing."
+ W !!?5,"The NDC contains three sections separated by dashes.",!?5,"It contains 6 digits, a dash, 4 digits, a dash, then 2 digits."
+ W !!?5,"For Example: If the NDC is 12345-123-1, enter 012345012301.",!?5,"             If the NDC is 123456-123-12, enter 123456012312."
  Q
 NDCUPC ;Extended help for selecting either NDC or UPC
  W !?5,"Select NDC to enter a National Drug Code prompt.",!?5,"Select UPC to enter a Universal Product Code prompt."

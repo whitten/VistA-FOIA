@@ -1,20 +1,7 @@
 LR7OSBR ;slc/dcm - Silent BB report ;8/11/97
- ;;5.2;LAB SERVICE;**121,230,387**;Sep 27, 1994;Build 10
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
+ ;;5.2;LAB SERVICE;**121,230**;Sep 27, 1994
 EN ;
- I '$D(DFN) S DFN=$P(^LR(LRDFN,0),"^",3)
- I $$GET^XPAR("DIV^SYS^PKG","OR VBECS ON",1,"Q"),$L($T(EN^ORWLR1)),$L($T(CPRS^VBECA3B)) D  Q
- . D VBECS
- . I $$GET^XPAR("DIV^SYS^PKG","OR VBECS LEGACY REPORT",1,"Q") D
- .. D LINE^LR7OSUM4
- .. D LN S ^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(20,CCNT,"*** [LEGACY VISTA BLOOD BANK REPORT] ***")
- .. D LN S ^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(4,CCNT,"The following historical information comes from the Legacy VISTA Blood Bank System")
- .. D LN S ^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(4,CCNT,"It represents data collected prior to the installation of VBECS. Some of the information")
- .. D LN S ^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(4,CCNT,"in this report may have been duplicated in the VBECS report above (if available).")
- .. D LINE^LR7OSUM4
- .. D LEGACY
- D LEGACY
- Q
-LEGACY ;VISTA Legacy Blood Bank Report
  I '$D(^LR(LRDFN,"BB"))&($O(^LR(LRDFN,.99))>3!($O(^LR(LRDFN,.99))<1)) Q
  S (LRN(2),LRSAV,LR("S"))=1,LRSS="BB"
  K ^TMP("LRBL",$J)
@@ -25,16 +12,7 @@ LEGACY ;VISTA Legacy Blood Bank Report
  F  S G=$O(^TMP("LRBL",$J,G)) Q:G=""  S N=0 F  S N=$O(^TMP("LRBL",$J,G,N)) Q:N=""  S LRDFN=0 F  S LRDFN=$O(^TMP("LRBL",$J,G,N,LRDFN)) Q:'LRDFN  S LR=^(LRDFN) D ^LR7OSBR1
  K ^TMP("LRBL",$J)
  Q
-VBECS ;;Gets Blood Bank Report from VBECS
- N CNT,LRI
- K ^TMP("ORLRC",$J)
- D EN^ORWLR1(DFN),LN
- I '$O(^TMP("ORLRC",$J,0)) S ^TMP("ORLRC",$J,1,0)="",^TMP("ORLRC",$J,2,0)="No Blood Bank report available..."
- S CNT=$O(^TMP("LRC",$J,9999999999),-1),LRI="",^TMP("LRH",$J,"BLOOD BANK")=$S(CNT>0:CNT,1:1)
- F  S LRI=$O(^TMP("ORLRC",$J,LRI)) Q:LRI=""  S X=^(LRI,0),CNT=CNT+1,^TMP("LRC",$J,CNT,0)=X
- S GCNT=CNT
- K ^TMP("ORLRC",$J)
- Q
+ ;
 SET ;
  S W=^LR(LRDFN,0),Y=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)"),Z=+$G(^(.104)),Z(1)="^"_$P($G(^DD(P,.104,0)),"^",3),SSN=$P(X,"^",9)
  D SSN^LRU
@@ -70,7 +48,4 @@ EN1(DFN) ;Process formatted Blood Bank Report
  S LRIDT=0 F  S LRIDT=$O(^TMP("LRRR",$J,DFN,"BB",LRIDT)) Q:LRIDT<1  D
  . N DFN
  . D EN
- Q
-LN ;
- S GCNT=GCNT+1,CCNT=1
  Q

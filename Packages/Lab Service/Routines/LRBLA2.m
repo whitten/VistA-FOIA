@@ -1,6 +1,6 @@
-LRBLA2 ;AVAMC/REG/CYM - BB ADM DATA ;6/21/96  09:20
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLA2 ; IHS/DIR/AAB - BB ADM DATA 09:20 ; [ 6/21/96 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  W !,"|",?30,"BLOOD DONOR DATA",?70,"|  Total",?79,"|",!,LR("%"),!,"|No donation",?70,"|",$J(^TMP("LR",$J,"N"),6),?79,"|"
  W !,LR("%"),!,"|",?3,"Temporary deferrals",?70,"|",$J(^TMP("LR",$J,"N","T"),6),?79,"|"
  W !,LR("%"),!,"|",?3,"Permanent deferrals",?70,"|",$J(^TMP("LR",$J,"N","P"),6),?79,"|" I IOST?1"C".E W !,LR("%") D M Q:LR("Q")

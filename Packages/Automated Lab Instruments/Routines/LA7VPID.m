@@ -1,5 +1,5 @@
-LA7VPID ;DALOI/JMC - HL7 PID/PV1 segment builder utility ; 11-25-1998
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64**;Sep 27, 1994
+LA7VPID ;VA/DALOI/JMC - HL7 PID/PV1 segment builder utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997;Build 9
  ;
  ; Reference to routine $$EN^VAFHLPID supported by DBIA# 263
  ;
@@ -78,8 +78,9 @@ PV1(LRDFN,LA7ARRAY,LA7FS,LA7ECH) ; Build PV1 segment
  ;
 F2PID ; Build patient identifier field on file #2 patient
  ;
+ ;
  N I,ICN,LA7X,X
- S LA7ARRAY(0)=$$EN^VAFHLPID(DFN,"1,5,6,7,8,10NTB,16,19",LA7PIDSN)
+ S LA7ARRAY(0)=$$EN^VAFHLPID(DFN,"1,5,6,7,8,10NTB,11,13,16,19",LA7PIDSN)  ;ihs/cmi/maw 11/19/2010 added field 11 and 13
  ;
  ; Return external identifer in PID-2 sequence, backward compatibility to V2.2
  I $L(LA7EXTID) D
@@ -104,6 +105,16 @@ F2PID ; Build patient identifier field on file #2 patient
  ; Send alternate patient id if passed
  I LA7ALTID'="" S $P(LA7ARRAY(0),HL("FS"),5)=LA7ALTID
  I $P(LA7ARRAY(0),HLFS,5)?1N.N S $P(LA7ARRAY(0),HL("FS"),5)=$$M11^HLFNC($P(LA7ARRAY(0),HL("FS"),5),HL("ECH"))
+ ;
+ ;cmi/maw 3/9/2010 pass HRN only across the interface
+ S $P(LA7ARRAY(0),HLFS,3)=$$HRN^AUPNPAT(DFN,DUZ(2))
+ S $P(LA7ARRAY(0),HLFS,4)=$$HRN^AUPNPAT(DFN,DUZ(2))
+ S $P(LA7ARRAY(0),HLFS,11)=""
+ S $P(LA7ARRAY(0),HLFS,13)=""
+ ;cmi/maw 3/9/2010 end of mods
+ ;cmi/maw 4/14/2010 mods for client number
+ S $P(LA7ARRAY(0),HLFS,19)=$$ACCT^LA7VQINS(LA7ORD)  ;setup this function call
+ ;cmi/maw 4/14/2010 end of mods for client number
  ;
  ; Check for overflow (>245)
  I $O(VAFPID(0)) D

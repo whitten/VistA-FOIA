@@ -1,4 +1,4 @@
-XLFDT1 ;ISC-SF/RWF - Date/Time Functions cont. from VA FileMan %DTC ;02/20/2003  10:05
+XLFDT1 ;ISC-SF/RWF - Date/Time Functions cont. from VA FileMan %DTC ;02/20/2003  10:05 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**71,280**;Jul 10, 1995
  ;If y contains a "D" then Date only.
  ;if y contains a "F" then output with leading blanks

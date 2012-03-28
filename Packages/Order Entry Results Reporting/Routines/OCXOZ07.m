@@ -1,5 +1,5 @@
-OCXOZ07 ;SLC/RJS,CLA - Order Check Scan ;MAR 8,2011 at 13:52
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**32,221,243**;Dec 17,1997;Build 242
+OCXOZ07 ;SLC/RJS,CLA - Order Check Scan ;JUN 15,2011 at 12:58
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**32**;Dec 17,1997
  ;;  ;;ORDER CHECK EXPERT version 1.01 released OCT 29,1998
  ;
  ; ***************************************************************
@@ -109,7 +109,7 @@ CHK151 ; Look through the current environment for valid Event/Elements for this 
  ; ORDITEM( ---------> GET ORDERABLE ITEM FROM ORDER NUMBER
  ;
  I $L(OCXDF(1)),$$LIST(OCXDF(1),"NW,SN"),$L(OCXDF(34)) S OCXDF(96)=$$ORDITEM(OCXDF(34)),OCXOERR=$$FILE(DFN,60,"96") Q:OCXOERR 
- I $L(OCXDF(15)),(OCXDF(15)="F"),$L(OCXDF(1)),$$LIST(OCXDF(1),"RE"),$L(OCXDF(2)),($E(OCXDF(2),1,2)="LR"),$L(OCXDF(34)) S OCXDF(96)=$$ORDITEM(OCXDF(34)) D CHK264^OCXOZ0B
+ I $L(OCXDF(15)),(OCXDF(15)="F"),$L(OCXDF(1)),$$LIST(OCXDF(1),"RE"),$L(OCXDF(2)),($E(OCXDF(2),1,2)="LR"),$L(OCXDF(34)) S OCXDF(96)=$$ORDITEM(OCXDF(34)) D CHK265^OCXOZ0A
  Q
  ;
 CHK157 ; Look through the current environment for valid Event/Elements for this patient.
@@ -130,7 +130,7 @@ CHK157 ; Look through the current environment for valid Event/Elements for this 
  ; ORDITEM( ---------> GET ORDERABLE ITEM FROM ORDER NUMBER
  ;
  I $L(OCXDF(1)),$$LIST(OCXDF(1),"NW,SN"),$L(OCXDF(34)) S OCXDF(96)=$$ORDITEM(OCXDF(34)),OCXOERR=$$FILE(DFN,61,"96") Q:OCXOERR 
- I $L(OCXDF(23)),(OCXDF(23)="F"),$L(OCXDF(1)),$$LIST(OCXDF(1),"RE"),$L(OCXDF(2)) D CHK253^OCXOZ0B
+ I $L(OCXDF(23)),(OCXDF(23)="F"),$L(OCXDF(1)),$$LIST(OCXDF(1),"RE"),$L(OCXDF(2)) D CHK254^OCXOZ0A
  Q
  ;
 CHK163 ; Look through the current environment for valid Event/Elements for this patient.
@@ -143,31 +143,12 @@ CHK163 ; Look through the current environment for valid Event/Elements for this 
  ; OCXDF(37) ---> Data Field: PATIENT IEN (NUMERIC)
  ; OCXDF(40) ---> Data Field: ORDER MODE (FREE TEXT)
  ; OCXDF(43) ---> Data Field: OI NATIONAL ID (FREE TEXT)
- ; OCXDF(156) --> Data Field: ALLERGY ASSESSMENT (BOOLEAN)
- ;
- ;      Local Extrinsic Functions
- ; ALRGY( -----------> ALLERGY ASSESSMENT
- ; CLIST( -----------> STRING CONTAINS ONE OF A LIST OF VALUES
- ; FILE(DFN,136, ----> FILE DATA IN PATIENT ACTIVE DATA FILE  (Event/Element: NO ALLERGY ASSESSMENT)
  ;
  I (OCXDF(40)="ACCEPT") D CHK164^OCXOZ08
  I (OCXDF(40)="DISPLAY") S OCXDF(2)=$P($G(OCXPSD),"|",2) I $L(OCXDF(2)),($E(OCXDF(2),1,2)="PS") S OCXDF(37)=$G(DFN) I $L(OCXDF(37)) D CHK182^OCXOZ08
  I (OCXDF(40)="SELECT") D CHK196^OCXOZ09
- I (OCXDF(40)="SESSION") S OCXDF(2)=$P($G(OCXPSD),"|",2) I $L(OCXDF(2)),($E(OCXDF(2),1,2)="PS") S OCXDF(43)=$P($P($G(OCXPSD),"|",3),"^",1) I $L(OCXDF(43)) D CHK227^OCXOZ0A
- I $$CLIST(OCXDF(40),"SELECT,SESSION") S OCXDF(37)=$G(DFN) I $L(OCXDF(37)) S OCXDF(156)=$$ALRGY(OCXDF(37)) I $L(OCXDF(156)),'(OCXDF(156)) S OCXOERR=$$FILE(DFN,136,"") Q:OCXOERR 
+ I (OCXDF(40)="SESSION") S OCXDF(2)=$P($G(OCXPSD),"|",2) I $L(OCXDF(2)),($E(OCXDF(2),1,2)="PS") S OCXDF(43)=$P($P($G(OCXPSD),"|",3),"^",1) I $L(OCXDF(43)) D CHK230^OCXOZ0A
  Q
- ;
-ALRGY(ORPT)   ; determine if pt has an allergy assessment
- ; rtn 0 if no allergy assessment, 1 if allergy assessment or NKA
- N ORALRGY
- D EN1^GMRAOR1(ORPT,"ORALRGY")
- Q:$G(ORALRGY)="" 0
- Q 1
- ;
-CLIST(DATA,LIST) ;   DOES THE DATA FIELD CONTAIN AN ELEMENT IN THE LIST
- ;
- N PC F PC=1:1:$L(LIST,","),0 I PC,$L($P(LIST,",",PC)),(DATA[$P(LIST,",",PC)) Q
- Q ''PC
  ;
 FILE(DFN,OCXELE,OCXDFL) ;     This Local Extrinsic Function logs a validated event/element.
  ;

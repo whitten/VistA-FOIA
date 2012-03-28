@@ -1,4 +1,4 @@
-MCPARC ; GENERATED FROM 'MCNONENDOPARAC' PRINT TEMPLATE (#1278) ; 12/09/02 ; (FILE 699, MARGIN=75)
+MCPARC ; GENERATED FROM 'MCNONENDOPARAC' PRINT TEMPLATE (#3778) ; 11/29/04 ; (FILE 699, MARGIN=75)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,7 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 M DXS=^DIPT(1278,"DXS")
+ I $D(DXS)<9 M DXS=^DIPT(3778,"DXS")
  S I(0)="^MCAR(699,",J(0)=699
  D N:$X>4 Q:'DN  W ?4 W "PRIMARY PROVIDER: "
  S X=$G(^MCAR(699,D0,"PROV")) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
@@ -56,7 +56,7 @@ A1R ;
  G B1R
 B1 ;
  D N:$X>9 Q:'DN  W ?9 W " "
- S X=$G(^MCAR(699,D0,26,D1,0)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(699,D0,26,D1,0)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  D N:$X>49 Q:'DN  W ?49 W "DOSAGE: "
  W ?0,$E($P(X,U,2),1,30)
  Q
@@ -82,7 +82,7 @@ D1R ;
  G E1R
 E1 ;
  D N:$X>9 Q:'DN  W ?9 W " "
- S X=$G(^MCAR(699,D0,8,D1,0)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(699,D0,8,D1,0)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  D N:$X>29 Q:'DN  W ?29 W "DOSE ROUTE: "
  S Y=$P(X,U,2) W:Y]"" $S($D(DXS(2,Y)):DXS(2,Y),1:Y)
  D N:$X>59 Q:'DN  W ?59 W "TOTAL DOSE: "

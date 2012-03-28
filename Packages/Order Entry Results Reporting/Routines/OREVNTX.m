@@ -1,5 +1,5 @@
-OREVNTX ; SLC/MKB - Event delayed orders RPC's ;06/16/10  05:32
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**141,243,280**;Dec 17, 1997;Build 85
+OREVNTX ; SLC/MKB - Event delayed orders RPC's ; 08 May 2002  2:12 PM
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**141**;Dec 17, 1997
  ;
 PAT(ORY,DFN)    ; -- Returns currently delayed events for patient DFN
  N EVT,CNT,X,Y S DFN=+$G(DFN),(EVT,CNT)=0
@@ -189,22 +189,13 @@ ACTLOG(PTEVT,ACTION,EVTYPE,SAVE)  ; -- Log a note for ACTION on PTEVT
  Q
  ;
 LAPSED(PTEVT)   ; -- Ck if PTEVT has lapsed, if so lapse all orders
- N Y,X0,EVT,ENTERED,DAYS,ORN,ORCA,ORSIGDT S Y=0
+ N Y,X0,EVT,ENTERED,DAYS S Y=0
  I $G(^ORE(100.2,PTEVT,1)) G LPQ ;already terminated
- S X0=$G(^ORE(100.2,PTEVT,0)),EVT=+$P(X0,U,2)
+ S X0=$G(^ORE(100.2,PTEVT,0)),EVT=+$P(X0,U,2),ENTERED=+$P(X0,U,5)
  S:$P($G(^ORD(100.5,EVT,0)),U,12) EVT=+$P(^(0),U,12) ;parent
- S ENTERED="9999999"
- ; if event order is signed then ENTERED needs to be the DT it was signed from file 100
- S ORN=$P(^ORE(100.2,PTEVT,0),U,4)
- I +ORN S ORCA=$P($G(^OR(100,+ORN,3)),U,7)
- I $G(ORCA) S ORSIGDT=$P($G(^OR(100,+ORN,8,ORCA,0)),U,6)
- I $G(ORSIGDT) S ENTERED=ORSIGDT
- ; if event order is not signed then ENTERED needs to be the ENTERED DT from file 100.2
- I ENTERED="9999999" S ENTERED=+$P(X0,U,5)
  S DAYS=+$P($G(^ORD(100.5,EVT,0)),U,6) I DAYS<1 G LPQ ;doesn't lapse
  I ENTERED>$$FMADD^XLFDT(DT,(0-DAYS)) G LPQ ;not lapsed yet
  D LP1(PTEVT) S Y=1 ;lapse orders, event
- N J S J=0 F  S J=$O(^ORE(100.2,"DAD",PTEVT,J)) Q:'J  D LP1(J)
 LPQ Q Y
  ;
 LP1(PTEVT) ; -- Lapse orders, event PTEVT
@@ -213,7 +204,6 @@ LP1(PTEVT) ; -- Lapse orders, event PTEVT
  S IFN=0 F  S IFN=$O(^OR(100,"AEVNT",PAT,PTEVT,IFN)) Q:IFN<1  D
  . S STS=$P($G(^OR(100,IFN,3)),U,3) I (STS=10)!(STS=11)!(IFN=+$P(X0,U,4)) D
  .. D STATUS^ORCSAVE2(IFN,14)
- .. D ALPS^ORCSAVE2(IFN,1,"DELAYED ORDER")
  .. S $P(^OR(100,IFN,8,1,0),U,15)="" D:$P(^(0),U,4)=2 SIGN^ORCSAVE2(IFN,"","",5,1)
  D DONE(PTEVT),ACTLOG(PTEVT,"LP")
  Q

@@ -1,16 +1,8 @@
 RAHLO4 ;HIRMFO/GJC-File rpt (data from bridge program) ;7/21/99  11:45
- ;;5.0;Radiology/Nuclear Medicine;**4,8,81,84**;Mar 16, 1998;Build 13
- ;
- ;Integration Agreements
- ;----------------------
- ;NOW^%DTC(10000); %ZTLOAD(10063); FIND^DIC(2051); ^DIE(10018); ^DIK(10013); $$GET1^DIQ(2056)
- ;GETS^DIQ(2056); ^XMD(10070)
- ;
+ ;;5.0;Radiology/Nuclear Medicine;**4,8**;Mar 16, 1998
 TASK ; Task ORU message
  S ZTDESC="Rad/Nuc Med Compiling HL7 ORU Message",ZTDTH=$H,ZTIO="",ZTRTN="RPT^RAHLRPC",ZTSAVE("RADFN")="",ZTSAVE("RADTI")="",ZTSAVE("RACNI")="",ZTSAVE("RARPT")=""
- ;Next line of coding will assure that ORU (report) message will be sent after posible ORM message. (10 second)
- S $P(ZTDTH,",",2)=$P(ZTDTH,",",2)+4 S:$P(ZTDTH,",",2)>86400 ZTDTH=$P(ZTDTH,",")+1_","_($P(ZTDTH,",",2)-86400)
- S:$L($G(RANOSEND)) ZTSAVE("RANOSEND")="" D ^%ZTLOAD
+ D ^%ZTLOAD
  K ZTDESC,ZTDTH,ZTIO,ZTRTN,ZTSAVE
  Q
 VOICE ; voice dictation auto-print (background process)
@@ -21,7 +13,10 @@ VOICE ; voice dictation auto-print (background process)
  S ZTDESC="Rad/Nuc Med voice dictation auto-print"
  D ^%ZTLOAD K RAMES,ZTDESC,ZTSK,ZTIO,ZTSAVE,ZTRTN,RASV,ZTDTH
  Q
- ;
+FILETST ; is anyone else working on this report?
+ L +^RARPT(RARPT):1
+ I '$T S RAERR="This report is being edited by another user" L -^RARPT(RARPT)
+ Q
 UPMEM ;copy (prim:dx,stf,res),rpt ien to other members of same print set
  ; first clear those fields
  K DIE,DA,DR S DA=RACNI,DA(1)=RADTI,DA(2)=RADFN
@@ -101,10 +96,9 @@ LSTPCE(X,DEL) ; given a string and a delimiter, return the last piece
 CKDUPA ; if duplicate addendum, send msg to members of unverify rpt mailgroup
  S RADUPA=0 ; 0 means not a duplicate
  N I1,I2,X1,X2,X3,X4,X21,R0,R1,R2,MATCH,XMSUB
- S I1="I",I2="RAIMP" I $O(^RARPT(RARPT,I1,0))'="" D ISITDUP ;Q:'RADUPA
+ S I1="I",I2="RAIMP" I $O(^RARPT(RARPT,I1,0))'="" D ISITDUP Q:'RADUPA
  ;
- I 'RADUPA S I1="R",I2="RATXT" I $O(^RARPT(RARPT,I1,0))'="" D ISITDUP Q:'RADUPA
- ;S I1="R",I2="RATXT" I $O(^RARPT(RARPT,I1,0))'="" D ISITDUP Q:'RADUPA
+ S I1="R",I2="RATXT" I $O(^RARPT(RARPT,I1,0))'="" D ISITDUP Q:'RADUPA
  ;
  S XMSUB="Duplicate addendum being sent to Vista"
  ;
@@ -156,12 +150,10 @@ CKDUPA ; if duplicate addendum, send msg to members of unverify rpt mailgroup
  Q
 ISITDUP ; X1=last ien ^RARPT, X2=LAST IEN ^TMP, x21=first ien ^TMP
  Q:'$O(^TMP("RARPT-REC",$J,RASUB,I2,0))
- N X1,X2,X21,X3,X4,XX
  S RADUPA=0 ; Reset to zero otherwise Imp Text match will override
  S X1=$O(^RARPT(RARPT,I1,""),-1)
- S XX=$G(^RARPT(RARPT,I1,X1,0)) S XX=$S(XX=""!(XX=" "):0,1:1)
  S X2=$O(^TMP("RARPT-REC",$J,RASUB,I2,""),-1),X21=$O(^(0))
- S X3=X1-X2+XX Q:X3<1  ; begin comparison from ^RARPT(RARPT,I1,X3
+ S X3=X1-X2+1 Q:X3<1  ; begin comparison from ^RARPT(RARPT,I1,X3
  ; chk 1st line of previous addendum
  Q:^RARPT(RARPT,I1,X3,0)'["Addendum: "  S X4=^(0)
  S X4=$E(X4,$L("Addendum: ")+1,$L(X4)) ; exclude "Addendum: " from X4

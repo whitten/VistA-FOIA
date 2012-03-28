@@ -1,18 +1,13 @@
 VBECA1A ;HIOFO/REL - Verify Patient ; 7/5/01 6:50am
- ;;1.0;VBECS;;Apr 14, 2005;Build 35
- ;
- ; Note: This routine supports data exchange with an FDA registered
- ; medical device. As such, it may not be changed in any way without
- ; prior written approval from the medical device manufacturer.
- ; 
- ; Integration Agreements:
- ; Reference to ^DIC supported by IA #10006
- ; Reference to $$LRDFN^LR7OR1 supported by IA #2503
- ;
- QUIT
- ;
+ ;;0.5;VBECS;**294**;Sep 6, 2000
+ ; This routine retrieves data maintained by a regulated medical
+ ; device.  The routine must not be modified by anyone other than the
+ ; device manufacturer.
+ ;Reference to ^DIC supported by IA #10006
+ ;Reference to $$LRDFN^LR7OR1 supported by IA #2503
+ Q
 PAT ; Verify Patient
- N NUM,ERR,X,Y,DIC,ROOT K VBECERR S NUM=0
+ N NUM,ERR,X,Y,DIC,IFN,ROOT K VBECERR S NUM=0
  I $G(PATID)="" S ERR=1 D ERR
  I $G(PATNAM)="" S ERR=2 D ERR
  I $G(PATDOB)="" S ERR=3 D ERR

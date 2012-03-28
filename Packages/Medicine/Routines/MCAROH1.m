@@ -1,4 +1,4 @@
-MCAROH1 ; GENERATED FROM 'MCARHOLT1' PRINT TEMPLATE (#979) ; 07/25/98 ; (FILE 691.6, MARGIN=80)
+MCAROH1 ; GENERATED FROM 'MCARHOLT1' PRINT TEMPLATE (#3703) ; 11/29/04 ; (FILE 691.6, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,10 +11,11 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(979,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3703,"DXS")
+ S I(0)="^MCAR(691.6,",J(0)=691.6
  D N:$X>4 Q:'DN  W ?4 S DIP(1)=$S($D(^MCAR(691.6,D0,0)):^(0),1:"") S X="WARD/CLINIC: "_$S('$D(^SC(+$P(DIP(1),U,18),0)):"",1:$P(^(0),U,1)) K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "REQUESTED BY: "
- S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "REASON FOR STUDY:"
  S I(1)=8,J(1)=691.65 F D1=0:0 Q:$O(^MCAR(691.6,D0,8,D1))'>0  X:$D(DSC(691.65)) DSC(691.65) S D1=$O(^(D1)) Q:D1'>0  D:$X>23 T Q:'DN  D A1
  G A1R
@@ -23,7 +24,7 @@ A1 ;
  Q
 A1R ;
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "REVIEWED BY: "
- S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,15) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,15) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 X DXS(1,9) K DIP K:DN Y W X
  D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(691.6,D0,4)):^(4),1:"") S X="HOURS: "_$P(DIP(1),U,2)_" TOTAL,  "_$P(DIP(1),U,3)_" READABLE" K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "MALFUNCTIONS:"
@@ -33,7 +34,8 @@ B1 ;
  S X=$G(^MCAR(691.6,D0,3,D1,0)) S DIWL=20,DIWR=79 D ^DIWP
  Q
 B1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N D N:$X>4 Q:'DN  W ?4 W "----------------------------  RESULTS  ----------------------------"
  D T Q:'DN  D N D N:$X>29 Q:'DN  W ?29 W "HEART RATE"
  D N:$X>57 Q:'DN  W ?57 W "TIME"

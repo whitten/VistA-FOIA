@@ -1,6 +1,7 @@
-LRBLCAP ;AVAMC/REG - BB CAP WORKLOAD ;3/3/93  14:31
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLCAP ; IHS/DIR/FJE - BB CAP WORKLOAD 14:31 ; [ 3/3/93 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
 L ;blood component log-in workload capture
  F A=0:0 S A=$O(L(A)) Q:'A  S C=+L(A) D SET
  Q

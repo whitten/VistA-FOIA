@@ -1,6 +1,10 @@
-TIUEDIM ; SLC/JER - Enter/Edit Multiple Document ; 6/14/2002
- ;;1.0;TEXT INTEGRATION UTILITIES;**7,41,52,100,109,112**;Jun 20, 1997
+TIUEDIM ; SLC/JER - Enter/Edit Multiple Document ; 3/7/01
+ ;;1.0;TEXT INTEGRATION UTILITIES;**7,41,52,100,109**;Jun 20, 1997
  ; 2/2: Update DIE from TIUEDIT to TIUEDI4
+ ;IHS/ITSC/LJF  02/26/2003  added call to stuff V Note file
+ ;                          added call to edit PCC visit
+ ;              12/11/2003  review previous notes works for all notes
+ ;
 MAIN(TIUCLASS,TIUOUT,TIUNDA,TIUCHNG) ; Control Branching
  N TIUREL,TIUCHK,TIUDA,TIUEDIT,TIUY,TIUNEW,TIUTYP,TIUPAT
  N TIUI,DTOUT S TIUDFLT=""
@@ -15,12 +19,14 @@ MAIN(TIUCLASS,TIUOUT,TIUNDA,TIUCHNG) ; Control Branching
  . S DFN=+$G(TIUPAT(TIUI)) Q:+DFN'>0
  . W !!,"For Patient ",$P(TIUPAT(TIUI),U,2)
  . S TIUCLASS=$G(TIUCLASS,38)
- . I TIUCLASS=3,$S(+$$ISA^USRLM(DUZ,"TRANSCRIPTIONIST"):0,1:1),(+$G(NOSAVE)'>0) D EXSTNOTE^TIUEDI2(DFN) D:$G(VALMAR)="^TMP(""OR"",$J,""CURRENT"")" FULL^VALM1
+ . ;
+ . ;IHS/ITSC/LJF 12/11/2003
+ . ;I TIUCLASS=3,$S(+$$ISA^USRLM(DUZ,"TRANSCRIPTIONIST"):0,1:1),(+$G(NOSAVE)'>0) D EXSTNOTE^TIUEDI2(DFN) D:$G(VALMAR)="^TMP(""OR"",$J,""CURRENT"")" FULL^VALM1
+ . I $S(+$$ISA^USRLM(DUZ,"TRANSCRIPTIONIST"):0,1:1),(+$G(NOSAVE)'>0) D EXSTNOTE^TIUEDI2(DFN) D:$G(VALMAR)="^TMP(""OR"",$J,""CURRENT"")" FULL^VALM1
+ . ;
  . I +$G(DIROUT)!+$G(DUOUT)!+$G(DTOUT) S TIUOUT=1 Q
  . ; -- Set title array TIUTYP (use TIUTITLE or ask user) --
  . D SETTL^TIUEDI4(.TIUTYP,TIUCLASS,$G(TIUTITLE)) I +$G(TIUTYP)'>0 S TIUOUT=1 Q
- . ; --- Re-direct surgical reports ---
- . I +$$ISA^TIULX(TIUTYP,+$$CLASS^TIUSROI("SURGICAL REPORTS")) D ENTEROP^TIUSROI(DFN,TIUTYP) Q
  . ; -- Get doc parameters for title, X entry action --
  . D DOCPRM^TIULC1(TIUTYP,.TIUDPRM)
  . S TIUENTRY=$$GETENTRY^TIUEDI2(+TIUTYP)
@@ -37,7 +43,12 @@ MAIN(TIUCLASS,TIUOUT,TIUNDA,TIUCHNG) ; Control Branching
  . . W $$PNAME^TIULC1(TIUTYP),".",!,"Please contact IRM..."
  . X TIUVMETH
  . I $S($D(DIROUT):1,$D(DTOUT):1,1:0) S TIUQUIT=1 Q
- . I $D(DUOUT) Q
+ . ;
+ . ;I $D(DUOUT) Q                                   ;IHS/ITSC/LJF 02/26/2003 original
+ . I $S('$D(TIU("VISIT")):1,$D(DUOUT):1,1:0) D  Q   ;IHS/ITSC/LJF 02/26/2003 if no visit or ^
+ . . W !,$C(7),"Visit required to continue." H 2    ;IHS/ITSC/LJF 02/26/2003 give explanation for quitting
+ . D VEDIT^BTIUED("")                               ;IHS/ITSC/LJF 02/26/2003 added call to edit PCC visit
+ . ;
  . ; -- If user OK'd basic info, go on to get text, etc.: --
  . I $D(TIU),+$G(TIUASK) D
  . . ; -- Get record DA --
@@ -69,6 +80,10 @@ MAIN(TIUCLASS,TIUOUT,TIUNDA,TIUCHNG) ; Control Branching
  . . E  D QUE^TIUPXAP1 ; Post workload now in background
  . . S TIUCMMTX=$$COMMIT^TIULC1(+$P(TIUTYP(1),U,2))
  . . I TIUCMMTX]"" X TIUCMMTX
+ . . ;
+ . . ; --- Link PN to VNote file ---
+ . . D VNOTE^BTIUPCC(DA,TIU("VISIT"),DFN,"ADD") ;IHS/ITSC/LJF 02/26/2003 added call
+ . . ;
  . . D RELEASE^TIUT(DA)
  . . D VERIFY^TIUT(DA)
  . . ; -- Get signature for DA 

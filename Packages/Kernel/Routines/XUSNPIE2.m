@@ -1,5 +1,5 @@
 XUSNPIE2 ;FO-OAKLAND/JLI - DATA ENTRY FOR INITIAL NPI VALUES ;6/5/09
- ;;8.0;KERNEL;**410,435,454,462,480,519**;Jul 10, 1995;Build 2
+ ;;8.0;KERNEL;**410,435,454,462,480,519**;Jul 10, 1995;Build 8
  ;;Per VHA Directive 2004-038, this routine should not be modified
  Q
  ;

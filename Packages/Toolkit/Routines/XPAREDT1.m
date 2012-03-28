@@ -1,5 +1,5 @@
 XPAREDT1 ; SLC/KCM - Supporting Calls - Entities; [3/31/03 7:19am] ;9/12/07  16:19
- ;;7.3;TOOLKIT;**26,109**;Apr 25, 1995;Build 5
+ ;;7.3;TOOLKIT;**26,109**;Apr 25, 1995;Build 10
  ;
 BLDLST ; ...continued from BLDLST^XPAREDIT(LST,PAR)
  ; Build list of entities allowed for this parameter

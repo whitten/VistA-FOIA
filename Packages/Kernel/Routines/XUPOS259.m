@@ -1,4 +1,4 @@
-XUPOS259 ;SFISC/SO- Correct DISABLE field in Protocols exported in 236 ;10:32 AM  10 Oct 2002
+XUPOS259 ;SFISC/SO- Correct DISABLE field in Protocols exported in 236 ;10:32 AM  10 Oct 2002 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**259**;Jul 10, 1995
  ; Get domain pointer for site
  N XUX

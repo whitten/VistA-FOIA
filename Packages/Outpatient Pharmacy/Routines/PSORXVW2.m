@@ -1,17 +1,18 @@
-PSORXVW2 ;ISC-BIRM/PDW - view cmop activity logs ;08 Dec 1999 12:48 PM
- ;;7.0;OUTPATIENT PHARMACY;**33,71,117,152,148**;DEC 1997
+PSORXVW2 ;ISC-BIRM/PDW - view cmop activity logs ;29-Mar-2006 08:13;A,A
+ ;;7.0;OUTPATIENT PHARMACY;**33,71,117,152,1005**;DEC 1997
  ; External Referrence to file # 550.2 granted by DBIA 2231
  ;External reference to ^PS(50.607 supported by DBIA 2221
  ;External reference to ^PS(51.2 supported by DBIA 2226
  ;External reference to File ^PS(55 supported by DBIA 2228
  ;External reference to VA(200 supported by DBIA 10060
  ;get data from event multiple
+ ; Modified - IHS/CIA/PLS - 01/09/04 - Line COPAY+1
  S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)=" "
  S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="CMOP Event Log:",IEN=IEN+1
- S ^TMP("PSOAL",$J,IEN,0)="Date/Time             Rx Ref  TRN-Order       Stat             Comments",IEN=IEN+1,$P(^TMP("PSOAL",$J,IEN,0),"=",79)="="
+ S ^TMP("PSOAL",$J,IEN,0)="Date/Time             Rx Ref    TRN-Order      Stat             Comments",IEN=IEN+1,$P(^TMP("PSOAL",$J,IEN,0),"=",79)="="
  F PSXA=0:0 S PSXA=$O(^PSRX(DA,4,PSXA)) Q:'PSXA  S PSX4=^(PSXA,0) D FIX D
- .S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)=$$DATE(DA,$P(PSX4,"^",3))_"         "_$S('PSXFIL:"Orig",1:"Ref "_$G(PSXFIL))_"    "_$G(PSXBREF)
- .S ^TMP("PSOAL",$J,IEN,0)=^TMP("PSOAL",$J,IEN,0)_"            "_$G(PSXT)_"    "_$S($G(PSXTST)=3:$E($P($G(PSXCAN),"^"),1,35),$G(PSXNDC)'="":"NDC: "_PSXNDC,1:"")
+ .S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)=$S($G(PSXTST)=3:PSXTCAN,$G(PSXTST)=1:$G(PSXRDT),1:$G(PSXTRDT))_"         "_$S('PSXFIL:"Orig",1:"Ref "_$G(PSXFIL))_"    "_$G(PSXBREF)
+ .S ^TMP("PSOAL",$J,IEN,0)=^TMP("PSOAL",$J,IEN,0)_"            "_$G(PSXT)_"    "_$S($G(PSXTST)=3:$E($G(PSXCAN),1,35),$G(PSXNDC)'="":"NDC: "_PSXNDC,1:"")
  . I PSXCAR="",PSXID="" Q
  . N X S X="Carrier: "_$E(PSXCAR,1,21)
  . S X=$$SETSTR^VALM1("Pkg ID: ",X,32,8)
@@ -47,7 +48,7 @@ F1 S PSXNDC=$P(PSX4,U,8)
  S PSXCAR=$P(PSXCAN,U,3)
  S PSXID=$P(PSXCAN,U,4)
  ; get cmop site
- S I1=PSXBAT   ; S I1=$O(^PSX(550.2,"B",PSXBAT,""))
+ S I1=$O(^PSX(550.2,"B",PSXBAT,""))
 P1 ; get transmission d/t
  S ZDT=$P(^PSX(550.2,I1,0),U,6),ZD1=$P(ZDT,"."),ZD2=$P(ZDT,".",2)
  S ZD2=$E(ZD2,1,4)
@@ -70,6 +71,7 @@ SKIP .S PSXT="DISP"
  Q
  ;
 COPAY ;Copay activity log
+ Q:$G(DUZ("AG"))="I"   ; IHS/CIA/PLS - 01/09/04 - Copay not used in IHS
  S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)=" ",IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="Copay Activity Log:"
  S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="#   Date        Reason               Rx Ref         Initiator Of Activity",IEN=IEN+1,$P(^TMP("PSOAL",$J,IEN,0),"=",79)="="
  I '$O(^PSRX(DA,"COPAY",0)) S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="There's NO Copay activity to report" Q
@@ -101,14 +103,4 @@ DOSE1 ;
  S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="           *Schedule: "_$P(DOSE,"^",8)
  I $P(DOSE,"^",5)]"" S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="           *Duration: "_$P(DOSE,"^",5)_" ("_$S($P(DOSE,"^",5)["M":"MINUTES",$P(DOSE,"^",5)["H":"HOURS",$P(DOSE,"^",5)["L":"MONTHS",$P(DOSE,"^",5)["W":"WEEKS",1:"DAYS")_")"
  I $P(DOSE,"^",6)]"" S IEN=IEN+1,^TMP("PSOAL",$J,IEN,0)="        *Conjunction: "_$S($P(DOSE,"^",6)="A":"AND",$P(DOSE,"^",6)="T":"THEN",$P(DOSE,"^",6)="E":"EXCEPT",1:"")
- Q
- ;
-DATE(RX,RFL) ;
- I $G(PSXTST)=3,$G(PSXTCAN)'="" Q PSXTCAN
- I $G(PSXTST)=1 Q $G(PSXRDT)
- I $G(PSXTST)=3,'RFL,$$GET1^DIQ(52,RX,32.1,"I") Q $$FMTE^XLFDT($$GET1^DIQ(52,RX,32.1,"I"),2)
- I $G(PSXTST)=3,RFL,$$GET1^DIQ(52.1,RFL_","_RX,5,"I") Q $$FMTE^XLFDT($$GET1^DIQ(52.1,RFL_","_RX,32.1,"I"),2)
- Q $G(PSXTRDT)
- ;
-DAT S DAT="",DTT=DTT\1 Q:DTT'?7N  S DAT=$E(DTT,4,5)_"/"_$E(DTT,6,7)_"/"_$E(DTT,2,3)
  Q

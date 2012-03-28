@@ -1,5 +1,5 @@
 XINDX5 ;SF-ISC/RWF - CROSS REFERENCE ALL ROUTINES ;03/26/2002  09:57
- ;;7.3;TOOLKIT;**20,27,61,121**;Apr 25, 1995;Build 7
+ ;;7.3;TOOLKIT;**20,27,61,121**;Apr 25, 1995;Build 10
  ; Per VHA Directive 2004-038, this routine should not be modified.
  G END:$D(IND("QUIT")) I INP(8) W !,"Called Routines",! D ^XINDX52 ;Get called routines
  K ARG,CCN,CH,COM,ERR,GK,GRB,I,INDDA,INDDS,L,LAB,LAB0,LC,LIN,LOC,PC,PRV,R,RTN,S,STR,TXT,V,X,Y

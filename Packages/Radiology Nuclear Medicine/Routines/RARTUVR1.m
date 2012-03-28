@@ -1,7 +1,6 @@
 RARTUVR1 ;HISC/FPT,SWM AISC/RMO-Unverified Reports ;8/19/97  11:16
- ;;5.0;Radiology/Nuclear Medicine;**29,56**;Mar 16, 1998;Build 3
+ ;;5.0;Radiology/Nuclear Medicine;**29**;Mar 16, 1998
  ;
- ;Supported IA #2056 GET1^DIQ
  ; RAHOURS=hours diffce btw DT and RARPTENT, also used in RACUT(rahours)
 BTG ; build tmp global
  N RAQT
@@ -24,8 +23,7 @@ INC(RATYP) ; Increment count for Resident, Staff or Unknown
  ;
  N RA1
  S RATYP=$E($G(RATYP))
- S RAIPNAME=$S(RATYP="R":RAPRES,RATYP="S":RAPSTF,1:"")
- S:RAIPNAME'="" RAIPNAME=$$GET1^DIQ(200,RAIPNAME_",",.01)
+ S RAIPNAME=$P($G(^VA(200,$S(RATYP="R":RAPRES,RATYP="S":RAPSTF,1:U),0)),U,1)
  S:RAIPNAME="" RAIPNAME="UNKNOWN"
  ; If report on ASTAT x-ref for 2 report statuses, then it will be
  ; counted twice. Check if dealt with already. If so, QUIT
@@ -43,9 +41,9 @@ INC(RATYP) ; Increment count for Resident, Staff or Unknown
  ;
 PHYS ;print other staff and residents
  N RA2ND,R1,R2,RASTR
- S (R1,R2)=0 F  S R2=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SRR",R2)) Q:'R2  S:+$G(^(R2,0)) R1=R1+1,RA2ND("SRR",R1)=+^(0),RA2ND("SRR",R1)=$E($$GET1^DIQ(200,RA2ND("SRR",R1)_",",.01),1,20)
- S (R1,R2)=0 F  S R2=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SSR",R2)) Q:'R2  S:+$G(^(R2,0)) R1=R1+1,RA2ND("SSR",R1)=+^(0),RA2ND("SSR",R1)=$E($$GET1^DIQ(200,RA2ND("SSR",R1)_",",.01),1,20)
- S R1=$E($$GET1^DIQ(200,+$P(Y(0),"^",15)_",",.01),1,15) ; prim staff
+ S (R1,R2)=0 F  S R2=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SRR",R2)) Q:'R2  S:+$G(^(R2,0)) R1=R1+1,RA2ND("SRR",R1)=+^(0),RA2ND("SRR",R1)=$E($P($G(^VA(200,RA2ND("SRR",R1),0)),"^"),1,20)
+ S (R1,R2)=0 F  S R2=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SSR",R2)) Q:'R2  S:+$G(^(R2,0)) R1=R1+1,RA2ND("SSR",R1)=+^(0),RA2ND("SSR",R1)=$E($P($G(^VA(200,RA2ND("SSR",R1),0)),"^"),1,20)
+ S R1=$E($P($G(^VA(200,+$P(Y(0),"^",15),0)),"^"),1,15) ; prim staff
  S RASTR="Other Att/Res: "
  S:RAIPNAME'[R1 RASTR=RASTR_R1
 PHYS1 I '$O(RA2ND("SSR",0)) G PHYS2
@@ -54,7 +52,7 @@ PHYS11 S R1=$O(RA2ND("SSR",R1)) G:R1="" PHYS2
  G:RAIPNAME[RA2ND("SSR",R1) PHYS11 ;omit if name matches current staff/resid/unkn
  I $L(RASTR)+$L(RA2ND("SSR",R1))>IOM W !,RASTR,"; " S RASTR="   "
  S:RASTR]"   " RASTR=RASTR_"; " S RASTR=RASTR_RA2ND("SSR",R1) G PHYS11
-PHYS2 S R1=$E($$GET1^DIQ(200,+$P(Y(0),"^",12)_",",.01),1,15) ;prim resid
+PHYS2 S R1=$E($P($G(^VA(200,+$P(Y(0),"^",12),0)),"^"),1,15) ;prim resid
  I RAIPNAME[R1 G PHYS20 ;omit if name matches current staff/resid/unk
  I $L(RASTR)+$L(R1)>IOM W !,RASTR,"; " S RASTR="   "
  S:RASTR]"   " RASTR=RASTR_"; " S RASTR=RASTR_R1

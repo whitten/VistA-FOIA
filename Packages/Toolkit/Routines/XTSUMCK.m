@@ -1,4 +1,5 @@
-XTSUMCK ;Boise/MAW,SFISC/RSD -compute routine checksums ;10/04/96  11:11
+XTSUMCK ;Boise/MAW,SFISC/RSD -compute routine checksums ;10/04/96  11:11 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**44**;Jul 10, 1995
  ;^XTMP("XTSUMCK",DUZ)=end time^home cpu^status^task #^start time^# rtns
  ;^XTMP("XTSUMCK",DUZ,"SYS",system)=end time^active^status^task #^end time^# rtns

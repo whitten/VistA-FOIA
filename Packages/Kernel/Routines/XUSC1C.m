@@ -1,4 +1,4 @@
-XUSC1C ;ISCSF/RWF - Client Interface to Server services. ;10/09/2002  17:03
+XUSC1C ;ISCSF/RWF - Client Interface to Server services. ;10/09/2002  17:03 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**283**;Jul 10, 1995
  ;Return 0 = OK, else -1^msg
 EN(INPUT,OUTPUT,TYPE) ;Call to connect to Server

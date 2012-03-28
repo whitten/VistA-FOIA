@@ -1,5 +1,7 @@
 LRAPT3 ;AVAMC/REG/WTY - AUTOPSY RPT PRINT COND(1)'T ;10/18/01
- ;;5.2;LAB SERVICE;**1,259,315**;Sep 27, 1994;Build 25
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**1,259**;Sep 27, 1994
+ ;
  S:'$D(LRSF515) LRSF515=0
  S A=0 F  S A=$O(^LR(LRDFN,"AY",A)) Q:'A!(LR("Q"))  D
  .S C=0 F F=0:1 S C=$O(^LR(LRDFN,"AY",A,5,C)) Q:'C!(LR("Q"))  D
@@ -10,13 +12,12 @@ LRAPT3 ;AVAMC/REG/WTY - AUTOPSY RPT PRINT COND(1)'T ;10/18/01
  Q:LR("Q")
  W !
  Q:LRSF515  ;Don't print diagnosis codes on the SF515
- N LRX
  S A=0 F  S A=$O(^LR(LRDFN,80,A)) Q:'A!(LR("Q"))  D
  .D:$Y>(IOSL-6) FF Q:LR("Q")
  .Q:LR("Q")
- .S LRX=+^LR(LRDFN,80,A,0),LRX=$$ICDDX^ICDCODE(LRX,,,1)
- .W !,"ICD code: ",$P(LRX,"^",2),?20
- .S X=$P(LRX,"^",4) D:LRS(5) C^LRUA W X
+ .S X=+^LR(LRDFN,80,A,0),X=^ICD9(X,0)
+ .W !,"ICD code: ",$P(X,"^"),?20
+ .S X=$P(X,"^",3) D:LRS(5) C^LRUA W X
  Q
 SP S Y=$P(X,"^",2),E=$P(X,"^",3),X=$P(X,"^")_":"
  S A1=$P($P(LRAU("S"),X,2),";",1) D D^LRU S T(2)=Y

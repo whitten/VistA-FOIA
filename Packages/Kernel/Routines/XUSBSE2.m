@@ -1,5 +1,5 @@
 XUSBSE2 ;FO-OAK/JLI-CONNECT WITH HTTP SERVER AND GET REPLY ;04/29/09  12:47
- ;;8.0;KERNEL;**404,439,523**;Jul 10, 1995;Build 16
+ ;;8.0;KERNEL;**404,439,523**;Jul 10, 1995;Build 19
  Q
  ;
  ; Original version, returns only first line after headers

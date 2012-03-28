@@ -1,5 +1,5 @@
 PSAUDP ;BIR/LTL,JMB-Nightly Background Job - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**6,3,12,14,25,64,66**; 10/24/97;Build 2
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**6,3,12,14,25**; 10/24/97
  ;
  ;Reference to ^PS(57.6 are covered by IA #772
 PICKLST ;ask for parameters PSA*3*25
@@ -31,7 +31,7 @@ DONE ;
 END K DA,DATA,DIC,DIE,DR,PSA50,PSAD0,PSAD1,PSAD2,PSAD3,PSADT,PSAIP,PSALOC,PSANUM,PSAQTY,X,Y,PSABGN,PSAEND,PARDATA,JOBIEN,X
  Q
 PROCESS ;Stuff last UD dispensing fld with DT
- F  L +^PSD(58.8,PSALOC,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,PSALOC,0):0 I  Q
  S DIE="^PSD(58.8,",DA=PSALOC,DR="27////"_PSADT D ^DIE K DIE,DA,DR
  ;Subtract dispensing from balance
  S PSABAL=$P($G(^PSD(58.8,PSALOC,1,PSA50,0)),"^",4)
@@ -46,13 +46,11 @@ PROCESS ;Stuff last UD dispensing fld with DT
  ;Stuff total dispensed
  S DIE="^PSD(58.8,PSALOC,1,PSA50,5,",DA(2)=PSALOC,DA(1)=PSA50,DA=$E(PSADT,1,5)*100,DR="9////^S X=$P($G(^(0)),U,6)+PSAQTY" D ^DIE K DIE,DA
  ;Get next transaction node number
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q  ;; << *66 RJS
 FIND S PSANUM=$P(^PSD(58.81,0),"^",3)+1 I $D(^PSD(58.81,PSANUM)) S $P(^PSD(58.81,0),"^",3)=$P(^PSD(58.81,0),"^",3)+1 G FIND
  ;Add next transaction node with data.
  S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSANUM D ^DIC K DIC,DLAYGO
  S DIE="^PSD(58.81,",DA=PSANUM
  S DR="1////2;2////^S X=PSALOC;3////^S X=PSADT;4////^S X=PSA50;5////^S X=PSAQTY;9////^S X=$G(PSABAL)" D ^DIE K DIE,DA
- L -^PSD(58.81,0)  ;; >> *66 RJS
  ;Add activity node
  S DIC="^PSD(58.8,PSALOC,1,PSA50,4,",DIC(0)="L",(X,DINUM)=PSANUM,DIC("P")=$P(^DD(58.8001,19,0),"^",2),DA(2)=PSALOC,DA(1)=PSA50,DLAYGO=58.8 D ^DIC K DA,DIC,DLAYGO
  L -^PSD(58.8,PSALOC,0)

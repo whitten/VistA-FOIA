@@ -1,8 +1,8 @@
-NURAPA1 ; ;06/10/97
+NURAPA1 ; ;11/29/04
  D DE G BEGIN
 DE S DIE="^NURSA(213.2,",DIC=DIE,DP=213.2,DL=1,DIEL=0,DU="" K DG,DE,DB Q:$O(^NURSA(213.2,DA,""))=""
- I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,12) S:%]"" DE(1)=% S %=$P(%Z,U,13) S:%]"" DE(2)=% S %=$P(%Z,U,14) S:%]"" DE(3)=% S %=$P(%Z,U,15) S:%]"" DE(4)=% S %=$P(%Z,U,16) S:%]"" DE(5)=% S %=$P(%Z,U,17) S:%]"" DE(6)=%
- I $D(^(.5)) S %Z=^(.5) S %=$P(%Z,U,1) S:%]"" DE(7)=% S %=$P(%Z,U,2) S:%]"" DE(8)=% S %=$P(%Z,U,3) S:%]"" DE(9)=% S %=$P(%Z,U,4) S:%]"" DE(10)=%
+ I $D(^(.5)) S %Z=^(.5) S %=$P(%Z,U,4) S:%]"" DE(1)=%
+ I $D(^(1)) S %Z=^(1) S %=$P(%Z,U,11) S:%]"" DE(2)=%
  K %Z Q
  ;
 W W !?DL+DL-2,DLB_": "
@@ -15,17 +15,17 @@ TR R X:DTIME E  S (DTOUT,X)=U W $C(7)
 A K DQ(DQ) S DQ=DQ+1
 B G @DQ
 RE G PR:$D(DE(DQ)) D W,TR
-N I X="" G A:DV'["R",X:'DV,X:D'>0,A
+N I X="" G NKEY:$D(^DD("KEY","F",DP,DIFLD)),A:DV'["R",X:'DV,X:D'>0,A
 RD G QS:X?."?" I X["^" D D G ^DIE17
  I X="@" D D G Z^DIE2
  I X=" ",DV["d",DV'["P",$D(^DISV(DUZ,"DIE",DLB)) S X=^(DLB) I DV'["D",DV'["S" W "  "_X
 T G M^DIE17:DV,^DIE3:DV["V",P:DV'["S" X:$D(^DD(DP,DIFLD,12.1)) ^(12.1) I X?.ANP D SET I 'DDER X:$D(DIC("S")) DIC("S") I  W:'$D(DB(DQ)) "  "_% G V
  K DDER G X
-P I DV["P" S DIC=U_DU,DIC(0)=$E("EN",$D(DB(DQ))+1)_"M"_$E("L",DV'["'") S:DIC(0)["L" DLAYGO=+$P(DV,"P",2) I DV'["*" D ^DIC S X=+Y,DIC=DIE G X:X<0
+P I DV["P" S DIC=U_DU,DIC(0)=$E("EN",$D(DB(DQ))+1)_"M"_$E("L",DV'["'") S:DIC(0)["L" DLAYGO=+$P(DV,"P",2) G:DV["*" AST^DIED D NOSCR^DIED S X=+Y,DIC=DIE G X:X<0
  G V:DV'["N" D D I $L($P(X,"."))>24 K X G Z
  I $P(DQ(DQ),U,5)'["$",X?.1"-".N.1".".N,$P(DQ(DQ),U,5,99)["+X'=X" S X=+X
 V D @("X"_DQ) K YS
-Z K DIC("S"),DLAYGO I $D(X),X'=U S DG(DW)=X S:DV["d" ^DISV(DUZ,"DIE",DLB)=X G A
+Z K DIC("S"),DLAYGO I $D(X),X'=U D:$G(DE(DW,"INDEX")) SAVEVALS G:'$$KEYCHK UNIQFERR^DIE17 S DG(DW)=X S:DV["d" ^DISV(DUZ,"DIE",DLB)=X G A
 X W:'$D(ZTQUEUED) $C(7),"??" I $D(DB(DQ)) G Z^DIE17
  S X="?BAD"
 QS S DZ=X D D,QQ^DIEQ G B
@@ -43,85 +43,27 @@ SET N DIR S DIR(0)="SV"_$E("o",$D(DB(DQ)))_U_DU,DIR("V")=1
  I $D(DB(DQ)),'$D(DIQUIET) N DIQUIET S DIQUIET=1
  D ^DIR I 'DDER S %=Y(0),X=Y
  Q
+SAVEVALS S @DIEZTMP@("V",DP,DIIENS,DIFLD,"O")=$G(DE(DQ)) S:$D(^("F"))[0 ^("F")=$G(DE(DQ))
+ I $D(DE(DW,"4/")) S @DIEZTMP@("V",DP,DIIENS,DIFLD,"4/")=""
+ E  K @DIEZTMP@("V",DP,DIIENS,DIFLD,"4/")
+ Q
+NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
+KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="NURAPA1",DQ=1
-1 S DW="0;12",DV="RNJ9,3",DU="",DLB="(11) BUDGETED CHIEF NURSE",DIFLD=11
- S X=NURSFT(11)
+1 S DW=".5;4",DV="RNJ9,3",DU="",DLB="(20) BUDGETED INSTR/EDU",DIFLD=20
+ S X=NURSFT(20)
  S Y=X
  S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
  G RD
 X1 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
  Q
  ;
-2 S DW="0;13",DV="RNJ9,3",DU="",DLB="(12) BUDGETED ASST CHIEF NURSE",DIFLD=12
- S X=NURSFT(12)
+2 S DW="1;11",DV="RD",DU="",DLB="DATE",DIFLD=43
+ S X=NURSCRDT
  S Y=X
  S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
  G RD
-X2 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
+X2 S %DT="" D ^%DT S X=Y K:Y<1 X
  Q
  ;
-3 S DW="0;14",DV="RNJ9,3",DU="",DLB="(13) BUDGETED ASSOC CHIEF N.S.",DIFLD=13
- S X=NURSFT(13)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X3 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-4 S DW="0;15",DV="RNJ9,3",DU="",DLB="(14) BUDGETED SUPERVISOR",DIFLD=14
- S X=NURSFT(14)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X4 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-5 S DW="0;16",DV="RNJ9,3",DU="",DLB="(15) BUDGETED HEAD NURSE",DIFLD=15
- S X=NURSFT(15)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X5 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-6 S DW="0;17",DV="RNJ9,3",DU="",DLB="(16) BUDGETED OTHER NURSE",DIFLD=16
- S X=NURSFT(16)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X6 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-7 S DW=".5;1",DV="RNJ9,3",DU="",DLB="(17) BUDGETED NURSE RESHR",DIFLD=17
- S X=NURSFT(17)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X7 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-8 S DW=".5;2",DV="RNJ9,3",DU="",DLB="(18) BUDGETED ASSOC CHIEF/RESH",DIFLD=18
- S X=NURSFT(18)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X8 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-9 S DW=".5;3",DV="RNJ9,3",DU="",DLB="(19) BUDGETED ASSOC CHIEF/EDU",DIFLD=19
- S X=NURSFT(19)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X9 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-10 S DW=".5;4",DV="RNJ9,3",DU="",DLB="(20) BUDGETED INSTR/EDU",DIFLD=20
- S X=NURSFT(20)
- S Y=X
- S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
- G RD
-X10 K:+X'=X!(X>99999.999)!(X<0)!(X?.E1"."4N.N) X
- Q
- ;
-11 D:$D(DG)>9 F^DIE17 G ^NURAPA2
+3 G 0^DIE17

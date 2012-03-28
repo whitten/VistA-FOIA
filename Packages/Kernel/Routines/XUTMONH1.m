@@ -1,4 +1,5 @@
-XUTMONH1 ;SEA/RDS - TaskMan: Option, XUTMON, Part 4 (Help Modules) ;5/12/94  12:11
+XUTMONH1 ;SEA/RDS - TaskMan: Option, XUTMON, Part 4 (Help Modules) ;5/12/94  12:11 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
  Q

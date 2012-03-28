@@ -1,5 +1,5 @@
-TIULA1 ; SLC/JER - More interactive functions ;4/18/03
- ;;1.0;TEXT INTEGRATION UTILITIES;**75,113,207**;Jun 20, 1997
+TIULA1 ; SLC/JER - More interactive functions ;26-MAY-1999 13:40:52
+ ;;1.0;TEXT INTEGRATION UTILITIES;**75**;Jun 20, 1997
 TRAVERSE(DA,RETURN,PARM,TYPE) ; Select Document Type(s)
  N C,I,XQORM,Y N:'$D(LEVEL) LEVEL S LEVEL=+$G(LEVEL)+1
  S:$G(TYPE)']"" TYPE="D"
@@ -55,9 +55,8 @@ DOCLIST(CLASS,Y,PARM,DFLT) ; Get preferred documents for user
  S XQORM("S")="I $$CANPICK^TIULP(+$G(^TIU(8925.98,+DA(1),10,+DA,0)))"
  D EN^XQORM
  Q
-SELCAT(Y,PARM,DFLT,TIUOVER) ; Get preferred documents for user
+SELCAT(Y,PARM,DFLT) ; Get preferred documents for user
  N TIUI,TIUDA,CATREC,CATLOOK,CATSCRN,CATVAL,XQORM,X ;P75 newed CATVAL
- N TIUT1,TIUT2,TIUTSTR,TIUHOLD
  S TIUI=0
  S XQORM="1;TIU(8925.8,"
  I $G(DFLT)="LAST" D
@@ -70,23 +69,6 @@ SELCAT(Y,PARM,DFLT,TIUOVER) ; Get preferred documents for user
  S XQORM("A")="Select SEARCH CATEGOR"_$S(+XQORM(0)'=1:"IES",1:"Y")_": "
  I XQORM(0)["D" S XQORM("H")="W !!,$$CENTER^TIULS(""--- Search Categories ---""),!"
  D EN^XQORM
- ; BEGIN TIU207
- ; FLAG IF TITLE OR ALL CATEGORIES WERE SELECTED. NEEDED IN HDR^TIURH AS ^TMP("TIUR","TIU OVERRIDE")
- S TIUT1="",TIUTSTR=""
- F  S TIUT1=$O(Y(TIUT1)) Q:TIUT1=""  D
- .I $P(Y(TIUT1),"^",3)="Title" S TIUTSTR=TIUTSTR_"TITLE"
- .I $P(Y(TIUT1),"^",3)="All Categories" S TIUTSTR=TIUTSTR_"ALL"
- I TIUTSTR["TITLE" S TIUOVER=TIUTSTR
- ; IF SPECIFIC CATEGORY AND ALL CATEGORIES WHERE SELECTED THEN REMOVE ALL CATEGORIES.
- I $O(Y(""),-1)>1,TIUTSTR["ALL" D
- .M TIUHOLD=Y K Y
- .S TIUT1="",TIUT2=1
- .F  S TIUT1=$O(TIUHOLD(TIUT1)) Q:TIUT1=""  D
- ..I $P(TIUHOLD(TIUT1),"^",3)="All Categories" Q
- ..S Y(TIUT2)=TIUHOLD(TIUT1)
- ..S Y=TIUT2
- ..S TIUT2=TIUT2+1
- ; END TIU207
  F  S TIUI=$O(Y(TIUI)) Q:+TIUI'>0  D
  . S TIUDA=+$P(Y(TIUI),U,2)
  . S CATREC=$G(^TIU(8925.8,TIUDA,0))
@@ -124,19 +106,3 @@ GETTERM(X) ; Get Lexicon term
  . S USEX=$$READ^TIUU("Y",">>>  Use "_X,"Yes")
  . I +USEX S Y=1_U_X
  Q Y
-GETDIV() ; Get Institution Number and Name
- N TIUDIV,TIUSTN,Y
- S TIUDIV=$S($P($G(^DG(43,1,"GL")),U,2):$$MULTDIV,1:$$PRIM^VASITE)
- S TIUSTN=$$SITE^VASITE(,TIUDIV)
- I $P(TIUSTN,U)>0,($P(TIUSTN,U,2)]"") D
- . S Y=$P(TIUSTN,U)_U_$P(TIUSTN,U,2)
- E  D
- . S Y=-1
- Q Y
-MULTDIV() ; User selects from active divisions
- N DIR,X,Y
- S DIR(0)="PA^40.8:EM"
- S DIR("A")="Select DIVISION: "
- S DIR("S")="I $$SITE^VASITE(,+Y)>0"
- D ^DIR
- Q +Y

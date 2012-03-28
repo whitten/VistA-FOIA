@@ -1,6 +1,6 @@
-LRBLRCT ;AVAMC/REG/CYM - CROSSMATCH:TRANSFUSION REPORT ;6/19/96  09:50 ;
- ;;5.2;LAB SERVICE;**72,247,267**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLRCT ; IHS/DIR/AAB - CROSSMATCH:TRANSFUSION REPORT 6/19/96 09:50 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END W !!?20,"Crossmatch:Transfusion Report",!
  D B^LRU G:Y<0 END S LRLDT=LRLDT+.99,LRSDT=LRSDT-.0001
  S ZTRTN="QUE^LRBLRCT" D BEG^LRUTL G:POP!($D(ZTSK)) END
@@ -13,13 +13,16 @@ C F A=LRSDT:0 S A=$O(^LRD(65,"AN",A)) Q:'A!(A>LRLDT)  F I=0:0 S I=$O(^LRD(65,"AN
 SET S Z=$O(^LRD(65,I,3,0)) I Z S X=^(Z,0),Z=$P(X,"^",4)
  S X=^LRD(65,I,2,P,1,B,0),Y=$P(X,"^",4),LRF(Y)=0,^TMP($J,P,+X,I)=$P(X,"^",10)_"^"_$S(Y]"":Y,1:"?")_"^"_Z Q
  ;
-W S (LRP,LRX,LRX(1),LRT,LRZ)=0 F A=0:0 S LRP=$O(^TMP($J,"B",LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,"B",LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S SSN=^(LRDFN),LRDPF=$P(^LR(LRDFN,0),U,2),LRZ=LRZ+1 W:LRZ>1 !,LR("%") D V
+W ;S (LRP,LRX,LRX(1),LRT,LRZ)=0 F A=0:0 S LRP=$O(^TMP($J,"B",LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,"B",LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S SSN=^(LRDFN),LRDPF=$P(^LR(LRDFN,0),U,2),LRZ=LRZ+1 W:LRZ>1 !,LR("%") D V
+ S (LRP,LRX,LRX(1),LRT,LRZ)=0 F A=0:0 S LRP=$O(^TMP($J,"B",LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,"B",LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S HRCN=^(LRDFN),LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3),LRZ=LRZ+1 W:LRZ>1 !,LR("%") D V
+ ;IHS/ANMC/CLS 11/1/95
  Q
-V D:$Y>(IOSL-6) H Q:LR("Q")  D SSN^LRU W !,$J(LRZ,3),")",?6,LRP,?38,SSN F LRS=0:0 S LRS=$O(^TMP($J,LRDFN,LRS)) Q:'LRS!(LR("Q"))  S Y=LRS D DT^LRU S LRD=Y D U
+V ;D:$Y>(IOSL-6) H Q:LR("Q")  D SSN^LRU W !,$J(LRZ,3),")",?6,LRP,?38,SSN F LRS=0:0 S LRS=$O(^TMP($J,LRDFN,LRS)) Q:'LRS!(LR("Q"))  S Y=LRS D DT^LRU S LRD=Y D U
+ D:$Y>(IOSL-6) H Q:LR("Q")  D SSN^LRU W !,$J(LRZ,3),")",?6,LRP,?38,HRCN F LRS=0:0 S LRS=$O(^TMP($J,LRDFN,LRS)) Q:'LRS!(LR("Q"))  S Y=LRS D DT^LRU S LRD=Y D U  ;IHS/ANMC/CLS 11/1/95
  Q
 U S LRI=0 F LRE=0:1 S LRI=$O(^TMP($J,LRDFN,LRS,LRI)) Q:'LRI  S:'LRE LRX(1)=LRX(1)+1 S LRC=^(LRI),LRX=LRX+1,LRH=1 D:$P(LRC,"^")="TRANSFUSED" A D:$Y>(IOSL-6) H1 Q:LR("Q")  D X
  Q
-X S Y=$P(LRC,"^",2),X=^LRD(65,LRI,0),C=$P(^LAB(66,$P(X,"^",4),0),"^",2) W !,LRD,?17,$P(X,"^"),?32,C,?37,Y,?40,$E($P(LRC,"^"),1,23)
+X S Y=$P(LRC,"^",2),X=^LRD(65,LRI,0),C=$P(^LAB(66,$P(X,"^",4),0),"^",2) W !,LRD,?15,$P(X,"^"),?28,C,?33,Y,?38,$P(LRC,"^")
  I $D(^LRD(65,"AP",LRDFN,LRI)) W " On x-match, not counted" W ?65,$E($P(LRC,U,3),1,14) S LRX=LRX-1 Q
  S LRF(Y)=LRF(Y)+LRH Q
 A S Y=$O(^LRD(65,LRI,9,0)) I 'Y S LRT=LRT+1 Q
@@ -30,9 +33,10 @@ A S Y=$O(^LRD(65,LRI,9,0)) I 'Y S LRT=LRT+1 Q
  ;
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,"BLOOD BANK",!,"CROSSMATCH:TRANSFUSIONS (from: ",LRSTR," to ",LRLST,")"
- W:LRQ(2) !,"Specimen date",?17,"Unit ID",?32,"Comp",?37,"XM",?40,"Release Reason",?65,"Location"
+ W:LRQ(2) !,"Specimen date",?15,"Unit ID",?28,"Comp",?33,"XM",?38,"Release Reason",?65,"Location"
  W !,LR("%") Q
-H1 D H Q:LR("Q")  W !,?6,LRP,?38,SSN Q
+H1 ;D H Q:LR("Q")  W !,?6,LRP,?38,SSN Q
+ D H Q:LR("Q")  W !,?6,LRP,?38,HRCN Q  ;IHS/ANMC/CLS 11/1/95
 H2 S LRQ(2)=0 D H Q
  ;
 STATS D:$Y>(IOSL-11) H2 Q:LR("Q")  I LRT["." S X=LRT D Z S LRT=X

@@ -1,5 +1,7 @@
-SCRPV1 ; bp/djb - PCMM Inconsistency Rpt - Main ; 8/25/99 9:52am
+SCRPV1 ; bp/djb - PCMM Inconsistency Rpt - Main ; 8/25/99 9:52am [ 11/02/2000  9:33 AM ]
  ;;5.3;Scheduling;**177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 added call to list template
+ ;                        added list template check to wait message
  ;
  ;This routine is part of Patch 177 (PCMM Phase II). It prompts for
  ;those Team and Position Assignments to be validated according to
@@ -27,12 +29,15 @@ EXIT ; Cleanup and Exit
  Q
  ;
 RUN ;Gather the data and print the report.
+ I $E(IOST,1,2)="C-" D ^BSDSCV1 Q    ;IHS/ANMC/LJF 11/2/2000
+IHS ;EP; entry point for list template  ;IHS/ANMC/LJF 11/2/2000
  ;
  KILL ^TMP("PCMM PATIENT",$J)
  KILL ^TMP("PCMM POSITION",$J)
  ;
  I SCTYPE("TM")="I" D LIST^SCRPV1B1 Q
- I '$D(ZTQUEUED),'(IOST["P-"&(IOST["MESSAGE")) W "Please wait..."
+ ;I '$D(ZTQUEUED),'(IOST["P-"&(IOST["MESSAGE")) W "Please wait..."  ;IHS/ANMC/LJF 11/2/2000
+ I '$G(VALM),'$D(ZTQUEUED),'(IOST["P-"&(IOST["MESSAGE")) W "Please wait..."  ;IHS/ANMC/LJF 11/2/2000
  ;
  D ^SCRPV1A ;............Gather data
  D ^SCRPV1B ;............Print report

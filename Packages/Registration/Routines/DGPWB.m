@@ -1,6 +1,8 @@
 DGPWB ;ALB/CAW/MLR - Patient Wristband Print ; 9/27/00 3:40pm
- ;;5.3;Registration;**62,82,287**;Aug 13, 1993
- ;  -**287** Substituting SS# when Primary long ID missing in .36 
+ ;;5.3;Registration;**62,82,287,1004,1009**;Aug 13, 1993
+ ;  -**287** Substituting SS# when Primary long ID missing in .36
+ ;IHS/OIT/LJF 08/31/2005 PATCH 1004 use chart # instead of SSN for patient ID
+ ;cmi/anch/maw 02/18/2008 PATCH 1009 requirement 3 in SET
  ;
 EN ; Ask patient name
  ; This is used when printing a wristband from the menu
@@ -57,7 +59,8 @@ SET ;Set the lines to print
  ;
  ; If a different wristband is going to be used-change name in "B" x-ref
  ;
- S LINE=0 S IFN=$O(^DIC(39.1,"B","WRISTBAND",0)) Q:'IFN
+ ;S LINE=0 S IFN=$O(^DIC(39.1,"B","WRISTBAND",0)) Q:'IFN  ;cmi/maw 2/18/2008 PATCH 1009
+ S LINE=0 S IFN=$O(^DIC(39.1,"B","IHS WRISTBAND",0)) Q:'IFN  ;cmi/maw 2/18/2008 PATCH 1009 requirement 3
  F  S LINE=$O(^DIC(39.1,IFN,1,LINE)) Q:'LINE  D
  .S DATA=0 F  S DATA=$O(^DIC(39.1,IFN,1,LINE,1,DATA)) Q:'DATA  D
  ..S ITEMD=^DIC(39.1,IFN,1,LINE,1,DATA,0)
@@ -79,6 +82,9 @@ SET ;Set the lines to print
  Q
  ;
 PID ;Substituting SS# for missing PID#  **287**  MLR
+ ;
+ S Y=$S($G(VA("PID"))]"":"#"_VA("PID"),1:"NO ID FOUND") Q   ;IHS/OIT/LJF 8/31/2005 PATCH 1004
+ ;
  S Y=$P($G(^DPT(DFN,0)),U,9)
  D
  . I Y S Y=$E(Y,1,3)_" "_$E(Y,4,5)_" "_$E(Y,6,$L(Y)) Q

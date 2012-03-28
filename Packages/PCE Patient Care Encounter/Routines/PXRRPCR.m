@@ -1,5 +1,5 @@
 PXRRPCR ;HIN/MjK - Clinic Specfic Workload Reports ;6/7/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**146**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
 HDR D TITLE I $D(^TMP($J)) W @IOF,?(IOM-20),$E($$HTE^XLFDT($H),1,18)
  W @$S($D(^TMP($J)):"!?((IOM/2)-($L(PXRROPT)/2))",1:"!!?((IOM/2)-($L(PXRROPT)/2))"),PXRROPT,!!
  Q
@@ -23,7 +23,7 @@ QLM D LINE W !?1,"QUALITY OF CARE MARKERS (6 mos. prior to ",PXRREDT(1),")",?61,
  W ! Q
 PREVMD D LINE W !?1,"PREVENTIVE MEDICINE (12 mos. prior to ",PXRREDT(1),")",?52,"|      Clinic      |Overall" S Y=$P(PXRRYR,".") D XD W !?1,Y," to " W PXRREDT(1),?52,"|    #",?61,"|   %",?71,"| Mean %" D DASH
  Q
-UTIL D LINE W !?1,"UTILIZATION DATA (12 months prior to ",PXRREDT(1),?61,"| Number | Overall" S Y=$P(PXRRYR,".") D XD W !?1,Y," to " W PXRREDT(1),?61,"|   #    |   Mean #" D DASH
+UTIL D LINE W !?1,"UTILIZATION DATA (12 monoths prior to ",PXRREDT(1),?61,"| Number | Overall" S Y=$P(PXRRYR,".") D XD W !?1,Y," to " W PXRREDT(1),?61,"|   #    |   Mean #" D DASH
  Q
 MEAN W ?1,"The overall mean values for this report will be for the clinic(s) selected",!?1,"which had encounters during the selected date range.",!
  Q

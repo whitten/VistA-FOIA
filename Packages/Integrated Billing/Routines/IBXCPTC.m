@@ -1,4 +1,4 @@
-IBXCPTC ; GENERATED FROM 'IB CPT CP DISPLAY' PRINT TEMPLATE (#238) ; 06/27/96 ; (FILE 350.71, MARGIN=80)
+IBXCPTC ; GENERATED FROM 'IB CPT CP DISPLAY' PRINT TEMPLATE (#3653) ; 11/29/04 ; (FILE 350.71, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,13 +11,14 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(238,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3653,"DXS")
+ S I(0)="^IBE(350.71,",J(0)=350.71
  S X=$G(^IBE(350.71,D0,0)) D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0,$E($P(X,U,1),1,59)
  D T Q:'DN  D N D N:$X>1 Q:'DN  W ?1 W "CHECK-OFF SHEET"
  D N:$X>60 Q:'DN  W ?60 W "PRINT ORDER"
  D N:$X>1 Q:'DN  W ?1 W "---------------"
  D N:$X>60 Q:'DN  W ?60 W "-----------"
- D N:$X>1 Q:'DN  W ?1 S Y=$P(X,U,4) S Y=$S(Y="":Y,$D(^IBE(350.7,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ D N:$X>1 Q:'DN  W ?1 S Y=$P(X,U,4) S Y=$S(Y="":Y,$D(^IBE(350.7,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>60 Q:'DN  W ?60 S Y=$P(X,U,2) W:Y]"" $J(Y,7,0)
  D T Q:'DN  D N D N:$X>1 Q:'DN  W ?1 W "PROCEDURES"
  D N:$X>60 Q:'DN  W ?60 W "PRINT ORDER"

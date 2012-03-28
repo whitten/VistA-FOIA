@@ -1,4 +1,5 @@
 LRLABELA ;DALOI/JMC - INTERMEC 4100 1X2 LABEL PRINT BARCODE/PLAIN ;10/20/93  10:16
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**161,218**;Sep 27, 1994
  ;This routine is used in conjunction with the Intermec program routine
  ;LRBARA to print a two label accession label for accession areas which

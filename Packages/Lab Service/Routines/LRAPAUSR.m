@@ -1,4 +1,5 @@
 LRAPAUSR ;AVAMC/REG/WTY - AUTOPSY SUPPLEMENTARY REPORT;9/14/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**1,173,248,259,317**;Sep 27, 1994
  ;
  ;Reference to ^DD(63 supported by IA #10155
@@ -143,7 +144,8 @@ FT ;Footer
  I IOSL'>66 F  Q:$Y>(IOSL-13)  W !
  D W W !!,"Pathologist: ",LRM(3),?52,LRW(9),?55,"| Date ",$E(LRH(3),1,12)
  D W W !,LRQ(1),?(IOM-30),"AUTOPSY SUPPLEMENTARY REPORT"
- W !,$E(LRP,1,30),?31,SSN,?49,"SEX:",SEX,?55,"DOB:",DOB,!,LRLLOC
+ ; W !,$E(LRP,1,30),?31,SSN,?49,"SEX:",SEX,?55,"DOB:",DOB,!,LRLLOC
+ W !,$E(LRP,1,30),?31,HRCN,?49,"SEX:",SEX,?55,"DOB:",DOB,!,LRLLOC    ; IHS/OIT/MKK - LR*5.2*1030
  W ?31,LRM(1),?55,"AGE AT DEATH: ",AGE
  Q
 SGL ;Entry point for printing single report

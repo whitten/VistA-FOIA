@@ -1,5 +1,5 @@
-PSSPOIM1 ;BIR/RTR,WRT-Manual create of Orderable Item continued ; 4/28/09 4:36pm
- ;;1.0;PHARMACY DATA MANAGEMENT;**29,38,47,141,153**;9/30/97;Build 32
+PSSPOIM1 ;BIR/RTR,WRT-Manual create of Orderable Item continued ; 02/04/00 13:32
+ ;;1.0;PHARMACY DATA MANAGEMENT;**29,38,47**;9/30/97
  ;
 CHK S PSNO=0 I $G(PSMAN) W !!,"Matching ",PSNAME,!,"   to",!,SPHOLD," ",$P($G(^PS(50.606,+DOSEPTR,0)),"^"),!
  I '$G(PSMAN) S PSMC=$P($G(^PS(50.7,PSSP,0)),"^") W !!,"Matching ",PSNAME,!,"   to",!,PSMC," ",$P($G(^PS(50.606,+$P(^PS(50.7,PSSP,0),"^",2),0)),"^"),!
@@ -24,22 +24,19 @@ CHECK W !!!,"Checking Drug files, please wait..."
  .I DONEFLAG F QQQ=0:0 S QQQ=$O(^PS(52.7,QQQ)) Q:'QQQ!('DONEFLAG)  S PSZNAME=$P($G(^PS(52.7,QQQ,0)),"^") I PSZNAME'="",$D(^PS(52.7,"B",PSZNAME)),$P($G(^PS(52.7,QQQ,0)),"^",2),'$P($G(^(0)),"^",11) D  I ZZG S DONEFLAG=0
  ..S ZZG=1 S PSZZDATE=+$P($G(^PS(52.7,QQQ,"I")),"^") I PSZZDATE,PSZZDATE<PSZXDATE S ZZG=0
 MAIL I DONEFLAG W !!!,?3,"You are finished matching to the Orderable Item File!",!!,"A clean-up job is being queued now, and when it is finished, you will"
- I  W !,"receive a mail message informing you of its completion.",! K DIR S DIR(0)="E",DIR("A")="Press Return to continue" D ^DIR K DIR
+ I  W !,"receive a mail message informing you of it's completion.",! K DIR S DIR(0)="E",DIR("A")="Press Return to continue" D ^DIR K DIR
  I $G(DONEFLAG) S PSSOMAIL=1,PSOUDUZ=DUZ S ZTRTN="DATE^PSSPOIM1",ZTIO="",ZTDTH=$H,ZTDESC="ORDERABLE ITEM CLEAN UP",ZTSAVE("DUZ")="",ZTSAVE("PSSOMAIL")="" D ^%ZTLOAD
  I 'DONEFLAG W $C(7),$C(7),!!?5,"There are still Drugs not matched, you will need to come back",!?5,"and continue matching Drugs!",! K DIR S DIR(0)="E",DIR("A")="Press Return to continue" D ^DIR K DIR
  K DONEFLAG,QQQ,QQNM,PSZZDATE,PSZXDATE,ZZG,USAGE,FFFF,PSZNAME Q
 OTHER W @IOF W !,"There are other Dispense Drugs with the same VA Generic Name and same Dose",!,"Form already matched to orderable items. Choose a number to match, or enter",!,"'^' to enter a new one.",!!?6,"Disp. drug -> ",PSNAME,! Q
 EN(PSVAR) ;
  W !?3,"Now editing Orderable Item:",!?3,$P(^PS(50.7,PSVAR,0),"^"),"   ",$P($G(^PS(50.606,+$P(^(0),"^",2),0)),"^")
- W ! K DIE N MFLG S PSBEFORE=$P(^PS(50.7,PSVAR,0),"^",4),PSBEFORE1=+$P(^PS(50.7,PSVAR,0),"^",2),PSAFTER=0,PSINORDE=""
- S PSSOTH=$P($G(^PS(59.7,1,40.2)),"^"),DIE="^PS(50.7,",DR="5;6;.04;.05;.06;D DFR^PSSPOIMO(PSBEFORE1),DFRL^PSSPOIMO;10//YES;I X=""Y"" S Y=""@2"";D PDCHK^PSSPOIMO;@2;.07;.08;7;S:'$G(PSSOTH) Y=""@1"";7.1;@1",DA=PSVAR
+ W ! K DIE N MFLG S PSBEFORE=$P(^PS(50.7,PSVAR,0),"^",4),PSAFTER=0,PSINORDE=""
+ S PSSOTH=$P($G(^PS(59.7,1,40.2)),"^"),DIE="^PS(50.7,",DR="5;6;.04;.05;.06;.07;.08;7;S:'$G(PSSOTH) Y=""@1"";7.1;@1",DA=PSVAR
  D ^DIE S PSAFTER=$P(^PS(50.7,PSVAR,0),"^",4) K DIE,PSSOTH
  S:PSBEFORE&('PSAFTER) PSINORDE="D" S:PSAFTER PSINORDE="I"
  I PSINORDE'="" D REST^PSSPOIDT(PSVAR)
- K PSBEFORE,PSBEFORE1,PSAFTER,PSINORDE
-IMMUN ;PSS*1*141 FOR 'IMMUNIZATIONS DOCUMENTATION BY BCMA'
- I $O(^PSDRUG("AOC",PSVAR,"IM000"))'["IM" G SYN ;ASK WHEN APPROPRIATE
- W ! S DIE="^PS(50.7,",DA=PSVAR,DR=9 D ^DIE K DIE
+ K PSBEFORE,PSAFTER,PSINORDE
 SYN W ! K DIC S:'$D(^PS(50.7,PSVAR,2,0)) ^PS(50.7,PSVAR,2,0)="^50.72^0^0" S DIC="^PS(50.7,"_PSVAR_",2,",DA(1)=PSVAR,DIC(0)="QEAMZL",DIC("A")="Select SYNONYM: ",DLAYGO=50.72 D ^DIC K DIC
  I Y<0!($D(DTOUT))!($D(DUOUT)) K:'$O(^PS(50.7,PSVAR,2,0)) ^PS(50.7,PSVAR,2,0) G FIN
  W ! S DA=+Y,DIE="^PS(50.7,"_PSVAR_",2,",DA(1)=PSVAR,DR=.01 D ^DIE K DIE G SYN

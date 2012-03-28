@@ -1,5 +1,5 @@
-GMTS1 ; SLC/JER,KER - Health Summary Driver ; 05/22/2008
- ;;2.7;Health Summary;**7,16,24,28,37,49,58,89**;Oct 20, 1995;Build 61
+GMTS1 ; SLC/JER,KER - Health Summary Driver ; 01/06/2003
+ ;;2.7;Health Summary;**7,16,24,28,37,49,58**;Oct 20, 1995
  ;                    
  ; External References
  ;   DBIA 10076  ^XUSEC(
@@ -34,13 +34,10 @@ OUTPUT ; Loop through GMTSEG()
  . S X=GMTSPX2 D REGDT4^GMTSU S GMTSPXD2=X
  D HEADER^GMTSUP
  K GMTSQIT S GMTSEGN=""
- N STR
  F  S GMTSEGN=$O(GMTSEG(GMTSEGN)) Q:GMTSEGN=""  D  I $D(GMTSQIT),(GMTSQIT="") Q
  . K GMTSQIT S GMTSEQ=$P(GMTSEG(GMTSEGN),U,1)
  . S GMTSE=$P(GMTSEG(GMTSEGN),U,2) D SEGMNT D:GMTSEGN=GMTSEGC LASTPG
- I $D(GMTSOBJ),+($O(GMTSEG(0)))=0 D
- .S STR=$S(GMTSOBJ("NO DATA")'="":"  "_GMTSOBJ("NO DATA"),1:"  No data available")
- .W !,STR
+ I $D(GMTSOBJ),+($O(GMTSEG(0)))=0 W !,"  No data available"
  S GMTSHDR=$E(GMTSHDR,1,3)_" END "_$E(GMTSHDR,9,79)
  S:$D(GMTSOBJ) GMTSHDR=$E(GMTSHDR,1,74)
  S:$D(GMTSOBJE) GMTSHDR="",$P(GMTSHDR,"*",74)="*"

@@ -1,4 +1,5 @@
-XQT2 ;SEA/Luke - Define a path template ;06/07/99  11:23
+XQT2 ;SEA/Luke - Define a path template ;06/07/99  11:23 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**37**;Jul 10, 1995
  S U="^",XQTSV=XQY_U_XQDIC_U_XQY0
 EN ;Entry point for Create a Template Option.

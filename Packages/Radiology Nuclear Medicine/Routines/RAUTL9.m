@@ -1,5 +1,5 @@
 RAUTL9 ;HISC/FPT-Utility Routines ;4/9/97  10:08
- ;;5.0;Radiology/Nuclear Medicine;**13,27,51**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;**13,27**;Mar 16, 1998
 EN1 ; allow lower & uppercase response to REPORT STATUS field
  ; called from [RA REPORT EDIT] & [RA VERIFY REPORT ONLY]
  ;   "      "  routine UNVER+2^RARTE1
@@ -106,7 +106,7 @@ CHPRINT ; Prints text from the 'Clinical History' field in file 70
  ;
  N DIR,DTOUT,DUOUT
  D EN^DDIOL("CLINICAL HISTORY:")
- S DIWL=1,DIWF="|WC75",RAV=0 K ^UTILITY($J,"W")
+ S DIWL=1,DIWF="WC75",RAV=0 K ^UTILITY($J,"W")
  F  S RAV=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"H",RAV)) Q:RAV'>0  D
  . S X=^RADPT(RADFN,"DT",RADTI,"P",RACNI,"H",RAV,0)
  . D ^DIWP

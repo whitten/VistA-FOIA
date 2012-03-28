@@ -1,5 +1,6 @@
 LRAPM ;AVAMC/REG/WTY - ANATOMIC PATH MODIFY MICRO/DX ;10/23/04  22:55
- ;;5.2;LAB SERVICE;**72,91,130,231,248,295**;Sep 27, 1994
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**72,91,130,231,248,295**;Sep 27, 1994;Build 5
  ;
  ;Reference to ^%DT supported by IA #10003
  ;Reference to %XY^%RCR supported by IA #10022
@@ -23,7 +24,8 @@ W K X,Y R !!,"Select Accession Number/Pt name: ",LRAN:DTIME
 REST W "  for ",LRH(0) I '$D(^LRO(68,LRAA,1,LRAD,1,LRAN,0)) W $C(7),!!,"Accession # ",LRAN," for ",LRH(0)," not in ACCESSION file",!! Q
  S X=^LRO(68,LRAA,1,LRAD,1,LRAN,0),LRLLOC=$P(X,"^",7),LRDFN=+X
  Q:'$D(^LR(LRDFN,0))  S X=^(0) D ^LRUP
- W !,LRP,"  ID: ",SSN
+ ; W !,LRP,"  ID: ",SSN
+ W !,LRP,"  ID: ",HRCN  ; IHS/ANMC/CLS 08/18/96 -- LR*5.2*1030
  S LRI=$P(^LRO(68,LRAA,1,LRAD,1,LRAN,3),"^",5)
  W:$O(^LR(LRDFN,LRSS,LRI,.1,0)) !,"Specimen(s):" F X=0:0 S X=$O(^LR(LRDFN,LRSS,LRI,.1,X)) Q:'X  W !,$P($G(^(X,0)),U)
 DIE S X=^LR(LRDFN,LRSS,LRI,0)
@@ -66,7 +68,7 @@ A S:'$D(^LR(LRDFN,LRSS,LRI,LRE,0)) ^(0)=LRQ(LRB) S LRT(1)=^(0),(B,C)=0
  S X=^LR(LRDFN,LRSS,LRI,0),Y=$P(X,"^",15),$P(^(0),"^",11)="" S:'Y $P(^(0),"^",15)=$P(X,"^",11)
  I $G(SEX)["F","SPCY"[LRSS D DEL^LRWOMEN ;This sends notificatin to WHP
  ;that a previously verified report has been modified. ;cym 2/20/1999
- D UPDATE^LRPXRM(LRDFN,LRSS,LRI)
+ ; D UPDATE^LRPXRM(LRDFN,LRSS,LRI)     ; IHS/OIT/MKK - LR*5.2*130 - RPMS Does NOT use Clinical Reminders
  I '$D(^LRO(69.2,LRAA,2,LRAN,0)) D
  .L +^LRO(69.2,LRAA,2):5 I '$T D  Q
  ..S MSG(1)="The final reports queue is in use by another person.  "

@@ -1,4 +1,5 @@
-%ZOSV ;SFISC/AC - $View commands for MSM-PC/PLUS ;06/25/99  14:02
+%ZOSV ;SFISC/AC - $View commands for MSM-PC/PLUS ;06/25/99  14:02 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**13,25,49,94,107,118**;Jul 10, 1995
  ;
 ACTJ() ;Active Jobs

@@ -1,5 +1,5 @@
-PXRMXT ; SLC/PJH - Reminder Reports Template Load ;11/21/2005
- ;;2.0;CLINICAL REMINDERS;**4**;Feb 04, 2005;Build 21
+PXRMXT ; SLC/PJH - Reminder Reports Template Load ;08/01/2001
+ ;;1.5;CLINICAL REMINDERS;**6**;Jun 19, 2000
  ; 
  ; Called from PXRMYD,PXRMXD
  ;
@@ -15,7 +15,7 @@ START N X,Y,CNT,FOUND,PXRMFLD,DIC,MSG
  ;Select template required
  W !
  S CNT=0,DIC=810.1,DIC(0)="AEQMZ"
- S DIC("A")="Select an existing REPORT TEMPLATE or return to continue: "
+ S DIC("A")="Select an existing REPORT TEMPLATE or return to continue:"
  S DIC("S")="I $P(^PXRMPT(810.1,+Y,0),U,3)=PXRMTYP"
  D ^DIC
  I X=(U_U) S DTOUT=1
@@ -51,7 +51,7 @@ FIND(TYP) ;
  ;Load variables from report template (both INT and EXT)
  ;------------------------------------------------------
 LOAD N ARRAY
- D GETS^DIQ(810.1,$P(PXRMTMP,U),"**","IE","ARRAY","MSG")
+ D GETS^DIQ(810.1,$P(PXRMTMP,U),"**","IER","ARRAY","MSG")
  I $D(MSG) D  Q
  .W !!,"File read failed, GETS^DIQ returned the following error message:"
  .N IC S IC="MSG"
@@ -59,20 +59,26 @@ LOAD N ARRAY
  .W !,"Examine the above error message for the reason.",!
  .H 2
  ;
- N MREF,ORDER,ORDERC,SUB,SUB1,XREF
+ N SUB,SUB1,ORDER,ORDERC
  ;
  S SUB1=$O(ARRAY(810.1,""))
- D XREF^PXRMXTB
- S SUB="" F  S SUB=$O(XREF(SUB)) Q:SUB=""  D 
- .S @SUB=$G(ARRAY(810.1,SUB1,XREF(SUB),"I"))
+ F SUB="PXRMTYP","PXRMSEL","PXRMREP","PXRMPRIM","PXRMFD","PXRMFUT" D
+ .S @SUB=$G(ARRAY(810.1,SUB1,SUB,"I"))
  ;
- S PXRMFLD=$G(ARRAY(810.1,SUB1,XREF("PXRMSEL"),"E"))
- S RUN=$G(ARRAY(810.1,SUB1,XREF("RUN"),"E"))
+ ;Location Selection criteria
+ S PXRMLCSC=ARRAY(810.1,SUB1,"PXRMLCSC","I")
+ ;
+ ;Reminders Due fields only
+ F SUB="PXRMFD" D
+ .S @SUB=$G(ARRAY(810.1,SUB1,SUB,"I"))
+ ;
+ S PXRMFLD=$G(ARRAY(810.1,SUB1,"PXRMSEL","E"))
+ S RUN=$G(ARRAY(810.1,SUB1,"RUN","E"))
  ;Update name if template has been renamed
- S $P(PXRMTMP,U,2)=$G(ARRAY(810.1,SUB1,XREF("NAME"),"E"))
- S TITLE=$G(ARRAY(810.1,SUB1,XREF("TITLE"),"E")),$P(PXRMTMP,U,3)=TITLE
+ S $P(PXRMTMP,U,2)=$G(ARRAY(810.1,SUB1,"NAME","E"))
+ S TITLE=$G(ARRAY(810.1,SUB1,"TITLE","E")),$P(PXRMTMP,U,3)=TITLE
  ;
-MULT ;Clear multiple field arrays
+ ;Clear multiple field arrays
  K PXRMREM,PXRMPAT,PXRMPRV,PXRMOTM,PXRMFAC,PXRMLCHL,PXRMCS,PXRMCGRP
  K PXRMFACN,PXRMCSN,PXRMCGRN,PXRMRCAT,REMINDER
  ;
@@ -96,14 +102,12 @@ MULT ;Clear multiple field arrays
  D SUB(.PXRMCGRP,810.112,"CLINIC GROUP",1)
  ;Load Reminder Categories
  D SUB(.PXRMRCAT,810.113,"REMINDER CATEGORY",1)
- ;Load Patient lists
- D SUB(.PXRMLIST,810.114,"PXRMLIST",1)
  ;
  ;Build PXRMFACN/PXRMLOCN array IEN's and counters NHL/NFAC
  D NUM
  ;
- ;Build Service Category array
- I $L(PXRMSCAT)>0 F IC=1:1:$L(PXRMSCAT,",") S PXRMSCAT($P(PXRMSCAT,",",IC))=""
+ ;Build Service Category string (held as array in PXRMPT to allow edit)
+ I PXRMSEL="L" S PXRMSCAT=$$STR(810.19,"SERVICE")
  ;
  ;Add Descriptions for Reminders
  D DES(.PXRMREM,"^PXD(811.9",4)
@@ -121,6 +125,7 @@ MULT ;Clear multiple field arrays
  ;
  ;Combine individual reminders and category reminders
  D MERGE^PXRMXS1
+ ;
  Q
  ;
  ;
@@ -131,14 +136,14 @@ SUB(OUTPUT,SUB,VAR,ORD) ;
  N IC,INT,EXT,SUB1,DISP
  S SUB1="",IC=0
  F  S SUB1=$O(ARRAY(SUB,SUB1)) Q:SUB1=""  D
- .S INT=$P($G(ARRAY(SUB,SUB1,MREF(VAR),"I")),";")
- .S EXT=$G(ARRAY(SUB,SUB1,MREF(VAR),"E"))
+ .S INT=$P($G(ARRAY(SUB,SUB1,VAR,"I")),";")
+ .S EXT=$G(ARRAY(SUB,SUB1,VAR,"E"))
  .S IC=IC+1
  .I ORD=1 S OUTPUT(IC)=INT_U_EXT
  .I ORD'=1 S OUTPUT(IC)=EXT_U_INT
  .I (VAR'="REMINDER")&(VAR'="REMINDER CATEGORY") Q
  .;Get display order
- .S DISP=$G(ARRAY(SUB,SUB1,MREF("DISPLAY ORDER"),"I"))
+ .S DISP=$G(ARRAY(SUB,SUB1,"DISPLAY ORDER","I"))
  .;Store in PXRMREM for display
  .S OUTPUT(IC)=OUTPUT(IC)_U_DISP
  .;Put reminders with no sequence number last
@@ -147,6 +152,16 @@ SUB(OUTPUT,SUB,VAR,ORD) ;
  .I VAR="REMINDER" S ORDER(DISP,IC)=""
  .I VAR="REMINDER CATEGORY" S ORDERC(DISP,IC)=""
  Q
+ ;
+ ;Extract INTernal format from ARRAY and build string
+ ;---------------------------------------------------
+STR(SUB,VAR) ; 
+ N IC,INT,SUB1
+ S SUB1="",IC=0,@VAR=""
+ F  S SUB1=$O(ARRAY(SUB,SUB1)) Q:SUB1=""  D
+ .S INT=$P($G(ARRAY(SUB,SUB1,VAR,"I")),";")
+ .S @VAR=@VAR_INT
+ Q @VAR
  ;
  ;Build array PXRMFACN and NFAC
  ;-----------------------------

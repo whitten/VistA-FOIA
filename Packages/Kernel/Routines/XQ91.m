@@ -1,4 +1,5 @@
-XQ91 ; SEA/MJM - Restrict availability of options (cont.) ;9/29/92  15:06 ;5/13/93  11:46 AM
+XQ91 ; SEA/MJM - Restrict availability of options (cont.) ;9/29/92  15:06 ;5/13/93  11:46 AM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  S (XQI,XQJ)=1,XQDF="",(XQTDV,XQTOD)=0 W !
 GETDV W !," Enter ",$S($O(XQDV(0))>0!($O(XQOD(0))>0):"another",1:"a")," DEVICE name (or -DEVICE to delete): " R X:DTIME S:'$T X=U G:X[U OUT

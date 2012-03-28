@@ -1,5 +1,5 @@
 LRBARCF ;DALOI/JMC - Lab Label Configuration Utility ;1/13/97 12:36
- ;;5.2;LAB SERVICE;**161,218**;Sep 27, 1994
+ ;;5.2T9;LR;**161,218,1018**;Nov 17, 2004
 EN ;
  ;
  N %ZIS,DIC,DIR,DIRUT,DTOUT,DUOUT,J,X,Y

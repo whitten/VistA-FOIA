@@ -1,5 +1,6 @@
-LRPXAPI6 ;SLC/STAFF Lab Extract API code ;10/5/03  14:53
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXAPI6 ;VA/SLC/STAFF - Lab Extract API code ;10/5/03  14:53
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 CONDS(CONDS,COND,TYPE,ITEM) ; from LRPXAPI3
  ; returns array CONDS of conditions - for Micro and AP

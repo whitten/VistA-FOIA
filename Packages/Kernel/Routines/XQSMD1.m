@@ -1,5 +1,6 @@
-XQSMD1 ; SEA/MJM - Secure MenuMan Delegation (cont.); 5/18/88  2:16 PM ;9/13/96  09:23
- ;;8.0;KERNEL;**47**;Jul 10, 1995
+XQSMD1 ; SEA/MJM - Secure MenuMan Delegation (cont.); 5/18/88  2:16 PM ;05/08/96  10:45 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
+ ;;8.0;KERNEL;**29**;Jul 10, 1995
  ;
  S XQK=0
 GETOP ;Get options to add to (or remove from XQDOP) users.
@@ -15,7 +16,7 @@ ASK W !!,$S(XQDOP:"Remove",1:"Add")," option(s): " R XQ:DTIME S:'$T XQ=U G:XQ=U 
  ;Get a range of options allowing for name with hyphens in them
  I XQ?1E.E1"-"1E.E S XQRNG=0 D  G:'XQRNG ASK
  .S X=XQ,DIC=19,DIC(0)="MEZ" D ^DIC S:Y'<0 XQ=$P(Y,U,2) I Y>0 S XQRNG=1 Q
- .W ! S DIR("A")="Do mean the options from "_$P(XQ,"-")_" to "_$P(XQ,"-",2)_"? (Y/N)",DIR("B")="YES",DIR(0)="Y" D ^DIR I Y S (XQN,XQSTART)=$P(XQ,"-",1),XQEND=$P(XQ,"-",2) D FIND
+ .W ! S DIR("A")="Do mean the options from "_$P(XQ,"-")_" to "_$P(XQ,"-",2)_"?	(Y/N)",DIR("B")="YES",DIR(0)="Y" D ^DIR I Y S (XQN,XQSTART)=$P(XQ,"-",1),XQEND=$P(XQ,"-",2) D FIND
   .Q
   ;
   I XQ'?1E.E1"-"1E.E S X=XQ,DIC=19,DIC(0)="MEZ" D ^DIC S:Y'<0 XQ=$P(Y,U,2) I Y<0 W !," ??",*7 G ASK

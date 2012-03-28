@@ -1,5 +1,5 @@
-LRRPU ;DALOI/JMC - Interim Report Results Utility ; May 10, 2004 0900
- ;;5.2;LAB SERVICE;**286**;Sep 27, 1994
+LRRPU ;VA/DALOI/JMC - Interim Report Results Utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**286,1027**;NOV 01, 1997
  ;
  ;
 TSTRES(LRDFN,LRSS,LRIDT,LRDN,LR60,LRCODE) ; Test results and parameters

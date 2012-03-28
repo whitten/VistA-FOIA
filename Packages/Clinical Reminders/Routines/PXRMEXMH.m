@@ -1,5 +1,5 @@
 PXRMEXMH ; SLC/PKR - Clinical Reminder Exchange main help. ;05/14/2001
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
+ ;;1.5;CLINICAL REMINDERS;**5**;Jun 19, 2000
  ;======================================================================
 LOAD ;If necessary load the help text into the ^TMP array.
  ;Check if the help text has already been loaded.

@@ -1,4 +1,6 @@
-LRAPQ ;AVAMC/REG/CYM - ANAT PATH QUEUE LIST ;2/12/98  10:35 ;
+LRAPQ ; IHS/DIR/AAB - ANAT PATH QUEUE LIST 2/12/98 10:35 ; [ 07/08/1998 10:16 AM ]
+ ;;5.2;LR;**1002,1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**72,201**;Sep 27, 1994
  D ^LRAP G:'$D(Y) END
  W !!,LRO(68)," (",LRABV,")",!!?20,"List of pathology reports in print queue",!!?16,"1. ",$S(LRSS'="AU":"Preliminary",1:"Supplementary")," reports",!?16,"2. ",$S(LRSS'="AU":"Final",1:"Protocols"),?31,$S(LRSS'="AU":"reports",1:"")
@@ -12,10 +14,13 @@ QUE U IO D L^LRU,S^LRU,H S LR("F")=1,LRC=0
 L I LRSS'="AU" Q:$P($P($G(^LR(LRDFN,LRSS,LRI,0)),U,6)," ")'=LRABV  S X=+^(0) G W
  E  Q:$P($P($G(^LR(LRDFN,"AU")),U,6)," ")'=LRABV  S X=+^("AU")
 W W !,$J(LRAN,4),?10,$$FMTE^XLFDT(X,"D") S LRC=LRC+1
- S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),X=@(X_Y_",0)") S SSN=$P(X,"^",9) D SSN^LRU
- W ?24,$P(X,"^"),?55,SSN Q
+ ;S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),X=@(X_Y_",0)") S SSN=$P(X,"^",9) D SSN^LRU
+ S X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),X=@(X_Y_",0)") S SSN=$P(X,"^",9) D SSN^LRU  ;IHS/ANMC/CLS 11/1/95
+ ;W ?24,$P(X,"^"),?55,SSN Q
+ W ?24,$P(X,"^"),?55,HRCN Q  ;IHS/ANMC/CLS 11/1/95
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,LRO(68)," (",LRABV,") ",$S(LRS=2&(LRSS'="AU"):"FINAL",LRS=1:"PRELIMINARY",LRS=2&(LRSS="AU"):"PROTOCOL(S)",1:"SUPPLEMENTARY"),$S(LRS=2&(LRSS="AU"):"",1:" REPORTS")," IN PRINT QUEUE"
- W !,"Acc #",?12,"Date",?24,"Patient",?55,"SSN",!,LR("%") Q
+ ;W !,"Acc #",?12,"Date",?24,"Patient",?55,"SSN",!,LR("%") Q
+ W !,"Acc #",?12,"Date",?24,"Patient",?55,"HRCN",!,LR("%") Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q

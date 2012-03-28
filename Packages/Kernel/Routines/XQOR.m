@@ -1,4 +1,5 @@
-XQOR ; SLC/KCM - Prepare to Unwind Options ;5/24/94  17:58 ;
+XQOR ; SLC/KCM - Prepare to Unwind Options ;5/24/94  17:58 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**48,56**;Jul 10, 1995
  S DIC=19,DIC(0)="AEMQ" D ^DIC K DIC Q:Y<0  S X=+Y_";DIC(19,"
 EN ;Process options/protocols from top

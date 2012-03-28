@@ -1,5 +1,7 @@
 PXBPQUA ;ISL/JVS,ESW - PROMPT QUANTITY ; 6/18/03 6:34pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,112,132,152**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,112**;Aug 12, 1996
+ ;
+ ;
  ;
  ;
  ;
@@ -19,8 +21,8 @@ Q1 ;---
  I DATA'=" ",DATA'["^",DATA'="" S ^DISV(DUZ,"PXBQUA-5")=DATA
  I DATA=" ",$D(^DISV(DUZ,"PXBQUA-5")) S DATA=^DISV(DUZ,"PXBQUA-5") W DATA
  ;-----------------
- I DATA]"",DATA'?.3N D:DATA="?" HELP^PXBUTL0("QU1") D:DATA="??" HELP^PXBUTL0("QU2") G Q
- I DATA'="",DATA<1!(DATA>999) G Q
+ I DATA]"",DATA'?.2N D:DATA="?" HELP^PXBUTL0("QU1") D:DATA="??" HELP^PXBUTL0("QU2") G Q
+ I DATA'="",DATA<1!(DATA>100) G Q
  I DATA="",$G(CPTQUA) S DATA=CPTQUA
  I DATA="",'$G(CPTQUA) S DATA=1
  I DATA="?" D HELP^PXBUTL0("QU1") G QUA
@@ -28,9 +30,7 @@ Q1 ;---
 QFIN ;--FINISH UP VARIABLES
  S QUA=DATA
  N VALP S VALP=+$P($G(REQI),U,3)
- I +QUA>1,VALP>0,$D(^IBE(357.69,VALP)) D
- .;PX*1.0*132,IB*2*257
- .I $$GET1^DIQ(357.69,VALP,.06,"I")'="Y" W !,"Only one E&M code allowed, quantity changed to 1." S QUA=1
+ I +QUA>1,VALP>0,$D(^IBE(357.69,VALP)) W !,"Only one E&M allowed, quantity changed to 1." S QUA=1
  S $P(REQI,"^",4)=$P(QUA,"^",1)
  S $P(REQE,"^",4)=$P(QUA,"^",1)
 QUAX ;--EXIT AND CLEANUP

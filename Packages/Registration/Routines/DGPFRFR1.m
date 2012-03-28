@@ -1,5 +1,5 @@
 DGPFRFR1 ;ALB/RBS - PRF ASSIGNMENTS DUE REVIEW REPORT CONT. ; 5/21/03 4:40pm
- ;;5.3;Registration;**425**;Aug 13, 1993
+ ;;5.3;Registration;**425,1007,1008**;Aug 13, 1993
  ;
  ;This routine will create the ASSIGNMENTS DUE FOR REVIEW REPORT.
  ;This routine will be used to display or print all of the patient
@@ -180,7 +180,10 @@ HEAD ;Print/Display page header
  W !,"DATE RANGE: ",$$FDATE^VALM1($G(DGSORT("DGBEG")))_" TO "_$$FDATE^VALM1($G(DGSORT("DGEND")))
  W !?1,"FLAG NAME: ",$G(DGFG),!
  I DGGRAND W DGLINE Q
- W !,"PATIENT NAME",?22,"SSN",?33,"ASSIGNED",?43,"REVIEW DT",?54,"NOTIFICATION SENT"
+ ;IHS/OIT/LJF 12/22/2006 PATCH 1007 changed SSN to CHART #
+ ;W !,"PATIENT NAME",?22,"SSN",?33,"ASSIGNED",?43,"REVIEW DT",?54,"NOTIFICATION SENT"
+ W !,"PATIENT NAME",?22,"CHART #",?33,"ASSIGNED",?43,"REVIEW DT",?54,"NOTIFICATION SENT"
+ ;
  W !,"--------------------",?22,"---------",?33,"--------",?43,"---------",?54,"-----------------"
  Q
  ;

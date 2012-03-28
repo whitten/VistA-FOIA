@@ -1,5 +1,5 @@
-DICOMPX ;SFISC/GFT-EVALUATE COMPUTED FLD EXPR ;10:29 AM  22 Nov 2002
- ;;22.0;VA FileMan;**6,76,114**;Mar 30, 1999
+DICOMPX ;SFISC/GFT-EVALUATE COMPUTED FLD EXPR ;10:29 AM  22 Nov 2002 [ 12/09/2003  4:30 PM ]
+ ;;22.0;VA FileMan;**6,76,114,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 M ;
  I '$D(J(0)) K X Q

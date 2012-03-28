@@ -1,21 +1,20 @@
-ALPBFRM1 ;OIFO-DALLAS MW,SED,KC -STANDARD PRINT FORMATTING UTIL;01/01/03
- ;;3.0;BAR CODE MED ADMIN;**8**;Mar 2004
+ALPBFRM1 ;OIFO-DALLAS MW,SED,KC -STANDARD PRINT FORMATTING UTILITIES;01/01/03
+ ;;2.0;BAR CODE MED ADMIN;**17**;May 2002
  ;
-F132(DATA,DAYS,MLCNT,RESULTS,ALPPAT) ; format data into a 132-column
- ; output array...
+F132(DATA,DAYS,MLDATE,RESULTS) ; format 53.7 order data into a 132-column output array...
  ; DATA = an array containing a specific order node for a selected
  ;        patient in file 53.7
  ; DAYS = a number that represents the number of initial boxes
  ;        (1 box = 1 day) to add to lines 4-10 (max=7 -- note that
  ;        this is usually a 3-day MAR, but a 7-day MAR could be
  ;        returned from this format utility)
- ; MLCNT = Number of Med-log entries to print with orders
+ ; MLDATE = a date from which med log entries will start
  ; RESULTS = an array passed by reference into which the formatted
  ;           entry is set up returns a formatted array in RESULTS
  ;           (note: total line count is returned at RESULTS(0))
  I $D(DATA)="" Q
  ;
- N ALPBADM,ALPBDAYS,ALPBDRUG,ALPBIBOX,ALPBNBOX,ALPBPBOX,ALPBSTOP,ALPBTEXT,ALPBTIME,ALPBX,DATE,LINE,BOLDON,BOLDOFF,X,ALPBPRNG,ALPBFLG,ALPBPRN,ALPBMLC
+ N ALPBADM,ALPBDAYS,ALPBDRUG,ALPBIBOX,ALPBNBOX,ALPBPBOX,ALPBSTOP,ALPBTEXT,ALPBTIME,ALPBX,DATE,LINE,BOLDON,BOLDOFF,X,ALPBPRNG,ALPBFLG,ALPBPRN
  ; to use BOLD, comment out the next line and remove comments from
  ; the following five lines...
  S BOLDON="<<",BOLDOFF=">>"
@@ -24,8 +23,6 @@ F132(DATA,DAYS,MLCNT,RESULTS,ALPPAT) ; format data into a 132-column
  ;S BOLDON=$G(IOINHI)
  ;S BOLDOFF=$G(IOINORM)
  ;D KILL^%ZISS
- ;
- ;S MLCNT=$S(+$P($G(^ALPB(53.71,1,2)),U,4)>0:+$P(^ALPB(53.71,1,2),U,4),1:1)
  I $G(DAYS)="" S DAYS=3
  I DAYS>7 S DAYS=7
  S DATE=$$DT^XLFDT()
@@ -107,22 +104,6 @@ F132(DATA,DAYS,MLCNT,RESULTS,ALPPAT) ; format data into a 132-column
  ;Set PRN Flag
  S ALPBPRNG=0
  S:$P($G(DATA(4)),"^",3)["PRN" ALPBPRNG=1
- ;
- ; provider comments, special instructions, and other print info...
- I +$O(DATA(5,0)) D
- .K ALPBCMNT
- .M ALPBCMNT=DATA(5)
- .S ALPBCOL=60
- .D FTEXT^ALPBFRMU(ALPBCOL,.ALPBCMNT,.ALPBTEXT)
- .K ALPBCMNT
- .S ALPBX=0
- .F  S ALPBX=$O(ALPBTEXT(ALPBX)) Q:'ALPBX  D
- ..S ALPBLINE=ALPBTEXT(ALPBX,0)
- ..S LINE=LINE+1
- ..S RESULTS(LINE)=ALPBLINE
- .K ALPBCOL,ALPBLINE,ALPBTEXT,ALPBX
- ;S LINE=LINE+1,RESULTS(LINE)=""
- ;
  ; provider, pharmacist or entry person, and verifier...
  S LINE=LINE+1
  S RESULTS(LINE)="    Provider: "_$P($G(DATA(2)),"^")
@@ -139,10 +120,24 @@ F132(DATA,DAYS,MLCNT,RESULTS,ALPPAT) ; format data into a 132-column
  S LINE=LINE+1
  S RESULTS(LINE)="      Status: "_$P($P(DATA(0),"^",3),"~",2)
  ;
+ ; provider comments, special instructions, and other print info...
+ I +$O(DATA(5,0)) D
+ .K ALPBCMNT
+ .M ALPBCMNT=DATA(5)
+ .S ALPBCOL=$S(ALPBADM>8:60,1:130)
+ .D FTEXT^ALPBFRMU(ALPBCOL,.ALPBCMNT,.ALPBTEXT)
+ .K ALPBCMNT
+ .S ALPBX=0
+ .F  S ALPBX=$O(ALPBTEXT(ALPBX)) Q:'ALPBX  D
+ ..S ALPBLINE=ALPBTEXT(ALPBX,0)
+ ..S LINE=LINE+1
+ ..S RESULTS(LINE)=ALPBLINE
+ .K ALPBCOL,ALPBLINE,ALPBTEXT,ALPBX
+ ;
  ; med log data...
  S LINE=LINE+1
  S RESULTS(LINE)="BCMA MEDICATION LOG HISTORY"
- ;I $G(MLDATE)'="" S RESULTS(LINE)=RESULTS(LINE)_" (since "_$$FMTE^XLFDT(MLDATE)_")"
+ I $G(MLDATE)'="" S RESULTS(LINE)=RESULTS(LINE)_" (since "_$$FMTE^XLFDT(MLDATE)_")"
  I +$O(DATA(10,0))=0 D
  .S LINE=LINE+1
  .S RESULTS(LINE)=" No Medication Log entries are on file for this order."
@@ -151,34 +146,19 @@ F132(DATA,DAYS,MLCNT,RESULTS,ALPPAT) ; format data into a 132-column
  .S RESULTS(LINE)=" Log Date"
  .S RESULTS(LINE)=$$PAD^ALPBUTL(RESULTS(LINE),16)_"Message"
  .S RESULTS(LINE)=$$PAD^ALPBUTL(RESULTS(LINE),31)_"Log Entry Person"
- .I $O(DATA(10,"IMLOG",0))="" D
+ .I $O(DATA(10,"B",MLDATE))="" D
  ..S LINE=LINE+1
  ..S RESULTS(LINE)=" No entries since the above date are on file."
- .;S ALPBMDT=MLDATE
- .S ALPBMDT=0,ALPBMLC=1
- .F  S ALPBMDT=$O(DATA(10,"IMLOG",ALPBMDT)) Q:'ALPBMDT!(ALPBMLC>MLCNT)  D
+ .S ALPBMDT=MLDATE
+ .F  S ALPBMDT=$O(DATA(10,"B",ALPBMDT)) Q:'ALPBMDT  D
  ..S ALPBX=0
- ..F  S ALPBX=$O(DATA(10,"IMLOG",ALPBMDT,ALPBX)) Q:'ALPBX!(ALPBMLC>MLCNT)  D
- ...S LINE=LINE+1,ALPBMLC=ALPBMLC+1
- ...S RESULTS(LINE)=" "_$$FDATE^ALPBUTL($P(DATA(10,ALPBX,0),"^",1))
+ ..F  S ALPBX=$O(DATA(10,"B",ALPBMDT,ALPBX)) Q:'ALPBX  D
+ ...S LINE=LINE+1
+ ...S RESULTS(LINE)=" "_$$FDATE^ALPBUTL(ALPBMDT)
  ...S RESULTS(LINE)=$$PAD^ALPBUTL(RESULTS(LINE),16)_$P(DATA(10,ALPBX,0),"^",3)
  ...S RESULTS(LINE)=$$PAD^ALPBUTL(RESULTS(LINE),31)_$S($P(DATA(10,ALPBX,0),"^",2)'="":$P(DATA(10,ALPBX,0),"^",2),1:"<not on file")
  ..K ALPBX
- .K ALPBMDT,ALPBMLC
- ;
- ; BCMA LAST ACTION
- I +$G(ALPPAT)>0 D
- .S ALPBX=0
- .F  S ALPBX=$O(DATA(7,ALPBX)) Q:'ALPBX  D
- ..S ALPDRUG=$P(DATA(7,ALPBX,0),"^",1),ALPBDNM=$P(DATA(7,ALPBX,0),"^",2)
- ..Q:+ALPDRUG'>0
- ..S ALPLACT=$$LACT^ALPBUTL3(ALPPAT,ALPDRUG)
- ..I ALPLACT'="" D
- ...S LINE=LINE+1,RESULTS(LINE)=$$REPEAT^XLFSTR("-",75)
- ...S LINE=LINE+1
- ...S RESULTS(LINE)="Last action for "_ALPBDNM_"  "_" was "_$P(ALPLACT,"^",3)_" on "_$$FDATE^ALPBUTL($P(ALPLACT,"^",1))
- ...S RESULTS(LINE)=RESULTS(LINE)_" By "_$S($P(ALPLACT,"^",2)'="":$P(ALPLACT,"^",2),1:"<not on file>")
- K ALPLACT,ALPDRUG,ALPBX
+ .K ALPBMDT
  ;
  I LINE<11 F I=1:1 Q:LINE=11  D
  .S LINE=LINE+1

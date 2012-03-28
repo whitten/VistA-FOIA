@@ -1,4 +1,5 @@
-XQ31 ;SEA/AMF - MENU MANAGEMENT REPORTS ;09/30/94  10:07
+XQ31 ;SEA/AMF - MENU MANAGEMENT REPORTS ;09/30/94  10:07 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  W !!,"This option lists options by parents, as well as running several other menu",!,"management utilities. It can be run for one option, one package or all."
 PKG R !!,"Select PACKAGE/OPTION name: ALL// ",X:DTIME S:'$T X=U S DIC=9.4,DIC(0)="EMZ" Q:X[U  S:'$L(X) X="ALL"

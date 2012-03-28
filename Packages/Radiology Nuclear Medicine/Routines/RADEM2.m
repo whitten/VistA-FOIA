@@ -1,7 +1,8 @@
 RADEM2 ;HISC/CAH,FPT,GJC-Display Patient Demographics (short) ;10/20/94  09:18
  ;;5.0;Radiology/Nuclear Medicine;**31**;Mar 16, 1998
-PAT Q:'$D(^DPT(RADFN,0))  S Y=^(0),RANME=$P(Y,"^"),RASEX=$P(Y,"^",2),RASSN=$$SSN^RAUTL,RADOB=$P(Y,"^",3),X1=DT,X2=RADOB D ^%DTC S RAGE=X\365.25
- S:$E(DT,4,7)=$E(RADOB,4,7) RAGE=RAGE+1 ; today is birthday
+PAT ;Q:'$D(^DPT(RADFN,0))  S Y=^(0),RANME=$P(Y,"^"),RASEX=$P(Y,"^",2),RASSN=$$SSN^RAUTL,RADOB=$P(Y,"^",3),X1=DT,X2=RADOB D ^%DTC S RAGE=X\365.25
+ Q:'$D(^DPT(RADFN,0))  S Y=^(0),RANME=$P(Y,"^"),RASEX=$P(Y,"^",2),RASSN=$$SSN^RAUTL,RADOB=$P(Y,"^",3),X1=DT,X2=RADOB D ^%DTC D DEM^VADPT S RAGE=VADM(4)  ;IHS/ITSC/CLS 02/08/2004 use IHS printable age
+ ;S:$E(DT,4,7)=$E(RADOB,4,7) RAGE=RAGE+1 ; today is birthday  ;IHS/ITSC/CLS 02/08/2004
  S Y=RADOB D D^RAUTL S RADOB=Y
  N RAVETELI S RAVETELI=$$VETELI(RADFN)
  S RAVET=$P(RAVETELI,"^"),RAELIG=$P(RAVETELI,"^",2)

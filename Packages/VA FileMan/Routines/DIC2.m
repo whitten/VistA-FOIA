@@ -1,4 +1,5 @@
-DIC2 ;SF/XAK/TKW-LOOKUP (CONT) ;5/10/00  11:16
+DIC2 ;SF/XAK/TKW-LOOKUP (CONT) ;5/10/00  11:16 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**4,17,20,31,40**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 WO ; Display .01 field, Primary KEY values and Identifiers for an entry.

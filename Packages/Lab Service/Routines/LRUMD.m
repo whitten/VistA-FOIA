@@ -1,5 +1,5 @@
-LRUMD ;AVAMC/REG/CYM - MD SELECTED LAB RESULTS ;2/19/98  09:13 ;
- ;;5.2;LAB SERVICE;**201,341**;Sep 27, 1994
+LRUMD ;AVAMC/REG/CYM - MD SELECTED LAB RESULTS ;JUL 06, 2010 3:14 PM;
+ ;;5.2;LAB SERVICE;**201,341,1027**;NOV 01, 1997
  D L G:Y=-1 END K LRDPAF D LR^LRUMD2 S LRDFN(1)=0,(LRA,LRE,LRG,LRV)=""
  W !!,"Print/display tests for a single patient or group " S %=2 D YN^LRU I %=1 D ^LRUMDS G END:'$D(X),MI
  D ^LRUMD1 G END:LRV=1,D^LRUMD2:LRV=2 I '$O(^LRO(69.2,LRAA,7,DUZ,1,0)) G END
@@ -20,15 +20,19 @@ I S LRI=LRLDT,W(1)=0 F E=0:0 S LRI=$O(^LR(LRDFN,"CH",LRI)) Q:'LRI!(LRI>LRSDT)!(L
  ;
 W S LRR=LRR+1 I LRR=1 D H Q:LR("Q")  S LR("F")=1
  S W(1)=W(1)+1,X=^LR(LRDFN,"CH",LRI,0),T=$P(X,"^",5),LRDATE=$TR($$Y2K^LRX(+X,"5M"),"@"," ")
- I W(1)=1 S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),LRP=$P(V,"^"),SSN=$P(V,"^",9),LRL=$S($D(@(X_Y_".1)")):^(.1),$D(^LR(LRDFN,.1)):^(.1),1:"") D SSN^LRU
- D:$Y>(IOSL-6) H1 Q:LR("Q")  W:W(1)=1 !,SSN,?18,$E(LRL,1,5),?39,LRP W !,LRDATE W:T'=Z(2)&(T'=Z(3))&(T'=Z(5)) ?17,$E($P(^LAB(61,T,0),"^"),1,7)
+ ; I W(1)=1 S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),LRP=$P(V,"^"),SSN=$P(V,"^",9),LRL=$S($D(@(X_Y_".1)")):^(.1),$D(^LR(LRDFN,.1)):^(.1),1:"") D SSN^LRU
+ I W(1)=1 S X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),LRP=$P(V,"^"),SSN=$P(V,"^",9),LRL=$S($D(@(X_Y_".1)")):^(.1),$D(^LR(LRDFN,.1)):^(.1),1:"") D SSN^LRU  ;IHS/ANMC/CLS 08/18/96
+ ; D:$Y>(IOSL-6) H1 Q:LR("Q")  W:W(1)=1 !,SSN,?18,$E(LRL,1,5),?39,LRP W !,LRDATE W:T'=Z(2)&(T'=Z(3))&(T'=Z(5)) ?17,$E($P(^LAB(61,T,0),"^"),1,7)
+ D:$Y>(IOSL-6) H1 Q:LR("Q")  W:W(1)=1 !,HRCN,?18,$E(LRL,1,5),?39,LRP W !,LRDATE W:T'=Z(2)&(T'=Z(3))&(T'=Z(5)) ?17,$E($P(^LAB(61,T,0),"^"),1,7)  ;IHS/ANMC/CLS 08/18/96
  F X=0:0 S X=$O(^TMP($J,"L",LR,X)) Q:'X  S LRT=^(X) I $D(^LR(LRDFN,"CH",LRI,LRT)) S Y=^(LRT) W ?(16+(X*8)),$J($P(Y,"^"),6),$P(Y,"^",2)
  Q
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,"List for: ",$P(^VA(200,DUZ,0),"^") W:LRE ?40,LRE(1) W:IOST'?1"C".E !,"Work copy- DO NOT PUT IN PATIENT'S CHART"
- W !?3,"SSN",?18,"Location",?39,"Patient",! F X=0:0 S X=$O(^TMP($J,"N",LR,X)) Q:'X  W ?(16+(X*8)),$J(^TMP($J,"N",LR,X),7)
+ ; W !?3,"SSN",?18,"Location",?39,"Patient",! F X=0:0 S X=$O(^TMP($J,"N",LR,X)) Q:'X  W ?(16+(X*8)),$J(^TMP($J,"N",LR,X),7)
+ W !?3,"HRCN",?18,"Location",?39,"Patient",! F X=0:0 S X=$O(^TMP($J,"N",LR,X)) Q:'X  W ?(16+(X*8)),$J(^TMP($J,"N",LR,X),7)  ; IHS/ANMC/CLS 08/18/96
  W !,LR("%1") Q
-H1 D H Q:LR("Q")  I W(1)>1 W !,SSN,?18,$E(LRL,1,5),?39,LRP
+H1 ; D H Q:LR("Q")  I W(1)>1 W !,SSN,?18,$E(LRL,1,5),?39,LRP
+ D H Q:LR("Q")  I W(1)>1 W !,HRCN,?18,$E(LRL,1,5),?39,LRP  ; IHS/ANMC/CLS 08/18/96
  Q
 L ;from LRUMDU
  D END S X="CHEMISTRY" D ^LRUTL Q

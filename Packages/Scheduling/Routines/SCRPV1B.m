@@ -1,5 +1,6 @@
 SCRPV1B ; bp/djb - PCMM Inconsistency Rpt - Print ; 9/13/99 3:23pm
  ;;5.3;Scheduling;**177,231**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed SSN to HRCN
  ;
 EN ;
  NEW PAGE,QUIT
@@ -50,7 +51,8 @@ PATIENT ;Print patient inconsistencies
 PATIENT1 ;Patient printout sorted by patient name.
  NEW DFN,DFNNAM,NUM,POS,SSN,TM,TXT,VAR
  ;
- W !?3,"PATIENT",?41,"SSN"
+ ;W !?3,"PATIENT",?41,"SSN" ;IHS/ANMC/LJF 11/2/2000
+ W !?3,"PATIENT",?41,"ID#"  ;IHS/ANMC/LJF 11/2/2000
  W !?6,"INCONSISTENCY"
  W !?9,"TEAM",?41,"POSITION",!
  ;
@@ -61,6 +63,7 @@ PATIENT1 ;Patient printout sorted by patient name.
  . F  S DFN=$O(^TMP("PCMM PATIENT",$J,DFNNAM,DFN)) Q:'DFN!QUIT  D  ;
  .. I $Y>(IOSL-6) D PAUSE Q:QUIT
  .. S SSN=$P($G(^DPT(DFN,0)),U,9)
+ .. S SSN=$$HRCN^BDGF2(DFN,+$G(DUZ(2)))  ;IHS/ANMC/LJF 11/2/2000
  .. W !?3,DFNNAM,?41,SSN
  .. S NUM=0
  .. F  S NUM=$O(^TMP("PCMM PATIENT",$J,DFNNAM,DFN,NUM)) Q:'NUM!QUIT  D
@@ -92,7 +95,8 @@ PATIENT2 ;Patient printout sorted by inconsistency number and then team name.
  ;
  W !,"INCONSISTENCY"
  W !?3,"TEAM"
- W !?6,"PATIENT",?38,"SSN",?50,"POSITION",!
+ ;W !?6,"PATIENT",?38,"SSN",?50,"POSITION",!  ;IHS/ANMC/LJF 11/2/2000
+ W !?6,"PATIENT",?38,"ID#",?50,"POSITION",!   ;IHS/ANMC/LJF 11/2/2000
  ;
  KILL ^TMP("PCMM PATIENT1",$J)
  ;
@@ -135,6 +139,7 @@ PATIENT2 ;Patient printout sorted by inconsistency number and then team name.
  .... S POS=0
  .... F  S POS=$O(^TMP("PCMM PATIENT1",$J,NUM,TM,DFNNAM,DFN,POS)) Q:'POS!QUIT  D  ;
  ..... S SSN=$P($G(^DPT(DFN,0)),U,9)
+ ..... S SSN=$$HRCN^BDGF2(DFN,+$G(DUZ(2)))  ;IHS/ANMC/LJF 11/2/2000
  ..... I $Y>(IOSL-6) D PAUSE Q:QUIT
  ..... W !?6,DFNNAM,?38,SSN,?50,POS
  ;

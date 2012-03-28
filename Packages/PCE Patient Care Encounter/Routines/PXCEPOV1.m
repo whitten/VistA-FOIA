@@ -1,5 +1,5 @@
-PXCEPOV1 ;ISL/dee - Used to edit and display V POV ;8/31/05
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**134,149,124,170**;Aug 12, 1996
+PXCEPOV1 ;ISL/dee - Used to edit and display V POV ;6/20/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
  ;; ;
  Q
  ;
@@ -7,20 +7,17 @@ PXCEPOV1 ;ISL/dee - Used to edit and display V POV ;8/31/05
  ;Special cases for display.
  ;
 DNARRAT(PNAR) ;Provider Narrative for ICD-9
- N PXCEPNAR,SNARR
- I PNAR<0 Q ""
+ N PXCEPNAR
  S PXCEPNAR=$P(^AUTNPOV(PNAR,0),"^")
  I $G(VIEW)="B",$D(ENTRY)>0 D
  . N DIC,DR,DA,DIQ,PXCEDIQ1
- . ;S DIC=80
- . ;S DR="3"
+ . S DIC=80
+ . S DR="3"
  . S DA=$P(ENTRY(0),"^",1)
- . ;S DIQ="PXCEDIQ1("
- . ;S DIQ(0)="E"
- . ;D EN^DIQ1
- . S SNARR=$P($$ICDDX^ICDCODE(DA,$G(IDATE)),"^",4)
- . ;S:$G(PXCEDIQ1(80,DA,3,"E"))=PXCEPNAR PXCEPNAR=""
- . S:SNARR=PXCEPNAR PXCEPNAR=""
+ . S DIQ="PXCEDIQ1("
+ . S DIQ(0)="E"
+ . D EN^DIQ1
+ . S:PXCEDIQ1(80,DA,3,"E")=PXCEPNAR PXCEPNAR=""
  Q PXCEPNAR
  ;
 DPRIMSEC(PRIMSEC) ;
@@ -150,19 +147,3 @@ E1201(REQTIME,BEFORE,AFTER,DEFAULT) ;
  S $P(PXCEAFTR($P(PXCETEXT,"~",1)),"^",$P(PXCETEXT,"~",2))=$P(Y,"^")
  Q
  ;
-ICDCODE ;enter ICD9 code using lexicon
- ; DBIA # 1571 AND 1609
- N CODE
- K X
- I +$G(PXCEAFTR(0))>0 D
- . S CODE=$P(PXCEAFTR(0),"^")
- . S X=$P($$ICDDX^ICDCODE(CODE,$G(PXCEAPDT)),"^",2)
- D CONFIG^LEXSET("ICD",,$G(PXCEAPDT))
- S DIC("A")="Select Diagnosis: "
- S DIC="^LEX(757.01,",DIC(0)=$S('$L($G(X)):"A",1:"")_"EQM"
- D ^DIC
- I X="@" Q
- I Y=-1 S DIRUT=-1 Q
- S CODE=Y(1)
- S Y=+$$ICDDX^ICDCODE(CODE)
- Q

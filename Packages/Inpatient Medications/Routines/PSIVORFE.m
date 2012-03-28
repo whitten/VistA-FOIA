@@ -1,7 +1,8 @@
 PSIVORFE ;BIR/MLM-IV FLUID ORDER ENTRY FOR OE/RR FRONT DOOR. ;26 NOV 97 / 9:55 AM 
- ;;5.0; INPATIENT MEDICATIONS ;**58,81,110**;16 DEC 97
+ ;;5.0; INPATIENT MEDICATIONS ;**58,81**;16 DEC 97
  ;
  ; Reference to ^VA(200 is supported by DBIA 10060.
+ ; Reference to ^%DTC is supported by DBIA 10000.
  ;
 EN ; Entry pt. to create new IV Fluid order.
  S PSJORNP=$G(ORNP) D PS^PSIVOREN Q:PSJORPF  F  D NEWORD Q:DONE
@@ -20,9 +21,7 @@ GTFLDS ;Ask field no.s to be edited.
  S Y=$P($G(XQORNOD(0)),"=",2)
  S PSGEFN=1_":"_$L(EDIT,U),PSJDTYP=$E(PSIVAC,1) D:Y="" ENEFA^PSGON K PSJDTYP I '$G(Y) S:PSIVAC="OE" DONE=1 S PSJEDFLG=1 Q
  S X=EDIT,EDIT="" F X1=1:1:$L(Y,",") S:$P(X,U,$P(Y,",",X1)) $P(EDIT,"^",X1)=$P(X,U,$P(Y,",",X1))
- N PSIVRENW S PSIVRENW=1
  D EDIT^PSIVEDT
- K PSIVRENW
  Q
  ;
 SET ; Set variables needed to create/update orders in the ORDERS file (100).
@@ -61,5 +60,5 @@ SETUP ; Initialize variables.
  Q
  ;
 NEWENT ; Get login date/entry code for new order
- S P("LOG")=$$DATE^PSJUTL2(),P("CLRK")=DUZ_U_$P($G(^VA(200,DUZ,0)),U)
+ D NOW^%DTC S P("LOG")=+$E(%,1,12),P("CLRK")=DUZ_U_$P($G(^VA(200,DUZ,0)),U)
  Q

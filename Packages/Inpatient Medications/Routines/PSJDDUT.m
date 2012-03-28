@@ -1,5 +1,5 @@
 PSJDDUT ;BIR/LDT-INPATIENT MEDICATIONS DD UTILITY ;21 AUG 97  7:55 AM
- ;;5.0; INPATIENT MEDICATIONS ;**40,44,50,83,116,111,113**;16 DEC 97;Build 63
+ ;;5.0; INPATIENT MEDICATIONS ;**40,44,50,83,116**;16 DEC 97
  ;
  ; Reference to ^PS(51 is supported by DBIA# 2176.
  ; Reference to ^PS(51.1 is supported by DBIA# 2177.
@@ -100,27 +100,8 @@ HT ;
  ;;first two letters of each weekday entered is needed.
  ;
 ADTM2 ;Called from Non-Verified Orders File (53.1), Admin Times field 39    
- S PSJHLP(1)="All times must be the same length (2 or 4 characters), must be"
- S PSJHLP(2)="separated by dashes ( - ), and be in ascending order"
- S PSJHLP(3)=" "
- S PSJHLP(4)="This is the set of administration times for this order."
- S PSJHLP(5)="If the Schedule Type is CONTINUOUS the number of administration"
- S PSJHLP(6)="times cannot exceed that indicated by the schedule.  There can"
- S PSJHLP(7)="be less administration times then indicated by the schedule."
- S PSJHLP(8)="There must be at least one administration time entered."
- S PSJHLP(9)=" "
- S PSJHLP(10)="If the Schedule Type is CONTINUOUS and is an Odd Schedule"
- S PSJHLP(11)="(A schedule whose frequency is not evenly divisible by or"
- S PSJHLP(12)="into 1440 minutes or 1 day), Administration Times are not allowed."
- S PSJHLP(13)="For example Q5H, Q17H - these are not evenly divisible by 1440."
- S PSJHLP(14)=" "
- S PSJHLP(15)="If the Schedule Type is CONTINUOUS with a non-odd frequency of"
- S PSJHLP(16)="greater than 1 day (1440 minutes) then more than one"
- S PSJHLP(17)="administration time is not allowed.  For example schedules of"
- S PSJHLP(18)="Q72H, Q3Day, Q5Day."
- S PSJHLP(19)=" "
- S PSJHLP(20)="If the Schedule Type is ONE TIME it cannot have more than one"
- S PSJHLP(21)="administration time."
+ S PSJHLP(1)="EACH TIME MUST BE TWO DIGITS BETWEEN 01 AND 24. THE TIMES MUST BE"
+ S PSJHLP(2)="SEPARATED WITH ""-""'S AND BE IN ASCENDING ORDER."
  D WRITE
  Q
  ;
@@ -159,20 +140,13 @@ EN ;Called from Non-Verified Orders file 53.1, Start/Date Time field 10
  G DONE
  ;
 ENGO ;
- N FD
  S SCH=$P(ND2,"^")
  S ST=$S($D(PSGDLS):PSGDLS,1:$P(ND2,"^",2))
  S TS=$P(ND2,"^",5),MN=$P(ND2,"^",6)
  I $P(PSJSYSW0,U,5)=2 D
- . Q:'TS  S:TS'[$P(ST,".",2) $P(PSJSYSW0,U,5)=1 D
- .. N STRING,ND2,SCH,TS,MN S STRING=$G(PSGSD)_"^"_$G(PSGFD)_"^"_$G(PSGSCH)_"^"_$G(PSGST)_"^"_$G(PSGPDRG)_"^"_$G(PSGAT)
- .. S (FD,ST)=$$ENQ^PSJORP2(PSGP,STRING) S:'ST ST=$S($D(PSGDLS):PSGDLS,1:$P(ND2,"^",2))
+ . S $P(PSJSYSW0,U,5)=1
+ . S ST=$$ENSD^PSGNE3(ST,TS,ST,"")
  . S $P(PSJSYSW0,U,5)=2
- I $G(FD),$P(ND2,"^",4),FD>$P(ND2,"^",4) D  G DONE
- . W !,"There is no schedule and/or administration time that falls between the Start Date/Time"
- . W !,"and Stop Date/Time.  For the order to be valid the schedule and/or administration time"
- . W !,"must fall between the order's Start Date/Time and Stop Date/Time.",!
- S TS=$P(ND2,"^",5),MN=$P(ND2,"^",6)
  G MWF:SCH["@",DONE:'TS&'MN
  I 'TS S AM=MN*PSGDL,X=$$EN^PSGCT(ST,AM) G DONE
  S TM=$E(ST_"00000",9,8+$L($P(TS,"-")))

@@ -1,5 +1,5 @@
 VALMXQ02 ; alb/mjk - XQOR1 for export with LM v1 ; 3/30/93
- ;;1;List Manager;**2**;Aug 13, 1993
+ ;;1;List Manager;;Aug 13, 1993
  ;
  ;
 XQOR1 ; SLC/KCM - Main Unwinding Loop ;3/23/92  08:34 ;
@@ -8,8 +8,10 @@ LOOP ;From: EN^XQOR
  I "QOLD"[$P(^TMP("XQORS",$J,XQORS,"FLG"),"^"),'$D(^TMP("XQORS",$J,0,"CTXT","ADD")) D ENTRY^XQORO G:$D(XQORQUIT)!$D(XQORPOP)!$D(DIROUT)!$D(DTOUT) EXCT
  D EACH G:$D(XQORQUIT)!$D(XQORPOP)!$D(DIROUT)!$D(DTOUT) EXCT
  ; Start RT Log, IF PROTOCOL HAS AN ENTRY ACTION AND IF $D(XRTL)
- I $D(@(^TMP("XQORS",$J,XQORS,"REF")_"20)"))'[0 S Y=^(20) I $L(Y) D:$D(XRTL) T0^%ZOSV N X X Y S:$D(X)'[0 ^TMP("XQORS",$J,XQORS,"X")=X
+ I $D(@(^TMP("XQORS",$J,XQORS,"REF")_"20)"))'[0 S Y=^(20) I $L(Y) D:$D(XRTL) T0^%ZOSV D  N X X Y S:$D(X)'[0 ^TMP("XQORS",$J,XQORS,"X")=X
+ . I $L($T(LOGRSRC^%ZOSV)),$G(^TMP("XQORS",$J,XQORS,"REF"))["ORD(101,",$P(@(^("REF")_"0)"),"^",4)'="M",$P(^(0),"^",4)'="Q" S ORX=$P(^(0),"^") D:'$D(XQXFLG) ABT^XQ12 D:$P(XQXFLG,"^",2)=1 LOGRSRC^%ZOSV("*"_ORX)
  I $D(XRT0) S XRTN=$P($G(^ORD(101,+$G(XQORNOD),0)),U) I XRTN]"" D T1^%ZOSV ; Stop RT Log
+ I $L($T(LOGRSRC^%ZOSV)),$G(^TMP("XQORS",$J,XQORS,"REF"))["ORD(101,",$P(@(^("REF")_"0)"),"^",4)'="M",$P(^(0),"^",4)'="Q" S ORX=$P(^(0),"^") D:'$D(XQXFLG) ABT^XQ12 D:$P(XQXFLG,"^",2)=1 LOGRSRC^%ZOSV("*"_ORX)
  I $D(XQORQUIT)!$D(XQORPOP)!$D(DIROUT)!$D(DTOUT) G EXAT
  I $D(XQORFLG) S:$D(XQORFLG("PS")) $P(^TMP("XQORS",$J,XQORS,"FLG"),"^",2)=+XQORFLG("PS") S:$D(XQORFLG("SH")) $P(^TMP("XQORS",$J,XQORS,"FLG"),"^",5)=+XQORFLG("SH") K XQORFLG
 REDO D @$S("QM"[$P(^TMP("XQORS",$J,XQORS,"FLG"),"^"):"MENU^XQOR3","DOX"[$P(^TMP("XQORS",$J,XQORS,"FLG"),"^"):"ACT^XQOR2","T"[$P(^TMP("XQORS",$J,XQORS,"FLG"),"^"):"EN^XQORD",1:"NUL^XQOR2")

@@ -1,4 +1,5 @@
-LRAPFIX ;AVAMC/REG/CYM -FIX ACCESSION X-REF ;5/31/96  10:28
+LRAPFIX ; IHS/DIR/AAB -FIX ACCESSION X-REF 10:28 ; [ 5/31/96 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  ;
  I $D(^LRO(68,"VR")) D BMES^XPDUTL("Looks like you've already run the AP Accession Number conversion") W $C(7),!!

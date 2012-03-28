@@ -1,4 +1,5 @@
-XQ93 ; SF-ISC.SEA/JLI - CHECK FOR NEEDING TO BE QUEUED ;12/7/89  15:34 ;10/22/92  12:58 PM
+XQ93 ; SF-ISC.SEA/JLI - CHECK FOR NEEDING TO BE QUEUED ;12/7/89  15:34 ;10/22/92  12:58 PM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 EN ; Check whether option can be run at present time, otherwise kill
  ; off value of IO and display next non-prohibited time option can be run

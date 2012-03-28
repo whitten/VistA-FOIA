@@ -1,5 +1,5 @@
 %ZISH ;ISF/AC,RWF - GT.M for VMS/Unix Host file Control ;12/07/09  15:53
- ;;8.0;KERNEL;**275,306,385,524**;Jul 10, 1995;Build 12
+ ;;8.0;KERNEL;**275,306,385,524**;Jul 10, 1995;Build 15
  ; for GT.M for Unix/VMS, version 4.3
  ;
 OPENERR ;

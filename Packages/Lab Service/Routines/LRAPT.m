@@ -1,5 +1,5 @@
 LRAPT ;AVAMC/REG/WTY - AP PATIENT RPT ;9/22/00
- ;;5.2;LAB SERVICE;**72,173,248**;Sep 27, 1994
+ ;;5.2T9;LR;**72,173,248,1018**;Nov 17, 2004
  ;
  ;Reference to ^%DT supported by IA #10003
  ;Reference to ^%ZIS supported by IA #10086

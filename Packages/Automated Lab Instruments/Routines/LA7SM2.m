@@ -1,5 +1,5 @@
-LA7SM2 ;DALOI/JMC - Shipping Manifest Options ;5/5/97  14:39
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64**;Sep 27, 1994
+LA7SM2 ;VA/DALOI/JMC - Shipping Manifest Options ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997;Build 9
  ;
 REQINFO ; Enter required information prior to shipping.
  D INIT^LA7SM
@@ -130,7 +130,7 @@ CHKREQI(LA7628,LA762801) ; Check for required info/incomplete setup
  ; Check if using non-VA codes
  I $P(LA7628(0),"^",5) D
  . F LA7J=1,2 I '$L($P(LA7I(5),"^",LA7J)) S LA7FLD=$S(LA7J=1:5.1,1:5.2) D SETERR
- I '$$GET1^DIQ(60,+$P(LA7I(0),"^",2)_",",64,"I") S LA7FILE=60,LA7FLD=64 D SETERR
+ ;I '$$GET1^DIQ(60,+$P(LA7I(0),"^",2)_",",64,"I") S LA7FILE=60,LA7FLD=64 D SETERR  ihs/cmi/maw 11/17/2010 don't throw error if non va code
  I 'LA7ERR,$O(LA7ERR(""))'="" S LA7ERR=1
  ;
  Q

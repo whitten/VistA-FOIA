@@ -1,5 +1,5 @@
 RAO7VLD ;HISC/GJC-Validate OE/RR data to Rad (frontdoor) ;1/6/98  13:02
- ;;5.0;Radiology/Nuclear Medicine;**75**;Mar 16, 1998;Build 4
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
 EN1(RAA,RAB,RAC,RAX,RAY,RAZ) ; Pass in parameters to validate data
  ; Returns '0' if data is valid, '1' if data is invalid
@@ -28,21 +28,18 @@ EN3(X,Y) ; does entry exist in a file
  ; X-> file #        'Y'-> ien
  ; 0 if entry exists, 1 if entry does not exist
  Q $S($D(@(^DIC(+X,0,"GL")_+Y_",0)"))#2:0,1:1)
- ;
-EN4(X) ;P75 Check CPRS entered CLINICAL HISTORY text for validity.
- ;This function returns: 1 if the string is valid else 0.
- ;Please note that once the data is valid, (a minimum of two
- ;alphanumeric characters on a character string) subsequent data
- ;strings may not be valid but are still stored. 
- N CHAR,CNT,FLG,I,LEN S (CNT,FLG)=0,LEN=$L(X)
+EN4(X) ; Check Clin. History text input through OE/RR for validity.
+ ; passes back '0' if valid, '1' if invalid.
+ Q:X']""!($L(X)=1) 1
+ N CHAR,CNT,FLG,I,LEN
+ S (CNT,FLG)=0,LEN=$L(X)
  F I=1:1:LEN D  Q:FLG
- .S CHAR=$E(X,I)
- .S:CHAR?1AN CNT=CNT+1
- .I CHAR'?1AN,(CNT) S CNT=0
- .S:CNT=2 FLG=1
- .Q
- Q FLG
- ;
+ . S CHAR=$E(X,I)
+ . S:CHAR?1AN CNT=CNT+1
+ . I CHAR'?1AN,(CNT) S CNT=0
+ . S:CNT=2 FLG=1
+ . Q
+ Q 'FLG
 EN5(RAD0,RANSTAT,RADUZ,RAREA) ; update the 'REQUEST STATUS TIMES' multiple
  ; in the Rad/Nuc Med Orders file.  All parameters must be in the
  ; internal format.

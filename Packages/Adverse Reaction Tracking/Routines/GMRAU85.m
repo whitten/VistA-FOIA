@@ -1,5 +1,5 @@
-GMRAU85 ;HIRMFO/RFM,WAA-UTILITIES FOR FILE 120.85 ; 1/6/93
- ;;4.0;Adverse Reaction Tracking;;Mar 29, 1996
+GMRAU85 ;HIRMFO/RFM,WAA-UTILITIES FOR FILE 120.85 ;02-Nov-2010 16:37;DU
+ ;;4.0;Adverse Reaction Tracking;**1002**;Mar 29, 1996;Build 32
 EN1 ; LOOKUP FOR FILE 120.85 ENTRY IF PATIENT IS NOT KNOWN
  ; THEN 120.85 ENTRY (GMRAPA1) IS RETURNED AND GMRAOUT IF ABNORMAL EXIT.
  S GMRAOUT=+($G(GMRAOUT))
@@ -20,8 +20,8 @@ ADR ; LOOKUP FOR FILE 120.85 ENTRY IF PATIENT (DFN) IS KNOWN,
  .   K DIR S DIR("A")="Select CAUSATIVE AGENT: ",DIR(0)="FAO^1:60",DIR("?",1)="   Answer with a Causative Agent of an observed drug reaction.",DIR("?")="   Type ?? to get a listing of this patient's data."
  .   S DIR("??")="^D HLP^GMRAU851" D ^DIR K DIR I $D(DIRUT) S GMRAOUT=1 Q
  .   S:GMRAOUT GMRAOUT=GMRAOUT-1
- .   S GMRAX=Y,X=$P($G(^DPT(DFN,0)),"^"),DIC="^GMR(120.8,",DIC(0)="EZQ",DIC("S")="I $P(^(0),U)=DFN,$P($$UP^XLFSTR($P(^(0),U,2)),$$UP^XLFSTR(GMRAX))="""",$$OBSDRG^GMRAU85(Y)",DIC("W")="W ""   "",$P($G(^(0)),U,2)" D ^DIC K DIC
- .   I $D(DTOUT)!$D(DUOUT) S GMRAOUT=1 Q
+ .   S GMRAX85=Y,X=$P($G(^DPT(DFN,0)),"^"),DIC="^GMR(120.8,",DIC(0)="EZQ",DIC("S")="I $P(^(0),U)=DFN,$P($$UP^XLFSTR($P(^(0),U,2)),$$UP^XLFSTR(GMRAX85))="""",$$OBSDRG^GMRAU85(Y)",DIC("W")="W ""   "",$P($G(^(0)),U,2)" D ^DIC K DIC
+ .   I +$D(DTOUT)!$D(DUOUT) S GMRAOUT=1 Q
  .   ;S GMRAX=Y,X=GMRAX,DIC="^GMR(120.8,",DIC(0)="SEZQM",DIC("S")="I $P(^(0),U)=DFN,$$OBSDRG^GMRAU85(Y)",DIC("W")="W ""   "",$P($G(^(0)),U,2)" D ^DIC K DIC I $D(DTOUT)!$D(DUOUT) S GMRAOUT=1 Q
  .   Q
  I GMRAOUT S GMRAOUT=2-GMRAOUT Q

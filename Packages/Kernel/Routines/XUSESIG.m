@@ -1,5 +1,5 @@
 XUSESIG ;SF/RWF - ROUTINE TO ENTER OR CHANGE ELECTRONIC SIGNATURE CODE ;10/16/2006
- ;;8.0;KERNEL;**14,55,437**;Jul 10, 1995;Build 2
+ ;;8.0;KERNEL;**14,55,437**;Jul 10, 1995;Build 5
 A ;Called by others from the top. See DBIC #936
  I $D(DUZ)[0 W "NO ACTION CAN BE TAKEN ON YOUR REQUEST     " Q
  N DA,DIE,DR,X1,K
@@ -40,7 +40,7 @@ SIG ;Call with DUZ; Return X1="" if fail else hashed ESC.
  S K=0 D S2 Q:X1=""
  Q  ;Following code was to force code change
  N LIFE S LIFE=$$KSP^XUPARAM("LIFETIME")
- S X2=+X2 I X2>0,(X2+LIFE)'>(+$H) D  I X1="" W !,*7,"Verification with held untill new code entered.",!
+ S X2=+X2 I X2>0,(X2+LIFE)'>(+$H) D  I X1="" W !,*7,"Verification with held until new code entered.",!
  . W !!,"Your Electronic Signature Code has expired, you need to create a new one."
  . N DA S DA=DUZ S:$$NEW()'=1 X1=""
  . Q

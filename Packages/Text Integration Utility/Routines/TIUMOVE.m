@@ -1,5 +1,7 @@
 TIUMOVE ; SLC/JER - Patient movement look-up ;10/26/95  21:17
  ;;1.0;TEXT INTEGRATION UTILITIES;**3**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/26/2003 display transfer facility based on ADT version
+ ;
 MAIN(TIUY,DFN,TIUSSN,TIUMDT,TIULDT,TIUMTYP,TIUDFLT,TIUMODE,TIULOC) ;
  ; Call with:     .TIUY - (by ref) array in which demographic, movement,
  ;                        & visit data are returned
@@ -48,7 +50,7 @@ TGET(Y,DFN,MDT,LDT,MTYPE,C,MODE) ; Get list of movements
  I MDT'=9999999.9999999 S MDT=9999999.9999999-$$IDATE^TIULC(MDT)
  I LDT'=0 S LDT=9999999.9999999-$$IDATE^TIULC(LDT)
  S C=0,I=LDT F  S I=$O(^DGPM("ATID"_MTYPE,DFN,I)) Q:+I'>0!(+I>MDT)  D
- . S N=$O(^DGPM("ATID"_MTYPE,DFN,I,0)) Q:'$D(^DGPM(+N,0)) 
+ . S N=$O(^DGPM("ATID"_MTYPE,DFN,I,0)) Q:'$D(^DGPM(+N,0))
  . S D=^(0),C=C+1,Y(C)=N_"^"_D
  . I +$G(MODE) S Y("TIUMVD",+D)=N,Y("TIUMVDA",N)=C
  Q
@@ -61,5 +63,11 @@ BREAK ; Handle prompting
  S TIUOK=X
  Q
 WRITE W !,$J(TIUI,4),">  ",$$DATE^TIULS(+TIUX,"AMTH DD, CCYY@HR:MIN"),?30,$S('$D(^DG(405.1,+$P(TIUX,"^",4),0)):"",$P(^(0),"^",7)]"":$P(^(0),"^",7),1:$E($P(^(0),"^",1),1,20))
- W ?55,"TO:  ",$S($D(^DIC(42,+$P(TIUX,"^",6),0)):$E($P(^(0),"^",1),1,18),1:"") I $P(TIUX,"^",18)=9 W !?23,"FROM:  ",$S($D(^DIC(4,+$P(TIUX,"^",5),0)):$P(^(0),"^",1),1:"")
+ ;
+ ;IHS/ITSC/LJF 02/27/2003 IHS transfer facility pointer is different from VA & different in each IHS version of ADT
+ ;W ?55,"TO:  ",$S($D(^DIC(42,+$P(TIUX,"^",6),0)):$E($P(^(0),"^",1),1,18),1:"") I $P(TIUX,"^",18)=9 W !?23,"FROM:  ",$S($D(^DIC(4,+$P(TIUX,"^",5),0)):$P(^(0),"^",1),1:"")  ;IHS/ITSC/LJF 02/26/2003
+ W ?55,"TO:  ",$S($D(^DIC(42,+$P(TIUX,"^",6),0)):$E($P(^(0),"^",1),1,18),1:"")
+ I $P(TIUX,"^",18)=9 W !?23,"FROM:  " NEW Y,C S Y=+$P(TIUX,U,5),C=$P(^DD(405,.05,0),U,2) D Y^DIQ W Y
+ ;IHS/ITSC/LJF 02/27/2003 end of mods
+ ;
  Q

@@ -1,5 +1,5 @@
-PSGOEE0 ;BIR/CML3-ORDER EDIT UTILITIES ; 10/7/08 11:08am
- ;;5.0; INPATIENT MEDICATIONS ;**58,95,179,216**;16 DEC 97;Build 10
+PSGOEE0 ;BIR/CML3-ORDER EDIT UTILITIES ;09 JAN 97 / 9:27 AM
+ ;;5.0; INPATIENT MEDICATIONS ;**58,95**;16 DEC 97
  ;
  ; Reference to ^DICN is supported by DBIA 10009.
  ; Reference to ^DIR is supported by DBIA 10026.
@@ -12,8 +12,6 @@ ENSFE3 ; set-up fields to edit for 53.1
  E  S PSGEFN="1:13" F X=1,2,3,4,5,6,7,8,9,10,11,12 S Y=$T(@(3_X)),@("PSGEFN("_+X_")="_$S($D(PSGOETOF):0,1:$P(Y,";",7))),PSGOEEF(+$P(Y,";",3))="",PSGOEEF=PSGOEEF+1
  E  S:$P(PSJSYSU,";",3)>1 PSGEFN(9)=0,PSGOEEF(+$P($T(39),";",3))="",PSGOEEF=PSGOEEF+1
  E  I PSGEB'=PSGOPR F X=10,13 S Y=$T(@(3_X)),@("PSGEFN("_X_")="_$S($D(PSGOETOF):0,1:$P(Y,";",7))),PSGOEEF(+$P(Y,";",3))="",PSGOEEF=PSGOEEF+1
- ;*216 highlight if DOSECHK fails
- N PSJDOSE D DOSECHK^PSJDOSE I +$G(PSJDSFLG),'$G(PSGOEEF(109)) S PSGOEEF(109)=1
  K PSGOEEND S PSGOEEG=3,PSGPDRG=PSGOPD,PSGPDRGN=PSGOPDN Q
  ;
 ENSFE5 ; set-up fields to edit for 55
@@ -21,8 +19,6 @@ ENSFE5 ; set-up fields to edit for 55
  F X=1:1:13 S Y=$T(@(5_X)),@("PSGEFN("_+X_")="_$S($D(PSGOETO):0,1:$P(Y,";",7))),PSGOEEF(+$P(Y,";",3))="",PSGOEEF=PSGOEEF+1
  I $P(PSJSYSU,";",3)>1 S PSGEFN(9)=0,PSGOEEF(+$P($T(59),";",3))="",PSGOEEF=PSGOEEF+1
  S PSGPDRG=PSGPD,PSGPDRGN=PSGPDN,PSGOEEND=1,PSGOEEG=5
- ;*216 highlight if DOSECHK fails
- N PSJDOSE D DOSECHK^PSJDOSE I +$G(PSJDSFLG),'$G(PSGOEEF(109)) S PSGOEEF(109)=1
  Q
  ;
 ENOK ;
@@ -50,11 +46,10 @@ ENNOU ; create new order or update old order
  ; PSJ*5*95 quick fix to prevent long string error; true fix in PSJ*5*91 (upd^psgoee)
  I PSGSI]"" S DR=DR_122_"////^S X="_+$P(PSGSI,"^",2)_";" I '$G(PSJLMFIN),'$G(PSGOEENO),$L($G(PSGOSI),"^")>20 S PSGSI=$P(PSGSI,"^")
  I PSGSM,PSGOHSM'=PSGHSM S DR=DR_"6////"_PSGHSM_";W ""."";"
- ;PSJ*5.0*179
- N P I 'PSGOEENO F P="1^3^10" I $D(PSGEFN($P(P,U,3))) S (Q,QQ)=0 F  S Q=$O(@("^PS(53.45,"_PSJSYSP_","_+P_","_Q_")")) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(@(PSGOEEWF_$P(P,U,2)_","_Q_",0)")) I X'=Y S:+P=1 DR=DR_"*" Q
- I 'PSGOEENO F P="1^3^10" I $D(PSGEFN($P(P,U,3))) S (Q,QQ)=0 F  S Q=$O(@(PSGOEEWF_$P(P,U,2)_","_Q_")")) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(^PS(53.45,PSJSYSP,+P,Q,0)) I X'=Y S:+P=1 DR=DR_"*" Q
- Q:$S(DR]"":1,1:PSGOEENO)  S (Q,QQ)=0 F  S Q=$O(^PS(53.45,PSJSYSP,2,Q)) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(@(PSGOEEWF_"1,"_Q_",0)")) I X'=Y S DR=DR_"*" Q
- Q:$S(DR]"":1,1:PSGOEENO)  S (Q,QQ)=0 F  S Q=$O(@(PSGOEEWF_"1,"_Q_")")) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(^PS(53.45,PSJSYSP,2,Q,0)) I X'=Y S DR=DR_"*" Q
+ N P I 'PSGOEENO F P="1^3^10" I $D(PSGEFN($P(P,U,3))) S (Q,QQ)=0 F  S Q=$O(@("^PS(53.45,"_PSJSYSP_","_+P_","_Q_")")) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(@(PSGOEEWF_$P(P,U,2)_","_Q_",0)")) I X'=Y S:+P=1 DR="*" Q
+ I 'PSGOEENO F P="1^3^10" I $D(PSGEFN($P(P,U,3))) S (Q,QQ)=0 F  S Q=$O(@(PSGOEEWF_$P(P,U,2)_","_Q_")")) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(^PS(53.45,PSJSYSP,+P,Q,0)) I X'=Y S:+P=1 DR="*" Q
+ Q:$S(DR]"":1,1:PSGOEENO)  S (Q,QQ)=0 F  S Q=$O(^PS(53.45,PSJSYSP,2,Q)) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(@(PSGOEEWF_"1,"_Q_",0)")) I X'=Y S DR="*" Q
+ Q:$S(DR]"":1,1:PSGOEENO)  S (Q,QQ)=0 F  S Q=$O(@(PSGOEEWF_"1,"_Q_")")) Q:'Q  S QQ=Q,X=$G(^(Q,0)),Y=$G(^PS(53.45,PSJSYSP,2,Q,0)) I X'=Y S DR="*" Q
  Q
  ;
 ENF ; finish order from edit

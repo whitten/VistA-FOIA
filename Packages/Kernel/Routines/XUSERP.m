@@ -1,4 +1,4 @@
-XUSERP ;ISF/RWF,SFVAMC/JC - file 200 Protocol ;06/24/2003  11:43
+XUSERP ;ISF/RWF,SFVAMC/JC - file 200 Protocol ;06/24/2003  11:43 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**313**;Jul 10, 1995
  ;
 CALL(XUNP,XUFLG) ;Queue Protocol

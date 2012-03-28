@@ -1,14 +1,10 @@
-RAO7PC2 ;HISC/GJC-Part two for Return Narrative (EN3^RAO7PC1) ;8/18/08  09:47
- ;;5.0;Radiology/Nuclear Medicine;**1,11,14,16,22,27,45,75,56,95,97**;Mar 16, 1998;Build 6
- ;Supported IA #1571 ^LEX(757.01
- ;Supported IA #10104 UP^XLFSTR
- ;Supported IA #2055 EXTERNAL^DILFD
- ;Supported IA #10060 ^VA(200
+RAO7PC2 ;HISC/GJC-Part two for Return Narrative (EN3^RAO7PC1);1/17/95 ;9/13/01  10:39
+ ;;5.0;Radiology/Nuclear Medicine;**1,11,14,16,22,27**;Mar 16, 1998
 CASE(Y) ; Retrieve exam data for specified inverse exam date range.
  ; 'Y'-> Exam node IEN
- N RABNOR,RACNT,RAEXAM,RAI,RAIMPRES,RAINCLUD,RAOPRC,RAORD,RAPDIAG
- N RAPIST,RAPIRE,RAPROC,RARDE,RADTI,RACNI,RADUPHX,RAREASDY
- N RARPT,RARPTST,RARPTXT,RASBN,RASDIAG,RAVER,RAERRFLG,Z,Z1,Z2,RATMP
+ N RABNOR,RACNT,RAEXAM,RAIMPRES,RAINCLUD,RAOPRC,RAORD,RAPDIAG
+ N RAPIST,RAPIRE,RAPROC,RARDE,RADTI,RACNI,RADUPHX
+ N RARPT,RARPTST,RARPTXT,RASBN,RASDIAG,RAVER,RAERRFLG,Z,Z1,Z2
  S RACNT=1
  S RAEXAM(0)=$G(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,0)) Q:RAEXAM(0)']""
  S:$P(RAEXAM(0),"^",25)=2 RAPSET=1
@@ -17,18 +13,15 @@ CASE(Y) ; Retrieve exam data for specified inverse exam date range.
  S RAPROC=$S($P(RAPROC(0),"^")]"":$P(RAPROC(0),"^"),1:"Unknown")
  S RAORD(0)=$G(^RAO(75.1,+$P(RAEXAM(0),"^",11),0))
  S RAORD(7)=$P(RAORD(0),"^",7) ; CPRS order ien
- S RAREASDY=$P($G(^RAO(75.1,+$P(RAEXAM(0),"^",11),.1)),"^") ;REASON FOR STUDY
  S RAOPRC(0)=$G(^RAMIS(71,+$P(RAORD(0),"^",2),0))
  S RAOPRC=$S($P(RAOPRC(0),"^")]"":$P(RAOPRC(0),"^"),1:"Unknown")
  S RAPDIAG(0)=$G(^RA(78.3,+$P(RAEXAM(0),"^",13),0))
- S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+$P(RAEXAM(0),U,13),0)),U,6),.01)
- S RAPDIAG=$P(RAPDIAG(0),"^")_$S(RATMP="":"",1:" ("_RATMP_")")
- S RARPT=+$P(RAEXAM(0),"^",17)
- ; RARPTST="NO REPORT" if no ^RARPT(ien) OR no data for Report Status
- S RARPT(0)=$G(^RARPT(RARPT,0)),RARPTST=$$UL^RAO7PC1A($$RSTAT^RAO7PC1A())
+ S RAPDIAG=$P(RAPDIAG(0),"^"),RARPT=+$P(RAEXAM(0),"^",17)
+ S RARPT(0)=$G(^RARPT(RARPT,0)),RARPTST=$P(RARPT(0),"^",5)
+ S RARPTST=$S(RARPTST="V":"Verified",RARPTST="R":"Released/Not verified",RARPTST="D":"Draft",RARPTST="PD":"Problem Draft",1:"No Report")
  ; set the following flag variable: RAINCLUD
- ; RAINCLUD=1 includes V, R, EF <-- patch 95
- S RAINCLUD=$S("RVE"[$E(RARPTST):1,1:0)
+ ; RAINCLUD=$S(RPT STATUS=verif'd or released/unverif'd:1,1:0)
+ S RAINCLUD=$S("RV"[$E(RARPTST):1,1:0)
  I $E(RARPTST)="V",(RAPSET'<0) D
  . S RAVER=$P(RARPT(0),"^",9),RASBN=$P($G(^VA(200,+RAVER,20)),"^",2)
  . S ^TMP($J,"RAE2",RADFN,Y,RAPROC,"V")=RAVER_"^"_RASBN
@@ -37,7 +30,6 @@ CASE(Y) ; Retrieve exam data for specified inverse exam date range.
  I RAPDIAG]"",(RAINCLUD),(RAPSET'<0) D  ; if diag & verif'd or released/unverif'd & first pass if part of xam set (many xams - one rpt)
  . S ^TMP($J,"RAE2",RADFN,Y,RAPROC,"D",RACNT)=RAPDIAG
  . Q
- S ^TMP($J,"RAE2",RADFN,Y,RAPROC,"RFS")=RAREASDY ;REASON FOR STUDY
  ; 1st, get clnhist from file70. 2nd, get addl clnhist form file74
  ; 1st:
  I +$O(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"H",0)) D
@@ -61,9 +53,7 @@ CASE(Y) ; Retrieve exam data for specified inverse exam date range.
  I +$O(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"DX",0)),(RAPSET'<0) D
  . S Z=0 F  S Z=$O(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"DX",Z)) Q:Z'>0  D
  .. S RASDIAG=+$G(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"DX",Z,0))
- .. S RASDIAG(0)=$G(^RA(78.3,RASDIAG,0))
- .. S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RASDIAG,0)),U,6),.01)
- .. S RASDIAG(1)=$P(RASDIAG(0),"^")_$S(RATMP="":"",1:" ("_RATMP_")")
+ .. S RASDIAG(0)=$G(^RA(78.3,RASDIAG,0)),RASDIAG(1)=$P(RASDIAG(0),"^")
  .. I RASDIAG(1)]"",(RAINCLUD) D
  ... S RACNT=RACNT+1,^TMP($J,"RAE2",RADFN,Y,RAPROC,"D",RACNT)=RASDIAG(1)
  ... I RABNOR'="Y" D
@@ -92,15 +82,8 @@ CASE(Y) ; Retrieve exam data for specified inverse exam date range.
  .S RAPIRE=$P(RAEXAM(0),"^",12)
  .S RARDE=$P(RARPT(0),"^",8)
  .S ^TMP($J,"RAE2",RADFN,Y,RAPROC,"P")=RAPIST_"^"_RAPIRE_"^"_RARDE
- ;If contrast media was involved in the exam pass that information.
- I +$O(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"CM",0)) S (RACNT,RAI)=0 D
- .F  S RAI=$O(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"CM",RAI)) Q:'RAI  D
- ..S RACNT=RACNT+1
- ..S RAI(0)=$G(^RADPT(RADFN,"DT",RAINVXDT,"P",Y,"CM",RAI,0))
- ..S ^TMP($J,"RAE2",RADFN,Y,RAPROC,"CM",RACNT)=$P(RAI(0),U)_"^"_$$EXTERNAL^DILFD(70.3225,.01,"",$P(RAI(0),U))
- ..Q
- Q
  ;
+ Q
 RPTXT(RARPT,Z) ; Retrieve report text & store in ^TMP
  ; 'RARPT' -> Report IEN
  ; 'Z'     -> "I":Impression Text <> "R":Report Text

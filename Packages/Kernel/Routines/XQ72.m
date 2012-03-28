@@ -1,4 +1,4 @@
-XQ72 ;SEA/MJM - ^Jump Utilities ;04/16/2002  14:02
+XQ72 ;SEA/MJM - ^Jump Utilities ;04/16/2002  14:02 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**47,46,157**;Jul 10, 1995
  ;
 JUMP ;Entry point for D+1^XQ and  LEGAL^XQ74.

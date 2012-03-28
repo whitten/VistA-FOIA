@@ -1,15 +1,40 @@
-DGOPATM ;GLRISC/REL - Patient Movements ;11/4/89  11:05 ;
+DGOPATM ;GLRISC/REL - Patient Movements ; [ 09/13/2001  3:55 PM ]
  ;;5.3;Registration;**93,162**;Aug 13, 1993
+ ;IHS/ANMC/LJF  5/24/2001 changed date limit to 14 days into past
+ ;                        added choice of type of movement
+ ;
  S (DAT,DGU)=0 D HDR
 P1 S %DT="AEXT",%DT("A")="START with DATE@TIME: " W ! D ^%DT G:Y<1 KIL S DAT=Y
  I DAT>NOW W "  [ Date cannot be in Future ]" G P1
- S X1=DT,X2=-5 D C^%DTC I DAT<X W "  [ DATE MORE THAN 5 DAYS IN PAST ]" G P1
-P2 S DGVAR="DAT^DGU",DGPGM="F0^DGOPATM" W ! D ZIS^DGUTQ I 'POP U IO G F0^DGOPATM
+ ;
+ ;
+ ;IHS/ANMC/LJF 5/24/2001 IHS changes
+ ;S X1=DT,X2=-5 D C^%DTC I DAT<X W "  [ DATE MORE THAN 5 DAYS IN PAST ]" G P1
+ S X1=DT,X2=-14 D C^%DTC I DAT<X W "  [ DATE MORE THAN 14 DAYS IN PAST ]" G P1
+ ;
+ NEW BDGADT S BDGADT=$$READ^BDGF("S^A:Admissions;D:Discharges;T:Transfers;ALL:All Movements","Choose Movements to Display","ALL") Q:BDGADT=U
+ I BDGADT="ALL" S BDGADT="ADT"
+ ;
+P2 ;S DGVAR="DAT^DGU",DGPGM="F0^DGOPATM" W ! D ZIS^DGUTQ I 'POP U IO G F0^DGOPATM
+ S DGVAR="DAT^DGU^BDGADT",DGPGM="F0^DGOPATM" W ! D ZIS^DGUTQ I 'POP U IO G F0^DGOPATM
+ ;IHS/ANMC/LJF 5/24/2001 end of changes
+ ;
+ ;
 KIL K %,%DT,%ZIS,ADM,DAT,DFN,DTP,DGVAR,DGPGM,DGU,DGX,FHA1,FW,FR,H1,I2,KK,LL,LST,NOD,NOW,NX,POP,RM,T1,TRN,TW,TR,X,X1,X2,Y,VA("BID"),VA("PID"),VAIP,VAERR,VADAT,VADATE D CLOSE^DGUTQ Q
 F0 D HDR1
- S DGX="--- A D M I S S I O N S ---" W !!?26,DGX,! S NOD="AMV1" D FND G KIL:DGU
- S DGX="--- D I S C H A R G E S ---" W !!?26,DGX,! S NOD="AMV3" D FND G KIL:DGU
- S DGX="--- T R A N S F E R S ---" W !!?26,DGX,! S NOD="AMV2" D FND W ! G KIL:DGU
+ ;
+ ;
+ ;IHS/ANMC/LJF 5/24/2001 more IHS changes
+ ;S DGX="--- A D M I S S I O N S ---" W !!?26,DGX,! S NOD="AMV1" D FND G KIL:DGU
+ ;S DGX="--- D I S C H A R G E S ---" W !!?26,DGX,! S NOD="AMV3" D FND G KIL:DGU
+ ;S DGX="--- T R A N S F E R S ---" W !!?26,DGX,! S NOD="AMV2" D FND W ! G KIL:DGU
+ I BDGADT["A" S DGX="--- A D M I S S I O N S ---" W !!?26,DGX,! S NOD="AMV1" D FND G KIL:DGU
+ I BDGADT["D" S DGX="--- D I S C H A R G E S ---" W !!?26,DGX,! S NOD="AMV3" D FND G KIL:DGU
+ I BDGADT["T" S DGX="--- T R A N S F E R S ---" W !!?26,DGX,! S NOD="AMV2" D FND W ! G KIL:DGU
+ D PAUSE^BDGF
+ ;IHS/ANMC/LJF 5/24/2001 end of changes
+ ;
+ ;
  G KIL
 DTP S DTP=$E(DTP,1,12) S DTP=$$FMTE^XLFDT(DTP,"1P") Q
 HDR S H1="" I DAT S DTP=DAT D DTP S H1=DTP_" to "

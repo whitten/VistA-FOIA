@@ -1,5 +1,5 @@
-XPDKRN ;SFISC/RSD - Kernel Install program ;07/02/2003  12:59
-V ;;8.0;KERNEL;**304**;Jul 10, 1995
+XPDKRN ;SFISC/RSD - Kernel Install program ;07/02/2003  12:59 [ 03/19/2004  12:04 PM ]
+V ;;8.0;KERNEL;**304,1009**;Jul 10, 1995
 EN N X,Y
  W !!,"KIDS "_$P($T(V),";",3),!
  D DT^DICRW:'$D(DT),INIT:($O(^DOPT("XPD","B"),-1)'=5)

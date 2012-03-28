@@ -1,5 +1,5 @@
-LA7SMP ;DALOI/JMC - Shipping Manifest Print ;11/25/96  14:39
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,45,46,64**;Sep 27, 1994
+LA7SMP ;VA/DALOI/JMC - Shipping Manifest Print ;11/25/96  14:39
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,45,46,64**;NOV 01, 1997;Build 9
 EN ;
  D EN^DDIOL("Print Shipping Manifest","","!!")
  D KILL^LA7SMP0
@@ -78,7 +78,9 @@ DQ ;
  . S LA7SKIP=$$CHKTST^LA7SMU(+LA7SM,LA762801)
  . I LA7SKIP,LA7SKIP<3 Q  ; Accession/test deleted
  . I $G(LA7CHK) D CHKREQI^LA7SM2(+LA7SM,LA762801)
- . S ^TMP("LA7SM",$J,+$P(LA762801(0),"^",7),+$P(LA762801(0),"^",9),$P(LA762801(0),"^",5),LA762801)=""
+ . ;S ^TMP("LA7SM",$J,+$P(LA762801(0),"^",7),+$P(LA762801(0),"^",9),$P(LA762801(0),"^",5),LA762801)=""  ;ihs/cmi/maw 8/4/2010 orig line
+ . S ^TMP("LA7SM",$J,+$P(LA762801(0),"^",7),+$P(LA762801(0),"^"),$P(LA762801(0),"^",5),LA762801)=""  ;ihs/cmi/maw 8/4/2010 changed sort to LRDFN from Packaging container
+ . ;S ^TMP("LA7SM",$J,+$P(LA762801(0),"^",7),+$P(LA762801(0),"^"),$$GETORDA^LA7VORM1($P(LA762801(0),"^",5)),LA762801)=""  ;ihs/cmi/maw 8/4/2010 changed sort to LRDFN from Packaging container
  . D BUILDRI^LA7SM2
  ;
  S (LA7SCOND,LA7SCONT,LA7UID)=""
@@ -129,6 +131,8 @@ DQ ;
  . . I +LA7SMST'=4 W ! D WARN^LA7SMP0
  . . D HED^LA7SMP0 Q:LA7EXIT
  . . S LA7DC=1 D SH^LA7SMP0
+ . ;cmi/maw 7/6/2010 add insurance information here
+ . D PRT^LA7VQINS(LA7UID)
  . W !,?11,$E(LA7LINE,1,41)
  . W !,?11,$P(^LAB(60,LA760,0),"^",1),?43,$P(LA7SPEC(0),"^")
  . I +LA7SMST'=4 D
@@ -141,19 +145,24 @@ DQ ;
  . . S X="Relevant clinical information: "_LA762801(.1) D ^DIWP
  . . M LA7CMT=^UTILITY($J,"W",DIWL)
  . . W ! D CMT^LA7SMP0 W !
- . W !,?13,"VA NLT Code [Name]: "
- . S LA7NLT=$$GET1^DIQ(64,+$$GET1^DIQ(60,LA760_",",64,"I")_",",1) ; NLT code.
- . W $S($L(LA7NLT):LA7NLT,1:"*** None specified ***")
- . S LA7NLTN=""
- . I $L(LA7NLT) S LA7NLTN=$$GET1^DIQ(64,+$$GET1^DIQ(60,LA760_",",64,"I")_",",.01) ; NLT code test name.
- . I $L(LA7NLTN) W:($X+$L(LA7NLTN)+3)>IOM !,?32 W " [",LA7NLTN,"]"
+ . W ! D OCMT^LA7SMP0(LA7UID) W !  ;ihs/cmi/maw 07/26/2011 for ref lab
+ . ;W !,?13,"VA NLT Code [Name]: "  ;ihs/cmi/maw 8/4/2010 not wanted
+ . ;S LA7NLT=$$GET1^DIQ(64,+$$GET1^DIQ(60,LA760_",",64,"I")_",",1) ; NLT code.  ;ihs/cmi/maw 8/4/2010 not wanted
+ . ;W $S($L(LA7NLT):LA7NLT,1:"*** None specified ***")  ;ihs/cmi/maw 8/4/2010 not wanted
+ . ;S LA7NLTN=""  ;ihs/cmi/maw 8/4/2010 not wanted
+ . ;I $L(LA7NLT) S LA7NLTN=$$GET1^DIQ(64,+$$GET1^DIQ(60,LA760_",",64,"I")_",",.01) ; NLT code test name.  ;ihs/cmi/maw 8/4/2010 not wanted
+ . ;I $L(LA7NLTN) W:($X+$L(LA7NLTN)+3)>IOM !,?32 W " [",LA7NLTN,"]"  ;ihs/cmi/maw 8/4/2010 not wanted
  . I $P(LA7SM(0),"^",5) D  ; Print non-VA test code info
  . . N LA7X,LA7Y,LA7Z
  . . S LA7X=$P($G(^DIC(4,+$P(LA7SCFG(0),"^",3),0),"UNKNOWN"),"^",1)_" Order Code [Name]: "
  . . W !,?11,LA7X,$S($L($P(LA762801(5),"^")):$P(LA762801(5),"^"),1:"*** None specified ***")," "
  . . S LA7Y="["_$S($L($P(LA762801(5),"^",2)):$P(LA762801(5),"^",2),1:"*** None specified ***")_"]"
- . . I $L(LA7Y)<(IOM-$X) W LA7Y Q
+ . . I $L(LA7Y)<(IOM-$X) D  Q
+ . . .W LA7Y
+ . . .D AO^LA7VQINS(LA7UID)
  . . S LA7X=IOM-$X W $E(LA7Y,1,LA7X)
+ . . ;lets try adding ask at order questions here
+ . . D AO^LA7VQINS(LA7UID)
  . . S LA7Y=$E(LA7Y,LA7X+1,$L(LA7Y)),LA7Z=IOM-11
  . . F  S LA7X=$E(LA7Y,1,LA7Z) Q:LA7X=""  W !,?11,LA7X S LA7Y=$E(LA7Y,LA7Z+1,$L(LA7Y))
  ;

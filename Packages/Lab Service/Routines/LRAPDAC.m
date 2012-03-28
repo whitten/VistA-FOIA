@@ -1,4 +1,6 @@
-LRAPDAC ;AVAMC/REG - DELETE AP YEARLY ACCESSIONS  ;5/9/91  18:12 ;
+LRAPDAC ; IHS/DIR/FJE - DELETE AP YEARLY ACCESSIONS 5/9/91 18:12 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!,?20,"Delete anatomic pathology accession lists"
  S %DT="",X="T" D ^%DT S LRA=$E(Y,1,3)-1_"0000"

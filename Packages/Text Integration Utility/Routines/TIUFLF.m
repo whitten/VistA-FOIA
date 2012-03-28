@@ -1,5 +1,6 @@
-TIUFLF ; SLC/MAM - Library; File 8925.1 Related: NODE0ARR(FILEDA,NODE0,PFILEDA), HASBOIL(FILEDA,NODE0), DDEFUSED(FILEDA), DESCUSED(FILEDA) ;10/24/95  23:35
- ;;1.0;TEXT INTEGRATION UTILITIES;;Jun 20, 1997
+TIUFLF ; SLC/MAM - Library;26-Jan-2006 12:46;MGH
+ ;;1.0;TEXT INTEGRATION UTILITIES;**1003**;Jun 20, 1997
+ ;IHS/CIA/MGH Modified to display the descriptions
  ;
 HASBOIL(FILEDA,NODE0) ;Function Returns 0, 1, 10, or 11 (like $D) if FILEDA/any descendant has Boilerplate Text, or NA if nonapplicable (neither DOC nor CO).
  ; Requires FILEDA, NODE0.
@@ -45,7 +46,7 @@ NODE0ARR(FILEDA,NODE0,PFILEDA) ; Sets NODE0 = ^TIU(8925.1,FILEDA,0)_U_PIECE20, w
  I '$D(PFILEDA) S PFILEDA=0
  I PFILEDA,NODE0="" W !!," File entry "_PFILEDA_" has Nonexistent Item "_FILEDA_"; See IRM.",! D PAUSE^TIUFXHLX G NODEX
  I NODE0="" W !!," ",FILEDA_" doesn't exist in the file; See IRM.",! D PAUSE^TIUFXHLX G NODEX
- N DIC,DA,DR,TIUFQ,SHARE,ORPHAN,BOILPT,TYPE,ITEMS,DIQ,USED
+ N DIC,DA,DR,TIUFQ,SHARE,ORPHAN,BOILPT,TYPE,ITEMS,DIQ,USED,DESC
  S DIC=8925.1,DR=".04:.13",DIQ(0)="I,E",DA=FILEDA,DIQ="TIUFQ" D EN^DIQ1
  S TYPE=$G(TIUFQ(8925.1,FILEDA,.04,"I")) S:TYPE="DOC" TYPE="TL"
  S NODE0("TYPE")=$G(^TMP("TIUF",$J,"TYPE"_TYPE))
@@ -63,6 +64,10 @@ NODE0ARR(FILEDA,NODE0,PFILEDA) ; Sets NODE0 = ^TIU(8925.1,FILEDA,0)_U_PIECE20, w
  S NODE0("BOILPT")=$S(BOILPT="NA":"",BOILPT:"Yes",1:"No")
  S ITEMS=$S($O(^TIU(8925.1,FILEDA,10,0)):1,1:0)
  S NODE0("ITEMS")=$S(ITEMS:"Yes",$P(NODE0,U,4)="O":"",1:"No")
+ ;IHS/CIA/MGH Added to display the description field
+ S DESC=$$HASDESC^BTIUFD(FILEDA,NODE0)
+ S NODE0("DESC")=$S(DESC=1:"Yes",DESC=0:"No",1:"No")
+ ;End changes
 NODEX Q
  ;
 DESCUSED(FILEDA) ; Function returns 1 if FILEDA has
@@ -92,7 +97,7 @@ DDEFUSED(FILEDA) ; Function called by 8925.1 computed field .08 USED BY DOCMTS.
  ; Assumes DDEFs CANNOT be reused except for SHARED Components.
  ; Returns YES if FILEDA is pointed to by 8925 docmts or components.
  ;         YES if FILEDA itself is not pointed to, but descendants
- ;           of Type DOC(Title) under FILEDA in the hierarchy are 
+ ;           of Type DOC(Title) under FILEDA in the hierarchy are
  ;           pointed to.
  ;         NA if FILEDA has Type Object.
  ;         ? if not known to be YES and FILEDA has Item w broken pointer.

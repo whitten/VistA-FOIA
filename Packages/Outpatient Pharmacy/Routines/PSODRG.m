@@ -1,24 +1,16 @@
-PSODRG ;IHS/DSD/JCM - ORDER ENTRY DRUG SELECTION ;03/30/93
- ;;7.0;OUTPATIENT PHARMACY;**20,23,36,53,54,46,112,139,207,148,243,268,324,251,375,387**;DEC 1997;Build 13
- ;Reference ^PSDRUG supported by DBIA 221
- ;Reference ^PS(50.7 supported by DBIA 2223
- ;Reference to PSSDIN supported by DBIA 3166
- ;Reference to $$NDCFMT^PSSNDCUT supported by IA 4707
- ;Reference to OROCAPI controlled subscription supported by IA 5367
- ;Reference to $$OITM^ORX8 supported by IA 5469
- ;Reference to ^VADPT supported by IA 10061
- ;Reference to IN^PSSHRQ2 supported by DBIA 5369
+PSODRG ;IHS/DSD/JCM-ORDER ENTRY DRUG SELECTION ;05-Jan-2007 09:40;SM
+ ;;7.0;OUTPATIENT PHARMACY;**20,23,36,53,54,46,112,139,1005**;DEC 1997
+ ;External reference ^PSDRUG supported by DBIA 221
+ ;External reference ^PS(50.7 supported by DBIA 2223
+ ;External reference to PSSDIN supported by DBIA 3166
+ ; Modified IHS/CIA/PLS - 12/30/03 - Line SET+15 and POST+4
+ ;          IHS/MSC/PLS - 01/05/07 - Line SET+9
  ;----------------------------------------------------------
 START ;
- S (PSONEW("DFLG"),PSONEW("FIELD"),PSODRG("QFLG"))=0 K PSORX("DFLG")
- D @($S(+$G(PSOEDIT)=1&('$D(DA)):"SELECT^PSODRGN",1:"SELECT"))
- G:$G(PSORXED("DFLG")) END ; Select Drug
- I $G(PSORX("EDIT")),$G(PSOY),$G(PSODRUG("IEN"))=+PSOY D  G:$G(PSORXED("DFLG")) END
- . N NDC D NDC(+$G(PSORXED("IRXN")),0,+PSOY,.NDC) I $G(NDC)="^" S PSORXED("DFLG")=1 Q
- . I $G(NDC)'="" S (PSODRUG("NDC"),PSORXED("FLD",27))=NDC
- ;
+ S (PSONEW("DFLG"),PSONEW("FIELD"),PSODRG("QFLG"))=0
+ D SELECT G:$G(PSORXED("DFLG")) END ; Select Drug
  I $G(PSORX("EDIT"))]"",'PSONEW("FIELD") D TRADE
- G:$G(PSONEW("DFLG"))!($G(PSODRG("QFLG")))!($G(PSORXED("DFLG"))) END
+ G:PSONEW("DFLG")!(PSODRG("QFLG"))!($G(PSORXED("DFLG"))) END
  D SET ; Set various drug information
  D NFI ; Display dispense drug/orderable item text
  D:'$G(PSOEDIT) POST I $G(PSORX("DFLG")) S PSONEW("DFLG")=1 K:'$G(PSORX("EDIT")) PSORX("DFLG") ; Do any post selection action
@@ -28,7 +20,7 @@ END ;D EOJ
  ;
 SELECT ;
  K:'$G(PSORXED) CLOZPAT
- K IT,DIC,X,Y,PSODRUG("TRADE NAME"),PSODRUG("NDC"),PSODRUG("DAW"),PSODRUG("BAD") S:$G(POERR)&($P($G(OR0),"^",9)) Y=$P(^PSDRUG($P(OR0,"^",9),0),"^")
+ K DIC,X,Y,PSODRUG("TRADE NAME") S:$G(POERR)&($P($G(OR0),"^",9)) Y=$P(^PSDRUG($P(OR0,"^",9),0),"^")
  I $G(PSODRUG("IEN"))]"" S Y=PSODRUG("NAME"),PSONEW("OLD VAL")=PSODRUG("IEN")
  W !,"DRUG: "_$S($G(Y)]"":Y_"// ",1:"") R X:$S($D(DTIME):DTIME,1:300) I '$T S DTOUT=1
  I X="",$G(Y)]"" S:Y X=Y S:'X X=$G(PSODRUG("IEN")) S:X X="`"_X
@@ -49,15 +41,6 @@ SELECT ;
 SELECTX K X,Y,DTOUT,DUOUT,PSONEW("OLD VAL")
  Q
  ;
-NDC(RX,RFL,DRG,NDC) ; Editing NDC for ECME Released Rx's
- S NDC=$S($G(NDC)'="":$G(NDC),1:$$GETNDC^PSONDCUT(RX,.RFL))
- I $$STATUS^PSOBPSUT(RX,RFL)="" Q
- I '$$RXRLDT^PSOBPSUT(RX,RFL) Q
- ;
- S NDC=$S($G(NDC)'="":$G(NDC),1:$$GETNDC^PSONDCUT(RX,.RFL))
- D NDCEDT^PSONDCUT(RX,.RFL,$G(DRG),$G(PSOSITE),.NDC)
- Q
- ;
 TRADE ;
  K DIR,DIC,DA,X,Y
  S DIR(0)="52,6.5" S:$G(PSOTRN)]"" DIR("B")=$G(PSOTRN) D ^DIR K DIR,DIC
@@ -75,14 +58,20 @@ SET ;
  S PSODRUG("MAXDOSE")=$P(PSOY(0),"^",4),PSODRUG("DEA")=$P(PSOY(0),"^",3)
  S PSODRUG("CLN")=$S($D(^PSDRUG(+PSOY,"ND")):+$P(^("ND"),"^",6),1:0)
  S PSODRUG("SIG")=$P(PSOY(0),"^",5)
- I $G(PSODRUG("NDC"))="" S PSODRUG("NDC")=$$GETNDC^PSSNDCUT(+PSOY,$G(PSOSITE))
- S PSODRUG("DAW")=+$$GET1^DIQ(50,+PSOY,81)
+ S PSODRUG("NDC")=$P($G(^PSDRUG(+PSOY,2)),"^",4)
+ S:$D(PSONEW("NDC")) PSONEW("NDC")=PSODRUG("NDC")
  S PSODRUG("STKLVL")=$G(^PSDRUG(+PSOY,660.1))
  G:$G(^PSDRUG(+PSOY,660))']"" SETX
  S PSOX1=$G(^PSDRUG(+PSOY,660))
  S PSODRUG("COST")=$P($G(PSOX1),"^",6)
  S PSODRUG("UNIT")=$P($G(PSOX1),"^",8)
  S PSODRUG("EXPIRATION DATE")=$P($G(PSOX1),"^",9)
+ ; IHS/CIA/PLS - 12/29/03 - Added IHS specific fields
+ S PSODRUG("AWP")=+$P($G(^PSDRUG(+PSOY,999999931)),U,2)  ; AWP Price
+ S PSODRUG("MANUFACTURER")=$$GET1^DIQ(50,+PSOY,9999999.24,"E")
+ S PSODRUG("LOT #")=$$GET1^DIQ(50,+PSOY,9999999.25)
+ S PSODRUG("EXPIRATION DATE")=$$GET1^DIQ(50,+PSOY,9999999.26,"I")
+ S:($P(%APSITE,"^",11)]"")&((PSODRUG("EXPIRATION DATE")="")!(PSODRUG("EXPIRATION DATE")'>DT)) PSODRUG("EXPIRATION DATE")=$$FMADD^XLFDT(DT,$P(%APSITE,"^",11))
 SETX K PSOX1,PSOY
  Q
 NFI ;display restriction/guidelines
@@ -90,77 +79,35 @@ NFI ;display restriction/guidelines
  I NFI]"","ODY"[NFI D TD^PSONFI
  K NFI Q
 POST ;order checks
- N LIST S LIST="PSOPEPS"
- K PSODOSD,^TMP("PSORXDC",$J),^TMP($J,LIST)
- K ZDGDG,ZTHER,IT,PSODLQT,PSODOSD
- S ^TMP($J,LIST,"IN","PING")="" D IN^PSSHRQ2(LIST)
- K DIR I $P(^TMP($J,LIST,"OUT",0),"^")=-1 D DATACK^PSODDPRE
- K ^TMP($J,LIST,"IN"),^TMP($J,LIST,"OUT","EXCEPTIONS")
- G:$G(PSORX("DFLG"))!($G(PSORXED("DFLG"))) POSTX
  K PSORX("INTERVENE") N STAT,SIG,PTR,NDF,VAP S PSORX("DFLG")=0
- W !! D HD^PSODDPR2():(($Y+5)'>IOSL)
  D ^PSOBUILD
- D @$S($G(COPY):"^PSOCPPRE",1:"^PSODDPRE") ; Duplicate drug check
- G:$G(PSORX("DFLG")) POSTX
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- I $P($G(^PSDRUG(PSODRUG("IEN"),"CLOZ1")),"^")="PSOCLO1" W !,"Now doing Clozapine Order checks.  Please wait...",! D CLOZ
+ D @$S($G(COPY):"^PSOCPDUP",1:"^PSODRDUP") ; Set PSORX("DFLG")=1 if process to stop
+ Q:$G(PSORX("DFLG"))
+ W:$G(PSOFIN)']"" !,"Now doing order checks.  Please wait...",!
+ D ^PSODGDGI
+ I $G(PSORX("INTERVENE"))]"" D FULL^VALM1,^PSORXI S VALMBCK="R"
  G:PSORX("DFLG") POSTX
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- W !,"Now doing allergy checks.  Please wait...",!
- S PSONOAL="" D ALLERGY^PSOORUT2 D:PSONOAL'="" NOALRGY K PSONOAL
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- G:PSORX("DFLG") POSTX
- D ^PSODGAL1 K PSORX("INTERVENE")
- ;aminoglycoside
- N AOC
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- S AOC=$$AOC^OROCAPI(PSODFN,$P(PSODRUG("NDF"),"A",2)) I $P(AOC,"^",4)]"" D
- .W !!,"***Aminoglycoside Ordered***",!!
- .K ^UTILITY($J,"W") S DIWL=1,DIWR=78,DIWF="" S X=$P(AOC,"^",4) D ^DIWP
- .W !! F ZX=0:0 S ZX=$O(^UTILITY($J,"W",1,ZX)) Q:'ZX  W ?2,^UTILITY($J,"W",1,ZX,0),! D HD^PSODDPR2():(($Y+5)'>IOSL)
- .K ^UTILITY($J,"W")
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- ;dangerous meds for pat >64
- I $G(PSODRUG("OI")) D
- .N OI,OIR S OI=$$OITM^ORX8(PSODRUG("OI"),"99PSP") Q:'OI
- .S OIR=$$DOC^OROCAPI(PSODFN,OI) I $P(OIR,"^",4)]"" D
- ..D HD^PSODDPR2():(($Y+5)'>IOSL) W !!,"***Dangerous Meds for Patient >64***",!! S DFN=PSODFN D DEM^VADPT
- ..K ^UTILITY($J,"W") S DIWL=1,DIWR=78,DIWF="" S X=$P(OIR,"^",4) D ^DIWP
- ..F ZX=0:0 S ZX=$O(^UTILITY($J,"W",1,ZX)) Q:'ZX  W ?2,^UTILITY($J,"W",1,ZX,0),! D HD^PSODDPR2():(($Y+5)'>IOSL)
- ..K ^UTILITY($J,"W")
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- ;metformin lab results
- N GOC S GOC=$$GOC^OROCAPI(PSODFN,PSODRUG("NAME")) I $P(GOC,"^",4)]"" D
- .W !!,"***Metformin Lab Results***",!!
- .K ^UTILITY($J,"W") S DIWL=1,DIWR=78,DIWF="" S X=$P(GOC,"^",4) D ^DIWP
- .F ZX=0:0 S ZX=$O(^UTILITY($J,"W",1,ZX)) Q:'ZX  W ?2,^UTILITY($J,"W",1,ZX,0),! D HD^PSODDPR2():(($Y+5)'>IOSL)
- .K ^UTILITY($J,"W")
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- K DIWF,DIWL,DIWR,ZX,DFN
- I $G(PSODRUG("DEA"))["S"!($E($G(PSODRUG("VA CLASS")),1,2)="XA") D  G POSTX ;stops if drug is supply
- .W !,"Now Processing Enhanced Order Checks!  Please wait...",! H 1
- ;enhanced OC
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- W ! D @$S($G(COPY):"OBX^PSOCPPRE",1:"OBX^PSODDPRE") ; Set PSORX("DFLG")=1 if process to stop new enhanced order checks
+ D:$P($G(^PSDRUG(PSODRUG("IEN"),"CLOZ1")),"^")]"" CLOZ G:PSORX("DFLG") POSTX
+ K PSORX("INTERVENE")
+ S X="APSQLAB" X ^%ZOSF("TEST") I $T D PRINT^APSQLAB   ; IHS/CIA/PLS - 01/18/04 - Output lab information
+ I $D(PSODRUG("NDF")) S NDF=$P(PSODRUG("NDF"),"A"),VAP=$P(PSODRUG("NDF"),"A",2),PTR=NDF_"."_VAP
+ I $G(NDF) D CHK^PSODGAL(PSODFN,"DR",PTR) K NDF,VAP,PTR
+ I $P($G(PSODRUG("NDF")),"A")=0 D CHK1^PSODGAL(PSODFN)
+ I $D(PSODRUG("VA CLASS")) D CLASS^PSODGAL
 POSTX ;
- K IT,^TMP($J,"DI"),PSORX("INTERVENE"),DA,^TMP($J,"PSODRDI"),ZDGDG,ZTHER K ^TMP($J,"DI"_PSODFN),PSZZQUIT
+ K PSORX("INTERVENE"),DA
  Q
  ;
 EOJ ;
  K PSODRG
- Q
-WAIT ;
- K DIR S DIR(0)="E",DIR("?")="Press Return to continue",DIR("A")="Press Return to continue..." W !
- D ^DIR K DIRUT,DUOUT,DIR,X,Y
  Q
  ;
 CLOZ ;
  S ANQRTN=$P(^PSDRUG(PSODRUG("IEN"),"CLOZ1"),"^"),ANQX=0
  S P(5)=PSODRUG("IEN"),DFN=PSODFN,X=ANQRTN
  X ^%ZOSF("TEST") I  D @("^"_ANQRTN) S:$G(ANQX) PSORX("DFLG")=1
- K P(5),ANQRTN,ANQX,X,DFN
+ K P(5),ANQRTN,ANQX,X
  Q
- ;
 EN(DRG) ;returns lab test identified for clozapine order checking
  K LAB I $P($G(^PSDRUG(DRG,"CLOZ1")),"^")'="PSOCLO1" S LAB("NOT")=0 Q
  I $P($G(^PSDRUG(DRG,"CLOZ1")),"^")="PSOCLO1" D
@@ -169,23 +116,4 @@ EN(DRG) ;returns lab test identified for clozapine order checking
  .K CNT F I=0:0 S I=$O(^PSDRUG(DRG,"CLOZ2",I)) Q:'I  D
  ..S LABT=$S($P(^PSDRUG(DRG,"CLOZ2",I,0),"^",4)=1:"WBC",1:"ANC"),LAB(LABT)=$P(^PSDRUG(DRG,"CLOZ2",I,0),"^")_"^"_$P(^(0),"^",3)_"^"_$P(^(0),"^",4)
  K LABT,I
- Q
-NOALRGY ;
- D HD^PSODDPR2():(($Y+5)'>IOSL)
- N DIR S DIR(0)="SA^1:YES;0:NO"
- I $D(^TMP($J,"PSOINTERVENE",+PSODFN)) D  Q
- .S DIR("A")="No Allergy Assessment - Do you want to duplicate Intervention?: ",DIR("B")="Yes"
- .D ^DIR
- .I 'Y D  Q
- ..I Y=0 D ^PSORXI Q
- ..S PSORX("DFLG")=1
- .D DUPINV^PSORXI
- W $C(7),!,"There is no allergy assessment on file for this patient."
- W !,"You will be prompted to intervene if you continue with this prescription"
- S DIR("A")="Do you want to Continue?: ",DIR("B")="N" D ^DIR
- I 'Y D  Q
- .I $D(PSONV) S PSZZQUIT=1 Q
- .S PSORX("DFLG")=1
- I $D(PSONV) S PSORX("INTERVENE")=0 D EN1^PSORXI(PSONV) Q
- D ^PSORXI
  Q

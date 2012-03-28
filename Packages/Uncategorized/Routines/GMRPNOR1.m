@@ -1,19 +1,19 @@
-GMRPNOR1 ;SLC/MKB/DJP Progress Note- OE/RR interface;; 2-14-97 ; 7-DEC-1999 12:10:24
- ;;2.5;Progress Notes;**25,45,50**;Jan 08, 1993
+GMRPNOR1 ;SLC/MKB/DJP Progress Note- OE/RR interface;; 2-14-97 ;2/26/97  12:27
+ ;;1.0;TEXT INTEGRATION UTILITIES;;Jun 20, 1997
+ ;;2.5;Progress Notes;**25,45**;Jan 08, 1993
  ;
  ; this rtn is needed by TIU to support the one letter CWAD indicators
  ; in OE/RR 2.5 screens- subroutine CWAD
  ; DO NOT delete this rtn when the GMRP* rtns are deleted in the
  ; TIU clean-up
  ;
-SELPT ;select new patient using IN^OR to update ORVP, etc. GMRP*2.5*50
- ; IN^OR doesn't exist, code no longer used
- ;K DIC,Y,DIROUT S GMRPOLD=$G(ORVP)
- ;D IN^OR I $D(DIROUT) S GMRPEND=1 Q
- ;I (ORVP=GMRPOLD) S XQORM("B")="Redisplay Screen" K GMRPOLD Q
- ;K GMRPOLD D PAT Q:$D(GMRPQT)  S:'$D(GMRPCTXT) GMRPCTXT=1
- ;D @("BUILD"_GMRPCTXT_"^GMRPNOR"),SCREEN^GMRPNOR
- ;Q
+SELPT ;select new patient using IN^OR to update ORVP, etc.
+ K DIC,Y,DIROUT S GMRPOLD=$G(ORVP)
+ D IN^OR I $D(DIROUT) S GMRPEND=1 Q
+ I (ORVP=GMRPOLD) S XQORM("B")="Redisplay Screen" K GMRPOLD Q
+ K GMRPOLD D PAT Q:$D(GMRPQT)  S:'$D(GMRPCTXT) GMRPCTXT=1
+ D @("BUILD"_GMRPCTXT_"^GMRPNOR"),SCREEN^GMRPNOR
+ Q
 PAT ;set up patient info for use - expects ORVP or DFN
  S GMRPDFN=$S($D(ORVP):$P(ORVP,";"),$D(DFN):DFN,1:0)
  I +GMRPDFN'>0 D  Q:$D(GMRPQT)
@@ -29,20 +29,12 @@ PAT ;set up patient info for use - expects ORVP or DFN
  Q
 CWAD(GMRPDFN) ;;check if any clinical warnings exist for patient
  ;Returns GMRPCWAD="CWAD" (for ones found), or "" if none
- ;S DFN (below) needed for hidden action CWAD^TIULX 
- ; N GMRPCWAD,GMRPCWA1,TIUST,GMRPALG,GMRPI
- N GMRPCWA1,GMRPI
  I '+GMRPDFN Q ""
  S GMRPCWAD=""
- S GMRPCWA1=""
- F GMRPI=7,8 D
- . I $D(^TIU(8925,"ADCPT",+GMRPDFN,30,GMRPI)) S GMRPCWA1=GMRPCWA1_"C"
- . I $D(^TIU(8925,"ADCPT",+GMRPDFN,31,GMRPI)) S GMRPCWA1=GMRPCWA1_"W"
- . I $D(^TIU(8925,"ADCPT",+GMRPDFN,27,GMRPI)) S GMRPCWA1=GMRPCWA1_"D"
- . Q
- S DFN=GMRPDFN D ALLERGY^GMRPNCW I $D(GMRPALG) S GMRPCWA1=GMRPCWA1_"A"
- F GMRPI="C","W","D","A" D
- . I GMRPCWA1[GMRPI S GMRPCWAD=GMRPCWAD_GMRPI
+ I $D(^TIU(8925,"ADCPT",+GMRPDFN,30,7)) S GMRPCWAD="C"
+ I $D(^TIU(8925,"ADCPT",+GMRPDFN,31,7)) S GMRPCWAD=GMRPCWAD_"W"
+ S DFN=GMRPDFN D ALLERGY^GMRPNCW I $D(GMRPALG) S GMRPCWAD=GMRPCWAD_"A"
+ I $D(^TIU(8925,"ADCPT",+GMRPDFN,27,7)) S GMRPCWAD=GMRPCWAD_"D"
  K CWA,TIUST,GMRPALG
  Q GMRPCWAD
  ;

@@ -1,187 +1,123 @@
-PXRMPROB ; SLC/PKR - Code for Problem List. ;06/09/2006
- ;;2.0;CLINICAL REMINDERS;**4**;Feb 04, 2005;Build 21
+PXRMPROB ; SLC/PKR - Code to treat items from the Problem List. ;24-Sep-2009 16:14;MGH
+ ;;1.5;CLINICAL REMINDERS;**2,1005,1006,1007**;Jun 19, 2000
  ;
- ;===================================================
-FPDAT(DFN,TAXARR,NGET,SDIR,BDT,EDT,STATUSA,FLIST) ;Find data for a
- ;patient. STATUSA is an array containing a list of status to search
- ;for. A status can be "A" for active or "I" for inactive. If STATUSA=""
- ;it will search for all with data.
- N BDTT,DAS,DATE,DEND,DS,DSAVE,DTT,EDATE,EDTT,ICDP,IND,JND,LGT,LLT
- N NFOUND,NPRIO,NSTAT,PRIO,PRIOA,STAT,STATUSAT,TDATE,TE,TIND,TLIST,TS
- I $G(^PXRMINDX(9000011,"DATE BUILT"))="" D  Q
- . D NOINDEX^PXRMERRH("TX",TAXARR("IEN"),9000011)
- I '$D(^PXRMINDX(9000011,"PSPI",DFN)) Q
- S NSTAT=STATUSA(0)
- I NSTAT=0 Q
- ;EDATE is the evaluation date.
- S EDATE=$$NOW^PXRMDATE
- S BDTT=BDT-.0000001
- S EDTT=$S(EDT[".":EDT+.0000001,1:EDT+.240001)
- S DEND=$S(EDT[".":EDT,1:EDT+.240001)
- S DTT=EDATE+.240001
- ;Get the start and end of the taxonomy.
- S TS=$O(TAXARR(80,""))-1
- S TE=$O(TAXARR(80,""),-1)
- ;For chronic problems we use today's date so only search for chronic
- ;problems if today's datelies in the date range.
- I EDATE'<BDT,EDATE'>DEND S NPRIO=3,PRIOA(1)="C",PRIOA(2)="A",PRIOA(3)="U"
- E  S NPRIO=2,PRIOA(1)="A",PRIOA(2)="U"
- S NFOUND=0
- F IND=1:1:NSTAT D
- . S STAT=STATUSA(IND)
- . F JND=1:1:NPRIO D
- .. S PRIO=PRIOA(JND)
- .. I '$D(^PXRMINDX(9000011,"PSPI",DFN,STAT,PRIO)) Q
- .. I SDIR=-1,PRIO'="C" S DS=EDTT,LLT=BDT,LGT=EDT
- .. I SDIR=-1,PRIO="C" S DS=DTT,LLT=0,LGT=EDATE
- .. I SDIR=1,PRIO'="C" S DS=BDTT,LLT=0,LGT=EDT
- .. I SDIR=1,PRIO="C" S DS=0,LLT=0,LGT=EDATE
- .. S ICDP=TS
- .. F  S ICDP=$O(^PXRMINDX(9000011,"PSPI",DFN,STAT,PRIO,ICDP)) Q:(ICDP>TE)!(ICDP="")  D
- ... I '$D(TAXARR(80,ICDP)) Q
- ... S DATE=DS
- ... F  S DATE=+$O(^PXRMINDX(9000011,"PSPI",DFN,STAT,PRIO,ICDP,DATE),SDIR) Q:$S(DATE=0:1,DATE<LLT:1,DATE>LGT:1,1:0)  D
- .... S DAS=$O(^PXRMINDX(9000011,"PSPI",DFN,STAT,PRIO,ICDP,DATE,""))
- .... S DSAVE=$S(PRIO="C":EDATE,1:DATE)
- .... I DSAVE'<BDT,DSAVE'>DEND D
- ..... S NFOUND=NFOUND+1
- ..... S TLIST(DSAVE,NFOUND)=DAS_U_ICDP_U_STAT_U_PRIO
- ..... I NFOUND>NGET D
- ...... S TDATE=$O(TLIST(""),-SDIR),TIND=$O(TLIST(TDATE,""))
- ...... K TLIST(TDATE,TIND)
- ;Return up to NGET of the most recent entries.
- S NFOUND=0
- S DATE=""
- F  S DATE=$O(TLIST(DATE),SDIR) Q:(DATE="")!(NFOUND=NGET)  D
- . S IND=0
- . F  S IND=$O(TLIST(DATE,IND)) Q:(IND="")!(NFOUND=NGET)  D
- .. S NFOUND=NFOUND+1
- .. S FLIST(DATE,NFOUND,9000011)=TLIST(DATE,IND)_U_"ICD9"
- Q
- ;
- ;===================================================
-GETDATA(DA,FIEVT) ;Return data for a specified Problem List entry.
+ ;Patch 1005 fixed issue with empty conditions
+ ;Patch 1006 fixed issue with empty date
+ ;=======================================================================
+BLDPC(DFN) ;Check and if necessary build the Problem List patient cache.
+ N DATE,ICD9P,INVDATE,INVDT,NPATIEN,PROBIEN,TEMP
  N GMPLCOND,GMPLDLM,GMPLICD,GMPLLEX,GMPLODAT,GMPLPNAM,GMPLPRIO,GMPLPRV
  N GMPLSTAT,GMPLTXT,GMPLXDAT
- ;DBIA #2644
- D CALL2^GMPLUTL3(DA)
- S FIEVT("PROVIDER NARRATIVE")=GMPLTXT
- S FIEVT("DATE ENTERED")=GMPLODAT
- S FIEVT("DATE LAST MODIFIED")=GMPLDLM
- S FIEVT("STATUS")=GMPLSTAT
- S FIEVT("PRIORITY")=GMPLPRIO
+ ;If the patient's problem list was modified since the cache was
+ ;last built the cache will have been killed in PXRMPINF.
+ I '$D(^XTMP(PXRMDFN,"PROB","NPATIEN")) D
+ . K ^XTMP(PXRMDFN,"PROB")
+ . S INVDT=$$INVFFMDL^PXRMDATE(DT,1)
+ . S PROBIEN=""
+ . F  S PROBIEN=$O(^AUPNPROB("AC",DFN,PROBIEN)) Q:PROBIEN=""  D
+ .. D CALL2^GMPLUTL3(PROBIEN)
+ .. ;IHS/MSC/MGH Line changed for IHS problems
+ .. ;I (GMPLCOND="H")!(GMPLCOND="") Q
+ .. I GMPLCOND="H" Q
+ .. S INVDATE=$$INVFFMDL^PXRMDATE(GMPLDLM,1)
+ .. ;IHS/MSC/MGH 1006 If no inverse date,quit
+ .. I INVDATE="" Q
+ ..;If the problem is chronic use today's date instead of the
+ ..;date last modified.
+ ..;IHS/MSC/MGH Patch 1007 Changed because IHS does not use chronic field
+ ..;I GMPLPRIO="C" D
+ ..S DATE=DT
+ ..S INVDATE=INVDT
+ .. ;E  S DATE=GMPLDLM
+ .. S ^TMP($J,"PROB",GMPLICD,INVDATE)=PROBIEN_U_U_DATE_U_GMPLICD_U_GMPLSTAT_U_GMPLPRIO
+ .;
+ .;Build the list of most recent entries.
+ . S NPATIEN=0
+ . S ICD9P=""
+ . F  S ICD9P=$O(^TMP($J,"PROB",ICD9P)) Q:ICD9P=""  D
+ .. S INVDATE=$O(^TMP($J,"PROB",ICD9P,""))
+ .. S NPATIEN=NPATIEN+1
+ .. S TEMP=^TMP($J,"PROB",ICD9P,INVDATE)
+ .. S ^XTMP(PXRMDFN,"PROB",ICD9P,INVDATE)=TEMP
+ . S ^XTMP(PXRMDFN,"PROB","NPATIEN")=NPATIEN
+ . K ^TMP($J,"PROB")
+ E  S NPATIEN=^XTMP(PXRMDFN,"PROB","NPATIEN")
+ Q NPATIEN
+ ;
+ ;=======================================================================
+EVAL(DFN,FIND0,TFIND0,TAXIEN,FLIST) ;Evaluate Problem List entries.
+ N FIRST,ICD9P,INVDATE,LAST,NPATIEN,TAX0,TLIST,USEINP
+ S NPATIEN=$$BLDPC(DFN)
+ I NPATIEN=0 Q
+ ;Lock the expanded taxonomy cache.
+ I '$$LOCKXTL^PXRMBXTL(TAXIEN) Q
+ ;Get the first and last entry in the patient cache, use this for the
+ ;match limits.
+ S FIRST=$O(^XTMP(PXRMDFN,"PROB",""))
+ S LAST=$O(^XTMP(PXRMDFN,"PROB","NPATIEN"),-1)
+ S ICD9P=FIRST-1
+ F  S ICD9P=$O(^PXD(811.3,TAXIEN,80,"ICD9P",ICD9P)) Q:(ICD9P>LAST)!(ICD9P="")  D
+ . S INVDATE=+$O(^XTMP(PXRMDFN,"PROB",ICD9P,""))
+ . I INVDATE>0 D
+ .. S TLIST(INVDATE)=$G(^XTMP(PXRMDFN,"PROB",ICD9P,INVDATE))
+ D ULOCKXTL^PXRMBXTL(TAXIEN)
+ S INVDATE=$O(TLIST(""))
+ ;If there are no entries we are done.
+ I INVDATE="" Q
+ S TAX0=^PXD(811.2,TAXIEN,0)
+ S USEINP=$P(TAX0,U,9)
+ I USEINP="" S USEINP=$P(TFIND0,U,9)
+ I USEINP="" S USEINP=$P(FIND0,U,9)
+ ;If Use Inactive Problems is true return the most recent entry no
+ ;matter what the status. If it is false return the most recent
+ ;active entry.
+ I 'USEINP D
+ . N DONE,STATUS
+ . S DONE=0
+ . S INVDATE=""
+ . F  S INVDATE=$O(TLIST(INVDATE)) Q:(DONE)!(INVDATE="")  D
+ .. S STATUS=$P(TLIST(INVDATE),U,5)
+ .. I STATUS="A" D
+ ... S FLIST(INVDATE,"AUPNPROB")=TLIST(INVDATE)
+ ... S DONE=1
+ E  S FLIST(INVDATE,"AUPNPROB")=TLIST(INVDATE)
  Q
  ;
- ;===================================================
-GPLIST(TAXARR,NOCC,BDT,EDT,STATUSA,PLIST) ;Build patient list for
- ;Problem List entries.
- ;STATUSA is an array containing a list of status to search for. A
- ;status can be "A" for active or "I" for inactive. If STATUSA=""
- ;it will search for all with data.
- N DAS,DATE,DEND,DFN,DSAVE,ICDP,IND,JND,NFOUND,NPRIO,NSTAT,PRIO,PRIOA
- N STAT,TEMP,TLIST
- I $G(^PXRMINDX(9000011,"DATE BUILT"))="" D  Q
- . D NOINDEX^PXRMERRH("TX",TAXARR("IEN"),9000011)
- S TLIST="GPLIST_PXRMPROB"
- S DEND=$S(EDT[".":EDT,1:EDT+.240001)
- K ^TMP($J,TLIST)
- S NSTAT=STATUSA(0)
- I NSTAT=0 Q
- ;EDATE is the evaluation date.
- S EDATE=$$NOW^PXRMDATE
- ;For chronic problems we use today's date so only search for chronic
- ;problems if EDATE lies in the date range.
- I EDATE'<BDT,EDATE'>DEND D
- . S NPRIO=3
- . S PRIOA(1)="C",PRIOA(2)="A",PRIOA(3)="U"
- E  D
- . S NPRIO=2
- . S PRIOA(1)="A",PRIOA(2)="U"
- S NFOUND=0
- S ICDP=""
- F  S ICDP=$O(TAXARR(80,ICDP)) Q:(ICDP="")  D
- .;Since chronic problems will have today's date find those first.
- . I '$D(^PXRMINDX(9000011,"ISPP",ICDP)) Q
- . F IND=1:1:NSTAT D
- .. S STAT=STATUSA(IND)
- .. I '$D(^PXRMINDX(9000011,"ISPP",ICDP,STAT)) Q
- .. F JND=1:1:NPRIO D
- ... S PRIO=PRIOA(JND)
- ... I '$D(^PXRMINDX(9000011,"ISPP",ICDP,STAT,PRIO)) Q
- ... S DFN=""
- ... F  S DFN=$O(^PXRMINDX(9000011,"ISPP",ICDP,STAT,PRIO,DFN)) Q:DFN=""  D
- .... S DATE=""
- .... F  S DATE=$O(^PXRMINDX(9000011,"ISPP",ICDP,STAT,PRIO,DFN,DATE)) Q:DATE=""  D
- ..... S DAS=$O(^PXRMINDX(9000011,"ISPP",ICDP,STAT,PRIO,DFN,DATE,""))
- ..... S NFOUND=NFOUND+1
- ..... S DSAVE=$S(PRIO="C":EDATE,1:DATE)
- ..... I DSAVE'<BDT,DSAVE'>DEND S ^TMP($J,TLIST,DFN,DSAVE,DAS)=ICDP_U_"ICD9"_U_STAT_U_PRIO
- ;Return up to NOCC of the most recent entries.
- S DFN=0
- F  S DFN=$O(^TMP($J,TLIST,DFN)) Q:DFN=""  D
- . S NFOUND=0
- . S DATE=""
- . F  S DATE=$O(^TMP($J,TLIST,DFN,DATE),-1) Q:(DATE="")!(NFOUND=NOCC)  D
- .. S DAS=""
- .. F  S DAS=$O(^TMP($J,TLIST,DFN,DATE,DAS)) Q:DAS=""  D
- ... S NFOUND=NFOUND+1
- ... S TEMP=^TMP($J,TLIST,DFN,DATE,DAS)
- ... S ^TMP($J,PLIST,1,DFN,NFOUND,9000011)=DAS_U_DATE_U_TEMP
- K ^TMP($J,TLIST)
- Q
- ;
- ;===================================================
-MHVOUT(INDENT,OCCLIST,IFIEVAL,NLINES,TEXT) ;Produce the MHV output.
- N CODE,EM,D0,DIAG,EM,ICD9P,ICD9ZN,IND,JND,NAME,NIN,NOUT,PN,PRIORITY
- N STATUS,TEMP,TEXTIN,TEXTOUT,VDATE
- S NAME="Problem Diagnosis = "
- S IND=0
- F  S IND=$O(OCCLIST(IND)) Q:IND=""  D
- . S VDATE=IFIEVAL(IND,"DATE")
- . S TEMP=$$EDATE^PXRMDATE(VDATE)
- . S ICD9P=IFIEVAL(IND,"CODEP")
- . S ICD9ZN=$$ICDDX^ICDCODE(ICD9P,VDATE)
- . S CODE=$P(ICD9ZN,U,2)
- . S DIAG=$P(ICD9ZN,U,4)
- . S TEMP=NAME_DIAG
- . S TEMP=TEMP_" ("_$$EDATE^PXRMDATE(VDATE)_")"
- . D FORMATS^PXRMTEXT(INDENT+2,PXRMRM,TEMP,.NOUT,.TEXTOUT)
- . F JND=1:1:NOUT S NLINES=NLINES+1,TEXT(NLINES)=TEXTOUT(JND)
- S NLINES=NLINES+1,TEXT(NLINES)=""
- Q
- ;
- ;===================================================
-OUTPUT(INDENT,OCCLIST,IFIEVAL,NLINES,TEXT) ;Produce the clinical
- ;maintenance output. The Problem List information is:  DATE, ICD9 IEN, 
+ ;======================================================================
+OUTPUT(NLINES,TEXT,FINDING,FIEVAL) ;Produce the clinical
+ ;maintenance output. The Problem List information is:  DATE, ICD9 IEN,
  ;ICD9 CODE, PROVIDER NARRATIVE.
- N CODE,EM,D0,DIAG,EM,ICD9P,ICD9ZN,IND,JND,NIN,NOUT,PN,PRIORITY
- N STATUS,TEMP,TEXTIN,TEXTOUT,VDATE
+ N EM,D0,DIAG,FIEN,ICD9P,ICD9ZN,PN,PRIORITY,TEMP,VDATE,CODE
+ S FIEN=$P(FIEVAL(FINDING,"SOURCE"),";",1)
+ S VDATE=FIEVAL(FINDING,"DATE")
+ S TEMP=$$EDATE^PXRMDATE(VDATE)
+ S TEMP=TEMP_" Problem Diagnosis: "
+ S D0=$G(^AUPNPROB(FIEN,0))
+ S ICD9P=FIEVAL(FINDING,"CODEP")
+ S ICD9ZN=$$GET0^PXRMICD9(ICD9P)
+ S CODE=$P(ICD9ZN,U,1)
+ S DIAG=$P(ICD9ZN,U,3)
+ S TEMP=TEMP_CODE_" "_DIAG
+ S PRIORITY=$G(FIEVAL(FINDING,"PRIORITY"))
+ I $L(PRIORITY)>0 D
+ . S TEMP=TEMP_" Priority-"_$$EXTERNAL^DILFD(9000011,1.14,"",PRIORITY,.EM)
+ ;If the finding has expired add "EXPIRED"
+ I $D(FIEVAL(FINDING,"EXPIRED")) S TEMP=TEMP_" - EXPIRED"
+ ;If the Problem is inactive add "INACTIVE PROBLEM"
+ I $D(FIEVAL(FINDING,"INACTIVE")) S TEMP=TEMP_" - INACTIVE PROBLEM"
  S NLINES=NLINES+1
- S TEXT(NLINES)=$$INSCHR^PXRMEXLC(INDENT," ")_"Problem Diagnosis:"
- S IND=0
- F  S IND=$O(OCCLIST(IND)) Q:IND=""  D
- . S VDATE=IFIEVAL(IND,"DATE")
- . S TEMP=$$EDATE^PXRMDATE(VDATE)
- . S ICD9P=IFIEVAL(IND,"CODEP")
- . S ICD9ZN=$$ICDDX^ICDCODE(ICD9P,VDATE)
- . S CODE=$P(ICD9ZN,U,2)
- . S DIAG=$P(ICD9ZN,U,4)
- . S TEMP=TEMP_" "_CODE_" "_DIAG
- . S PRIORITY=$G(IFIEVAL(IND,"PRIORITY"))
- . S PRIORITY=$S(PRIORITY'="":$$EXTERNAL^DILFD(9000011,1.14,"",PRIORITY,.EM),1:"UNDEFINED")
- . S TEMP=TEMP_" Priority: "_PRIORITY
- .;If the Problem is inactive mark it as such.
- . S STATUS=$G(IFIEVAL(IND,"STATUS"))
- . S STATUS=$S(STATUS'="":$$EXTERNAL^DILFD(9000011,.12,"",STATUS,.EM),1:"UNDEFINED")
- . S TEMP=TEMP_" Status: "_STATUS
- . S TEXTIN(1)=TEMP_"\\",NIN=1
- . S D0=^AUPNPROB(IFIEVAL(IND,"DAS"),0)
- . S PN=$P(D0,U,5)
- . I PN'="" S PN=$P($G(^AUTNPOV(PN,0)),U,1)
- . I PN="" S PN="MISSING"
- . I PN'=DIAG S TEXTIN(2)="Prov. Narr. - "_PN,NIN=2
- . D FORMAT^PXRMTEXT(INDENT+2,PXRMRM,NIN,.TEXTIN,.NOUT,.TEXTOUT)
- . F JND=1:1:NOUT S NLINES=NLINES+1,TEXT(NLINES)=TEXTOUT(JND)
- S NLINES=NLINES+1,TEXT(NLINES)=""
+ S TEXT(NLINES)=TEMP
+ S PN=$P(D0,U,5)
+ S PN=$P(^AUTNPOV(PN,0),U,1)
+ I ($L(PN)>0)&(PN'=DIAG) D
+ . S NLINES=NLINES+1
+ . S TEXT(NLINES)="Prov. Narr. - "_PN
+ I $D(PXRMDEV) D
+ . N UID
+ . S UID="ICD9PROB "_CODE
+ . S ^TMP(PXRMPID,$J,PXRMITEM,UID,"CODE")=CODE
+ . S ^TMP(PXRMPID,$J,PXRMITEM,UID,"DATE")=VDATE
+ . S ^TMP(PXRMPID,$J,PXRMITEM,UID,"DIAG")=DIAG
+ . S ^TMP(PXRMPID,$J,PXRMITEM,UID,"PN")=PN
  Q
  ;

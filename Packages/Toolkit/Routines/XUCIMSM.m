@@ -1,11 +1,13 @@
 %XUCI ;SF/STAFF - SWAP UCIS FOR MSM-UNIX ;11/20/92  07:30
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1016**;APR 1, 2003;Build 5
  ;;8.0;KERNEL;;Jul 10, 1995
+ ;IHS/MFD 2+3 gets commented out,SWAP+2 has prog mode check removed
 1 R !,"What UCI: ",%UCI:$S($D(DTIME):DTIME,1:10),"  " Q:%UCI=""!(%UCI["^")  G 2
  ;
 2 ;
  I %UCI="PROD"!(%UCI="MGR") S %UCI=^%ZOSF(%UCI)
  S X=%UCI X ^%ZOSF("UCICHECK") G ERR:0[Y
- I $S($P($ZV,"Version ",2)'<2:$V(0,$J,2)#2,1:$V(2,$J)#2) W:'($D(XUSLNT)!$D(ZTQUEUED)) !,*7,"NO SWITCHING UCI'S IN PROGRAMMER MODE!",! S Y=0 Q
+ ;I $S($P($ZV,"Version ",2)'<2:$V(0,$J,2)#2,1:$V(2,$J)#2) W:'($D(XUSLNT)!$D(ZTQUEUED)) !,*7,"NO SWITCHING UCI'S IN PROGRAMMER MODE!",! S Y=0 Q
 V D SWAP
 U I '($D(XUSLNT)!$D(ZTQUEUED)) W *7,!,"YOU'RE IN UCI: ",Y,!
  S $ZT="^%ZTER",%=$D(^%ZOSF("OS"))
@@ -13,7 +15,7 @@ K K %,%UCI S Y=1 Q
  ;
 SWAP ;I $P($ZV,"Version ",2)'<2
  S %ST=$S(X[",":$ZU($P(X,","),$P(X,",",2)),1:$ZU(X))
- I $P($ZV,"Version ",2),%ST["," S %ST=$P(%ST,",",2)*32+$P(%ST,",") V:'($V(0,$J,2)#2) 2:$J:%ST:2 Q
+ I $P($ZV,"Version ",2),%ST["," S %ST=$P(%ST,",",2)*32+$P(%ST,",") V 2:$J:%ST:2 Q ;IHS/MFD removed check for programmer mode V:'($V(0,$J,2)#2)
  F %ST=1:1:64 Q:$ZU(%ST)=X
  V:'($V(2,$J)#2) 2:$J:%ST-1:2 Q
  ;

@@ -1,9 +1,23 @@
-DGPMV21 ;ALB/MRL/MIR - PASS/FAIL MOVEMENT DATE; 8 MAY 89
+DGPMV21 ;ALB/MRL/MIR - PASS/FAIL MOVEMENT DATE; [ 09/13/2001  3:57 PM ]
  ;;5.3;Registration;**40,95,131**;Aug 13, 1993
+ ;IHS/ANMC/LJF  3/08/2001 removed calls to PTF
+ ;                        added check for lockout date range
+ ;
  I $S('$D(DGPMY):1,DGPMY?7N:0,DGPMY'?7N1".".N:1,1:0) S DGPME="DATE EITHER NOT PASSED OR NOT IN EXPECTED VA FILEMANAGER FORMAT" G Q
+ ;
+ ;IHS/ANMC/LJF 3/08/2001 added lines below to check lockout parameter
+ I $$LOCKED^BDGPAR(BDGDIV,DGPMY) D  G Q
+ . W !!?10,"*** CAN'T EDIT A MOVEMENT OLDER THAN LOCK OUT DATE. ***"
+ . W !?18,"*** CONTACT APPLICATION COORDINATOR ***" D PAUSE^BDGF
+ ;IHS/ANMC/LJF 3/08/2001 end of new code
+ ;
  I $S('$D(DGPMT):1,'DGPMT:1,1:0) S DGPME="TRANSACTION TYPE IS NOT DEFINED" G Q
- D PTF^DGPMV22(DFN,DGPMDA,.DGPME,DGPMCA) G:$G(DGPME)]"" Q K DGPME
- G CONT:("^4^5^"[("^"_DGPMT_"^"))!DGPMN D PTF I $D(DGPME),DGPME="***" Q
+ ;
+ ;IHS/ANMC/LJF 3/08/2001 removing calls to PTF
+ ;D PTF^DGPMV22(DFN,DGPMDA,.DGPME,DGPMCA) G:$G(DGPME)]"" Q K DGPME
+ ;G CONT:("^4^5^"[("^"_DGPMT_"^"))!DGPMN D PTF I $D(DGPME),DGPME="***" Q
+ ;IHS/ANMC/LJF 3/08/2001 end of changes
+ ;
 CONT Q:'DGPMN  D CHK I $D(DGPME) G Q
  I DGPM1X Q  ;Don't ask to add a new one if discharge or check-out
 ADD S Y=DGPMY X ^DD("DD")
@@ -20,7 +34,7 @@ CHK ;Check new date/time for consistency with other movements
  I DGPMT=6,$$CHKLAST^DGPMV30(DFN,DGPMCA,+DGPMY) S DGPME="Cannot change treating specialty while patient is on absence." Q
  I "^1^4^"'[("^"_DGPMT_"^") Q
  S X=$O(^DGPM("APTT3",DFN,DGPMY)),Y=$O(^DGPM("APTT5",DFN,DGPMY)) I X!Y S DGPME="New "_$S(DGPMT=1:"admission",1:"check-in")_" ...must enter after last "_$S(X:"discharge",1:"check-out") G Q
- S DGX=$P(DGPMAN,"^",21) Q:'$D(^DGPM(+DGX,0))  S DGX=^(0),X=$S($D(^DGPM(+$P(DGX,"^",14),0)):^(0),1:"") Q:'X  I $D(^DGP(45.84,+$P(X,"^",16))) S DGPME="Can't edit.  Corresponding NHCU/DOM PTF Record is Closed." G Q
+ ;S DGX=$P(DGPMAN,"^",21) Q:'$D(^DGPM(+DGX,0))  S DGX=^(0),X=$S($D(^DGPM(+$P(DGX,"^",14),0)):^(0),1:"") Q:'X  I $D(^DGP(45.84,+$P(X,"^",16))) S DGPME="Can't edit.  Corresponding NHCU/DOM PTF Record is Closed." G Q  ;IHS/ANMC/LJF 3/08/2001
  I $D(^DGPM(+$P(DGPMAN,"^",17),0)),+^(0) S DGPME="After discharge.  Must edit movement through NHCU/DOM transfer." G Q
  Q
  ;

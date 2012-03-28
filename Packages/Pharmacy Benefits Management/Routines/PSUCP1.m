@@ -1,5 +1,5 @@
-PSUCP1 ;BIR/TJH,PDW - PBM - CONTROL POINT, MANUAL ENTRY ; 1/10/11 8:08am
- ;;4.0;PHARMACY BENEFITS MANAGEMENT;**15,18**;MARCH, 2005;Build 7
+PSUCP1 ;BIR/TJH,PDW - PBM - CONTROL POINT, MANUAL ENTRY ;25 AUG 1998
+ ;;3.0;PHARMACY BENEFITS MANAGEMENT;**19,20**;Oct 15, 1998
  ;
  ;DBIA's
  ; Reference to file #4   supported by DBIA 10090
@@ -34,17 +34,10 @@ DATES ; do this if user entered N, wants date range
  ..W !!,"The end date of the search must be greater than the start date.",!
  ..K PSUSDT,PSUEDT
  ..S ERC=2 ; condition 2, ask dates again
- .I PSUSDT>DT!(PSUEDT>DT) D  Q
+ .I PSUSDT>DT!(PSUEDT>DT) D
  ..W !!,"Searches cannot be executed for future dates.",!
  ..K PSUSDT,PSUEDT
  ..S ERC=2 ; condition 2, ask dates again
- .;PSU*4*18 Warn if range > 93 days.
- .N X1,X2,X,% S X1=PSUEDT,X2=PSUSDT D ^%DTC I X>93 D  Q
- ..W !!,"WARNING you have chosen a range greater than 93 days."
- ..W !,"This could potentially create a very large amount of data."
- ..W !,"This may result in system problems."
- ..W !!,"Are you sure you want to continue"
- ..D YN^DICN W ! I %'=1 S ERC=2
  I ERC=1 G ERR
  I ERC=2 S ERC=0 G DATES
  ;
@@ -106,11 +99,11 @@ MASTER ; if monthly, should it be added to master file
 MODULE ; display and select module(s)
  D OPTS^PSUCP ; set up PSUA array with option info
  W !!,"Select one or more of the following:",!
- F I=1:1:12 W !,I,".",?5,PSUA(I,"M")
+ F I=1:1:10 W !,I,".",?5,PSUA(I,"M")
  W !!,"Laboratory data and a Patient Demographic summary report will be automatically"
  W !,"generated if IVs, Unit Dose, or Prescription extracts are chosen."
- W !,"You may select all of the modules by entering 'A' for ALL or by using '1:12'."
- W !!,"The Provider Data report may take an extended amount of time to run."
+ W !,"You may select all of the modules by entering 'A' for ALL or by using '1:10'."
+ W !!,"The Provider Information report may take an extended amount of time to run."
  W !,"It is recommended that it be run during off peak hours."
 MODP ; module selection prompt
  W !!,"Select the code(s) associated with the data requested: "
@@ -122,7 +115,7 @@ MODP ; module selection prompt
  ;I X["7" D  G MODULE
  ;.W !!,"Lab may not be selected directly.  It will be automatically included when"
  ;.W !,"options 1, 2 or 4 are part of the selection."
- S:"Aa"[$E(X) X="1:12"
+ S:"Aa"[$E(X) X="1:10"
 MODHLP I X["?" D  G MODULE:X["??",MODP
  .W !!,"Enter:  A single code number to print just that report."
  .W !,?8,"A range of code numbers.  Example:  1:3"
@@ -145,7 +138,7 @@ MODHLP I X["?" D  G MODULE:X["??",MODP
  I ERC W !!,"<INVALID CHOICE - ",X,", TRY AGAIN>",$C(7) G MODP
  I '$D(PSUMOD) W !!,"No choices were made." S X="?" G MODHLP
  ;
- F PII=1,2,4 I $D(PSUMOD(PII)) S PSUMOD(13)="" ; add Lab if IV,UD or OP
+ F PII=1,2,4 I $D(PSUMOD(PII)) S PSUMOD(11)="" ; add Lab if IV,UD or OP
  ;
  W !!,"You have selected: "
  S X="",PSUOPTS="" F  S X=$O(PSUMOD(X)) Q:X=""  W ?20,X," - ",PSUA(X,"M"),! S PSUOPTS=PSUOPTS_X_","
@@ -153,23 +146,14 @@ MODHLP I X["?" D  G MODULE:X["??",MODP
  . W ?20,"Patient Demographic Summary" W !
  S PSUOPTS=$E(PSUOPTS,1,$L(PSUOPTS)-1) ; remove trailing comma
  ;
- ;Set flag for combined AMIS summary report.
- I (PSUOPTS["1,2,3,4")&(PSUOPTS[6) S ^XTMP("PSU_"_PSUJOB,"CBAMIS")=""
- ;
 RPT ; select report type - full report or summary only
- N PSUGO
- D:PSUOPTS'=11&(PSUOPTS'=12)        ; no summary for VITALS/IMMS OR AA**
- . S DIR("A")="Print Summary Only"
- . S DIR("?",1)="Please answer with a 'Y' or 'N'."
- . S DIR("?")="Answer Yes and only the summary report will be generated."
- . S DIR(0)="YO",DIR("B")="NO"
- . D ^DIR K DIR,DIRUT,DIROUT,DUOUT,DTOUT W !
- . ;PSU*4*15
- . I (Y["^") S:Y="^" PSUGO=1 S:Y["^^" PSUGO=2 Q
- . S PSUSMRY=$S(Y:1,1:0)
- G ERR:$G(PSUGO)=1,MODULE:$G(PSUGO)=2
- S:PSUOPTS=11!(PSUOPTS=12) PSUSMRY=0
- ;
+ S DIR("A")="Print Summary Only"
+ S DIR("?",1)="Please answer with a 'Y' or 'N'."
+ S DIR("?")="Answer Yes and only the summary report will be generated."
+ S DIR(0)="YO",DIR("B")="NO"
+ D ^DIR K DIR,DIRUT,DIROUT,DUOUT,DTOUT W !
+ G ERR:Y="",ERR:Y="^",MODULE:Y["^^"
+ S PSUSMRY=$S(Y:1,1:0)
  ;
 BCKGND ; always run as a background job
  W !!,"This report will automatically run as a background job."
@@ -185,10 +169,8 @@ BCKGND ; always run as a background job
  K DTOUT
  S PSUDTH=Y
  ;
-DEVICE ;
- S PSUIOP="",PSUPOP=1
+DEVICE S PSUIOP="",PSUPOP=1
  I 'PSUDUZ D  G ERR:POP
- . I PSUOPTS=11!(PSUOPTS=12) W !,"HARDCOPIES NOT AVAILABLE FOR THIS OPTION" S POP=1 Q
  .S PSUIO=ION_";"_IOST_";"_IOM_";"_IOSL
  .S %ZIS="N0",%ZIS("B")="",%ZIS("A")="Select 132 column device: "
  .D ^%ZIS K %ZIS
@@ -202,7 +184,6 @@ DEVICE ;
  .S PSUIOP=$S('PSUPOP:"",1:ION_";"_IOST_";"_IOM_";"_IOSL) ; save printer parameters
  .D RESETVAR^%ZIS ; restore terminal parameters
 EXIT ; exit point for normal finish
- ;
  Q  ; return to calling routine, ^PSUCP
  ;
 PSUHDR ;Display header
@@ -212,15 +193,13 @@ PSUHDR ;Display header
  W !,"2. Pharmacy Patient UD Sub-file       File # 55.06"
  W !,"3. AR/WS Stats                        File # 58.5"
  W !,"4. Prescription                       File # 52"
- W !,"5. Procurement                        File # 58.811,# 58.81"
+ W !,"5. Procurement                        File # 442,# 58.811,# 58.81"
  W !,"6. Controlled Substances              File # 58.81"
  W !,"7. Patient Demographics               File # 2"
  W !,"8. Outpatient Visits                  File # 9000010,# 9000010.07"
  W !,"9. Inpatient PTF Record               File # 45"
  W !,"10. Provider Data                     File # 200,# 7,# 49,# 8932.1"
- W !,"11. Allergy/Adverse Event             File # 120.8,# 120.85"
- W !,"12. Vitals/Immunization Record        File # 120.5,# 9999999.14"
- W !,"13. Laboratory                        File # 60,# 63"
+ W !,"11. Laboratory                        File # 60,# 63"
  ;
  W !!,"This data can be collected for ALL of the files listed or for one or"
  W !,"more specific files.  A summary of data or a detailed report by drug"

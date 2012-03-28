@@ -1,5 +1,5 @@
 PSUDEM3 ;BIR/DAM - ICD9 codes for Outpatient Encounter Extract ; 20 DEC 2001
- ;;4.0;PHARMACY BENEFITS MANAGEMENT;;MARCH, 2005
+ ;;3.0;PHARMACY BENEFITS MANAGEMENT;**19**;Oct 15, 1998
  ;
  ;DBIA's
  ; Reference to file 80         supported by DBIA 10082

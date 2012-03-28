@@ -1,11 +1,13 @@
-LROS ;SLC/CJS/DALOI/FHS-LAB ORDER STATUS ;8/11/97
+LROS ;SLC/CJS/DALOI/FHS-LAB ORDER STATUS ;8/11/97 [ 04/14/2003  11:42 AM ]
+ ;;5.2;LR;**1003,1004,1015,1018,1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**121,153,202,210,221,263**;Sep 27, 1994
  N LRLOOKUP S LRLOOKUP=1 ; Variable to indicate to lookup patients, prevent adding new entries in ^LRDPA
 EN K DIC,LRDPAF,%DT("B") S DIC(0)="A"
  D ^LRDPA G:(LRDFN=-1)!$D(DUOUT)!$D(DTOUT) LREND D L0 G EN
 L0 D ENT S %DT="" D DT^LRX
 L1 S LREND=0,%DT="E",%DT("A")="DATE to begin review: " D DATE^LRWU G LREND:Y<1 S (LRSDT,LRODT)=Y S %DT="",X="T-"_$S($P($G(^LAB(69.9,1,0)),U,9):$P(^(0),U,9),1:30) D ^%DT S LRLDAT=Y
-L2 S LRSN=$O(^LRO(69,LRODT,1,"AA",LRDFN,0)) I LRSN<1 S Y=LRODT D DD^LRX W !,"No orders for ",Y S X1=LRODT,X2=-1 D C^%DTC S LRODT=X I LRODT<LRLDAT W !!,"NO REMAINING ACTIVE ORDERS",! G LREND
+L2 ; S LRSN=$O(^LRO(69,LRODT,1,"AA",LRDFN,0)) I LRSN<1 S Y=LRODT D DD^LRX W !,"No orders for ",Y S X1=LRODT,X2=-1 D C^%DTC S LRODT=X I LRODT<LRLDAT W !!,"NO REMAINING ACTIVE ORDERS",! G LREND
+ S LRSN=$O(^LRO(69,LRODT,1,"AA",LRDFN,0)) I LRSN<1 S Y=LRODT D DD^LRX S X1=LRODT,X2=-1 D C^%DTC S LRODT=X I LRODT<LRLDAT W !!,"NO REMAINING ACTIVE ORDERS",! G LREND     ; IHS/OIT/MKK - LR*5.2*1030
  D WAIT:$Y>18 G LREND:LREND,L2:LRSN<1
  I LRSDT'=LRODT W !,"Orders for date: " S Y=LRODT D DD^LRX W Y," OK" S %=1 D YN^DICN I %'=1 G LREND
  D ENTRY G LREND:LREND S X1=LRODT,X2=-1 D C^%DTC S LRODT=X
@@ -16,7 +18,8 @@ ENTRY D HED Q:LREND
 ORDER ;call with LRSN, from LROE, LROE1, LRORD1, LROW2, LROR1
  K D,LRTT S LREND=0
  Q:'$D(^LRO(69,LRODT,1,LRSN,0))  S LROD0=^LRO(69,LRODT,1,LRSN,0),LROD1=$S($D(^(1)):^(1),1:""),LROD3=$S($D(^(3)):^(3),1:"")
- W !?2,"-Lab Order # ",$S($D(^LRO(69,LRODT,1,LRSN,.1)):^(.1),1:"") S X=$P(LROD0,U,6) D DOC^LRX W ?45,"Provider: ",$E(LRDOC,1,25) D WAIT Q:$G(LREND)
+ ; W !?2,"-Lab Order # ",$S($D(^LRO(69,LRODT,1,LRSN,.1)):^(.1),1:"") S X=$P(LROD0,U,6) D DOC^LRX W ?45,"Provider: ",$E(LRDOC,1,25) D WAIT Q:$G(LREND)
+ W !,"Lab Order # " D REVIDEO^BLRUTIL3($S($D(^LRO(69,LRODT,1,LRSN,.1)):" "_^(.1)_" ",1:""))  S X=$P(LROD0,U,6) D DOC^LRX W ?45,"Provider: ",$E(LRDOC,1,25) D WAIT Q:$G(LREND)  ; IHS/OIT/MKK - LR*5.2*1030
  S X=$P(LROD0,U,3),X=$S(X:$S($D(^LAB(62,+X,0)):$P(^(0),U),1:""),1:""),X4="" I $D(^LRO(69,LRODT,1,LRSN,4,1,0)),+^(0) S X4=+^(0),X4=$S($D(^LAB(61,X4,0)):$P(^(0),U),1:"")
  I $E($P(LROD1,U,6))="*" W !?3,$P(LROD1,U,6) D WAIT Q:$G(LREND)
  I $G(^LRO(69,LRODT,1,LRSN,"PCE")) W !,?5,"Visit Number(s): ",$G(^("PCE")) D WAIT Q:$G(LREND)
@@ -50,8 +53,16 @@ WRITE ;
  W ?20,$S($D(^LAB(62.05,+LRURG,0)):$P(^(0),U),1:"")," " D WAIT Q:$G(LREND)
  I $X>28 W ! D WAIT Q:$G(LREND)
  W ?28,LROT," ",LROS,?43," ",LROSD
- W:X3 ?60," ",$S($D(^LRO(68,X1,1,X2,1,X3,.2)):^(.2),1:"")
- I LRROD W !?46,"  See order: ",LRROD D WAIT
+ ; W:X3 ?60," ",$S($D(^LRO(68,X1,1,X2,1,X3,.2)):^(.2),1:"")
+ W:X3 ?62,$S($D(^LRO(68,X1,1,X2,1,X3,.2)):^(.2),1:"")                ; IHS/OIT/MKK - LR*5.2*1030
+ ; I LRROD W !?46,"  See order: ",LRROD D WAIT
+ I LRROD W !?46,"  See order: " D REVIDEO^BLRUTIL3(" "_LRROD_" ")  D WAIT   ; IHS/OIT/MKK - LR*5.2*1030
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ ;IHS/ITSC/TPF 11/08/02 'SIGN OR SYMPTOM' LAB POV **1015**
+ ; W !,"Sign or Symptom: ",$G(^LRO(69,LRODT,1,LRSN,2,LRACN,9999999))
+ W:$L($G(^LRO(69,LRODT,1,LRSN,2,LRACN,9999999))) !,?2,"Sign or Symptom: ",$G(^LRO(69,LRODT,1,LRSN,2,LRACN,9999999))     ; IHS/OIT/MKK - LR*5.2*1030
+ ;----- END IHS MODIFICATIONS
+ ;
  Q
 COM(LRMMODE) ;
  ;Write comments
@@ -79,7 +90,8 @@ NO2 S:'Y Y=$P(LROD0,U,8) S Y=$S(Y:Y,+LROD3:+LROD3,+LROD1:+LROD1,1:LRODT) D DATE 
  I $L($P(LROD1,U,6)) W !,?20,$P(LROD1,U,6) D WAIT
  Q
 DATE S Y=$$FMTE^XLFDT(Y,"5MZ") Q
-HED D WAIT:$E(IOST,1)="C"&($Y>18) Q:$G(LREND)  W @IOF,!,"  Test",?20,"Urgency",?30,"Status",?64,"Accession"
+HED ; D WAIT:$E(IOST,1)="C"&($Y>18) Q:$G(LREND)  W @IOF,!,"  Test",?20,"Urgency",?30,"Status",?64,"Accession"
+ D WAIT:$E(IOST,1)="C"&($Y>18) Q:$G(LREND)  W @IOF,!,"  Test",?20,"Urgency",?30,"Status",?62,"Accession"  ; IHS/OIT/MKK - LR*5.2*1030
 ENT ;from LROE, LROE1, LRORD1, LROW2
  Q
 LREND I $E(IOST)="P" W @IOF

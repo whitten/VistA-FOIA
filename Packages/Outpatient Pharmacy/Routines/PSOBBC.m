@@ -1,16 +1,20 @@
-PSOBBC ;IHS/DSD/JCM-BATCH BARCODE DRIVER ;3/30/06 10:10am
- ;;7.0;OUTPATIENT PHARMACY;**11,22,27,34,46,130,146,185,242,264,300,337**;DEC 1997;Build 1
+PSOBBC ;IHS/DSD/JCM-BATCH BARCODE DRIVER ;13-Feb-2007 10:24;SM
+ ;;7.0;OUTPATIENT PHARMACY;**11,22,27,34,46,130,146,1004,1005**;DEC 1997
  ;External reference to ^IBE(350.1,"ANEW" supported by DBIA 592
  ;External references CHPUS^IBACUS and TRI^IBACUS supported by DBIA 2030
+ ;External reference PDA^PPPPDA1 supported by DBIA 1374
  ;External references LK^ORX2 and ULK^ORX2 supported by DBIA 867
  ;External references ^PS(55 supported by DBIA 2228
  ;External references U, UL, PSOL, and PSOUL^PSSLOCK supported by DBIA 2789
- ;PSO*242 change default to from Q to S
  ;-------------------------------------------------------------------
+ ; Modified - IHS/CIA/PLS - 01/16/04 - Line PROCESSX
+ ;                          06/24/05 - Line PROCESSX+5
+ ;                                     Line REFILL+2, REFILL+3
+ ;                                     New IHSFLDS API
+ ;            IHS/MSC/PLS   05/27/06 - Line PT+3 - AudioCare Support
 START ;
  N PSODFN,PSOBBCNO
  D INIT I '$D(PSOPAR) D ^PSOLSET G:'$D(PSOPAR) EOJ
- I $P($G(PSOPAR),"^",2),'$D(^XUSEC("PSORPH",DUZ)) S PSORX("VERIFY")=1  ;337
  I $G(PSOSITE) S PSOBARID=$G(^PS(59,PSOSITE,"IB")) I '$D(^IBE(350.1,"ANEW",+PSOBARID,1,1)) D  S PSORX("QFLG")=1 K PSOBARID G END
  .W $C(7),!!,"WARNING: Pharmacy Copay not working,",!,?10,"Check IB SERVICE/SECTION in Pharmacy Site File.",!!!,"You will not be able to enter any new prescriptions until this is corrected!"
  S PSOBBC("QFLG")=0,PSORX("BAR CODE")=1
@@ -40,7 +44,7 @@ ASK ;
  W !,"Please answer the following for this session of prescriptions",!
  D EN^PSOREF2(.PSOBBC) I PSOBBC("DFLG") S PSOBBC("QFLG")=1 G ASKX
  D SUSP
- D INPT,CNH
+ D INPT
  D:'$P($G(PSOPAR),"^",6) EARLY
  D SET
  D:PSOBBC1("FROM")="NEW" NOORE^PSONEW(.PSOBBC) S:$G(PSOBBC("NOO"))'="" PSOBBCNO=$G(PSOBBC("NOO")) S:$G(PSOBBC("DFLG")) PSOBBC("QFLG")=1
@@ -49,7 +53,7 @@ ASKX Q
 SUSP ;
  S DIR(0)="SAB^Q:QUEUED;S:SUSPENDED"
  S DIR("A")="Will these refills be Queued or Suspended ? "
- S DIR("B")="S"   ;PSO*242
+ S DIR("B")="Q"
  D DIR G:PSOBBC("QFLG") SUSPX
  S (PSOBBC1("QS"),PSOBBC("QS"))=Y S:PSOBBC1("QS")="S" BINGCRT=0
 SUSPX K X,Y,DIR
@@ -57,19 +61,11 @@ SUSPX K X,Y,DIR
  ;
 INPT ;
  S DIR(0)="YA"
- S DIR("A")="Allow refills for inpatient ? "
+ S DIR("A")="Allow fills for inpatient and CNH ? "
  S DIR("B")="N"
  D DIR G:PSOBBC("QFLG") INPTX
  S (PSOBBC1("INOK"),PSOBBC("INOK"))=Y
 INPTX K X,Y,DIR
- Q
-CNH ;
- S DIR(0)="YA"
- S DIR("A")="Allow refills for CNH ? "
- S DIR("B")="N"
- D DIR G:PSOBBC("QFLG") CNHX
- S (PSOBBC1("CNHOK"),PSOBBC("CNHOK"))=Y
-CNHX K X,Y,DIR
  Q
  ;
 EARLY ;
@@ -103,12 +99,22 @@ PROCESS ;
  I $G(PSODFN)'=$P(^PSRX(PSOBBC("IRXN"),0),"^",2) D  G:PSOBBC("DFLG") PROCESS
  .I $G(PSODFN) D ULK,ULP
  .D PT Q:PSOBBC("DFLG")
- .D PROFILE^PSORX1
+ .D PROFILE^PSORX1 S X="PPPPDA1" X ^%ZOSF("TEST") I  S X=$$PDA^PPPPDA1(PSODFN) W !!
  E  D PTC G:PSOBBC("DFLG") PROCESS
  D:'$G(PSOSD) ^PSOBUILD
  S PSOBBC("DONE")=PSOBBC("IRXN")_","
  D @PSOBBC1("FROM") S:$G(PPL)&$D(BINGRTE) BBRX(1)=$S($D(PSOBBC("DONE")):PSOBBC("DONE"),1:BBRX) D:$D(BINGCRT)&($D(BINGRTE)&($D(DISGROUP))) ^PSOBING1 K BBRX D ULRX G PROCESS
-PROCESSX I $G(PPL) D SETX,TRI,Q^PSORXL K PPL,RXFL
+PROCESSX ;I $G(PPL) D SETX,TRI,Q^PSORXL K PPL,RXFL  ; IHS/CIA/PLS - 01/16/04
+ ; IHS/CIA/PLS - 01/16/04 - Previous line commented out
+ ;                          Next five lines added.
+ I $G(PPL) D
+ .D SETX,TRI
+ .;IHS/CIA/PLS - 06/24/05 - Changed reference from VEX to BEX in next two lines
+ .;I '$G(VEXRX) D Q^PSORXL
+ .;E  D OPT^APSPNE4 K VEXPPL
+ .I '$G(BEXRX) D Q^PSORXL
+ .E  D OPT^APSPNE4 K BEXPPL
+ .K PPL
  Q
 GETRXM ;
  K DIR,PSOBBC("IRXN"),PSOREFXM
@@ -138,11 +144,11 @@ GETRXMX K X,Y,DIR,PSOOPT
 PT ;
  S PSOBBC("DFLG")=0
  W !,$C(7),"New Patient, please pause"
- I $G(PPL) D SETX,TRI,Q^PSORXL K PPL
+ ;IHS/MSC/PLS - 05/27/06 - Next two lines modified to support AudioCare
+ ;I $G(PPL) D SETX,TRI,Q^PSORXL K PPL
+ D PROCESSX  ; New line
  K RXFL
  S (DFN,PSODFN)=$P(^PSRX(PSOBBC("IRXN"),0),"^",2),PSORX("NAME")=$P(^DPT(PSODFN,0),"^")
- D ICN^PSODPT(DFN)
- ;CHECK FOR BAD ADDRESS/SAB
  S PSOLOUD=1 D:$P($G(^PS(55,PSODFN,0)),"^",6)'=2 EN^PSOHLUP(PSODFN) K PSOLOUD
  D ^PSOBUILD
  S PSOX=$G(^PS(55,PSODFN,"PS")) I PSOX]"" S PSORX("PATIENT STATUS")=$P($G(^PS(53,PSOX,0)),"^")
@@ -155,18 +161,24 @@ PTC S (DFN,PSODFN)=$P(^PSRX(PSOBBC("IRXN"),0),"^",2)
  K PSOTPEXT
  I $G(PSOPTPST(2,PSODFN,.1))]"" D:'PSOBBC("INOK") PID W !,$C(7),?10,"PATIENT IS AN INPATIENT ON WARD ",PSOPTPST(2,PSODFN,.1)," !!" I 'PSOBBC("INOK") S PSOBBC("DFLG")=1 G PTX
  K PSORX("CNH")
- I $G(PSOPTPST(2,PSODFN,148))="YES" D:'PSOBBC("CNHOK") PID W !,$C(7),?10,"PATIENT IS IN A CONTRACT NURSING HOME !!" S:PSOBBC("CNHOK") PSORX("CNH")=1 I 'PSOBBC("CNHOK") S PSOBBC("DFLG")=1 G PTX
+ I $G(PSOPTPST(2,PSODFN,148))="YES" D:'PSOBBC("INOK") PID W !,$C(7),?10,"PATIENT IS IN A CONTRACT NURSING HOME !!" S:PSOBBC("INOK") PSORX("CNH")=1 I 'PSOBBC("INOK") S PSOBBC("DFLG")=1 G PTX
  D:PSOBBC1("FROM")="NEW" COPAY^PSOPTPST
 PTX K PSOPTPST W:PSOBBC("DFLG") !!,$C(7),"Rx not filled"
  Q
  ;
 REFILL ;
  N PSOFROM S PSOFROM="REFILL",XFROM="BATCH"
+ ;S:'$G(PPL) PPL=$G(PSORX("PSOL",1))  ;IHS/CIA/PLS - 06/24/05  - Commented out in patch 1005.
+ D IHSFLDS(.PSOBBC)                  ;IHS/CIA/PLS - 06/24/05
  D EN^PSOREF0(.PSOBBC)
  Q
 REFILLX ;
  Q
  ;
+IHSFLDS(PSOREF) ;EP - IHS/CIA/PLS - 06/24/05 - Call to setup IHS specific fields
+ N PSODRUG
+ D IHSSET^PSOREF1
+ Q
 NEW ;
  N PSOFROM S (PSOFROM,XFROM)="BATCH"
  S PSOBBC("OIRXN")=PSOBBC("IRXN")
@@ -176,7 +188,6 @@ NEW ;
  S PSOBBC("EAOK")=$G(PSOBBC1("EAOK"))
  S PSOBBC("QS")=PSOBBC1("QS")
  S PSOBBC("INOK")=PSOBBC1("INOK")
- S PSOBBC("CNHOK")=PSOBBC1("CNHOK")
  S:$G(PSOBBC1("CLERK CODE")) PSOBBC("CLERK CODE")=PSOBBC1("CLERK CODE")
  S:$G(PSOBBC1("EXPIRATION DATE")) PSOBBC("EXPIRATION DATE")=PSOBBC1("EXPIRATION DATE")
  K PSORNW,PSOOPT

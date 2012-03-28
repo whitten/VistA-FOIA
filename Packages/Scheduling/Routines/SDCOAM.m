@@ -1,5 +1,8 @@
-SDCOAM ;ALB/RMO - Appt Mgmt Actions - Check Out; 11 FEB 1993 10:00 am
- ;;5.3;Scheduling;**1,20,27,66,132**;08/13/93
+SDCOAM ;ALB/RMO - Appt Mgmt Actions - Check Out; 11 FEB 1993 10:00 am [ 08/20/2004  4:07 PM ]
+ ;;5.3;Scheduling;**1,20,27,66,132,1001,1012**;08/13/93
+ ;IHS/ITSC/LJF 10/10/2003 removed requirement for SD SUPERVISOR key on Delete Check-out
+ ;
+ ;cmi/flag/maw 06/02/2010 PATCH 1012 RQMT149 added for check of appt in list view DEL
  ;
 CO(SDCOACT,SDCOACTD) ;Check Out Classification, Provider and Diagnosis
  ;                Actions on Appt Mgmt
@@ -81,7 +84,10 @@ DIS(SDFN,SDCLN) ;Discharge from Clinic
  Q
  ;
 DEL ;Entry point for SDAM DELETE CHECK OUT protocol
- I '$D(^XUSEC("SD SUPERVISOR",DUZ)) W !!,*7,">>> You must have the 'SD SUPERVISOR' key to delete an appointment check out." D PAUSE^VALM1 S VALMBCK="R" G DELQ
+ ;
+ ;IHS/ITSC/LJF 10/10/2003 no reason for key in IHS since check-out not associated with visit coding
+ ;I '$D(^XUSEC("SD SUPERVISOR",DUZ)) W !!,*7,">>> You must have the 'SD SUPERVISOR' key to delete an appointment check out." D PAUSE^VALM1 S VALMBCK="R" G DELQ
+ ;
  N DFN,SDCL,SDCOAP,SDDA,SDOE,SDT,VALMY,VALSTP
  S VALMBCK="",VALSTP="" ;VALSTP is used in scdxhldr to identify deletes
  D EN^VALM2(XQORNOD(0))
@@ -90,6 +96,7 @@ DEL ;Entry point for SDAM DELETE CHECK OUT protocol
  F  S SDCOAP=$O(VALMY(SDCOAP)) Q:'SDCOAP  D
  .I $D(^TMP("SDAMIDX",$J,SDCOAP)) K SDAT S SDAT=^(SDCOAP) D
  ..W !!,^TMP("SDAM",$J,+SDAT,0)
+ .. I $P(SDAT,U,6)]"" W !!,*7,">>> This is not a valid appointment." D PAUSE^VALM1 Q  ;cmi/maw 6/2/2010 PATCH 1012 for list view
  ..S DFN=+$P(SDAT,"^",2),SDT=+$P(SDAT,"^",3),SDCL=+$P(SDAT,"^",4),SDDA=$$FIND^SDAM2(DFN,SDT,SDCL)
  ..S SDOE=+$P($G(^DPT(DFN,"S",SDT,0)),"^",20)
  ..I 'SDOE!('$$CODT^SDCOU(DFN,SDT,SDCL)) W !!,*7,">>> The appointment must have a check out date/time to delete." D PAUSE^VALM1 Q
@@ -106,7 +113,8 @@ DELQ Q
  ;
 ASK() ;Ask if user is sure they want to delete the check out
  N DIR,DTOUT,DUOUT,Y
- W !!,*7,">>> Deleting the appointment check out will also delete any check out related",!?4,"information.  This information may include classifications, procedures,",!?4,"providers and diagnoses."
+ ;IHS/ITSC/LJF 6/2/2004 PATCH #1001 remove VA warning.
+ ;W !!,*7,">>> Deleting the appointment check out will also delete any check out related",!?4,"information.  This information may include classifications, procedures,",!?4,"providers and diagnoses."
  S DIR("A")="Are you sure you want to delete the appointment check out"
  S DIR("B")="NO",DIR(0)="Y" W ! D ^DIR
  Q +$G(Y)

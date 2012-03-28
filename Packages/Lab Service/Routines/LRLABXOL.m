@@ -1,4 +1,5 @@
 LRLABXOL ;RVAMC/PLS/DALISC/FHS - REPRINT ACCESSION LABELS FOR ENTIRE ORDER ; 5/19/93  07:40
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**11,121,161**;Sep 27, 1994
  ; Will print all the required labels for a entire order.
 EN K ZTSK

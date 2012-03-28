@@ -1,5 +1,5 @@
 LR7OV4 ;DALOI/DCM/RLM-Immediate Lab Collect Utilities ;12/18/97 08:35
- ;;5.2;LAB SERVICE;**187,256,272**;Sep 27, 1994
+ ;;5.2T9;LR;**187,256,272,1018**;Nov 17, 2004
 ON(DIV) ;Check Immediate Collect parameter is on
  ;DIV=DUZ(2) division pointer
  Q:'$G(DIV) 0

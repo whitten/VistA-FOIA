@@ -1,14 +1,12 @@
-GMRCISG1 ;SLC/JFR - BUILD IFC HL7 SEGMENTS CONT'D ;08/16/10  08:59
- ;;3.0;CONSULT/REQUEST TRACKING;**22,66**;DEC 27, 1997;Build 30
- ;#2171 XUAF4, #10103 XLFDT, #10106 HLFNC, #10112 VASITE, #2541 $$KSP^XUPARAM, #2056(GET1^DIQ)
- ;
+GMRCISG1 ;SLC/JFR - BUILD IFC HL7 SEGMENTS CONT'D ;10/31/01 09:00
+ ;;3.0;CONSULT/REQUEST TRACKING;**22**;DEC 27, 1997
  Q  ;can't start here
 ORCRESP(GMRCO,GMRCOC,GMRCOS) ;build ORC for app ACK msgs
  ; Input:
  ;  GMRCO   = ien from file 123 of entry responding to
  ;  GMRCOC  = order control to put into segment
  ;  GMRCOS  = HL7 encoded order status to put in message
- ;
+ ; 
  ; Output:
  ;  ORC segment to use in response message
  ;
@@ -30,7 +28,6 @@ NWORC(GMRCO) ; build ORC seg for a new order
  N GMRCPCS,SITE,GMRCPHN,GMRCPAG
  S GMRCPCS(1)="NW"
  S GMRCPCS(2)=GMRCO_U_$$STA^XUAF4($$KSP^XUPARAM("INST"))_U_"GMRCIFR"
- S $P(GMRCPCS(7),U,4)=$$FMTHL7^XLFDT($P(^GMR(123,GMRCO,0),U,24)) ;wat/66
  S $P(GMRCPCS(7),U,6)=$$URG^GMRCIUTL(GMRCO)
  S GMRCPCS(9)=$$FMTHL7^XLFDT(+^GMR(123,GMRCO,0))
  S GMRCPCS(10)=$$HLNAME^GMRCIUTL($P($G(^GMR(123,GMRCO,40,1,0)),U,5))
@@ -71,7 +68,7 @@ OBR(GMRCO,GMRCACT) ; build an OBR seg for new order or resubmit
  ;  GMRCACT = ien from 40 multiple of action (only on resubmit or fwd)
  ;
  ; Output:
- ;  OBR segment
+ ;  OBR segment 
  ;
  N GMRCPCS,GMRCROL
  S GMRCPCS(1)=1
@@ -116,7 +113,7 @@ OBR(GMRCO,GMRCACT) ; build an OBR seg for new order or resubmit
 ORCTST() ;build ORC for testing imp.
  ;Input:
  ;
- ;Output:
+ ;Output: 
  ; ORC segment used to test IFC implementation
  ;
  N GMRCPCS,SITE,GMRCRP

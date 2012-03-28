@@ -1,4 +1,5 @@
-LRLNCX  ;DALOI/FS- ROUTINE TO EXTRACT VISTA TEST NAMES FOR LOINC MAPPING;1-FEB-2001
+LRLNCX  ;DAL/OI/FS - ROUTINE TO EXTRACT VISTA TEST NAMES FOR LOINC MAPPING ; 1-FEB-2001; [Aug 06, 2010 ]
+ ;;5.2;LR;**1018,1028**;NOV 01, 1997;Build 46
  ;;5.2;LAB SERVICE;**232,278**;Sep 27,1994
  ;;
  ; Field Separator = "|"
@@ -19,11 +20,21 @@ EN ;
 3 ;Selected all tests
 2 ;Selected accession area - screen on LRAA(#)
  D ASK G END:$G(LREND)
- F  S LR60N=$O(^LAB(60,"B",LR60N)) Q:LR60N=""  D
- . S LR60=0 F  S LR60=$O(^LAB(60,"B",LR60N,LR60)) Q:LR60<1  D
- . . Q:$G(^LAB(60,"B",LR60N,LR60))
- . . I '$D(^LAB(60,LR60,0))#2 K ^LAB(60,"B",LR60N,LR60) Q
- . . Q:$P(^LAB(60,LR60,0),U,3)="N"!($P(^(0),U,3)="")  D OUT
+ ;[LR*5.2*1028,MPW,08/09/10]Rewrite loop to go directly through File 60 rather than "B" cross-reference.
+ ;F  S LR60N=$O(^LAB(60,"B",LR60N)) Q:LR60N=""  D
+ ;S LR60=0 F  S LR60=$O(^LAB(60,"B",LR60N,LR60)) Q:LR60<1  D
+ ;Q:$G(^LAB(60,"B",LR60N,LR60))
+ ;I '$D(^LAB(60,LR60,0))#2 K ^LAB(60,"B",LR60N,LR60) Q
+ ;Q:$P(^LAB(60,LR60,0),U,3)="N"!($P(^(0),U,3)="")  D OUT
+ ;[LR*5.2*1028,MPW,08/09/10]Added next 6 lines.
+ S LR60=0
+ F  S LR60=$O(^LAB(60,LR60)) Q:LR60'=+LR60  D
+ .S LR60N=$P(^LAB(60,LR60,0),U,1)
+ .;skip inactive tests
+ .Q:$E(LR60N,1,2)="ZZ"!($E(LR60N,1,2)="zz")
+ .F I=1:1 Q:$E(LR60N,1)'="_"  S LR60N=$E(LR60N,2,$L(LR60N)) ;strip leading underscores from test name
+ .I $E(LR60N,1)="x" S LR60N=$E(LR60N,2,$L(LR60N)) ;strip leading 'x' on interface test name
+ .Q:$P(^LAB(60,LR60,0),U,3)="N"!($P(^(0),U,3)="")  D OUT
  Q
 1 ;create individual test list.
  K ^TMP("LR LOINC",$J)
@@ -45,15 +56,21 @@ OUT ;
  I $G(LRAA) S LRNOP=1 D  Q:LRNOP
  . S LR8=0 F  S LR8=$O(^LAB(60,LR60,8,LR8)) Q:LR8<1!('$G(LRNOP))  D
  . . I $D(LRAA(+$P($G(^LAB(60,LR60,8,LR8,0)),U,2)))#2 S LRNOP=0
+ ;[LR*5.2*1028,MPW,08/09/10]Added next 1 line.
+ I '$D(^LAB(60,LR60,1)) S (LRSP,LRSPN,LRUNIT)="" D WRT Q
  S LRSP=0 F  S LRSP=$O(^LAB(60,LR60,1,LRSP)) Q:LRSP<1  D
- . S LRSP0=$G(^(LRSP,0)),LR61=$G(^LAB(61,LRSP,0)),LRUNIT=$P(LRSP0,U,7)
+ .;[LR*5.2*1028,MPW,08/06/10]S LRSP0=$G(^(LRSP,0)),LR61=$G(^LAB(61,LRSP,0)),LRUNIT=$P(LRSP0,U,7)
+ . S LRSP0=$G(^(LRSP,0)),LR61=$G(^LAB(61,LRSP,0)),LRUNIT=$P(LRSP0,U,7) I LRUNIT=+LRUNIT S LRUNIT=$P(^BLRUCUM(LRUNIT,0),U,1)
+ . ;[LR*5.2*1028;08/23/10;IHS/OIT/MPW]Added next 1 line to skip specimens already mapped
+ . Q:$G(^LAB(60,LR60,1,LRSP,95.3))'=""
  . S LRSPN=$P(LR61,U),LR64061=$P(LR61,U,9),LRLSPN=$P(LR61,U,8)
  . K LR64N I LR64061 S LR64N=$P($G(^LAB(64.061,LR64061,0)),U,2)
  . S LRSPN=$S($D(LR64N):LR64N,$L(LRLSPN):LRLSPN,1:LRSPN)
  . D WRT
  Q
 WRT ;LR60N [test name] - translate "*" or "?" to spaces
- W !,$E(LR60_"-"_LRSP_LRFS_$TR(LR60N,"*?"," ")_" "_LRSPN_LRFS_LRUNIT,1,80)
+ ;[LR*5.2*1028,MPW,08/09/10]W !,$E(LR60_"-"_LRSP_LRFS_$TR(LR60N,"*?"," ")_" "_LRSPN_LRFS_LRUNIT,1,80)
+ W !,$E(LR60_$S(LRSP'="":"-",1:"")_LRSP_LRFS_$TR(LR60N,"*?"," ")_$S(LRSPN'="":" ",1:"")_LRSPN_LRFS_LRUNIT,1,80)
  Q
 ASK ;
  K DIR S DIR(0)="Y",DIR("A")="Ready to Capture"
@@ -66,8 +83,8 @@ MSG ;
  W !," -----    -----     -----     ----"
  W !,"This option will create a Local Master Observation File (LMOF)"
  W !,"from your local LABORATORY TEST (#60) file."
- W !!,"Only 'CH' subscripted test having a dataname and having a type"
- W !,"of 'BOTH', 'INPUT' or 'OUTPUT' will be extracted."
+ ;W !!,"Only 'CH' subscripted test having a dataname and having a type"
+ ;W !,"of 'BOTH', 'INPUT' or 'OUTPUT' will be extracted."
  W !,"The LMOF file will use the vertical bar '|' as the field separator."
  W !,"The 1st. field is the test internal number and internal number"
  W !,"of the spec. (i.e. 1-72 will represent test 1 and specimen 72)."

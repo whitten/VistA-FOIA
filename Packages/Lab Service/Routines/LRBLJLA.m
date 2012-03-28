@@ -1,7 +1,7 @@
-LRBLJLA ;AVAMC/REG/CYM - CROSSMATCH LABELS ;6/17/96  14:21 ;
- ;;5.2;LAB SERVICE;**72,247,408**;Sep 27, 1994;Build 8
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- Q  D END,CK^LRBLPUS G:Y=-1 END S:'$D(^LRO(69.2,LRAA,9,0)) ^(0)="^69.25A^^"
+LRBLJLA ; IHS/DIR/AAB - CROSSMATCH LABELS 6/17/96 14:21 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
+ D END,CK^LRBLPUS G:Y=-1 END S:'$D(^LRO(69.2,LRAA,9,0)) ^(0)="^69.25A^^"
  W !?30,"PRINT XMATCH LABELS" S X=$P(^LRO(69.2,LRAA,9,0),"^",4) W:X !?25,"(There ",$S(X>1:"are",1:"is")," ",X," label",$S(X>1:"s",1:"")," to print)"
  W !?3,"Add labels for emergency transfusion " S %=2 D YN^LRU I %=1 D E
  W !! I '$O(^LRO(69.2,LRAA,9,0)) W $C(7),!!,"THERE ARE NO LABELS TO PRINT !",!,"DO WANT TO ADD SOME OF YOUR OWN" S %=2 D YN^LRU G:%'=1 END D C G ED
@@ -23,13 +23,15 @@ C W ! S DIC="^LRO(69.2,LRAA,9,",DLAYGO=69,DIC(0)="AEQLM",DIC("A")="Select Unit I
  S DIE="^LRO(69.2,LRAA,9,",DR=".01:.05",DA=+Y D ^DIE K DIC,DIE,DR,DA,D G C
  ;
 E S:'$D(^LRO(69.2,LRAA,9,0)) ^(0)="^69.25A^^"
-A K DIC D ^LRDPA Q:LRDFN=-1  S X=^LR(LRDFN,0),Y=$P(X,"^",3),LRABO=$P(X,"^",5),LRRH=$P(X,"^",6),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),Z=$S($D(@(X_Y_",.35)")):+^(.35),1:0),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU
+A ;K DIC D ^LRDPA Q:LRDFN=-1  S X=^LR(LRDFN,0),Y=$P(X,"^",3),LRABO=$P(X,"^",5),LRRH=$P(X,"^",6),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),Z=$S($D(@(X_Y_",.35)")):+^(.35),1:0),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU
+ K DIC D ^LRDPA Q:LRDFN=-1  S X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),LRABO=$P(X,"^",5),LRRH=$P(X,"^",6),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),Z=$S($D(@(X_Y_",.35)")):+^(.35),1:0),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU  ;IHS/ANMC/CLS
  I Z W $C(7),! G A
 B R !!,"Enter number of crossmatch labels wanted: ",LRB:DTIME Q:LRB=""!(LRB[U)  I LRB<1!(LRB>99) W $C(7),!,"Enter a number from 1 to 99." G B
  S %DT="T",X="N" D ^%DT,D^LRU
  L +^LRO(69.2,LRAA,9):5 I '$T W $C(7),!!,"I can't make those extra labels now.",!!,"Someone else started this first",!!,"Try again later if you still need extras",!! Q
  S X=^LRO(69.2,LRAA,9,0),LRC=$P(X,"^",3)+1,Z=$P(X,"^",3)+LRB,^(0)=$P(X,"^",1,2)_"^"_Z_"^"_Z
- F A=LRC:1:Z S ^LRO(69.2,LRAA,9,A,0)=Y_"^"_LRP_" "_SSN_"^"_"Patient ABO/Rh: "_LRABO_" "_LRRH_"^"_"Unit    ABO/Rh:        Unit#:"_"^"_"Crossmatch:            Tech :"
+ ;F A=LRC:1:Z S ^LRO(69.2,LRAA,9,A,0)=Y_"^"_LRP_" "_SSN_"^"_"Patient ABO/Rh: "_LRABO_" "_LRRH_"^"_"Unit    ABO/Rh:        Unit#:"_"^"_"Crossmatch:            Tech :"
+ F A=LRC:1:Z S ^LRO(69.2,LRAA,9,A,0)=Y_"^"_LRP_" "_HRCN_"^"_"Patient ABO/Rh: "_LRABO_" "_LRRH_"^"_"Unit    ABO/Rh:        Unit#:"_"^"_"Crossmatch:            Tech :"  ;IHS/ANMC/CLS 11/1/95
  L -^LRO(69.2,LRAA,9) Q
  ;
 END D V^LRU Q

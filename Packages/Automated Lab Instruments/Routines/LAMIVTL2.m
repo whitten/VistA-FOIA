@@ -1,5 +1,6 @@
-LAMIVTL2 ;DAL/HOAK 3rd vitek literal verification routine
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**12**;Sep 27,1994
+LAMIVTL2 ;VA/DAL/HOAK - 3rd vitek literal verification routine ;1/22/96  08:30 ;
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**1030**;NOV 01, 1997
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**12**;Sep 27,1994;Build 7
 INIT ;
 CONTROL ;
  S OK=1

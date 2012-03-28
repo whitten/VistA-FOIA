@@ -1,5 +1,5 @@
 XU8P497A ;BP/BT - UPDATE PERSON CLASS FILE; 4/7/2008
- ;;8.0;KERNEL;**497**;July 10, 1995;Build 5
+ ;;8.0;KERNEL;**497**;July 10, 1995;Build 15
  ;;"Per VHA Directive 2004-038, this routine should not be modified."
  ;
 EN ;

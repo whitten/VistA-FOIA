@@ -1,5 +1,5 @@
 LRAC14 ;DALOI/DH/RLM-FIND LOCATION FOR MULTIPLE ABBREVIATION ;6/16/97 15:45
- ;;5.2;LAB SERVICE;**272**;SEP 27, 1994
+ ;;5.2T9;LR;**272,1018**;Nov 17, 2004
  ; Reference to ^SC( supported by IA # 908
  ; Reference to ^%DTC supported by IA # 10000
  ; Reference to ^VADPT supported by IA # 10061

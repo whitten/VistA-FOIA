@@ -1,4 +1,4 @@
-XUSC1S ;ISCSF/RWF - Interface to Server services. ;10/09/2002  16:59
+XUSC1S ;ISCSF/RWF - Interface to Server services. ;10/09/2002  16:59 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**283**;Jul 10, 1995
  Q
  ;XUSC is used to pass data around.

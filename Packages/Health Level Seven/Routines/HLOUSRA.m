@@ -1,5 +1,5 @@
-HLOUSRA ;ALB/CJM -ListManager Screen for viewing downed links;12 JUN 1997 10:00 am ;07/23/2008
- ;;1.6;HEALTH LEVEL SEVEN;**130,138**;Oct 13, 1995;Build 34
+HLOUSRA ;ALB/CJM -ListManager Screen for viewing downed links;12 JUN 1997 10:00 am
+ ;;1.6;HEALTH LEVEL SEVEN;**130**;Oct 13, 1995;Build 10
  ;
 HEADER ;
  S VALMSG="Down Client Links"
@@ -89,15 +89,3 @@ ASKLINK() ;
  D ^DIC
  I +Y'=-1,'$D(DTOUT),'$D(DUOUT) Q $P(Y,"^",2)
  Q ""
- ;
-ASKPORT(LINKNAME)        ;
- Q:'$L($G(LINKNAME)) 0
- N DIR,X,DTOUT,DUOUT,PORT
- S DIR(0)="N^1:65535:0"
- S DIR("A")="PORT"
- S DIR("B")=$$PORT2^HLOTLNK(LINKNAME)
- S DIR("?",1)="Enter to specify a port other than the one that this link is configured"
- S DIR("?")="to normally use, otherwise just accept the default port."
- D ^DIR
- Q:$D(DTOUT)!$D(DUOUT) 0
- Q X

@@ -1,6 +1,7 @@
-LRBLY ;AVAMC/REG - STUFF DATA IN LAB LETTERS ;2/20/89  16:15 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLY ; IHS/DIR/FJE - STUFF DATA IN LAB LETTERS 2/20/89 16:15 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
 I S A=$P(X,"[",2) Q:'+A  S X(1)=$P(X,"["),X(2)=$P(X,"]",2,99) D R G I
  ;
 R S A=$P(A,"]"),A=$S($D(@("^TMP("_"""LRBLY"""_","_A_")")):@("^TMP("_"""LRBLY"""_","_A_")"),1:"") S X=X(1)_A_X(2) Q

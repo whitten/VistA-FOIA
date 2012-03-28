@@ -1,5 +1,5 @@
-HLTPCK2B ;OIFO-O/RJH - Message Header Validation (Con't) ; 09/22/2009  14:41
- ;;1.6;HEALTH LEVEL SEVEN;**120,133,122,148**;Oct 13, 1995;Build 3
+HLTPCK2B ;OIFO-O/RJH - Message Header Validation (Con't) ;09/13/2006
+ ;;1.6;HEALTH LEVEL SEVEN;**120,133**;Oct 13, 1995;Build 13
  ;Per VHA Directive 2004-038, this routine should not be modified.
  ;
  ; splitted from HLTPCK2A
@@ -22,16 +22,11 @@ MSA ;if ack, then get information and quit, we don't need to respond
  . ;get subscriber protocol and ack. to (show if this is an ack to an ack)
  . S X=$G(^HLMA(ARY("MTIENS"),0)),ARY("EIDS")=$P(X,U,8),ARY("ACK")=$P(X,U,10)
  . ;if no subscriber protocol then response msg. is invalid
- . ;
- . ; patch HL*1.6*122 start
- . ; comment out the following code: for patch 109- dynamic addressing
- . ; I ('ARY("EIDS")) S:(ERR="") ERR="Invalid Message Control ID in MSA Segment - No Subscr. IEN in 773" Q
+ . I ('ARY("EIDS")) S:(ERR="") ERR="Invalid Message Control ID in MSA Segment - No Subscr. IEN in 773" Q
  . ;get message text ien in file 772 and server protocol, 'EID'
  . S ARY("MTIEN")=+X,X=$G(^HL(772,+X,0)),ARY("EID")=$P(X,U,10)
  . I ('ARY("EID")) S:(ERR="") ERR="Event Protocol not found" Q
- . ; D EVENT^HLUTIL1(ARY("EIDS"),"770,773",.HLN)
- . I ARY("EIDS") D EVENT^HLUTIL1(ARY("EIDS"),"770,773",.HLN)
- . ; patch HL*1.6*122 end
+ . D EVENT^HLUTIL1(ARY("EIDS"),"770,773",.HLN)
  ;
  ;Find Server Protocol - based on sending application, message type,
  ;event type and version ID
@@ -113,13 +108,9 @@ RF ;Validate Receiving Facility
  .. Q:HLDOMP("FLAG")=1
  .. I $P(ARY("RAF"),HLCS)=HLINSTN Q
  .. ;
- .. ; patch HL*1.6*148
- .. ; S:ERR="" ERR="Receiving Facility mismatch."
- .. S:ERR="" ERR="Receiving Facility Mismatch."
+ .. S:ERR="" ERR="Receiving Facility mismatch."
  . I $P(ARY("RAF"),HLCS)=HLINSTN Q
- . ; patch HL*1.6*148
- . ; S:ERR="" ERR="Receiving Facility mismatch."
- . S:ERR="" ERR="Receiving facility mismatch."
+ . S:ERR="" ERR="Receiving Facility mismatch."
  ; patch HL*1.6*120 end
  ;
 SF ;Validate Sending Facility
@@ -174,9 +165,7 @@ SF ;Validate Sending Facility
  .. ; quit if 1st component defined
  .. S ARY("SAF-COMPONENT1")=$P(ARY("SAF"),HLCS,1)
  .. Q:ARY("SAF-COMPONENT1")]""
- .. ; patch HL*1.6*148
- .. ; S:ERR="" ERR="Receiving Facility mismatch."
- .. S:ERR="" ERR="Sending Facility mismatch."
+ .. S:ERR="" ERR="Receiving Facility mismatch."
  . ; patch HL*1.6*120 end
  . ;
  .Q:HLDOMP=$P(HLPARAM,U)  ;This is local app to app

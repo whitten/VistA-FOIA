@@ -1,6 +1,6 @@
-GMTSCNB ; SLC/KER - Consults Components Brief          ;05/14/09  17:36
- ;;2.7;Health Summary;**46,47,58,90**;Oct 20, 1995;Build 4
- ;
+GMTSCNB ; SLC/KER - Consults Components Brief          ; 01/06/2003
+ ;;2.7;Health Summary;**46,47,58**;Oct 20, 1995
+ ; 
  ; External References
  ;   DBIA  3358  ^GMR(123,
  ;   DBIA 10040  ^SC(
@@ -8,9 +8,7 @@ GMTSCNB ; SLC/KER - Consults Components Brief          ;05/14/09  17:36
  ;   DBIA  2056  $$GET1^DIQ     (file 123.1, 44)
  ;   DBIA  2056  GETS^DIQ       (file 123)
  ;   DBIA  2051  LIST^DIC       (file 123.02)
- ;
- ; Delete this line: test of perforce/eclipse
- ;
+ ;                     
  Q
 MAIN ; Consults - Brief
  K ^TMP("GMTSCN")
@@ -30,13 +28,11 @@ BCD ;   Brief Consults Display
  N GMTSID,GMTSFI,GMTSIE S GMTSID=0
  F  S GMTSID=$O(^TMP("GMTSCN",$J,GMTSID)) Q:+GMTSID=0  D  Q:$D(GMTSQIT)
  . S GMTSFI=123,GMTSIE="" F  S GMTSIE=$O(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE)) Q:GMTSIE=""  D  Q:$D(GMTSQIT)
- . . N GMTSNB,GMTSRD,GMTSTO,GMTSVC,GMTSFM,GMTSLA,GMTSAD,GMTSED
+ . . N GMTSNB,GMTSRD,GMTSTO,GMTSVC,GMTSFM,GMTSLA,GMTSAD
  . . S GMTSNB=+($G(GMTSIE)) S:+GMTSNB=0 GMTSNB="?"
  . . S GMTSRD=$G(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE,3,"I"))
  . . S GMTSRD=$$UP^XLFSTR($S(+GMTSRD>0:$$ED^GMTSU(+GMTSRD),1:"UNKNOWN"))
  . . S GMTSFM=$$UP^XLFSTR($G(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE,2,"E")))
- . . S GMTSED=$G(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE,17,"I"))
-    . . S GMTSED=$$UP^XLFSTR($S(+GMTSED>0:$$ED^GMTSU(+GMTSED),1:"UNKNOWN"))
  . . S GMTSTO=$$UP^XLFSTR($G(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE,1,"E")))
  . . S GMTSLA=$$UP^XLFSTR($G(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE,40,1,1,"E")))
  . . S GMTSLD=$G(^TMP("GMTSCN",$J,GMTSID,GMTSFI,GMTSIE,40,1,2,"I"))
@@ -45,13 +41,13 @@ BCD ;   Brief Consults Display
  Q
 BHDR ;   Brief Header
  N GMTSL S $P(GMTSL,"-",79)=""
- D CKP^GMTSUP Q:$D(GMTSQIT)  W !,"Request Date/",?15,"Request From",?52,"Earliest Date"
+ D CKP^GMTSUP Q:$D(GMTSQIT)  W !,"Request Date/",?15,"Request From"
  D CKP^GMTSUP Q:$D(GMTSQIT)  W !,"Number",?15,"Request To",?52,"Last Action",?67,"Action Date"
  D CKP^GMTSUP Q:$D(GMTSQIT)  W !,GMTSL
  Q
 WRT ;   Write Brief Consult
- D CKP^GMTSUP Q:$D(GMTSQIT)  W !,$E(GMTSRD,1,10),?15,GMTSFM,?52,$E(GMTSED,1,10)
- D CKP^GMTSUP Q:$D(GMTSQIT)  W !,GMTSNB,?15,GMTSTO,?52,GMTSLA,?67,GMTSLD
+ D CKP^GMTSUP Q:$D(GMTSQIT)  W !,$E(GMTSRD,1,10),?15,GMTSFM,?52,GMTSLA,?67,GMTSLD
+ D CKP^GMTSUP Q:$D(GMTSQIT)  W !,GMTSNB,?15,GMTSTO
  D CKP^GMTSUP Q:$D(GMTSQIT)  W !
  Q
 EXT(X,Y) ; Extract Consults
@@ -60,7 +56,7 @@ EXT(X,Y) ; Extract Consults
  S GMTSIEN=+($G(X)) Q:GMTSIEN=0  S GMTSI=+($G(Y))
  S DIC=123,GMTSIENS=+($G(GMTSIEN))_","
  S GMTSRT="^TMP(""GMTSCN"","_$J_","_GMTSI_")"
- S DIQ(0)="IE",DR=".01;1;2;3;9;17" D GETS^DIQ(123,GMTSIENS,DR,"EI",GMTSRT,"MSG")
+ S DIQ(0)="IE",DR=".01;1;2;3;9" D GETS^DIQ(123,GMTSIENS,DR,"EI",GMTSRT,"MSG")
  S GMTSFM=+($G(^TMP("GMTSCN",$J,GMTSI,123,GMTSIENS,2,"I"))) S:+GMTSFM=0 GMTSFM=""
  S GMTSVC="" S:+GMTSFM>0 GMTSVC=$$GET1^DIQ(44,GMTSFM,9,"E") S:$G(GMTSVC)="NONE" GMTSVC=""
  S:$L(GMTSVC) ^TMP("GMTSCN",$J,GMTSI,123,GMTSIENS,2,"SVC")=GMTSVC

@@ -1,7 +1,9 @@
-LRSRVR ;DALOI/RLM/JMC - LAB DATA SERVER ; Aug 17, 2006
- ;;5.2;LAB SERVICE;**232,303,346**;Sep 27, 1994;Build 10
+LRSRVR ;DALOI/RLM/JMC - LAB DATA SERVER ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**232,303,346,1027**;NOV 01, 1997;Build 10
  ; Reference to ^%ZOSF supported by IA #10096
  ; Reference to $$SITE^VASITE supported by IA #10112
+ ;
+ ; LR*5.2*1027 - IHS/OIT/MKK
  ;
 START ;
  N LRSITE,LRST,LRSUB,LRXMZ
@@ -41,7 +43,7 @@ START ;
  ; Send RELMA mapper formatted message
  I LRSUB="RELMA" D SERVER^LRSRVR2 Q
  ; Process RELMA mapper Packman global message
- ;I LRSUB="RELMA MAPPING" D RMAP^LRSRVR5 Q
+ ; I LRSUB="RELMA MAPPING" D RMAP^LRSRVR5 Q
  ;
  ; Send SNOMED mapping formatted message
  I LRSUB="SNOMED" D SERVER^LRSRVR6 Q
@@ -60,7 +62,7 @@ EXIT ; If all went well, report that too.
  S LRNOW=$$NOW^XLFDT
  S XMDUN="Lab Server",XMDUZ=".5",XMSUB=LRSTN_" LAB SERVER ("_LRNOW_")"
  S XMTEXT="^TMP($J,""LRDATA"","
- I '$D(XMY) S XMY("G.LABTEAM@ISC-DALLAS.VA.GOV")=""
+ ; I '$D(XMY) S XMY("G.LABTEAM@ISC-DALLAS.VA.GOV")=""      ; LR*5.2*1027 - Don't send to VA
  D ^XMD
  ;
 CLEAN ; Cleanup and exit
@@ -68,7 +70,8 @@ CLEAN ; Cleanup and exit
  . S XMDUN="Lab Server",XMDUZ=".5"
  . S XMSUB=LRSTN_" LAB SERVER ERROR ("_LRNOW_")"
  . S XMTEXT="^TMP($J,""LRDTERR"","
- . S XMY("G.LABTEAM@ISC-DALLAS.VA.GOV")="",XMY(XQSND)=""
+ . ; S XMY("G.LABTEAM@ISC-DALLAS.VA.GOV")="",XMY(XQSND)=""      ; LR*5.2*1027 - Don't send to VA
+ . S XMY(XQSND)=""           ; LR*5.2*1027 - Can send to self
  . D ^XMD
  ;
  ; Clean up server message in MailMan

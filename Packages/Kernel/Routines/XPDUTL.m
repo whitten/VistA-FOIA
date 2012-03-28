@@ -1,5 +1,5 @@
 XPDUTL ;SFISC/RSD - KIDS utilities ;10/15/2008
- ;;8.0;KERNEL;**21,28,39,81,100,108,137,181,275,491,511**;Jul 10, 1995;Build 5
+ ;;8.0;KERNEL;**21,28,39,81,100,108,137,181,275,491,511,1017**;Jul 10, 1995;Build 3
  ;Per VHA Directive 2004-038, this routine should not be modified.
  Q
 VERSION(X) ;Get current version from Package file, X=package name or
@@ -31,7 +31,8 @@ LAST(PKG,VER) ;returns last patch applied for a Package, PATCH^DATE
  Q PATCH_U_LATEST
  ;
 PATCH(X) ;return 1 if patch X was installed, X=aaaa*nn.nn*nnn
- Q:X'?1.4UN1"*"1.2N1"."1.2N.1(1"V",1"T").2N1"*"1.3N 0
+ ;Q:X'?1.4UN1"*"1.2N1"."1.2N.1(1"V",1"T").2N1"*"1.3N 0  ;ORIGINAL LINE - COMMENTED OUT
+ Q:X'?1.4UN1"*"1.2N1"."1.2N.1(1"V",1"T").2N1"*"1.6N 0  ;XU*8.0*1017 - IHS/OIT/FBD - EXPAND PATCH FORMAT TO aaaa*nn.nn*nnnnnn
  N %,I,J
  S I=$$LKPKG($P(X,"*")) Q:'I 0
  S J=$O(^DIC(9.4,I,22,"B",$P(X,"*",2),0)),X=$P(X,"*",3) Q:'J 0

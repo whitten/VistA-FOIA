@@ -1,5 +1,5 @@
 PXRRPRD ;ISL/PKR,ALB/Zoltan - PCE Provider Encounter reports driver.;9/22/98
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**3,10,12,18,61,189**;Aug 12, 1996;Build 13
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**3,10,12,18,61**;Aug 12, 1996
 MAIN ;
  N PXRRIOD,PXRRPRJB,PXRRPRST,PXRROPT,PXRRQUE,PXRRXTMP
  S PXRRXTMP=$$PXRRXTMP^PXRRWLD("PXRRPR")
@@ -44,7 +44,7 @@ PRTY ;Get the report type (detailed or summary).
  S PXRRQUE=$G(IO("Q"))
  ;
  ;Queue the report.
- I PXRRQUE D 
+ I PXRRQUE D
  . N DESC,IODEV,ROUTINE
  . S DESC="Provider Encounter Count Report - sort"
  . S IODEV=""
@@ -78,6 +78,5 @@ SAVE ;Save the variables.
  S ZTSAVE("PXRRQUE")=""
  S ZTSAVE("PXRRSCAT")=""
  S ZTSAVE("PXRRXTMP")=""
- S ZTSAVE("NONVA")=""
  Q
  ;

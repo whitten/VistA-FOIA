@@ -1,4 +1,5 @@
-XQKEY ;Seattle/Luke - Key and lock utilities ;9/14/94  10:49
+XQKEY ;Seattle/Luke - Key and lock utilities ;9/14/94  10:49 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 ADD(XQKUS,XQKEY,XQKF) ;Give a user a key      
  ;XQKDA = the user's duz, XQKEY = the name or IEN of the key,

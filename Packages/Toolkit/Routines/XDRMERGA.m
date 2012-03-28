@@ -1,5 +1,7 @@
-XDRMERGA ;SF-IRMFO.SEA/JLI - START OF NON-INTERACTIVE BATCH MERGE ;01/31/2000  09:14
- ;;7.3;TOOLKIT;**23,28,37,40,45**;Apr 25, 1995
+XDRMERGA ;SF-IRMFO.SEA/JLI - START OF NON-INTERACTIVE BATCH MERGE ;01/31/2000  09:14 [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**23,28,37,40,45,1001,1003**;Apr 03, 1995
+ ;IHS/OIT/LJF 11/03/2006 PATCH 1003 if none found to mark, say so (communicate with user)
+ ;            01/19/2007 PATCH 1003 added IHS chart # to approval display
  ;;
  Q
 APPROVE ; This is the entry point for approving a duplicate pair for merge
@@ -30,6 +32,10 @@ APPROVE ; This is the entry point for approving a duplicate pair for merge
  . . E  S XDRY(+$P(YVAL,U,2),+YVAL)=Y
  . . S XNCNT0=XNCNT0+1
  I XNCNT0>0 W !!,XNCNT0,"  Entries are awaiting approval for merging  Return to continue..." R X:DTIME
+ ;
+ ;IHS/OIT/LJF 11/03/2006 PATCH 1003 if none found, say so
+ I XNCNT0=0 W !!,"  No Verified Duplicates waiting to be marked as Ready" D PAUSE^BPMU Q
+ ;
  I $D(XDRY) D CHKBKUP I $D(DUOUT)!$D(DTOUT) Q
  K XDRY
  Q
@@ -64,8 +70,13 @@ CHECK ;
  . . I X1=""!(X2="") K XDRY(I,J) Q
  . . F  Q:X1'["MERGING INTO"  S X1=$P($P(X1,"(",2,10),")",1,$L(X1,")")-1)
  . . S XNCNT=XNCNT+1,XX(XNCNT)=I_U_J
- . . W !!,$J(XNCNT,3),"  ",?8,X1,?42,X1S,?60,"[",I,"]"
- . . W !,?8,X2,?42,X2S,?60,"[",J,"]"
+ . . ;
+ . . ;IHS/OIT/LJF 01/19/2007 PATCH 1003 add IHS chart # to display
+ . . ;W !!,$J(XNCNT,3),"  ",?8,X1,?42,X1S,?60,"[",I,"]"
+ . . ;W !,?8,X2,?42,X2S,?60,"[",J,"]"
+ . . W !!,$J(XNCNT,3),"  ",?8,X1,?42,X1S,?60,"[",I,"]",?70,"#",$$HRCN^BPMU(I,$G(DUZ(2)))
+ . . W !,?8,X2,?42,X2S,?60,"[",J,"]",?70,"#",$$HRCN^BPMU(J,$G(DUZ(2)))
+ . . ;
  . . I '(XNCNT#6) D @ASKNAME Q:$D(DUOUT)!$D(DTOUT)  W @IOF
  I '($D(DUOUT)!$D(DTOUT)) D @ASKNAME
  Q

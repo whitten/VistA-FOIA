@@ -1,5 +1,5 @@
 XUSRB4 ;ISF/RWF - Build a temporary sign-on token ;01/06/10  09:26
- ;;8.0;KERNEL;**150,337,395,419,437,499,523**;Jul 10, 1995;Build 16
+ ;;8.0;KERNEL;**150,337,395,419,437,499,523**;Jul 10, 1995;Build 19
  ;Per VHA Directive 2004-038, this routine should not be modified
  Q
  ;

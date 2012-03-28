@@ -57,7 +57,7 @@ FILE K DIC
  ;
  ;Finally it's time to stuff the entry in the master file
  ;Sends: FTP Address^ ^ ^ ^ Path ^ Username ^ Password ^ Physical Disk
- ;EG. 250 Okay^1.2.0.1^^^image\subdir^USERNAME^PASSWORD^_nfa0:
+ ;EG. 250 Okay^127.0.0.1^^^image\subdir^USERNAME^PASSWORD^_nfa0:
  S XMSG="250 Okay ^"_$G(^XMB(1,1,"FTP-RCV"))_"^^^"_$G(^("DISK/VOL"))_U_$G(^("FTPUSER"))_U_$G(^("FTPPWD"))_U_$P($G(^("FTPRCVDISK")),U)
  X XMSEN G Q:ER
  S DIC="^MAG(2005,",DIC(0)="FI",X=XMR0BLOB("NAME") D FILE^DICN

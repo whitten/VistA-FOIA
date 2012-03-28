@@ -1,5 +1,7 @@
-XTKERMIT ;SF-ISC/RWF - Kermit protocol controler ;9/14/94  08:38
+XTKERMIT ;SF-ISC/RWF - Kermit protocol controler ;9/14/94  08:38 [ 11/22/95  1:17 PM ]
  ;;7.3;TOOLKIT;;Apr 25, 1995
+ ;IHS/OHPRD/FJE 11/25/95 kermit utilities modified to remove some IO if
+ ;IHS/OHPRD/FJE 11/25/95 variable XTKHL7 exists, queues task for data transfer to HL7
  ;To call from outside on KERMIT
  ;set XTKDIC = fileman type global root, DWLC = last current data node
  ;Return DWLC = last data node, XTKDIC is killed.

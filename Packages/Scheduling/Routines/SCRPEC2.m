@@ -1,5 +1,8 @@
-SCRPEC2 ;ALB/CMM - Detail List of Pts & Enroll Clinics Continued ; 29 Jun 99  04:11PM
- ;;5.3;Scheduling;**41,140,174,177,526**;AUG 13, 1993;Build 8
+SCRPEC2 ;ALB/CMM - Detail List of Pts & Enroll Clinics Continued ; 29 Jun 99  04:11PM [ 11/01/2000  1:52 PM ]
+ ;;5.3;Scheduling;**41,140,174,177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 10/26/2000 call IHS code to format patient data
+ ;                        and for column headings
+ ;             11/01/2000 added 2nd primary care provider
  ;
  ;Detailed Listing of Patients and Their Enrolled Clinics Report
  ;
@@ -31,16 +34,20 @@ KEEP(TIEN,PTIEN,CLLIST) ;keep data for report
  ;
  N ENT,TNAME,INS,NODE,INAME,PDATA,NODE,CIEN,CNAME,PNAME
  N SCPCPR,SCPCAP,SCI,PCLIST
+ N SC2PCP   ;IHS/ANMC/LJF 11/1/2000
  S TNAME=$P($G(^SCTM(404.51,TIEN,0)),"^") ;team name
  S INS=+$P($G(^SCTM(404.51,TIEN,0)),"^",7) ;institution ien
  S INAME=$P($G(^DIC(4,INS,0)),"^") ;institution name
  S PNAME=$P($G(^DPT(PTIEN,0)),"^") ;patient name
  K ^TMP("SC",$J,PTIEN)
+LJF ;
  S SCI=$$GETALL^SCAPMCA(PTIEN) D
  .;Name of PC Provider
  .S SCPCPR=$P($G(^TMP("SC",$J,PTIEN,"PCPR",1)),U,2)
  .;Name of Associate Provider
  .S SCPCAP=$P($G(^TMP("SC",$J,PTIEN,"PCAP",1)),U,2)
+ .;Name of 2nd Primary Care Provider;IHS/ANMC/LJF 11/1/2000
+ .S SC2PCP=$P($G(^TMP("SC",$J,PTIEN,"NPCPR",1)),U,2)  ;IHS/ANMC/LJF 11/1/2000
  .Q
  ;
  S ENT=0
@@ -52,6 +59,7 @@ KEEP(TIEN,PTIEN,CLLIST) ;keep data for report
  .D SETUP(INS,INAME,TIEN,TNAME,PTIEN,PNAME,CIEN,CNAME)
  .S PDATA=$$PDATA^SCRPEC(PTIEN,CIEN,1)
  .S $P(PDATA,U,9)=SCPCPR,$P(PDATA,U,10)=SCPCAP
+ .S $P(PDATA,U,11)=SC2PCP  ;IHS/ANMC/LJF 11/1/2000
  .;name^pid^mt^pelig^pstat^statd^last^next^pc prov.^assoc. prov.
  .D FORMAT(PTIEN,INS,TIEN,PDATA,CNAME,CIEN)
  Q
@@ -91,6 +99,7 @@ PCASSIGN(DFN,TIEN) ;patient assigned to team as primary care
  Q PC
  ;
 HEADER ;report column titles
+ D HEADER^BSDSCEC Q  ;IHS/ANMC/LJF 10/26/2000
  N HLD
  S HLD="H0"
  S $E(@STORE@("SUBHEADER",HLD),25)="M.T."
@@ -105,7 +114,7 @@ HEADER ;report column titles
  S $E(@STORE@("SUBHEADER",HLD),115)="Associate"
  S HLD="H1"
  S @STORE@("SUBHEADER",HLD)="Patient Name"
- S $E(@STORE@("SUBHEADER",HLD),16)="Pt ID"
+ S $E(@STORE@("SUBHEADER",HLD),18)="Pt ID"
  S $E(@STORE@("SUBHEADER",HLD),25)="Stat"
  S $E(@STORE@("SUBHEADER",HLD),31)="Elig"
  ;Removed by patch 174
@@ -128,9 +137,10 @@ FORMAT(PTIEN,INS,TIEN,PDATA,CNAME,CIEN) ;format data for report
  ;CNAME - clinic name
  ;CIEN - clinic ien
  ;
- S @STORE@(INS,TIEN,CIEN,PTIEN)=$E($P(PDATA,"^"),1,12) ;patient name
- S $E(@STORE@(INS,TIEN,CIEN,PTIEN),14)=$P(PDATA,"^",2) ;primary long id 9 digit
- S $E(@STORE@(INS,TIEN,CIEN,PTIEN),26)=$P(PDATA,"^",3) ;means test category
+ D FORMAT^BSDSCEC(PTIEN,INS,TIEN,PDATA,CNAME,CIEN) Q  ;IHS/ANMC/LJF 10/26/2000
+ S @STORE@(INS,TIEN,CIEN,PTIEN)=$E($P(PDATA,"^"),1,15) ;patient name
+ S $E(@STORE@(INS,TIEN,CIEN,PTIEN),18)=$E($P(PDATA,"^",2),6,10) ;primary long id last 4 plus P
+ S $E(@STORE@(INS,TIEN,CIEN,PTIEN),25)=$P(PDATA,"^",3) ;means test category
  S $E(@STORE@(INS,TIEN,CIEN,PTIEN),31)=$P(PDATA,"^",4) ;primary eligibility
  ;Removed by patch 174
  ;S $E(@STORE@(INS,TIEN,CIEN,PTIEN),31)=$P(PDATA,"^",5) ;patient status

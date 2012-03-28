@@ -1,4 +1,5 @@
-XUS11 ;SFISC/RWF - READ AND STORE DA FROM TERMINALS ;3/11/93  07:48
+XUS11 ;SFISC/RWF - READ AND STORE DA FROM TERMINALS ;3/11/93  07:48 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 A W !!,"This routine will get the ANSI DA for your terminal.",!,"And allow you to save it."
  W !,"First lets get the DA response from your terminal",!,">"

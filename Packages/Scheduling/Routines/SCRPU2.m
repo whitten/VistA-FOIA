@@ -1,5 +1,6 @@
-SCRPU2 ;ALB/CMM - GENERIC PROMPTS FOR PCMM REPORTS ; 12 Jan 99  1:23 PM
- ;;5.3;Scheduling;**41,174,297,526,520**;AUG 13, 1993;Build 26
+SCRPU2 ;ALB/CMM - GENERIC PROMPTS FOR PCMM REPORTS ; 12 Jan 99  1:23 PM [ 11/03/2000  7:20 AM ]
+ ;;5.3;Scheduling;**41,174**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/03/2000 changed Last 4 of PID to Chart #
  ;
 DTRANG(FIRST,SECOND) ;Date Range - begin date ^ end date => fileman format
  ;FIRST - first prompt (not required)
@@ -28,7 +29,7 @@ GTEAM(CLN,DFN) ;
  ;given clinic and patient, find related team
  N TPEN,FOUND,TEAM
  S TPEN="",FOUND=0
- F  S TPEN=$O(^SCTM(404.57,"E",CLN,TPEN)) Q:TPEN=""!(FOUND)  D
+ F  S TPEN=$O(^SCTM(404.57,"D",CLN,TPEN)) Q:TPEN=""!(FOUND)  D
  .S TEAM=$P(^SCTM(404.57,TPEN,0),"^",2)
  .I $D(^SCPT(404.42,"APTTM",DFN,TEAM)) S FOUND=1
  I FOUND=1 Q TEAM
@@ -106,11 +107,10 @@ SORT() ;
  ;
 EN1 N X
  W !,"Sort By:",!?10,"[1] Division, Team, Practitioner",!?10,"[2] Division, Practitioner, Team"
- W !?10,"[3] Practitioner,Associated Clinic"
- W !!,"Select 1 or 2 or 3: "
+ W !!,"Select 1 or 2: "
  R X:DTIME
  I (X="^")!'$T Q 0
- I (X'="1")&(X'="2")&(X'=3) D HLP3 G EN1
+ I (X'="1")&(X'="2") D HLP3 G EN1
  I (X["?")!(X="") D HLP3 G EN1
  Q X
 HLP3 ;
@@ -121,16 +121,18 @@ HLP3 ;
  ;
 SORT2() ;Prompt for sorting by:
  ;   [1] Division, Team, Patient Name
- ;or [2] Division, Team, SSN
+ ;or [2] Division, Team, Last 4 Pt ID
  ;or [3] Division, Team, Practitioner, Patient Name
- ;or [4] Division, Team, Practitioner, SSN
+ ;or [4] Division, Team, Practitioner, Last 4 Pt ID
  ;
 EN4 ;
  N X
  W !,"Sort By:",!?10,"[1] Division, Team, Patient Name"
- W !?10,"[2] Division, Team, SSN"
+ ;W !?10,"[2] Division, Team, Last 4 Pt ID"   ;IHS/ANMC/LJF 11/03/2000
+ W !?10,"[2] Division, Team, Chart #"         ;IHS/ANMC/LJF 11/03/2000
  W !?10,"[3] Division, Team, Practitioner, Patient Name"
- W !?10,"[4] Division, Team, Practitioner, SSN"
+ ;W !?10,"[4] Division, Team, Practitioner, Last 4 Pt ID"  ;IHS/ANMC/LJF 11/03/2000
+ W !?10,"[4] Division, Team, Practitioner, Chart #"  ;IHS/ANMC/LJF 11/03/2000
  W !!,"Select 1, 2, 3, or 4: "
  R X:DTIME
  I X=""!(X="^")!'$T Q 0
@@ -140,7 +142,9 @@ EN4 ;
 HLP4 ;
  ;help prompt
  W !,"Enter: ",!?5,"- 1 to sort by Division, Team, Patient Name"
- W !?10,"- 2 to sort by Division, Team, SSN"
+ ;W !?10,"- 2 to sort by Division, Team, Last 4 Pt ID"  ;IHS/ANMC/LJF 11/03/2000
+ W !?10,"- 2 to sort by Division, Team, Chart #"   ;IHS/ANMC/LJF 11/03/2000
  W !?10,"- 3 to sort by Division, Team, Practitioner, Patient Name"
- W !?10,"- 4 to sort by Division, Team, Practitioner, SSN"
+ ;W !?10,"- 4 to sort by Division, Team, Practitioner, Last 4 Pt ID"  ;IHS/ANMC/LJF 11/03/2000
+ W !?10,"- 4 to sort by Division, Team, Practitioner, Chart #"  ;IHS/ANMC/LJF 11/03/2000
  Q

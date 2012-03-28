@@ -1,6 +1,6 @@
-LRBLAUD1 ;TOG/CYM   -AUDIT TRAIL UTILITY ;4/30/97   14:00
- ;;5.2;LAB SERVICE;**90,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLAUD1 ; IHS/DIR/AAB -AUDIT TRAIL UTILITY 4/30/97 14:00 ; [ 4/30/97 9:30 AM ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**90**;Sep 27, 1994
  ;
  ; This routine is called by file 65 edit template LRBLIDTM
  ;

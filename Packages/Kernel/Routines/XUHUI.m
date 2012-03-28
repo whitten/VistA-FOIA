@@ -1,4 +1,4 @@
-XUHUI ;SFISC/SO-Main Field Event Trigger Routine ;1:05 PM  7 Nov 2002
+XUHUI ;SFISC/SO-Main Field Event Trigger Routine ;1:05 PM  7 Nov 2002 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**236,266**;Jul 10, 1995
  ;This routine comprised three(3) entry points:
  ;HUI(), HUIKEY(), and OPKG()

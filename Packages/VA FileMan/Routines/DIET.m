@@ -1,6 +1,6 @@
-DIET ;SFISC/XAK-DISPLAY INPUT TEMPLATE    ALSO DOES AUDITING! ;22MAR2006
- ;;22.0;VA FileMan;**69,49,104,129,147**;Mar 30, 1999
- ;Per VHA Directive 10-93-142, this routine should not be modified.
+DIET ;SFISC/XAK-DISPLAY INPUT TEMPLATE    ALSO DOES AUDITING! ;22FEB2011
+ ;;22.0;VA FileMan;**69,49,104,129,147**;Mar 30, 1999;Build 5
+ ;
  N DICMX
  I '$D(^DIE(D0,0)) G EXIT
  S DICMX="W X,!"
@@ -20,9 +20,9 @@ AUDIT ;
  K % S DIEX=X D @+DIIX
  K DIIX,DPS,DIEX
  Q
-3 ;
+3 ;'X' is NEW value
  I $D(DG),$D(DIANUM($P(DIIX,U,2))) S Y=X,(DIEX(1),C)=$P(^DD(DP,+$P(DIIX,U,2),0),U,2) D Y^DIQ S @DIANUM($P(DIIX,U,2))=Y K DIANUM($P(DIIX,U,2)) G I
-2 ;
+2 ;'X' is OLD value
  S:$D(DP(1)) DPS=DP(1) S DIEDA="",DIEF="",%=1,DP(1)=DP,%F=+DP,X=DA
  F C=1:1 Q:'$D(^DD(DP(1),0,"UP"))  S %F=^("UP"),%=$O(^DD(%F,"SB",DP(1),0)) S:%="" %=-1 S DIEDA=DA(C)_","_DIEDA,DIEF=%_","_DIEF,DP(1)=%F
  D ADD I $D(DG),+DIIX=2 S DIANUM($P(DIIX,U,2))="^DIA("_%F_","_+Y_",3)"
@@ -33,7 +33,7 @@ I I (DIEX(1)["D")!(DIEX(1)["P")!(DIEX(1)["V")!(DIEX(1)["S") S ^(DIIX+.1)=X_U_DIE
  Q
  ;
 ACCESSED(%F,REF) ;WILL FLAG ENTRY 'REF' IN FILE '%F' AS BEING ACCESSED BY CURRENT USER, CURRENT TIME, CURRENT OPTION
- N Y,X,%T,%D
+ N Y,X,%T,%D,%,%I,%H
  D:'$G(DT) DT^DICRW
  Q:'%F!'REF  S %F=+%F,(REF,X)=+REF Q:'$D(^DIC(%F))
  D ADD ;COMES BACK WITH %T AND Y--THE AUDIT REF

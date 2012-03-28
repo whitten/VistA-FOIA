@@ -38,6 +38,12 @@ VSITPUT1 ;ISD/RJP - Continued...Verify/set fields and file visit record ;6/20/96
  . S:$G(VSITREC(811))]"" ^AUPNVSIT(+Y,811)=VSITREC(811)
  . S:$G(VSITREC(812))]"" ^AUPNVSIT(+Y,812)=VSITREC(812)
  . S DA=+Y,DIK="^AUPNVSIT(" D IX1^DIK K DIK
+ . ;
+ . ;IHS/ITSC/LJF 6/19/2003 adding fields required by IHS
+ . NEW DIE,DR S DIE="^AUPNVSIT(",DR="1104///^S X=$$UID^AUPNVSIT("_DA_")" D ^DIE
+ . I $$GET1^DIQ(9999999.39,1,.16,"I")="V" D   ;if MFI site, need 2 more fields
+ . . K DR S DR=".15///A;.36///"_$$GET1^DIQ(9999999.39,1,.01,"I") D ^DIE
+ . ;
  . L -^AUPNVSIT(DA)
  L -^XTMP("VSIT CREATE",+$G(VSIT("PAT")),+VSIT("VDT"))
  K DD,DO,DA,DIC,DIK,X,Y,DLAYGO

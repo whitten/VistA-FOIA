@@ -1,6 +1,7 @@
-LRBLJPH ;AVAMC/REG - UNIT PHENOTYPE BY ABO/RH ;2/18/93  09:26 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJPH ; IHS/DIR/FJE - UNIT PHENOTYPE BY ABO/RH 2/18/93 09:26 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END W !!,"Phenotyped units" S C(9)="POSNEG"
 ABO R !,"Select ABO group: ",C(7):DTIME Q:C(7)["^"!(C(7)="")  I C(7)'="A"&(C(7)'="B")&(C(7)'="O")&(C(7)'="AB") W $C(7),!,"Enter A, B, AB or O" G ABO
 RH R !,"Select Rh type: ",X:DTIME G:X=""!(X["^") END I X'?1"N".U&(X'?1"P".U)!($L(X)>3)!(C(9)'[X) W $C(7),"  Enter 'NEG' or 'POS'" G RH

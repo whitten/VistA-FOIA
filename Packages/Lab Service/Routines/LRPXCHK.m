@@ -1,5 +1,6 @@
-LRPXCHK ;SLC/STAFF - Lab PXRMINDX Index Validation ;3/30/04  12:01
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXCHK ;VA/SLC/STAFF - Lab PXRMINDX Index Validation ;3/30/04  12:01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 PATS ; select patients for index check
  N DFN,ERR,REPAIR

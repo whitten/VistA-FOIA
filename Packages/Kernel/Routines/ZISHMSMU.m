@@ -1,9 +1,16 @@
 ZISHMSMU ; IHS/DSM/MFD - HOST COMMANDS FOR UNIX ; [ 06/03/96  10:58 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1006,1007,1011,1016,1017**;APR 1, 2003;Build 3
  ;;8.0;KERNEL;;JUL 10, 1995
+ ;THIS ROUTINE CONTAINS IHS MODIFICATIONS BY IHS/HQW/JLS 12/24/97; IHS/ANMC/LJF 12/11/96; IHS/ADC/GTH 06/03/96; IHS/AAO/RPL 4/9/99; TASSC/MFD
  ;
  ; Excepted from IHS SAC 6.1.5, 6.1.2.2 and 6.1.2.3 memo dated 16Nov93.
  ;
  ; Rename to %ZISH in the managers account
+ ;
+ ;IHS/HQW/JLS 12/24/97  This routine called by %ZISH on UNIX Systems 
+ ;
+ ;IHS/ANMC/LJF 12/11/96
+ ; -- changed exit value for PWD call to make it work for VA calls
  ;
 OPEN(ZISH1,ZISH2,ZISH3) ; -----  Open unix file.
  ;  S Y=$$OPEN^%ZISH("/directory/","filename","R")
@@ -85,14 +92,42 @@ SEND(ZISH1,ZISH2,ZISH3) ;Send unix fl
  I '$L($G(ZISH3)) Q "-1^<destination not specified>"
  S Y=$$LIST(.ZISH1,ZISH2,.ZISH2) ; Put array of files in ZISH2()
  ;I OS=AIX S ZISHPARM="-nc"
- S ZISHPARM="-nc"
+ ;
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1016
+ ;S ZISHPARM="-nc"
  ; -n = suppress sending results in UNIX mail message to the user
  ; -c = pack file(s) with 'compress' before sending
+ S ZISHPARM="-a"  ;IHS/AAO/RPL -a for ascii mode with ftpsend
+ ;----- END IHS MODIFICATION - XU*8.0*1016
  ;I OS=SCO S ZISHPARM="-p"
  ; -p = pack the file before the send request
- F ZISH=1:1 Q:'$D(ZISH2(ZISH))  S ZISHC="sendto "_ZISHPARM_" "_ZISH3_" "_ZISH1_ZISH2(ZISH) D JW
+ ; - BEGIN IHS MODIFIACTION - XU*8.0*1016
+ ;F ZISH=1:1 Q:'$D(ZISH2(ZISH))  S ZISHC="sendto "_ZISHPARM_" "_ZISH3_" "_ZISH1_ZISH2(ZISH) D JW
+ F ZISH=1:1 Q:'$D(ZISH2(ZISH))  S ZISHC="cd /usr/spool/uucppublic; ftpsend "_ZISHPARM_" "_ZISH3_" "_ZISH2(ZISH) D JW  ;IHS/AAO/RPL 4/9/99 ftpsend after cd to public or nothing gets sent.
  Q ZISHX
+ ;----- END IHS MODIFICATION XU*8.0-*1016
  ;
+ ;
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Subroutine SENDTO1 is added to use sendto1 script to send file
+SENDTO1(X,Y)       ;EP - use sendto1 script to send unix file
+ ;X=Entry in ZISH SEND PARAMETERS FILE (name or ien)
+ ;Y=file (path and filename)
+ ;
+ ;    S Y=$$SENDTO1^%ZISH("param","/path/file")
+ ;
+ N ZISH
+ I '$L($G(Y)) Q "-1^<file not specified>"
+ S ZISHFL=Y
+ D GETDA
+ I '$G(ZISHDA1) Q Y
+ S ZISHDA=ZISHDA1
+ D ONE
+ I Y=0 D
+ .S Y="0^processed"
+ .I $G(ZISHRNUM) S Y=Y_"^"_ZISHRNUM
+ Q Y
+ ;----- END IHS MODIFICATION
 LIST(ZISH1,ZISH2,ZISH3) ; -----  Set local array holding filename(s).
  ;  S Y=$$LIST^%ZISH("/dir/","fl",".return array")
  ;                           "fl*",
@@ -104,7 +139,7 @@ LIST(ZISH1,ZISH2,ZISH3) ; -----  Set local array holding filename(s).
  D DF(.ZISH1)
  ;
  ; -- Init ZISHAUTO.$J.
- S ZISHC="rm ZISHAUTO."_$J
+ S ZISHC="rm /tmp/ZISHAUTO."_$J
  D JW
  ;
  ; -- Set array if filename(s) are passed by value.
@@ -114,14 +149,14 @@ LIST(ZISH1,ZISH2,ZISH3) ; -----  Set local array holding filename(s).
  ; -- Append listing to ZISHAUTO.$J.
  F ZISHDA=0:0 S ZISHDA=$O(ZISH2(ZISHDA)) Q:'ZISHDA  S ZISHF=ZISH2(ZISHDA) D
  . S ZISHDF=$S(ZISH1'="":ZISH1_ZISHF,1:ZISHF)
- . S ZISHC="ls "_ZISHDF_" >> ZISHAUTO."_$J
+ . S ZISHC="ls "_ZISHDF_" >> /tmp/ZISHAUTO."_$J
  . D JW
  .Q
  ;
  ; -- Open ZISHAUTO.$J to read.
  ; -- Create the 'Return Array' to pass back to user.
  S ZISHIOP1=ION_";"_IOST_";"_IOM_";"_IOSL
- S ZISHX=$$OPEN("/usr/mumps/","ZISHAUTO."_$J,"R")
+ S ZISHX=$$OPEN("/tmp/","ZISHAUTO."_$J,"R")
  I ZISHX Q ZISHX
  F ZISHLN=1:1 U IO R X Q:$$STATUS=-1  S ZISH3(ZISHLN)=$P(X,"/",$L(X,"/"))
  D ^%ZISC
@@ -129,7 +164,7 @@ LIST(ZISH1,ZISH2,ZISH3) ; -----  Set local array holding filename(s).
  D ^%ZIS
  ;
  ; -- Remove ZISHAUTO.$J.
- S ZISHC="rm ZISHAUTO."_$J
+ S ZISHC="rm /tmp/ZISHAUTO."_$J
  D JW
  ;
  Q ZISHX
@@ -164,30 +199,50 @@ PWD(ZISH1) ; -----  Print working directory.
  ; version of $$PWD.
  ; ---------------------------------------------------------------
  ;
- NEW %ZIS,POP,X,Y,ZISHC,ZISHDA,ZISHDF,ZISHF,ZISHIOP,ZISHLN,ZISHQ,ZISHX,ZISHSYFI,ZISHIOP1
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;IHS/OIRM/DSD/AEF/1/22/03 -THE LINE BELOW IS COMMENTED OUT AND REPLACED
+ ;BY NEW LINES TO GET DEF DIR FROM KERNEL SYSTEM PARAMETERS FILE
+ ;S ZISH1(1)="/tmp"
+ S ZISH1(1)=$G(^XTV(8989.3,1,"DEV"))
+ I ZISH1(1)="" S ZISH1(1)="/tmp/"
+ S ZISH1(1)=$TR(ZISH1(1),"\","/")
+ I $E(ZISH1(1),$L(ZISH1(1)))'="/" S ZISH1(1)=ZISH1(1)_"/"
+ Q ZISH1(1)   ;IHS/ANMC/LJF 12/11/96
+ ;Q 1         ;IHS/ANMC/LJF 12/11/96
+ ;----- END IHS MODIFICATION
  ;
- ; -- Init ZISHAUTO.$J.
- S ZISHC="rm ZISHAUTO."_$J
- D JW
  ;
- S ZISHC="pwd > ZISHAUTO."_$J
- D JW
+ ; --------------------------------------------------------------------------
+ ; PROGRAMMERS NOTE: IHS/OIT/BWF-FBD
+ ; Commented out followin VA code and re-introduced IHS modifications for XU*8.0*1016
+ ; -------------------------------------------------------------------------
  ;
- ; -- Open ZISHAUTO.$J to read.
- ; -- Create the 'Return Array' to pass back to user.
- S ZISHIOP1=ION_";"_IOST_";"_IOM_";"_IOSL
- S ZISHX=$$OPEN("/usr/mumps/","ZISHAUTO."_$J,"R")
- I ZISHX Q ZISHX
- F ZISHLN=1:1 U IO R X Q:$$STATUS=-1  S ZISH1(ZISHLN)=X
- D ^%ZISC
- S IOP=ZISHIOP1
- D ^%ZIS
- ;
- ; -- Remove ZISHAUTO.$J.
- S ZISHC="rm ZISHAUTO."_$J
- D JW
- ;
- Q ZISHX
+ ; ------ BEGIN IHS MODIFIACTION - XU*8.0*1016
+ ;NEW %ZIS,POP,X,Y,ZISHC,ZISHDA,ZISHDF,ZISHF,ZISHIOP,ZISHLN,ZISHQ,ZISHX,ZISHSYFI,ZISHIOP1
+ ;;
+ ;; -- Init ZISHAUTO.$J.
+ ;;S ZISHC="rm ZISHAUTO."_$J
+ ;D JW
+ ;;
+ ;S ZISHC="pwd > ZISHAUTO."_$J
+ ;D JW
+ ;;
+ ;; -- Open ZISHAUTO.$J to read.
+ ;; -- Create the 'Return Array' to pass back to user.
+ ;S ZISHIOP1=ION_";"_IOST_";"_IOM_";"_IOSL
+ ;S ZISHX=$$OPEN("/usr/mumps/","ZISHAUTO."_$J,"R")
+ ;I ZISHX Q ZISHX
+ ;F ZISHLN=1:1 U IO R X Q:$$STATUS=-1  S ZISH1(ZISHLN)=X
+ ;D ^%ZISC
+ ;S IOP=ZISHIOP1
+ ;D ^%ZIS
+ ;;
+ ;; -- Remove ZISHAUTO.$J.
+ ;S ZISHC="rm ZISHAUTO."_$J
+ ;D JW
+ ;;
+ ;Q ZISHX
+ ; ------ END IHS MODIFIACTION - XU*8.0*1016
  ;
 JW ; -- MSM extrinsic.
  S ZISHX=$$JOBWAIT^%HOSTCMD(ZISHC)
@@ -212,7 +267,94 @@ QL(X) ;Qlfrs
 FL(X) ; ----- Filename length.
  NEW ZISHP1,ZISHP2
  S ZISHP1=$P(X,"."),ZISHP2=$P(X,".",2)
- I $L(ZISHP1)>14 S X=4 Q
- I $L(ZISHP2)>8 S X=4 Q
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;THESE TWO LINES ARE COMMENTED OUT, FILE LENGTH IS NO LONGER AN ISSUE.
+ ;ORIGINAL MODIFIATION BY TASSC/MFD
+ ;I $L(ZISHP1)>14 S X=4 Q
+ ;I $L(ZISHP2)>8 S X=4 Q
+ ;----- END IHS MODIFICATION
  Q
  ;
+IHS() ;EP - Determine if the call was from an IHS application.
+ I '$L($G(XQY0)) Q 1
+ I "AB"[$E($G(XQY0)_" ") Q 1
+ ; If required, add more checks, below.
+ ; I "xxx"[$E($G(XQY0)_" ") Q
+ Q 0
+ ;
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;New subroutines added to support new $$SENDTO1 function
+ ;Original modification by MJD
+DIST(ZISH1,ZISH2)  ;send distribution list
+ N ZISH
+ I '$L($G(Y)) Q "-1^<file not specified>"
+ S ZISHFL=Y
+ D GETDA
+ I '$D(ZISHDA1) Q Y
+ I '$O(^%ZIB(9888888.93,ZISHDA1,1,0)) Q "-1^no entries in distribution list"
+ S ZISHDA=0
+ F  S ZISHDA=$O(^%ZIB(9888888.93,ZISHDA1,1,ZISHDA)) Q:'ZISHDA  D
+ .D ONE
+ S Y="0^list processed"
+ Q Y         
+ONE ;run one     
+ F I=1:1:10 S ZISH(I)=$P(^%ZIB(9888888.93,ZISHDA,0),"^",I)
+ S:ZISH(8)="" ZISH(8)="sendto1"
+ S ZISHC=ZISH(8)
+ I ZISH(3)'="",ZISH(4)'="" D
+ .S:ZISH(6)'="" ZISH(6)=ZISH(6)_" "
+ .S ZISH(6)=ZISH(6)_"-l "_ZISH(3)_":"_ZISH(4)
+ I ZISH(5)'="" D
+ .S:ZISH(6)'="" ZISH(6)=ZISH(6)_" "
+ .S ZISH(6)=ZISH(6)_"-r "_ZISH(5)
+ I ZISH(10)'="" D
+ .S:ZISH(6)'="" ZISH(6)=ZISH(6)_" "
+ .S ZISH(6)=ZISH(6)_"-w "_ZISH(6)
+ S:ZISH(6)'="" ZISHC=ZISHC_" "_ZISH(6)
+ S ZISHC=ZISHC_" "_ZISH(2)_" "_ZISHFL
+ I ZISH(8)="sendto1",ZISH(7)="B" D
+ .S ZISHRNUM=$$NXNM()
+ .S ZISHC=ZISHC_" "_ZISHRNUM
+ .S DIE="^%ZIB(9888888.93,",DA=ZISHDA,DR=".09///"_ZISHRNUM
+ .D ^DIE
+ D @(ZISH(7))
+ K ZISH,ZISHDA,ZISHFL
+ Q
+ ;
+F ;call hostcmd foreground
+ S Y=$$TERMINAL^%HOSTCMD(ZISHC)
+ Q
+B ;call hostcmd background
+ S Y=$$JOBWAIT^%HOSTCMD(ZISHC)
+ Q
+SCRIPT(X)          ;run a script
+ ;x=entry in ZISH SEND PARAMETERS file (name or ien)
+ D GETDA
+ I '$G(ZISHDA) Q Y
+ S ZISH(7)=$P(^%ZIB(9888888.93,ZISHDA,0),"^",7)
+ I ZISH(7)="" Q Y
+ S I=0
+ F  S I=$O(^%ZIB(9888888.93,ZISHDA,2,I)) Q:'I  D
+ .S ZISHC=^%ZIB(9888888.93,ZISHDA,2,I,0)
+ .D @(ZISH(7))
+ Q Y
+GETDA ;internal entry number
+ K ZISHDA1
+ S Y="-1^<ZISH SEND PARAMETER FILE entry not valid>"
+ I $G(X)="" Q
+ I X,$D(^%ZIB(9888888.93,X,0)) D  Q
+ .S ZISHDA1=X
+ .K Y
+ S ZISHDA1=$O(^%ZIB(9888888.93,"B",X,0))
+ I '$D(^%ZIB(9888888.93,+ZISHDA1,0)) D
+ .K ZISHDA1
+ Q
+NXNM() ;get next reference number
+ I '$D(^%ZIB(9888888.93,"ARNUM")) D
+ .S ^%ZIB(9888888.93,"ARNUM")=0
+ L +^%ZIB(9888888.93,"ARNUM"):1 I '$T Q 0
+ S Y=^%ZIB(9888888.93,"ARNUM")+1
+ S ^%ZIB(9888888.93,"ARNUM")=Y
+ L -^%ZIB(9888888.93,"ARNUM")
+ Q Y
+ ;----- END IHS MODIFICATION

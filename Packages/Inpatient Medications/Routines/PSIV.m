@@ -1,5 +1,5 @@
-PSIV ;BIR/PR,MLM-MISC UTILITIES ;19 Mar 99 / 9:45 AM
- ;;5.0; INPATIENT MEDICATIONS ;**7,16,29,38,53,56,72,58,110,181**;16 DEC 97;Build 190
+PSIV ;BIR/PR,MLM-MISC UTILITIES ;28-Mar-2011 19:23;DU
+ ;;5.0; INPATIENT MEDICATIONS ;**7,16,29,38,53,56,72,58,1011**;16 DEC 97;Build 17
  ;
  ; Reference to ^PS(55 is supported by DBIA 2191
  ; Reference to ^PSSLOCK is supported by DBIA 2789
@@ -11,12 +11,11 @@ PSIV ;BIR/PR,MLM-MISC UTILITIES ;19 Mar 99 / 9:45 AM
  ; Reference to ^VALM1 is supported by DBIA 10116
  ; Reference to ^PS(51.1 is supported by DBIA 2177
  ;
+ ; Modified - IHS/MSC/PLS - 03/28/2011 - Line ENCHS1+3
 ENGETP ;Enter here to select patient.
  K DIC S DIC("W")="W ""  "",$P(^(0),""^"",9) W:$D(^(.1)) ""  "",^(.1)",DIC="^DPT(",DIC(0)="QEM"
  D FULL^VALM1
 GETP1 ;
- ;NEW arrays use in order checks
- NEW PSJEXCPT,PSJOCER
  S PSGPTMP=0,PPAGE=1,DFN=-1,X="Select PATIENT:^^^^1" D ENQ Q:"^"[X
  D EN^PSJDPT
  I Y<0 G ENGETP
@@ -36,7 +35,7 @@ ENQ ;Enter here to read X. This is the general reader that I have
 VAR F QUX1=1:1 S QUD=$P($P(X,"^",4),",",QUX1) Q:QUD=""  I $P(QUD,QUX)="" W $S($P(X,"^",2)=QUX:"    "_QUX,1:"")_$P(QUD,QUX,2,99) S QUX=QUD G KILL
 PAT I $P(X,"^",5)]"",@$P(X,"^",5,999) G KILL
  W $C(7)," ???" G ENQ
-KILL S X=QUX K QUX,QUX1,QUD,PSJDCEXP Q
+KILL S X=QUX K QUX,QUX1,QUD Q
  ;
 ENADM ;Edit administration schedules.
  S DIC="^PS(51.1,",DIC(0)="QEAML",DLAYGO=51.1 D ^DIC K:+Y<0 %,DA,D0,DIC,DIE,DLAYGO,DR,Z,Y Q:'$D(Y)  S DIE=DIC,DR=".01;1",DA=+Y K DIC D ^DIE G ENADM
@@ -44,7 +43,7 @@ ENADM ;Edit administration schedules.
 ENOW D NOW^%DTC S Y=% K %,%H,%I
  Q
  ;
-ENC ;Get unit of measure for drug selected.
+ENC ;Get unit of measure for drug seleted.
  S X=$P($P(";"_$P(Y,U,3),";"_X_":",2),";")
  Q
  ;
@@ -60,6 +59,7 @@ OE N CONT S CONT=0
 ENCHS1 ;
  S PSJORQF=0,CONT=0
  S PSJPROT=2,PSJOL="",(PSGOP,PSGP)=DFN
+ D SETPTCX^APSPFUNC(DFN)  ;IHS/MSC/PLS - 03/28/11
  K PSJLMPRO D EN^VALM("PSJ LM BRIEF PATIENT INFO")
  S VALMCNT=30
  I PSIVBR="D PROCESS^PSIVRD",(PSJOL="N") D ORDNO^PSIVRD Q
@@ -89,23 +89,13 @@ OV ;
  I '$D(PSGODDD) S VALMBCK="R" Q
  N DONE
  F PSIVOV1=1:1:PSGODDD F PSIVOV2=1:1:$L(PSGODDD(PSIVOV1),",")-1 D
+ .;;S ON=+$P(PSGODDD(PSIVOV1),",",PSIVOV2),ON=$S($D(^TMP("PSIV",$J,"AB",ON)):^(ON),$D(^TMP("PSIV",$J,"PB",ON)):^(ON),$D(^TMP("PSIV",$J,"XB",ON)):^(ON),1:"") Q:'ON!$G(DONE)  D OV1
  .S ON=+$P(PSGODDD(PSIVOV1),",",PSIVOV2)
- .S ON=$$GTON(ON)
+ .S ON=$S($D(^TMP("PSIV",$J,"AB",ON)):^(ON),$D(^TMP("PSIV",$J,"NB",ON)):^(ON),$D(^TMP("PSIV",$J,"PB",ON)):^(ON),$D(^TMP("PSIV",$J,"XB",ON)):^(ON),1:"")
  .Q:'ON!$G(DONE)
  .D OV1
  S VALMBCK="Q"
  Q
-GTON(X) ;
- ;Return the ON node from ^Tmp
- I $G(X)="" Q ""
- I $D(^TMP("PSIV",$J,"AB",X)) Q ^(X)
- I $D(^TMP("PSIV",$J,"NB",X)) Q ^(X)
- I $D(^TMP("PSIV",$J,"PB",X)) Q ^(X)
- I $D(^TMP("PSIV",$J,"XB",X)) Q ^(X)
- I $D(^TMP("PSIV",$J,"NDB",X)) Q ^(X)
- I $D(^TMP("PSIV",$J,"PDB",X)) Q ^(X)
- I $D(^TMP("PSIV",$J,"RDB",X)) Q ^(X)
- Q ""
 OV1 ;
  S (ON,ON55,P("PON"))=9999999999-ON_$S(ON["V":"V",1:"P")
  I PSIVBR["D ^PSIVVW1" D
@@ -124,8 +114,6 @@ ENU ;Get IV additive strength. Called from templates.
  N Y S Y=+^PS(55,DA(2),"IV",DA(1),"AD",DA,0),PSIVSTR=$$ENU^PSIVUTL(Y)
  Q
 Q ;
- ;K PSJEXCPT,PSJOCER,^TMP($J,"PSJPRE")
- K ^TMP($J,"PSJPRE")
  K ^TMP("PSIV",$J),^TMP("PSJ",$J),^TMP("PSJPRO",$J),^TMP("PSJALL",$J),^TMP("PSJI",$J),^TMP("PSJON",$J)
  K DRG,DRGI,DRGN,DRGT,ERR,I,JJ,MI,N,N2,ON,ON55,P,P1,P3,P16,P17,PNOW,PS,PSGODD,PSGODDD,PSIV,PSIVAAT,PSIVACT,PSIVADM,PSIVAT
  K PSIVC,PSIVDT,PSIVFLAG,PSIVLN,PSIVNOW,PSIVNU,PSIVON,PSIVOV1,PSIVOV2,PSIVREA,PSIVSTR,PSIVSTRT,PSIVNOL,PSIVTYPE,PSJNKF

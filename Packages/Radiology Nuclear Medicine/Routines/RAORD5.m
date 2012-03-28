@@ -1,18 +1,16 @@
 RAORD5 ;HISC/CAH,FPT,GJC AISC/RMO-Print A Request ;8/4/97  14:47
- ;;5.0;Radiology/Nuclear Medicine;**8,10,15,31,45,75**;Mar 16, 1998;Build 4
+ ;;5.0;Radiology/Nuclear Medicine;**8,10,15,31**;Mar 16, 1998
  ; Input:  RADFN= Internal Number to Rad/Nuc Med Patient File #70
  ;         RAOIFN= Internal Number to Rad/Nuc Med Orders File #75.1
  ;         RAX= Null (Used to check for an '^')
  ;         RAPGE= 0 (Used as a page counter)
  ;
- ; 1-p75 10/12/2006 GJC RA*5*75 Remedy 162508 Modify Patient AGE calc
- ; 2-p75 10/12/2006 GJC RA*5*75 set REASON FOR STUDY to a local variable
  S:$D(ZTQUEUED) ZTREQ="@"
  G Q:'$D(^DPT(RADFN,0)) S RADPT0=^(0) G Q:'$D(^RAO(75.1,RAOIFN,0)) S RAORD0=^(0)
  K ^UTILITY($J,"W"),^(1) S RAOSTSYM="dc^c^h^^p^^^s",$P(RALNE,"-",79)="",$P(RALNE1,"=",79)="",DIWL=5,DIWR=75,DIWF="WC75"
  S RA("NME")=$P(RADPT0,"^"),RA("SEX")=$P(RADPT0,"^",2),RA("DOB")=$P(RADPT0,"^",3),RASSN=$$SSN^RAUTL
- S RA("AGE")=($$FMDIFF^XLFDT($P(RAORD0,U,16),RA("DOB")))\365.25 ;1-p75 
- S RA("STY_REA")=$P($G(^RAO(75.1,RAOIFN,.1)),U) ;2-p75
+ S X="NOW",%DT="T" D ^%DT K %DT S X1=Y,X2=RA("DOB") D ^%DTC S RA("AGE")=X\365.25
+ S:$E(Y,4,7)=$E(RA("DOB"),4,7) RA("AGE")=RA("AGE")+1 ; today is birthday
  S RA("PRC NODE")=$G(^RAMIS(71,+$P(RAORD0,U,2),0))
  S RA("PRC")=$E($P(RA("PRC NODE"),U),1,36)
  S RA("PRC")=$S(RA("PRC")]"":RA("PRC"),1:"UNKNOWN")
@@ -60,8 +58,6 @@ RAORD5 ;HISC/CAH,FPT,GJC AISC/RMO-Print A Request ;8/4/97  14:47
  ; Get other order info (orderer, transport mode, etc.)
  S RA("USR")=$S($D(^VA(200,+$P(RAORD0,"^",15),0)):$P(^(0),"^"),1:"UNKNOWN"),RA("TRAN")=$S($P(RAORD0,"^",19)']"":"UNKNOWN",1:$P($P(^DD(75.1,19,0),$P(RAORD0,"^",19)_":",2),";")) S:$P(RAORD0,"^",19)="p" RA("PORTABLE")=""
  K RA("ST"),^TMP($J,"RA DIFF PRC")
- ;determine if ordered procedure has CM assoc.; return null if none
- S RACMFLG("O")=$$CMEDIA^RAO7UTL(+$P(RAORD0,U,2),$P(RA("PRC NODE"),U,6))
  ; If appropriate, determine exam status and descendant exams
  I $D(^RADPT("AO",RAOIFN,RADFN)) D DPRC^RAORD2(RAOIFN,RADFN)
  S RADIV(0)=$G(^SC(+$P(RAORD0,"^",22),0))
@@ -76,7 +72,7 @@ RAORD5 ;HISC/CAH,FPT,GJC AISC/RMO-Print A Request ;8/4/97  14:47
  D ^RAORD6
  ;
 Q K DIWF,DIWL,DIWR,I,RA,RABARC,RABARC0,RABARC1,RADIV,RADIVPAR,RADPT0,RALNE,RALNE1,RAORD0,RAOSTSYM,RATAB,RAV,RASSN,RAXX,VA200,VAERR,VAIP,X,X1,X2,X3,Y,ZZ
- K RACMFLG,RALOC,^TMP($J,"RA DIFF PRC")
+ K RALOC,^TMP($J,"RA DIFF PRC")
  Q
 PHONE(X,Y) ; Setup phone information for Resident Physicians, Attending
  ; Physicians, and Primary Physicians.

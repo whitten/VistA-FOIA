@@ -1,5 +1,5 @@
 ZTEDIT2 ;SF/RWF - VA EDITOR ;09/03/2008
- ;;8.0;KERNEL;**9,16,120,499**;Jul 10, 1995;Build 14
+ ;;8.0;KERNEL;**9,16,120,499**;Jul 10, 1995;Build 24
  F %I=1:1 S %A=$T(%+%I),%T=$P(%A," ",1),%B=$P(%A," ",2,256) Q:%T="END"  I $L(%T) S ^%Z(%T)=%B
  G ^ZTEDIT3
  Q

@@ -1,4 +1,5 @@
-DICFIX ;SEA/TOAD,SF/TKW-FileMan: Finder, Search Compound Indexes ;5/26/99  14:40
+DICFIX ;SEA/TOAD,SF/TKW-FileMan: Finder, Search Compound Indexes ;5/26/99  14:40 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**4**;Mar 30, 1999;
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;

@@ -1,219 +1,74 @@
-KMPSGE ;OAK/KAK - Master Routine ;5/3/07  13:57
- ;;2.0;SAGG;;Jul 02, 2007
+KMPSGE ;SF/KAK - Master Routine ;27 AUG 97 1:12 pm
+ ;;1.8;SAGG PROJECT;**1**;May 14, 1999
  ;
-EN ;-- this routine can only be run as a TaskMan background job
+EN ; Routine can only be run as a TaskMan background job
  ;
  Q:'$D(ZTQUEUED)
- ;
- N CNT,COMPDT,HANG,KMPSVOLS,KMPSZE,LOC,MAXJOB,MGR,NOWDT,OS
- N PROD,PTCHINFO,QUIT,SESSNUM,SITENUM,TEMP,TEXT,UCI,UCIVOL
- N VOL,X,ZUZR
- ;
- ; maximum number of consecutively running jobs
- S MAXJOB=6
- ; hang time for LOOP and WAIT code
- S HANG=300
- ;
- S SESSNUM=+$H,U="^",SITENUM=$P($$SITE^VASITE(),U,3)
- ;
- S NOWDT=$$NOW^XLFDT
- ;
- S OS=$$MPLTF^KMPSUTL1
- I OS="UNK" D  Q
- .S TEXT(1)="   SAGG Project for this M platform is NOT implemented !"
- .D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- ;
- S MGR=^%ZOSF("MGR"),PROD=$P(^%ZOSF("PROD"),",")
- S PROD=$S($P(^KMPS(8970.1,1,0),U,3)="":PROD,1:$P(^(0),U,3))
- S LOC=$P(^KMPS(8970.1,1,0),U,2)
- ;
- L +^XTMP("KMPS")
- S ^XTMP("KMPS",0)=$$FMADD^XLFDT($$DT^XLFDT,14)_U_NOWDT_U_"SAGG data"
- K ^XTMP("KMPS",SITENUM),^XTMP("KMPS","ERROR")
- K ^XTMP("KMPS","START"),^XTMP("KMPS","STOP")
- ;
- ; routine KMPSUTL will always be updated with patch release
- S X="KMPSUTL"
- X "ZL @X S PTCHINFO=$T(+2)"
- S PTCHINFO=$P(PTCHINFO,";",3)_" "_$P(PTCHINFO,";",5)
- ; session number^M platform^SAGG version_" "_patch^start date-time^
- ;     -> completed date-time will be set in $$PACK
- S ^XTMP("KMPS",SITENUM,0)=SESSNUM_U_OS_U_PTCHINFO_U_NOWDT_U
+ N KMPSVOLS
+ S U="^",KMPSX=$P($P(^%ZOSF("OS"),U),"("),KMPSX1=$S(KMPSX="VAX DSM":"VAX",KMPSX="MSM-PC/386":"MSM",KMPSX="MSM-PC/PLUS":"MSMV4",KMPSX="OpenM-NT":"OMNT",1:"ERR")
+ I KMPSX1="ERR" W !,"SAGG Project for this environment is NOT implemented !",*7,! K KMPSX,KMPSX1 Q
+ I KMPSX1="MSMV4" I $ZV["Windows NT" S KMPSX1="MSM"
+ S KMPSMGR=^%ZOSF("MGR"),KMPSPROD=$P(^%ZOSF("PROD"),","),KMPSPROD=$S($P(^KMPS(8970.1,1,0),"^",3)="":KMPSPROD,1:$P(^(0),"^",3))
+ S KMPSSITE=^DD("SITE",1),KMPSLOC=$P(^KMPS(8970.1,1,0),"^",2) D NOW^%DTC S KMPSDT=%
+ L +^XTMP("KMPS") S ^XTMP("KMPS",0)=%+10000
+ K ^XTMP("KMPS",KMPSSITE),^XTMP("KMPS","ERROR"),^XTMP("KMPS","START"),^XTMP("KMPS","STOP")
+ S NUM=+$H,^XTMP("KMPS",KMPSSITE,0)=NUM_U_KMPSX1_U_$P($T(+2),";",3)_" "_$P($T(+2),";",5)_U_+$G(^KMPS(8970.1,2,0))
  S X="ERR1^KMPSGE",@^%ZOSF("TRAP")
- S TEMP=SITENUM_U_SESSNUM_U_LOC_U_NOWDT_U_PROD
+ S KMPSTEMP=KMPSSITE_U_NUM_U_KMPSLOC_U_KMPSDT_U_KMPSPROD
+ S (KMPSSTRT,KMPSVOL)=0 F  S KMPSVOL=$O(^KMPS(8970.1,1,1,"B",KMPSVOL)) Q:KMPSVOL=""!+$G(^XTMP("KMPS","STOP"))  D
+ .S KMPSUCIN=0 F  S KMPSUCIN=$O(^KMPS(8970.1,1,1,"B",KMPSVOL,KMPSUCIN)) Q:KMPSUCIN=""  D
+ ..S KMPSUCI=$P(^KMPS(8970.1,1,1,KMPSUCIN,0),U,2)
+ ..S:KMPSUCI="" KMPSUCI=KMPSPROD S KMPSVA(KMPSUCI_","_KMPSVOL)="",KMPSVOLS(KMPSVOL)=""
+ ..D @KMPSX1 S KMPSSTRT=KMPSSTRT+1 I KMPSSTRT=6 D WAIT
  ;
- S (CNT,VOL)=0
- F  S VOL=$O(^KMPS(8970.1,1,1,"B",VOL)) Q:VOL=""!+$G(^XTMP("KMPS","STOP"))  D
- .N UCI,UCIDA
- .S UCIDA=0 F  S UCIDA=$O(^KMPS(8970.1,1,1,"B",VOL,UCIDA)) Q:UCIDA=""!+$G(^XTMP("KMPS","STOP"))  D
- ..S UCI=$P(^KMPS(8970.1,1,1,UCIDA,0),U,2)
- ..S:UCI="" UCI=PROD S UCIVOL(UCI_","_VOL)="",KMPSVOLS(VOL)=""
- ..D @OS
- ..S CNT=CNT+1
- ..I CNT=MAXJOB S CNT=$$WAIT(HANG,MAXJOB)
+LOOK ;
+ D ZER^KMPSLK
+LOOP ;
+ ;  Wait for all volume sets to complete
  ;
- D EN^KMPSLK(SESSNUM,SITENUM)
- S QUIT=0
- D LOOP(HANG,SESSNUM,OS)
- I 'QUIT D
- .;N RESULT,XMZSENT
- .S RESULT=$$PACK(SESSNUM,SITENUM)
- .S XMZSENT=+RESULT,COMPDT=$P(RESULT,U,2)
- .S X=$$OUT^KMPSLK(NOWDT,OS,SESSNUM,SITENUM,XMZSENT,.TEXT)
- .D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT,COMPDT)
- D END^KMPSLK
- Q
+ H 300 I $D(^XTMP("KMPS","START")) G:(+$H<(NUM+3)) LOOP S KMPSTEXT(1)="   The SAGG Project collection routines have been running for more",KMPSTEXT(2)="   than 3 days.  No report has been generated." G MSG^KMPSLK
+ K KMPSTEXT I $D(^XTMP("KMPS","ERROR")) S KMPSTEXT(1)="   The SAGG Project has recorded an error on volume set(s):" D  G MSG^KMPSLK
+ .S KMPSX=0,KMPSVOL="" F  S KMPSVOL=$O(^XTMP("KMPS","ERROR",KMPSVOL)) Q:KMPSVOL=""  S:KMPSX KMPSTEXT(3)=KMPSTEXT(3)_"   "_KMPSVOL S:'KMPSX KMPSX=1,KMPSTEXT(3)="      "_KMPSVOL
+ .S (KMPSTEXT(2),KMPSTEXT(4))="",KMPSTEXT(5)="   See system error log for more details."
+ .I KMPSX1="OMNT" S KMPSTEXT(6)="",KMPSTEXT(7)="   Also run INTEGRIT on the listed volume(s)."
+ I $D(^XTMP("KMPS","STOP")) S KMPSTEXT(1)="   The SAGG Project collection routines have been STOPPED!  No report",KMPSTEXT(2)="   has been generated." G MSG^KMPSLK
+ I '$D(^XTMP("KMPS",KMPSSITE,NUM,KMPSDT)) D  G MSG^KMPSLK
+ .S KMPSTEXT(1)="   The SAGG Project collection routines did NOT obtain ANY global",KMPSTEXT(2)="   information.  Please ensure that the SAGG PROJECT file is"
+ .S KMPSTEXT(3)="   properly setup.  Then use the 'One-time Option Queue' under",KMPSTEXT(4)="   Task Manager to re-run the KMPS SAGG REPORT option."
+ S KMPSX1="" F  S KMPSX1=$O(^XTMP("KMPS",KMPSSITE,NUM,KMPSDT,KMPSX1)) Q:KMPSX1=""  S KMPSX2="" F  S KMPSX2=$O(^XTMP("KMPS",KMPSSITE,NUM,KMPSDT,KMPSX1,KMPSX2)) Q:KMPSX2=""  K KMPSVA(KMPSX2)
+ S KMPSX1="" F  S KMPSX1=$O(^XTMP("KMPS",KMPSSITE,NUM," NO GLOBALS ",KMPSX1)) Q:KMPSX1=""  K KMPSVA(KMPSX1)
+ I $D(KMPSVA) S KMPSTEXT(1)="   The SAGG Project collection routines did NOT monitor the following:",KMPSTEXT(2)="" D  G MSG^KMPSLK
+ .S KMPSX=0,KMPSX1="" F KMPSI=3:1 Q:KMPSX  S KMPSTEXT(KMPSI)="          " F KMPSJ=1:1:5 S KMPSX1=$O(KMPSVA(KMPSX1)) S:KMPSX1="" KMPSX=1 Q:KMPSX1=""  S KMPSTEXT(KMPSI)=KMPSTEXT(KMPSI)_KMPSX1_"   "
+ .S KMPSTEXT(KMPSI)="",KMPSTEXT(KMPSI+1)="   Please ensure that the SAGG PROJECT file is properly setup.  Then use"
+ .S KMPSTEXT(KMPSI+2)="   the 'One-time Option Queue' under Task Manager to re-run the KMPS SAGG",KMPSTEXT(KMPSI+3)="   REPORT option."
  ;
-LOOP(HANG,SESSNUM,OS)    ;
- ;---------------------------------------------------------------------
- ; Loop until all volume sets complete
+ ;  PackMan ^XTMP global to KMP1-SAGG-SERVER at Albany CIOFO
  ;
- ; HANG.....  time to wait to see if all volume sets have completed
- ; OS.......  type of operating system
- ; SESSNUM..  +$Horolog number of session
- ;---------------------------------------------------------------------
- N GBL,UCIVOL1
+ S U="^",N=$O(^DIC(4,"D",KMPSSITE,0)),NM=$S($D(^DIC(4,N,0)):$P(^(0),"^"),1:KMPSSITE)
+ K XMY S:'$D(XMDUZ) XMDUZ=.5 S:'$D(DUZ) DUZ=.5
+ S XMSUB=NM_" (Session #"_NUM_") XTMP(""KMPS"") Global",XMTEXT="^XTMP(""KMPS"","_KMPSSITE_"," I $D(IO) K:IO="" IO
+ D ENT^XMPG S KMPSXMZ=XMZ K XMTEXT
+ S X="S.KMP1-SAGG-SERVER@DOMAIN.NAME",XMN=0 D INST^XMA21 D ENT1^XMD
  ;
- F  Q:'$D(^XTMP("KMPS","START"))!+$G(^XTMP("KMPS","STOP"))  H HANG I (+$H>(SESSNUM+3)) D TOOLNG Q
+ G OUT^KMPSLK
  ;
- Q:QUIT
+WAIT ;  Wait here until less than 6 volume sets are running
  ;
- I $D(^XTMP("KMPS","ERROR")) D  Q
- .N J,JEND,OUT,TEXT,VOL
- .S QUIT=1
- .S TEXT(1)=" The SAGG Project has recorded an error on volume set(s):"
- .S OUT=0,VOL="",JEND=$S(OS="CVMS":2,OS="CWINNT":4,1:5)
- .F I=3:1 Q:OUT  D
- ..S TEXT(I)="      "
- ..F J=1:1:JEND S VOL=$O(^XTMP("KMPS","ERROR",VOL)) S:VOL="" OUT=1 Q:VOL=""  S TEXT(I)=TEXT(I)_VOL_"   "
- .S (TEXT(2),TEXT(I))=""
- .S TEXT(I+1)=" See system error log for more details."
- .I OS["C" D
- ..S TEXT(I+2)=""
- ..S TEXT(I+3)=" Also run "_$S(OS="CVMS":"Integrity",1:"INTEGRIT")_" on the listed volume(s)."
- .D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- ;
- I $D(^XTMP("KMPS","STOP")) D  Q
- .N TEXT
- .S QUIT=1
- .S TEXT(1)=" The SAGG Project collection routines have been STOPPED!  No report"
- .S TEXT(2)=" has been generated."
- .D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- ;
- I '$D(^XTMP("KMPS",SITENUM,SESSNUM,NOWDT)) D  Q
- .N TEXT
- .S QUIT=1
- .S TEXT(1)=" The SAGG Project collection routines did NOT obtain ANY global"
- .S TEXT(2)=" information.  Please ensure that the SAGG PROJECT file is"
- .S TEXT(3)=" properly setup.  Then use the 'One-time Option Queue' under"
- .S TEXT(4)=" Task Manager to re-run the 'SAGG Master Background Task'"
- .S TEXT(5)=" [KMPS SAGG REPORT] option."
- .D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- ;
- S GBL=""
- F  S GBL=$O(^XTMP("KMPS",SITENUM,SESSNUM,NOWDT,GBL)) Q:GBL=""  D
- .S UCIVOL1=""
- .F  S UCIVOL1=$O(^XTMP("KMPS",SITENUM,SESSNUM,NOWDT,GBL,UCIVOL1)) Q:UCIVOL1=""  D 
- ..K UCIVOL(UCIVOL1)
- S UCIVOL1=""
- F  S UCIVOL1=$O(^XTMP("KMPS",SITENUM,SESSNUM," NO GLOBALS ",UCIVOL1)) Q:UCIVOL1=""  K UCIVOL(UCIVOL1)
- ;
- I $D(UCIVOL) D  Q
- .N I,J,K,TEXT
- .S QUIT=1
- .S TEXT(1)=" The SAGG Project collection routines did NOT monitor the following:"
- .S TEXT(2)=""
- .S I=3,UCIVOL1=""
- .F  S UCIVOL1=$O(UCIVOL(UCIVOL1)) Q:UCIVOL1=""  D 
- ..S I=I+1
- ..S TEXT(I)=$J(" ",12)_UCIVOL1
- .S I=I+1,TEXT(I)=""
- .S I=I+1,TEXT(I)=" Please ensure that the SAGG PROJECT file is properly setup.  Then use"
- .S I=I+1,TEXT(I)=" the 'One-time Option Queue' under Task Manager to re-run the 'SAGG"
- .S I=I+1,TEXT(I)=" Master Background Task' [KMPS SAGG REPORT] option."
- .D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- ;
- Q
- ;
-PACK(SESSNUM,SITENUM)       ;
- ;---------------------------------------------------------------------
- ; PackMan ^XTMP global to KMP1-SAGG-SERVER at Albany FO
- ;
- ; SESSNUM..  +$Horolog number of session
- ; SITENUM..  site number
- ;
- ; Return:
- ; RETURN...  number of SAGG data message^completed date-time
- ;---------------------------------------------------------------------
- ;
- N COMPDT,N,NM,RETURN,X,XMSUB,XMTEXT,XMY,XMZ
- ;
- S U="^",N=$O(^DIC(4,"D",SITENUM,0))
- S NM=$S($D(^DIC(4,N,0)):$P(^(0),U),1:SITENUM)
- ;
- S:'$D(XMDUZ) XMDUZ=.5 S:'$D(DUZ) DUZ=.5
- K:$G(IO)="" IO
- ;
- ; set completed date-time
- S COMPDT=$$NOW^XLFDT
- S $P(^XTMP("KMPS",SITENUM,0),U,5)=COMPDT
- ;
- S XMSUB=NM_" (Session #"_SESSNUM_") XTMP(""KMPS"") Global"
- I SITENUM=+SITENUM S XMTEXT="^XTMP(""KMPS"","_SITENUM_","
- E  S XMTEXT="^XTMP(""KMPS"","""_SITENUM_""","
- S XMY("S.KMP1-SAGG-SERVER@FO-ALBANY.MED.VA.GOV")=""
- D ENT^XMPG
- ;
- S RETURN=XMZ_U_COMPDT
- ;
- Q RETURN
- ;
-WAIT(HANG,MAXJOB)    ;
- ;---------------------------------------------------------------------
- ; Wait here until less than MAXJOB volume sets are running
- ;
- ; HANG....  amount of time to wait
- ; MAXJOB..  maximum number of jobs allowed to run
- ;
- ; Return:
- ; RUN.....  number of currently running jobs
- ;---------------------------------------------------------------------
- ;
- N RUN
- ;
- F  H HANG S RUN=$$RUN Q:(RUN<MAXJOB)!+$G(^XTMP("KMPS","STOP"))
- ;
- Q RUN
- ;
-RUN() ;-- number of currently running jobs
- N RUN,VOL
- ;
- S RUN=0,VOL=""
- F  S VOL=$O(^XTMP("KMPS","START",VOL)) Q:VOL=""  S RUN=RUN+1
- ;
- Q RUN
- ;
-TOOLNG ;-- job has been running too long
- ;
- N TEXT
- ;
- S QUIT=1
- S TEXT(1)=" The SAGG Project collection routines have been running for more"
- S TEXT(2)=" than 3 days.  No report has been generated."
- D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- Q
- ;
+ H 300 S KMPSCUR="",KMPSRUN=0 F  S KMPSCUR=$O(^XTMP("KMPS","START",KMPSCUR)) Q:KMPSCUR=""  S KMPSRUN=KMPSRUN+1
+ I KMPSRUN>5 G WAIT
+ S KMPSSTRT=KMPSRUN Q
 ERR1 ;
- S KMPSZE=$ZE,ZUZR=$ZR,X="",@^%ZOSF("TRAP")
- D @^%ZOSF("ERRTN")
- K TEXT
- S TEXT(1)=" SAGG Project Error: "_KMPSZE
- S TEXT(2)=" See system error log for more details."
- S ^XTMP("KMPS","STOP")=""
- D MSG^KMPSLK(NOWDT,SESSNUM,.TEXT)
- G ^XUSCLEAN
+ S KMPSZE=$ZE,ZUZR=$ZR,X="",@^%ZOSF("TRAP") D @^%ZOSF("ERRTN") K KMPSTEXT S KMPSTEXT(1)="SAGG Project Error: "_KMPSZE_" on "_$ZU(5),KMPSTEXT(2)="See system error log for more details.",^XTMP("KMPS","STOP")="" D MSG^KMPSLK G ^XUSCLEAN
  ;
-CVMS ;-- for Cache for VMS platform
-CWINNT ;-- for Cache for Windows NT platform
- J START^%ZOSVKSE(TEMP_U_VOL)
- Q
+VAX ; DSM
+ J START^%ZOSVKSE:(OPTION="/ROUTINE=["_KMPSMGR_"]/UCI="_KMPSUCI_"/VOLUME="_KMPSVOL_"/DATA="""_KMPSTEMP_"""") Q
+ ;
+MSM ;
+ J START^%ZOSVKSE(KMPSTEMP)[KMPSUCI,KMPSVOL] Q
+ ;
+MSMV4 ;
+ S KMPSFS=$E(KMPSVOL)_"S"_$E(KMPSVOL,3)
+ J START^%ZOSVKSE(KMPSTEMP)[KMPSUCI,KMPSVOL,KMPSFS] Q
+ ;
+OMNT ; OpenM-NT
+ J START^%ZOSVKSE(KMPSTEMP_U_KMPSVOL) Q

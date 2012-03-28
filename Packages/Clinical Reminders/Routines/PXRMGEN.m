@@ -1,5 +1,5 @@
 PXRMGEN ; SLC/PJH - PXRM General Edit/Inquiry ;01/21/2000
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
+ ;;1.5;CLINICAL REMINDERS;;Jun 19, 2000
  ;
  ;Labels called from list 'PXRM GENERAL EDIT/LIST'
  ;

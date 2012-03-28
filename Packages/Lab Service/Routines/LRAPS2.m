@@ -1,4 +1,5 @@
-LRAPS2 ;AVAMC/REG - AUTOPSY PRT ;8/11/95  09:36 ;
+LRAPS2 ; IHS/DIR/AAB - AUTOPSY PRT 8/11/95 09:36 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  S LR("M")=1,LRSS="AU" D ^LRAPU S X=$S($D(^LRO(69.2,+Y,0)):^(0),1:""),LRAU(3)=$P(X,"^",3),LRAU(4)=$P(X,"^",4)
  R:IOST["C-" !!,"Press RETURN key ",X:DTIME D ZZ I '$P(^LR(LRDFN,"AU"),U,15) W !!,"Report not verified." Q

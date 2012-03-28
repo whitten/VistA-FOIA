@@ -1,6 +1,6 @@
-LRBLDEX ;AVAMC/REG/CYM - EX-BLOOD DONORS ;6/27/96  08:54 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDEX ; IHS/DIR/AAB - EX-BLOOD DONORS 6/27/96 08:54 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END
  I '$D(^LRO(69.2,LRAA,8,0)) S ^(0)="^69.31A^0^0"
  I '$D(^LRO(69.2,LRAA,8,65.5,0)) S ^(0)=65.5,X=^LRO(69.2,LRAA,8,0),^(0)="^69.31A^65.5^"_($P(X,"^",4)+1)

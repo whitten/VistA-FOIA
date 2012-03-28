@@ -1,5 +1,5 @@
 PXQUTL3 ;ISL/JVS CLEAN OUT BAD CROSSREFERENCES ;4/16/97  14:30
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**29,131**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**29**;Aug 12, 1996
  ;
 T ;
  ;
@@ -13,11 +13,7 @@ T ;
  W !,"               how much work has already been done."
  W !
  S Y=""
- S DIR(0)="S^S:Screen of 4 'MAIN' files;P:Provider V PROVIDER FILE;"
- S DIR(0)=DIR(0)_"D:Diagnosis V POV FILE;C:CPT V CPT FILE;"
- S DIR(0)=DIR(0)_"V:Visit VISIT FILE;O:Other 6 V Files;"
- S DIR(0)=DIR(0)_"R:Repair 4 'MAIN' V Files without prompting (automatic);"
- S DIR(0)=DIR(0)_"F:Fix ALL files without prompting (automatic)"
+ S DIR(0)="S^S:Screen of 4 'MAIN' files;P:Provider V PROVIDER FILE;D:Diagnosis V POV FILE;C:CPT V CPT FILE;V:Visit VISIT FILE;O:Other 6 V Files;R:Repair 4 'MAIN' V Files without prompts;F:Fix ALL files without prompting (automatic)"
  S DIR("A")="Which file do you need to fix "
  S DIR("B")="P"
  D ^DIR
@@ -29,7 +25,7 @@ T ;
  I Y="C" D PRMPT,C G T
  I Y="O" D INF,PRMPT,O^PXQUTL3B G T
  I Y="V" D PRMPT,V^PXQUTL3A G T
- I Y="R" D PRMPT S:AUTO="F" AUTOO="F" D P,D,C,V^PXQUTL3A G T
+ I Y="R" D P,D,C,V^PXQUTL3A G T
  I Y="S" D S^PXQUTL3A G T
  I Y="F" S (AUTO,AUTOO)="F" D P,D,C,V^PXQUTL3A,O^PXQUTL3B G T
  I Y="^" G EXIT
@@ -127,7 +123,6 @@ MON ;--MONITOR SITUATION
  Q
 CAL ;--CALCULATE TIME LEFT
  N PRVT,POVT,CPTT,VSTT
- N CPTP,VSTX,VSTXP     ;PX*1.0*131 (to satisfy ^XINDEX)
  S:'$G(PRVCNT) PRVCNT=1 S:'$G(POVCNT) POVCNT=1
  S:'$G(CPTCNT) CPTCNT=1 S:'$G(VSTCNT) VSTCNT=1
  S PRVT=$P($G(^AUPNVPRV(0)),"^",4)*3,PRVP=(($G(PRVCNT)/PRVT)*100)

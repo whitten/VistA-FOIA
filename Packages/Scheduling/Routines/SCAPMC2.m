@@ -1,5 +1,7 @@
-SCAPMC2 ;ALB/REW - Team API's: PTTM ; JUN 30, 1995
+SCAPMC2 ;ALB/REW - Team API's: PTTM ; JUN 30, 1995 [ 12/06/2000  10:09 AM ]
  ;;5.3;Scheduling;**41**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 replaced SSN as Long ID with HRCN
+ ;
  ;;1.0
 PTTM(SCTEAM,SCDATES,SCLIST,SCERR) ; -- list of patient team assignments
  ; input:
@@ -70,7 +72,8 @@ BLD(SCLIST,SCPTA,SCPTA0,SCN) ; build list
  Q:$D(^TMP("SCMC",$J,"EXCLUDE PT","SCPTA",+SCPTA0))
  N SCEFFDT,SCCNT
  S SCN=SCN+1
- S @SCLIST@(SCN)=+SCPTA0_U_$P($G(^DPT(+SCPTA0,0)),U,1)_U_SCPTA_U_$P(SCPTA0,U,2)_U_$P(SCPTA0,U,9)_U_$P($G(^DPT(+SCPTA0,.36)),U,3)
+ ;S @SCLIST@(SCN)=+SCPTA0_U_$P($G(^DPT(+SCPTA0,0)),U,1)_U_SCPTA_U_$P(SCPTA0,U,2)_U_$P(SCPTA0,U,9)_U_$P($G(^DPT(+SCPTA0,.36)),U,3)  ;IHS/ANMC/LJF 11/2/2000
+ S @SCLIST@(SCN)=+SCPTA0_U_$P($G(^DPT(+SCPTA0,0)),U,1)_U_SCPTA_U_$P(SCPTA0,U,2)_U_$P(SCPTA0,U,9)_U_$$HRCN^BDGF2(+SCPTA0,+$G(DUZ(2)))  ;IHS/ANMC/LJF 11/2/2000
  ;_U_$P(SCPTA0,U,3)_U_$P($G(^SCTM(404.51,+$P(SCPTA0,U,3),0)),U,1) - didn't include team data to make return array generic
  S @SCLIST@("SCPTA",+SCPTA0,SCPTA,SCN)=""
  Q

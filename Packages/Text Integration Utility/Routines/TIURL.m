@@ -1,6 +1,8 @@
-TIURL ; SLC/JER - List Management Library ;2/21/01
- ;;1.0;TEXT INTEGRATION UTILITIES;**88,100,224**;Jun 20, 1997;Build 7
+TIURL ; SLC/JER - List Management Library ;08-Aug-2007 19:09;MGH
+ ;;1.0;TEXT INTEGRATION UTILITIES;**88,100,1005**;Jun 20, 1997
  ; 11/14/00 Moved UPDATEID, etc to TIURL1
+ ;IHS/ITSC/LJF 02/27/2003 changed SSN to HRCN
+ ;IHS/MSC/MGH Patch 1005 changed the HRCN call for divisions
  ;
 UPRBLD(TIUCHNG,ITEMS) ; Refreshes, updates, or rebuilds the list
  ;after various actions. Also restores video.
@@ -21,9 +23,6 @@ UPRBLD(TIUCHNG,ITEMS) ; Refreshes, updates, or rebuilds the list
  ; -- If TIUROR screen needs changes, it is always
  ;    rebuilt, not updated:
  I RTN="TIUROR",$G(TIUCHNG("UPDATE")) S TIUCHNG("RBLD")=1
- ;VMP/ELR ADDED THE FOLLOWING 2 LINES IN PATCH 224
- I RTN="TIUR",$G(TIUCHNG("UPDATE")) S TIUCHNG("RBLD")=1
- I RTN="TIURM",$G(TIUCHNG("UPDATE")) S TIUCHNG("RBLD")=1
  ; -- Rebuild, Update, or Refresh list:
  ;    (In cases (e.g.browse) where more than one action
  ;    was performed, TIUCHNG("RBLD") may coexist w TIUCHNG("UPDATE"),
@@ -43,8 +42,6 @@ UPRBLD(TIUCHNG,ITEMS) ; Refreshes, updates, or rebuilds the list
  . W !,"Updating the list..."
  . F  S TIUI=$O(ITEMS(TIUI)) Q:'TIUI  D
  . . D SETREC(TIUI,.TIUREC)
- . . ;VMP/ELR ADDED THE FOLLOWING LINE IN PATCH 224
- . . I $G(TIUREC)="" Q
  . . S ^TMP("TIUR",$J,TIUI,0)=TIUREC
  I $G(TIUCHNG("REFRESH")) D  Q
  . W !,"Refreshing the list..."
@@ -66,8 +63,14 @@ SETREC(LINENO,TIUREC,PFIXFLAG) ; Update line LINENO with [new prefix], new flds
  I DOC="Addendum" D
  . S MOM=+$P(^TIU(8925,DA,0),U,6)
  . S DOC=DOC_" to "_$$PNAME^TIULC1(+$G(^TIU(8925,MOM,0)))
- S TIULST4=$E($P($G(^DPT(TIUR(8925,DA,.02,"I"),0)),U,9),6,9)
- S TIULST4="("_$E(TIUR(8925,DA,.02,"E"))_TIULST4_")"
+ ;S TIULST4=$E($P($G(^DPT(TIUR(8925,DA,.02,"I"),0)),U,9),6,9)          ;IHS/ITSC/LJF 02/27/2003
+ ;S TIULST4="("_$E(TIUR(8925,DA,.02,"E"))_TIULST4_")"                  ;IHS/ITSC/LJF 02/27/2003
+ ;NEW HRCN S DFN=TIUR(8925,DA,.02,"I") D PID^VADPT S TIULST4="#"_HRCN   ;IHS/ITSC/LJF 02/27/2003 use HRCN, not SSN
+ N HRCN S HRCN="" S DFN=TIUR(8925,DA,.02,"I") S HRCN=$$HRCN^TIUR2(DFN,+$G(DUZ(2)))
+ I HRCN'="" S TIULST4="#"_HRCN
+ I HRCN="",+$D(^XUSEC("TIU VIEWALL",DUZ)) S TIULST4="Unknown"
+ I HRCN="",'+$D(^XUSEC("TIU VIEWALL",DUZ)) Q
+ ;End modification
  S ADT=$$DATE^TIULS(TIUR(8925,DA,.07,"I"),"MM/DD/YY")
  S DDT=$$DATE^TIULS(TIUR(8925,DA,.08,"I"),"MM/DD/YY")
  S AMD=$$NAME^TIULS(TIUR(8925,DA,1208,"E"),"LAST, FI MI")

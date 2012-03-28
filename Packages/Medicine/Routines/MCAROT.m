@@ -1,4 +1,4 @@
-MCAROT ; GENERATED FROM 'MCARETT1' PRINT TEMPLATE (#975) ; 03/26/01 ; (FILE 691.7, MARGIN=80)
+MCAROT ; GENERATED FROM 'MCARETT1' PRINT TEMPLATE (#3699) ; 11/29/04 ; (FILE 691.7, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,7 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 M DXS=^DIPT(975,"DXS")
+ I $D(DXS)<9 M DXS=^DIPT(3699,"DXS")
  S I(0)="^MCAR(691.7,",J(0)=691.7
  D N:$X>44 Q:'DN  W ?44 W "TIME TEST:"
  W ?56 X DXS(1,9.2) S X=$E($P(X,".",2)_"0000",1,4),%=X>1159 S:X>1259 X=X-1200 S X=X\100_":"_$E(X#100+100,2,3)_" "_$E("AP",%+1)_"M" K DIP K:DN Y W X
@@ -22,7 +22,7 @@ BEGIN ;
  D N:$X>4 Q:'DN  W ?4 W "SEX:"
  W ?10 X DXS(2,9.3) S X=$P($P(DIP(202),$C(59)_$P(DIP(201),U,2)_":",2),$C(59),1) S D0=I(0,0) K DIP K:DN Y W X
  D N:$X>44 Q:'DN  W ?44 W "WARD/CLINIC: "
- S X=$G(^MCAR(691.7,D0,10)) S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,20)
+ S X=$G(^MCAR(691.7,D0,10)) S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,20)
  D N:$X>4 Q:'DN  W ?4 W "REF PHYS: "
  S X=$G(^MCAR(691.7,D0,3)) W ?16,$E($P(X,U,1),1,20)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "ETT PROTOCOL:"
@@ -36,7 +36,8 @@ A1 ;
  S X=$G(^MCAR(691.7,D0,2,D1,0)) S DIWL=19,DIWR=78 D ^DIWP
  Q
 A1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D N:$X>4 Q:'DN  W ?4 W "----------------------------------------------------------------------"
  D N:$X>18 Q:'DN  W ?18 W "SUPINE"
  D N:$X>33 Q:'DN  W ?33 W "UPRIGHT"
@@ -87,7 +88,8 @@ B1 ;
  S X=$G(^MCAR(691.7,D0,9,D1,0)) S DIWL=25,DIWR=78 D ^DIWP
  Q
 B1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "INTERPRETATION:"
  S X=$G(^MCAR(691.7,D0,5)) W ?21 S Y=$P(X,U,8) W:Y]"" $S($D(DXS(10,Y)):DXS(10,Y),1:Y)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "COMMENTS:"
@@ -97,12 +99,13 @@ C1 ;
  S X=$G(^MCAR(691.7,D0,6,D1,0)) S DIWL=1,DIWR=75 D ^DIWP
  Q
 C1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "HEART MEDS:"
  S I(1)=1,J(1)=691.71 F D1=0:0 Q:$O(^MCAR(691.7,D0,1,D1))'>0  X:$D(DSC(691.71)) DSC(691.71) S D1=$O(^(D1)) Q:D1'>0  D:$X>17 T Q:'DN  D D1
  G D1R
 D1 ;
- S X=$G(^MCAR(691.7,D0,1,D1,0)) W ?17 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(691.7,D0,1,D1,0)) W ?17 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  W " "
  W ?0,$E($P(X,U,2),1,10)
  W " "
@@ -113,10 +116,14 @@ D1R ;
  S I(1)=11,J(1)=691.703 F D1=0:0 Q:$O(^MCAR(691.7,D0,11,D1))'>0  X:$D(DSC(691.703)) DSC(691.703) S D1=$O(^(D1)) Q:D1'>0  D:$X>20 T Q:'DN  D E1
  G E1R
 E1 ;
- S X=$G(^MCAR(691.7,D0,11,D1,0)) D N:$X>19 Q:'DN  W ?19 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(696.9,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,40)
+ S X=$G(^MCAR(691.7,D0,11,D1,0)) D N:$X>19 Q:'DN  W ?19 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(696.9,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  Q
 E1R ;
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "EKG TECH:"
- S X=$G(^MCAR(691.7,D0,7)) W ?15 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(691.7,D0,7)) W ?15 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "ATTN PHYS:"
- G ^MCAROT1
+ W ?16 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
+ K Y K DIWF
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

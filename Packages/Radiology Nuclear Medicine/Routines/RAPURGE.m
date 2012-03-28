@@ -1,5 +1,5 @@
-RAPURGE ;HISC/CAH - AISC/MJK - Schedule Data Purge ;4/17/03  08:45
- ;;5.0;Radiology/Nuclear Medicine;**34,41**;Mar 16, 1998
+RAPURGE ;HISC/CAH,FPT,GJC AISC/MJK,RMO-Schedule Data Purge ;4/17/03  08:45
+ ;;5.0;Radiology/Nuclear Medicine;**34**;Mar 16, 1998
 SCH ;Edit purge parameters and schedule Rad/Nuc Med data purge
  I '($D(DUZ)#2) W !!,$C(7),"No 'DUZ' code. Purging not allowed.",! Q
  I '$D(^VA(200,DUZ,0)) W !!,$C(7),"Not a valid 'DUZ' code. Purging not allowed.",! Q
@@ -29,8 +29,8 @@ QB W !,"--Nothing Done--"
 Q K D0,D1,DA,DLAYGO,POP,RAPOP,RAPR,RAPUR,RAREPURG,X,Y,ZTDESC,ZTRTN,ZTSAVE,RAMES,RAGO,RAPURTYP Q
  ;
 RECORD ; select which records to purge
- S DIR(0)="S^E:Exams only;R:Reports only;B:Both exams & reports;"
- S DIR("?")="Do you want to purge Exams, Reports, Exams & Reports ?"
+ S DIR(0)="S^E:Exams only;R:Reports only;O:Orders only;B:Both exams & reports;A:All three;"
+ S DIR("?")="Do you want to purge Exams, Reports, Orders, Exams & Reports, All three types ?"
  S DIR("A")="Enter type of data to purge"
  S DIR("B")="Reports only"
  D ^DIR K DIR
@@ -38,7 +38,7 @@ RECORD ; select which records to purge
  Q
 ASKF ;ask final question
  S RAGO=0
- W !!,"You have chosen to purge ",$S(RAPURTYP="E":"Exam",RAPURTYP="R":"Report",RAPURTYP="B":"Exam & Report",1:"?")," records from "
+ W !!,"You have chosen to purge ",$S(RAPURTYP="E":"Exam",RAPURTYP="R":"Report",RAPURTYP="O":"Order",RAPURTYP="B":"Exam & Report",RAPURTYP="A":"All 3 types of",1:"?")," records from "
  S I=""
  F  S I=$O(RAPUR(I)) Q:'I  W " ",$P(^RA(79.2,I,0),U) W:$O(RAPUR(I)) ","
  W !
@@ -50,16 +50,16 @@ ASKF ;ask final question
 REMIND ;
  ;;+--------------------------------------------------------+
  ;;| This option is used to remove data from one or all of  |
- ;;| these globals:  ^RADPT, ^RARPT                         |
+ ;;| these globals:  ^RADPT, ^RARPT, ^RAO                   |
  ;;|                                                        |
  ;;| Make sure IRM keeps the backup that was made prior to  |
  ;;| running this option, and NOT overwrite that backup for |
  ;;| at least 6 months.  Data from ^RADPT and ^RARPT can be |
- ;;| recovered.                                             |
+ ;;| recovered, but not data from ^RAO (order data).        |
  ;;|                                                        |
- ;;| The cut-off dates for the 4 items (activity log,       |
- ;;| report, clinical history, tracking time) are           |
- ;;| compared to the exam date of those items.  If the      |
+ ;;| The cut-off dates for the 5 items (activity log,       |
+ ;;| report, clinical history, tracking time, order data)   |
+ ;;| are compared to the exam date of those items.  If the  |
  ;;| exam date for an item is older than the cut-off date   |
  ;;| for that item, then that item would be purged.         |
  ;;+--------------------------------------------------------+

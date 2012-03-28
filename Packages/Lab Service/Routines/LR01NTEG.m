@@ -1,4 +1,6 @@
 LR01NTEG ;ISC/XTSUMBLD KERNEL - Package checksum checker ;AUG 08, 1995@15:23:04
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;**34**;Sep 27, 1994
  ;;7.2;AUG 08, 1995@15:23:04
  S XT4="I 1",X=$T(+3) W !!,"Checksum routine created on ",$P(X,";",4)," by KERNEL V",$P(X,";",3),!

@@ -1,4 +1,5 @@
 LRLABEL1 ;SLC/TGA - PRINTS LABELS 2X5 UNEVEN ;2/6/91  08:18
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**161**;Sep 27, 1994
  ;For the 10 part SLC label at 16.5 CPI, With 1 label per 4 tests.
 1 U IO

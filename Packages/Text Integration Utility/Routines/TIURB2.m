@@ -1,10 +1,12 @@
-TIURB2 ; SLC/JER,AJB - More Review Screen Actions ; 1/18/05
- ;;1.0;TEXT INTEGRATION UTILITIES;**100,109,154,112,184,232**;Jun 20, 1997;Build 19
+TIURB2 ; SLC/JER,AJB - More Review Screen Actions ;18-JAN-2002 12:27:10
+ ;;1.0;TEXT INTEGRATION UTILITIES;**100,109,154**;Jun 20, 1997
  ; 2/3: Update TEXTEDIT from TIUEDIT to TIUEDI4
  ; 9/28 Moved DELETE, DEL, DELTEXT, DIK to new rtn TIURB2
  ; 8/2/02 DELTEXT logic to bypass user-response if called by GUI TIU*1*154
  ;        GODEL+12, changed direct access of DPT global to FM
- Q
+ ;
+ ;IHS/ITSC/LJF 02/27/2003 update VNote entry when deleting note
+ ;
 DELETE ; Delete action
  N TIUI,TIUY,TIUCHNG,Y,DIROUT,DTOUT,DUOUT
  N TIULNO,TIUJ,PRNTDA,LSTDA
@@ -50,11 +52,8 @@ GODEL ; -- Called from DEL^TIURB
  S TIUVTYP=$S(+$$ISDS^TIULX(+TIUD0):" Admission",1:" Visit")
  S TIUMSG="DELETING "_TIUTYP_" For "_TIUPT_"'s "_TIUVDT_TIUVTYP_"."
  S CANDEL=$$CANDO^TIULP(DA,"DELETE RECORD")
- ;VMP/ELR NEXT PARAGRAPH ADDED LONGER HANG FOR LONG ERROR MESSAGES
- I 'CANDEL D  G DELX
- . NEW TIUHANG S TIUHANG=2 I $L($G(CANDEL))>99 S TIUHANG=5
- . W !!,$C(7),$C(7),$C(7),$P(CANDEL,U,2),! H TIUHANG
- I $$HASIDKID^TIUGBR(DA) W !!,"This interdisciplinary parent cannot be deleted; its entries must first",!,"be detached.",! H 3 G DELX
+ I 'CANDEL W !!,$C(7),$C(7),$C(7),$P(CANDEL,U,2),! H 2 G DELX
+ I $$HASIDKID^TIUGBR(DA) W !!,"This interdisciplinary parent cannot be deleted; it's entries must first",!,"be detached.",! H 3 G DELX
  I $O(^TIU(8925,"DAD",+DA,0))>0,$$HASADDEN^TIULC1(DA) D
  . W !!,"This "_TIUTYP_" has ADDENDA."
  W !,$C(7) F TIUI=1:1:$L(TIUMSG,"|") W !,$P(TIUMSG,"|",TIUI)
@@ -88,8 +87,7 @@ GODEL ; -- Called from DEL^TIURB
 DELX L -^TIU(8925,+DA)
  Q
 DELTEXT(DA,TIURSN) ; After signature, only retraction possible
- N DR,DIE,TIUDA,TIUY I '$D(ZTQUEUED) D FULL^VALM1
- S TIUDA=DA
+ N DR,DIE D FULL^VALM1
  W !!?5,$C(7),"***********************************************************************"
  W !?5,"*  This document will now be RETRACTED. As such, it has been removed  *"
  W !?5,"*    from public view, and from typical Releases of Information,      *"
@@ -99,24 +97,19 @@ DELTEXT(DA,TIURSN) ; After signature, only retraction possible
  S DR="1610////^S X=+DUZ;1611////^S X=+$$NOW^XLFDT;1612////^S X=TIURSN"
  D ^DIE
  S DA=$$RETRACT^TIURD2(DA,"",14)
- ; Unlink PRF titles when TIU changes require it TIU*1*184
- D ISPRFTTL^TIUPRF2(.TIUY,+$G(^TIU(8925,TIUDA,0))) I +TIUY D UNLINK^TIUPRF1(TIUDA)
- ; Roll back SURGICAL REPORT TITLES when TIU changes require it ; TIU*1*112
- D ISSURG^TIUSROI(.TIUY,+$G(^TIU(8925,TIUDA,0))) I +TIUY D RETRACT^TIUSROI1(TIUDA)
- ; Remove link to consult if a Consult Title
- D ISCNSLT^TIUCNSLT(.TIUY,+$G(^TIU(8925,TIUDA,0))) I +TIUY D REMCNSLT^TIUCNSLT(TIUDA)
+ ; *** 8/2/02 changes below *** ; TIU*1*154
  I '$$BROKER^XWBLIB D
- . I '$D(ZTQUEUED),$$READ^TIUU("EA","Press RETURN to continue...")
+ . I $$READ^TIUU("EA","Press RETURN to continue...")
+ ; I $$READ^TIUU("EA","Press RETURN to continue...") ; pause ; original code
  Q
-DIK(DA,SUPPACT) ; Call ^DIK to delete the record
- ; [SUPPACT] = Boolean to suppress delete action
+DIK(DA) ; Call ^DIK to delete the record
  N DIK,TIUTYP,TIUTYPE,TIUDA,TIUVSIT,TIUVKILL,TIUDELX S TIUDA=0
  F  S TIUDA=+$O(^TIU(8925,"DAD",+DA,TIUDA)) Q:+TIUDA'>0  D DIK(TIUDA)
- S TIUTYPE=+$G(^TIU(8925,+DA,0)),SUPPACT=+$G(SUPPACT)
+ S TIUTYPE=+$G(^TIU(8925,+DA,0))
  S TIUTYP=$P($G(^TIU(8925.1,TIUTYPE,0)),U)
  S TIUVSIT=+$P($G(^TIU(8925,DA,0)),U,3),TIUDA=DA
  S TIUDELX=$$DELETE^TIULC1(TIUTYPE)
- I TIUDELX]"",'SUPPACT X TIUDELX
+ I TIUDELX]"" X TIUDELX
  S DIK="^TIU(8925,"
  D ^DIK ; W:'$D(ZTQUEUED) "."
  D DELAUDIT^TIUEDI1(DA)
@@ -124,6 +117,7 @@ DIK(DA,SUPPACT) ; Call ^DIK to delete the record
  D DELSGNR^TIURB1(DA)
  D DELIMG(DA)
  D ALERTDEL^TIUALRT(DA)
+ D VNOTE^BTIURB(DA)       ;IHS/ITSC/LJF 02/27/2003 update V Note on delete
  ; **52** Disable call to $$DELVFILE^PXAPI 'til further notice
  ; I +TIUVSIT,$D(^AUPNVSIT(+TIUVSIT)) S TIUVKILL=$$DELVFILE^PXAPI("ALL",TIUVSIT,"","TEXT INTEGRATION UTILITIES")
  Q

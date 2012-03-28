@@ -1,4 +1,4 @@
-MCOBK ; GENERATED FROM 'MCARECHOBRPR' PRINT TEMPLATE (#1021) ; 10/04/96 ; (FILE 691, MARGIN=80)
+MCOBK ; GENERATED FROM 'MCARECHOBRPR' PRINT TEMPLATE (#3745) ; 11/29/04 ; (FILE 691, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,11 +11,12 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(1021,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3745,"DXS")
+ S I(0)="^MCAR(691,",J(0)=691
  W ?0 W "DATE/TIME: "
  S X=$G(^MCAR(691,D0,0)) D N:$X>11 Q:'DN  W ?11 S Y=$P(X,U,1) D DT
  D N:$X>34 Q:'DN  W ?34 W "MEDICAL PATIENT: "
- S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>9 Q:'DN  W ?9 W "SEPTUM: "
  S X=$G(^MCAR(691,D0,4)) W ?0,$E($P(X,U,1),1,5)
  D N:$X>28 Q:'DN  W ?28 W "(8-11mm)"
@@ -35,7 +36,7 @@ BEGIN ;
  S I(1)=6,J(1)=691.04 F D1=0:0 Q:$O(^MCAR(691,D0,6,D1))'>0  X:$D(DSC(691.04)) DSC(691.04) S D1=$O(^(D1)) Q:D1'>0  D:$X>31 T Q:'DN  D A1
  G A1R
 A1 ;
- S X=$G(^MCAR(691,D0,6,D1,0)) D N:$X>11 Q:'DN  W ?11 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695.1,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(691,D0,6,D1,0)) D N:$X>11 Q:'DN  W ?11 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695.1,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  X DXS(1,9.2) S X=X="",DIP(3)=X S X="",DIP(4)=X S X=1,DIP(5)=X S X=", ",X=$S(DIP(3):DIP(4),DIP(5):X) K DIP K:DN Y W X
  S X=$G(^MCAR(691,D0,6,D1,0)) S Y=$P(X,U,2) W:Y]"" $S($D(DXS(2,Y)):DXS(2,Y),1:Y)
  Q
@@ -44,15 +45,16 @@ A1R ;
  S I(1)=9,J(1)=691.06 F D1=0:0 Q:$O(^MCAR(691,D0,9,D1))'>0  X:$D(DSC(691.06)) DSC(691.06) S D1=$O(^(D1)) Q:D1'>0  D:$X>16 T Q:'DN  D B1
  G B1R
 B1 ;
- S X=$G(^MCAR(691,D0,9,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=74 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693,Y,0))#2:$P(^(0),U,1),1:Y) S X=Y D ^DIWP
- D A^DIWW
+ S X=$G(^MCAR(691,D0,9,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=74 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693,Y,0))#2:$P(^(0),U),1:Y) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
  Q
 B1R ;
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "DIAGNOSIS(ES): "
  S I(1)=14,J(1)=691.15 F D1=0:0 Q:$O(^MCAR(691,D0,14,D1))'>0  X:$D(DSC(691.15)) DSC(691.15) S D1=$O(^(D1)) Q:D1'>0  D:$X>21 T Q:'DN  D C1
  G C1R
 C1 ;
- S X=$G(^MCAR(691,D0,14,D1,0)) D N:$X>9 Q:'DN  W ?9 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(697.5,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,50)
+ S X=$G(^MCAR(691,D0,14,D1,0)) D N:$X>9 Q:'DN  W ?9 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(697.5,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,50)
  Q
 C1R ;
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "OTHER CONCLUSIONS:"
@@ -62,14 +64,16 @@ D1 ;
  S X=$G(^MCAR(691,D0,10,D1,0)) S DIWL=10,DIWR=74 D ^DIWP
  Q
 D1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "SUMMARY: "
  S X=$G(^MCAR(691,D0,.2)) S Y=$P(X,U,1) W:Y]"" $S($D(DXS(3,Y)):DXS(3,Y),1:Y)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "PROCEDURE SUMMARY: "
  D N:$X>9 Q:'DN  S DIWL=10,DIWR=74 S Y=$P(X,U,2) S X=Y D ^DIWP
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "CARDIOLOGY ATTENDING:"
- S X=$G(^MCAR(691,D0,11)) W ?27 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(691,D0,11)) W ?27 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  W ?64 S MCFILE=691 D DISP^MCMAG K DIP K:DN Y
  D T Q:'DN  W ?2 K MCFILE K DIP K:DN Y
  K Y K DIWF

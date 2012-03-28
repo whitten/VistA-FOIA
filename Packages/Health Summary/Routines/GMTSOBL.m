@@ -1,5 +1,5 @@
-GMTSOBL ; SLC/KER - HS Object - Lookup                 ; 06/24/2009
- ;;2.7;Health Summary;**58,89**;Oct 20, 1995;Build 61
+GMTSOBL ; SLC/KER - HS Object - Lookup                 ; 01/06/2003
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;                
  ; External References
  ;   DBIA 10006  ^DIC  (file #142.5)
@@ -72,7 +72,7 @@ EE(X) ; Enter/Edit
  S GMTSDT=$$NOW^XLFDT,GMTSOBN=$P($G(^GMT(142.5,+X,0)),U,1)
  I $D(GMTSOWN) D  I X'>0 S GMTSQ=1 Q X
  . N GMTSCRE S GMTSCRE=$P($G(^GMT(142.5,+X,0)),"^",17) Q:+GMTSCRE'>0
- . I GMTSNEW'>0,GMTSCRE'=DUZ,'$D(^XUSEC("GMTSMGR",DUZ)) W !!,"    Sorry, you can not edit someone else's object." S X=-1
+ . I GMTSNEW'>0,GMTSCRE'=DUZ W !!,"    Sorry, you can not edit someone else's object." S X=-1
  I GMTSNEW>0,+DA>0,$D(^GMT(142.5,+DA,0)) D
  . S $P(^GMT(142.5,+DA,0),U,17)=+($G(DUZ)),$P(^GMT(142.5,+DA,0),U,18)=+GMTSDT
  I +X>0 D  Q:$G(X)=-1!($G(DA)=-1)!($G(Y)=-1) -1

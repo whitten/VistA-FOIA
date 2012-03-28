@@ -1,5 +1,5 @@
-GMRAFX3 ;SLC/DAN Update existing entries to new reactant ;03/16/10  08:35
- ;;4.0;Adverse Reaction Tracking;**17,19,23,20,45**;Mar 29, 1996;Build 5
+GMRAFX3 ;SLC/DAN Update existing entries to new reactant ;6/28/06  10:23
+ ;;4.0;Adverse Reaction Tracking;**17,19,23,20**;Mar 29, 1996;Build 1
  ;DBIA SECTION
  ;10018 - DIE
  ;2056  - DIQ
@@ -47,8 +47,7 @@ UIE ;Update individual entries
  D EN^ORKCHK(.GMRAOC,DFN,.GMRAORX,"ACCEPT")
  S GI=0,FND=0 F  S GI=$O(GMRAOC(GI)) Q:'+GI  D
  .Q:$P(GMRAOC(GI),U,2)'=3  ;Quit if not allergy related
- .;Q:$D(^OR(100,$P(GMRAOC(GI),U),9,"B",3))  ;23 If order check exists can't be for this data
- .Q:$$ANYARTOC^GMRAUTL2($P(GMRAOC(GI),U))  ;23 If order check exists can't be for this data
+ .Q:$D(^OR(100,$P(GMRAOC(GI),U),9,"B",3))  ;23 If order check exists can't be for this data
  .W !,"Patient has a(n) ",$P($$STATUS^ORQOR2($P(GMRAOC(GI),U)),U,2)," order for",$P($P(GMRAOC(GI),U,4),":",2),", order #",$P(GMRAOC(GI),U)
  .S FND=1
  W:'FND "No problems found"

@@ -1,5 +1,5 @@
-LR7OR2 ;DALOI/dcm - Get Lab results (cont.) ;8/11/97
- ;;5.2;LAB SERVICE;**121,187,219,285,286,372**;Sep 27, 1994;Build 11
+LR7OR2 ;VA/DALOI/dcm - Get Lab results (cont.) ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**121,187,219,285,286,372,1027**;NOV 01, 1997;Build 11
  ;
  ;
 CH(SDATE,EDATE,TEST,COUNT,SPEC,UNVER) ;Get CH subscript data

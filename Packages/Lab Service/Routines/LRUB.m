@@ -1,6 +1,7 @@
-LRUB ;AVAMC/REG - GET 62.5 ENTRIES ; 11/12/88  07:45 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRUB ; IHS/DIR/FJE - GET 62.5 ENTRIES 11/12/88 07:45 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  I $D(L)'=11 S L=80
  S:'$D(L(1))#2 L(1)="DRXZJT"
  S L(2)="" F L(6)=1:1 Q:$P(X," ",L(6),99)=""  S L(3)=$P(X," ",L(6)),L(5)="" D:L(3)]"" P S L(4)=$L(L(2))+$L(L(3)) S:L(4)'>L L(2)=L(2)_L(3)_" " I L(4)>L W "  too long",! G OUT

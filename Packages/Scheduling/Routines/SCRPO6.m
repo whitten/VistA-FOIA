@@ -1,10 +1,13 @@
-SCRPO6 ;BP-CIOFO/KEITH - Historical Team Assignment Summary ; 9/14/99 10:07am
- ;;5.3;Scheduling;**177,297**;AUG 13, 1993
+SCRPO6 ;BP-CIOFO/KEITH - Historical Team Assignment Summary ; 9/14/99 10:07am [ 11/02/2000  9:02 AM ]
+ ;;5.3;Scheduling;**177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 added call to list template
+ ;                        changed 132 column message
+ ;                        changed footer code for list template
+ ;                        moved IO variables kill to list template
+ ;                        changed SSN to HRCN
  ;
 EN ;Queue report
  N LIST,RTN,DESC
- S SUMON=0
- W !,"Print Final Summary Only" S %=2 D YN^DICN I %=1 S SUMON=1
  S LIST="DIV,TEAM"
  S RTN="RUN^SCRPO6"
  S DESC="Historical Team Assignment Summary"
@@ -28,15 +31,19 @@ PROMPT(LIST,SCRTN,SCDESC) ;Prompt for report parameters, queue report
  G:SCOUT END
  S SCT(1)="**** Report Parameters Selected ****" D SUBT^SCRPW50(SCT(1))
  G:'$$PPAR^SCRPO(.SC,1,.SCT) END
- W !!,"This report requires 132 column output!"
- W ! N ZTSAVE S ZTSAVE("^TMP(""SC"",$J,")="",ZTSAVE("SC")="",ZTSAVE("SUMON")=""
+ ;W !!,"This report requires 132 column output!"  ;IHS/ANMC/LJF 11/2/2000
+ W !!,"This report, when printed on paper,  requires wide paper or condensed print!"  ;IHS/ANMC/LJF 11/2/2000
+ W ! N ZTSAVE S ZTSAVE("^TMP(""SC"",$J,")="",ZTSAVE("SC")=""
  D EN^XUTMDEVQ(SCRTN,SCDESC,.ZTSAVE)
-END K ^TMP("SC",$J) D DISP0^SCRPW23,END^SCRPW50 Q
+END ;K ^TMP("SC",$J) D DISP0^SCRPW23,END^SCRPW50 Q  ;IHS/ANMC/LJF 11/2/2000
+ K ^TMP("SC",$J) D DISP0^SCRPW23 Q  ;IHS/ANMC/LJF 11/2/2000
  ;
 STOP ;Check for stop task request
  S:$D(ZTQUEUED) (SCOUT,ZTSTOP)=$S($$S^%ZTLOAD:1,1:0) Q
  ;
 RUN ;Print report
+ I $E(IOST,1,2)="C-" D ^BSDSCO6 Q    ;IHS/ANMC/LJF 11/2/2000
+IHS ;EP; entry point for list template  ;IHS/ANMC/LJF 11/2/2000
  N SCI,SCOUT
  K ^TMP("SCRPT",$J)
  S SCOUT=0
@@ -81,7 +88,6 @@ PRINT ;Print report
  Q:SCOUT
  S SCX=^TMP("SCRPT",$J,0,0) D SLINE("REPORT TOTAL:",SCX,12,.SCLF)
  Q:SCOUT  D FOOT^SCRPO7
- Q:$G(SUMON)
  I $D(^TMP("SCRPT",$J,0,0,"TLIST")) D
  .S SCTITL(2)=$$HDRX("T") D HDR^SCRPO(.SCTITL,132),SHDR("T") Q:SCOUT
  .S SCDIV=""
@@ -127,7 +133,8 @@ SLINE(SCN,SCX,SCPF,SCLF) ;Print summary line
  ;
  N SCI,SCY
  S SCY="2^3^7^5^4^9^8^10^6^11^12"
- I $Y>(IOSL-SCPF) D FOOT^SCRPO7,HDR^SCRPO(.SCTITL,132),SHDR("S") S SCLF=0
+ ;I $Y>(IOSL-SCPF) D FOOT^SCRPO7,HDR^SCRPO(.SCTITL,132),SHDR("S") S SCLF=0  ;IHS/ANMC/LJF 11/2/2000
+ I '$G(VALM),$Y>(IOSL-SCPF) D FOOT^SCRPO7,HDR^SCRPO(.SCTITL,132),SHDR("S") S SCLF=0  ;IHS/ANMC/LJF 11/2/2000
  Q:SCOUT  W:SCPF>10&SCLF !
  ;bp/djb Omit PC? column from REPORT TOTAL line.
  ;Old code start
@@ -194,12 +201,14 @@ SHDR(X) ;Print subheader
  .W !,$E(SCLINE,1,28),"  ---" F SCI=0:1:10 W ?(35+(9*SCI)),"-------"
  .Q
  I X="T" D  Q
- .W !,"Division",?32,"Team",?64,"Patient Name",?96,"SSN",?108,"Active Date",?121,"Inact. Date"
+ .;W !,"Division",?32,"Team",?64,"Patient Name",?96,"SSN",?108,"Active Date",?121,"Inact. Date"  ;IHS/ANMC/LJF 11/2/2000
+ .W !,"Division",?32,"Team",?64,"Patient Name",?96,"HRCN",?108,"Active Date",?121,"Inact. Date"  ;IHS/ANMC/LJF 11/2/2000
  .W ! F SCI=1:1:3 W $E(SCLINE,1,30),"  "
  .W "----------  -----------  -----------"
  .Q
  I X="P" D  Q
- .W !,"Division",?24,"Team",?48,"Patient Name",?72,"SSN",?84,"Team Position",?108,"Active Date",?121,"Inact. Date"
+ .;W !,"Division",?24,"Team",?48,"Patient Name",?72,"SSN",?84,"Team Position",?108,"Active Date",?121,"Inact. Date"  ;IHS/ANMC/LJF 11/2/2000
+ .W !,"Division",?24,"Team",?48,"Patient Name",?72,"HRCN",?84,"Team Position",?108,"Active Date",?121,"Inact. Date"  ;IHS/ANMC/LJF 11/2/2000
  .W ! F SCI=1:1:3 W $E(SCLINE,1,22),"  "
  .W "----------  ",$E(SCLINE,1,22),"  -----------  -----------"
  .Q

@@ -1,4 +1,5 @@
 LRUQ ;AVAMC/REG - CHECK FOR BAD POINTERS TO LAB FILE ;2/18/93  13:13
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**242**;Sep 27, 1994
  D END W !!,"Check parent file for bad pointers to lab file."
  S X="?" D FILE^LRDPA G:Y<1 END S LRF=+Y,LRN=$P(Y,U,2),LR=^DIC(LRF,0,"GL")

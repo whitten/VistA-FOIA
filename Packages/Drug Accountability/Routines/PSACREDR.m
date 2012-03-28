@@ -1,5 +1,5 @@
 PSACREDR ;BIR/JMB-Credit Resolution ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3**; 10/24/97
  ;This routine allows the user to apply credit memos to invoices.
  ;
  I '$D(^XUSEC("PSA ORDERS",DUZ)) W !,"You do not hold the key to enter the option." Q
@@ -73,7 +73,7 @@ SELECT ;Selects invoices for credit memos
  .S DA(2)=PSAIEN,DA(1)=PSAINV,DA=PSAIEN2
  .S:'$D(^PSD(58.811,PSAIEN,1,PSAINV,2,0)) DIC("P")=$P(^DD(58.8112,6,0),"^",2)
  .S DIC="^PSD(58.811,"_DA(2)_",1,"_DA(1)_",2,",DIC(0)="AEMQL",DIC("A")="CREDIT MEMO: ",DR=.01,DLAYGO=58.811
- .F  L +^PSD(58.811,PSAIEN,1,PSAINV,2,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ .F  L +^PSD(58.811,PSAIEN,1,PSAINV,2,0):0 I  Q
  .D ^DIC K DLAYGO I Y<0 S PSAOUT=1 K DIC Q
  .S DIE=DIC,DR="1;2;3",(PSADJDA,DA)=+Y D ^DIE K DA,DIE,DIC L -^PSD(58.811,PSAIEN,1,PSAINV,2,0)
  .S PSACRED=PSACRED+$P($G(^PSD(58.811,PSAIEN,1,PSAINV,2,PSADJDA,0)),"^",3)

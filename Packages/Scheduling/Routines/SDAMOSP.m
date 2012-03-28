@@ -1,5 +1,6 @@
-SDAMOSP ;ALB/CAW - Print for Appointment Statistics;4/15/92
+SDAMOSP ;ALB/CAW - Print for Appointment Statistics; [ 09/13/2001  2:14 PM ]
  ;;5.3;Scheduling;**22**;Aug 13, 1993
+ ;IHS/ANMC/LJF  9/29/2000 added call to display legend within 80 columns
  ;
 HDR ;Report Header
  ;
@@ -54,6 +55,7 @@ TOTAL ;Totals
  Q
  ;
 LEGEND ;Legend on bottom of output
+ D LEGEND^BSDAMO Q  ;IHS/ANMC/LJF 9/29/2000
  ;
  W !,?5,"o CI=Checked In ; RB=Rebooked"
  W !,?5,"o 'Cancelled' appointments only reflect appointments cancelled using 'Cancel Clinic Availability'."

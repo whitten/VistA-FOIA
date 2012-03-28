@@ -1,5 +1,5 @@
-OCXOZ01 ;SLC/RJS,CLA - Order Check Scan ;MAR 8,2011 at 13:52
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**32,221,243**;Dec 17,1997;Build 242
+OCXOZ01 ;SLC/RJS,CLA - Order Check Scan ;JUN 15,2011 at 12:58
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**32**;Dec 17,1997
  ;;  ;;ORDER CHECK EXPERT version 1.01 released OCT 29,1998
  ;
  ; ***************************************************************
@@ -8,15 +8,14 @@ OCXOZ01 ;SLC/RJS,CLA - Order Check Scan ;MAR 8,2011 at 13:52
  ; ** will be lost the next time the rule compiler executes.    **
  ; ***************************************************************
  ;
- ;    compiled code line length: 200
- ;        compiled routine size: 8000
- ; triggered rule ignore period: 300
+ ; compiled code line length: 200
+ ;     compiled routine size: 8000
  ;
  ;   Program Execution Trace Mode: OFF
  ;
  ;               Raw Data Logging: OFF
  ; Compiler mode:  ON
- ;   Compiled by: MOODY,SUSAN  (DUZ=17)
+ ;   Compiled by: ADAM,ADAM  (DUZ=1)
  Q
  ;
 LOG() ; Returns the number of days to keep the Raw Data Log or 0 if logging is disabled.
@@ -35,8 +34,7 @@ UPDATE(DFN,OCXSRC,OUTMSG) ; Main Entry point for evaluating Rules.
  ;
  K ^TMP("OCXCHK",$J)
  S ^TMP("OCXCHK",$J)=($P($H,",",2)+($H*86400)+(2*60))_" <- ^TMP ENTRY EXPIRATION DATE FOR ^OCXOPURG"
- N OCXOERR,OCXOCMSG,OCXNDX,OCXDF,OCXX,OCXTSPI
- S OCXTSPI=300
+ N OCXOERR,OCXOCMSG,OCXNDX,OCXDF,OCXX
  Q:'$G(DFN)
  I ($G(OCXOSRC)="GENERIC HL7 MESSAGE ARRAY") D GETDF,SWAPOUT("OCXODATA",.OCXODATA)
  I ($G(OCXOSRC)="GENERIC HL7 MESSAGE ARRAY") D CHK1^OCXOZ02
@@ -57,7 +55,7 @@ UPDATE(DFN,OCXSRC,OUTMSG) ; Main Entry point for evaluating Rules.
  Q
  ;
 GETDF ;This subroutine loads the OCXDF data field array from variables in the environment.
- ;  Called from UPDATE+9.
+ ;  Called from UPDATE+8.
  ;
  Q:$G(OCXOERR)
  ;
@@ -101,7 +99,7 @@ GETDF ;This subroutine loads the OCXDF data field array from variables in the en
  Q
  ;
 SWAPOUT(NAME,ARRAY) ;
- ;  Called from UPDATE+9.
+ ;  Called from UPDATE+8.
  ;
  Q:$G(OCXOERR)
  ;
@@ -113,7 +111,7 @@ SWAPOUT(NAME,ARRAY) ;
  Q
  ;
 SWAPIN(NAME,ARRAY) ;
- ;  Called from UPDATE+24.
+ ;  Called from UPDATE+23.
  ;
  Q:$G(OCXOERR)
  ;
@@ -124,7 +122,7 @@ SWAPIN(NAME,ARRAY) ;
  Q
  ;
 SCAN ; Tests all Rules for Event/Elements that were found to be valid in the UPDATE subroutine.
- ;  Called from UPDATE+15.
+ ;  Called from UPDATE+14.
  ;
  Q:$G(OCXOERR)
  ;

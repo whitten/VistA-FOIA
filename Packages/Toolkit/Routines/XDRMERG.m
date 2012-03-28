@@ -1,5 +1,6 @@
-XDRMERG ;SF-IRMFO.SEA/JLI - TENATIVE UPDATE POINTER NODES ;04/26/2001  08:17
- ;;7.3;TOOLKIT;**23,34,38,44,45,49,54,73**;Apr 25, 1995
+XDRMERG ;SF-IRMFO.SEA/JLI - TENATIVE UPDATE POINTER NODES ;04/26/2001  08:17 [ 12/18/2003  5:02 PM ]
+ ;;7.3;TOOLKIT;**23,34,38,44,45,49,54,73,1002,1003**;Apr 03, 1995
+ ;IHS/OIT/LJF 11/30/2006 PATCH 1003 added call to IHS subroutine for end of merge steps
  ;;
  Q
  ;
@@ -126,7 +127,13 @@ CLOSEIT ;
  S I="" F  S I=$O(^TMP($J,"XGLOB",I)) Q:I=""  D
  . I I'["DA,",$P($G(^TMP($J,"XGLOB",I,0,1)),U,3)="DINUM" D
  . . F XDRFR=0:0 S XDRFR=$O(@FROM@(XDRFR)) Q:XDRFR'>0  D
- . . . K @(I_XDRFR_")")
+ . . . ;
+ . . . ;IHS/OIT/LJF 11/30/2006 PATCH 1003 added call to IHS subroutine
+ . . . S BPMTO=$O(@FROM@(XDRFR,0))
+ . . . K @(I_XDRFR_")")   ;original VA code
+ . . . I $$GET^XPAR("PKG","BPM USE IHS LOGIC") D ENDMRG^BPMMRG(XDRFR,BPMTO,I)
+ . . . K BPMTO
+ ; 
  I FILE'=2 D
  . S I=^DIC(FILE,0,"GL")
  . F XDRFR=0:0 S XDRFR=$O(@FROM@(XDRFR)) Q:XDRFR'>0  D

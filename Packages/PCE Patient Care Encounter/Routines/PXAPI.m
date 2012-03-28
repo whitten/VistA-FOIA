@@ -1,5 +1,5 @@
 PXAPI ;ISL/dee - PCE's APIs ;4/16/97
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**15,14,27,28,124,164**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**14,15,27,28**;Aug 12, 1996
  Q
  ;
 PROVNARR(PXPNAR,PXFILE,PXCLEX) ;Convert external Provider Narrative to internal.
@@ -63,7 +63,7 @@ CPT(PXACPT,PXAPAT,PXADATE,PXAHLOC) ;This is the function call to return the quan
  ;                     (time is ignored if passed)
  ;  PXAHLOC  (optional) pointer to #44
  ;Returns
- ;  the count of how many (and quantity) of that cpt code are stored for that one day
+ ;  the count of how many (and quinity) of that cpt code are stored for that one day
  ;
  ;
  N PXAVST,PXAVCPT,PXREVDAT,PXENDDAT,PXACOUNT
@@ -93,19 +93,19 @@ INTV(WHAT,PACKAGE,SOURCE,VISIT,HL,DFN,APPT,LIMITDT,ALLHLOC) ;This api will promp
  ;
  Q $$INTV^PXBAPI(WHAT,PACKAGE,SOURCE,.VISIT,.HL,.DFN,$G(APPT),$G(LIMITDT),$G(ALLHLOC))
  ;
-DELVFILE(WHICH,VISIT,PACKAGE,SOURCE,ASK,ECHO,USER) ;Deletes the requested data related to the visit.
+DELVFILE(WHICH,VISIT,PACKAGE,SOURCE,ASK,ECHO,USER) ;Deletes the requesed data related to the visit.
  ;See DELVFILE^PXAPIDEL for parameters and return values.
  ;
  Q $$DELVFILE^PXAPIDEL(WHICH,VISIT,$G(PACKAGE),$G(SOURCE),$G(ASK),$G(ECHO),$G(USER))
  ;
-DATA2PCE(DATA,PACKAGE,SOURCE,VISIT,USER,DISPLAY,ERROR,SCREEN,ARRAY,ACCOUNT) ;API to pass data for add/edit/delete to PCE
+DATA2PCE(DATA,PACKAGE,SOURCE,VISIT,USER,DISPLAY,ERROR,SCREEN,ARRAY) ;API to pass data for add/edit/delete to PCE
  ;See DATA2PCE^PXAI for parameters and return values.
  ;
  I '($D(DATA)#2) Q -3
  I '($D(PACKAGE)#2) Q -3
  I '($D(SOURCE)#2) Q -3
  I '($D(VISIT)#2) S VISIT=""
- Q $$DATA2PCE^PXAI(DATA,PACKAGE,SOURCE,.VISIT,$G(USER),$G(DISPLAY),.ERROR,$G(SCREEN),.ARRAY,.ACCOUNT) ;PX*1.0*164 CHANGED $G(ERROR) TO .ERROR
+ Q $$DATA2PCE^PXAI(DATA,PACKAGE,SOURCE,.VISIT,$G(USER),$G(DISPLAY),$G(ERROR),$G(SCREEN),.ARRAY)
  ;
 SOURCE(SOURCE) ;Get IEN of data source in the PCE Data Source file
  Q $$SOURCE^PXAPIUTL($G(SOURCE))

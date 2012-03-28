@@ -1,4 +1,5 @@
-LACOARA4 ;SLC/RAF - ORGANON RA4 INTERFACE ;09/12/94   07:00
+LACOARA4 ; IHS/DIR/FJE - ORGANON RA4 INTERFACE 07:00 ; [ 09/12/94 ]
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;This routine has been modified by RAF/SLC for Miles City, it is
  ;to be considered class III software until Dallas releases it as

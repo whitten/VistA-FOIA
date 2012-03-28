@@ -1,6 +1,7 @@
-LRBLDC1 ;AVAMC/REG - COMPONENT PREP WORKLOAD ;4/20/93  11:49
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDC1 ; IHS/DIR/FJE - COMPONENT PREP WORKLOAD 11:49 ; [ 4/20/93 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  Q:'LRI!('LRCAPA)  F A=0:0 S A=$O(^LRE(LRQ,5,LRI,66,A)) Q:'A  S LRK=$P(^(A,0),"^",3) D:LRK S
  Q
 S K B F B=0:0 S B=$O(^LAB(66,A,9,B)) Q:'B  S B(B)=""

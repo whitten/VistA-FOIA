@@ -1,46 +1,24 @@
-PSODGDGI ;BIR/SAB - drug drug interaction checker ; 6/28/07 7:36am
- ;;7.0;OUTPATIENT PHARMACY;**10,27,48,130,144,132,188,207,243,274**;DEC 1997;Build 8
+PSODGDGI ;BIR/SAB - drug drug interaction checker ;4/14/93
+ ;;7.0;OUTPATIENT PHARMACY;**10,27,48,130,144,132**;DEC 1997
  ;External reference to ^PS(56 supported by DBIA 2229
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External references PSOL and PSOUL^PSSLOCK supported by DBIA 2789
  ;External reference to DDIEX^PSNAPIS supported by DBIA 2574
- ;External references to ^ORRDI1 supported by DBIA 4659
- ;External reference ^XTMP("ORRDI" supported by DBIA 4660
  Q:$$DDIEX^PSNAPIS($P(PSODRUG("NDF"),"A"),$P(PSODRUG("NDF"),"A",2))
- N PSOICT S (CRIT,DRG,LSI,DGI,DGS,SER,SERS,STA,PSOICT)=""
- F  S STA=$O(PSOSD(STA)) Q:STA=""!($G(PSORX("DFLG")))  F  S DRG=$O(PSOSD(STA,DRG)) Q:DRG=""!($G(PSORX("DFLG")))  I $P(PSOSD(STA,DRG),"^",2)<10 D
+ S (CRIT,DRG,LSI,DGI,DGS,SER,SERS,STA)=""
+ S STA=$O(PSOSD(STA)) Q:STA=""!($G(PSORX("DFLG")))  F  S DRG=$O(PSOSD(STA,DRG)) Q:DRG=""!($G(PSORX("DFLG")))  I $P(PSOSD(STA,DRG),"^",2)<10 D
  .Q:$P(PSOSD(STA,DRG),"^",7)']""
- .S NDF=$P(PSOSD(STA,DRG),"^",7)
- .;New logic to Loop All interactions and filter-up a critical if it exists
- .S IT=0,PSOICT=""
- .F  S IT=$O(^PS(56,"APD",NDF,PSODRUG("NDF"),IT)) Q:'IT  D
+ .S NDF=$P(PSOSD(STA,DRG),"^",7),IT=$O(^PS(56,"APD",NDF,PSODRUG("NDF"),0)) I IT D
  ..Q:$$DDIEX^PSNAPIS($P(NDF,"A"),$P(NDF,"A",2))
  ..Q:$P(^PS(56,IT,0),"^",7)&($P(^PS(56,IT,0),"^",7)<DT)
- ..I 'PSOICT S PSOICT=IT Q
- ..I $P($G(^PS(56,IT,0)),"^",4)=1 S PSOICT=IT Q
- ..Q
- .I 'PSOICT Q
- .S IT=PSOICT
- .I STA="ZNONVA" S DNM=DRG W ! D NVA^PSODRDU1 K DNM,IT,PSOICT Q
- .D BLD Q:+$G(PSORX("DFLG"))
- .Q
- I '$D(^XUSEC("PSORPH",DUZ)),$G(DGI)]"" S:+CRIT PSONEW("STATUS")=4 W $C(7),!,"DRUG INTERACTION WITH RX #s: "_LSI,! K LSI,DRG,IT,NDF,PSOICT
- K IT
- ; CHECK FOR REMOTE DRUG INTERACTIONS
- I +$G(PSORX("DFLG")) Q
- I $T(HAVEHDR^ORRDI1)']"" Q
- I '$$HAVEHDR^ORRDI1 Q
- I $D(^XTMP("ORRDI","OUTAGE INFO","DOWN")) D  Q
- .I $T(REMOTE^PSORX1)]"" Q
- .W !,"Remote data not available - Only local order checks processed." D PAUSE^PSOORRD2
- I $P($G(^XTMP("ORRDI","PSOO",PSODFN,0)),"^",3)<0 W !,"Remote data not available - Only local order checks processed." D PAUSE^PSOORRD2 Q
- I $D(^TMP($J,"DI"_PSODFN)) K ^TMP($J,"DI") M ^TMP($J,"DI")=^TMP($J,"DI"_PSODFN) D DRGINT^PSOORRD2
- K ^TMP($J,"DI"_PSODFN),^TMP($J,"DI")
+ ..I STA="ZNONVA" S DNM=DRG D NVA^PSODRDU1 K DNM Q
+ ..D BLD Q:+$G(PSORX("DFLG"))
+ I '$D(^XUSEC("PSORPH",DUZ)),$G(DGI)]"" S:+CRIT PSONEW("STATUS")=4 W $C(7),!,"DRUG INTERACTON WITH RX #s: "_LSI,! K LSI,DRG,IT,NDF
  Q
 TECH ;add tech entry to RX VERIFY file (#52.4)
  I +CRIT S PSODI=1,DIC="^PS(52.4,",DLAYGO=52.4,DIC(0)="L",(DINUM,X)=PSOX("IRXN"),DIC("DR")="1////"_PSODFN_";2////"_DUZ_";4///"_DT_";7///"_1_";7.1///"_SER_";7.2///"_DGI K DD,DO D FILE^DICN K DD,DO
  S:$G(DGS)'="" $P(^PSRX(PSOX("IRXN"),"DRI"),"^")=SERS,$P(^PSRX(PSOX("IRXN"),"DRI"),"^",2)=DGS  K PSODI,CRIT,DIC,DLAYGO,DINUM,DGI,DGS,SER,SERS Q
-BLD I $D(^XUSEC("PSORPH",DUZ)) D PHARM Q
+BLD I $D(^XUSEC("PSORPH",DUZ)) S PSORX("PHARM")=DUZ D PHARM Q
  S LSI=$P(^PSRX(+PSOSD(STA,DRG),0),"^")_"/"_$P(^PSDRUG($P(^(0),"^",6),0),"^")_","_LSI,DGI=$P(PSOSD(STA,DRG),"^")_","_DGI,SER=IT_","_SER I $P(PSOSD(STA,DRG),"^",9),$P(^PS(56,IT,0),"^",4)=1 S $P(^PSRX(+PSOSD(STA,DRG),"STA"),"^")=4
  I $P(^PS(56,IT,0),"^",4)=2 S SERS=IT_","_SERS,DGS=$P(PSOSD(STA,DRG),"^")_","_DGS
  S:$P(^PS(56,IT,0),"^",4)=1 CRIT=1 Q

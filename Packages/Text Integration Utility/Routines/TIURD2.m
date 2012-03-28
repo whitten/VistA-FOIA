@@ -1,9 +1,9 @@
-TIURD2 ; SLC/JER - Reassignment following signature ;11/01/03
- ;;1.0;TEXT INTEGRATION UTILITIES;**61,100,109,113,112**;Jun 20, 1997
+TIURD2 ; SLC/JER - Reassignment following signature ;29-Jul-2009 14:52;MGH
+ ;;1.0;TEXT INTEGRATION UTILITIES;**61,100,109,1006**;Jun 20, 1997
 RETRACT(TIUDA,TIUDAD,COPYSTAT,NEWDAD,SKIPADD) ; Retract document
  N TIUOD0,TIUOD12,TIUOD13,TIUOD14,TIUOD15,TIUOD16,TIUOD17,TIUI,TIUPAT
  N TIUDPRM,TIUCOPY,TIUVSUPP,DUOUT,DIROUT,DTOUT,DA,DR,DFN,TIU,TIULMETH
- N TIUTYP,TIUVMETH,TIUPATNM,TIUNREC,DFN,TIUNDAD,TIUTNM,ONRTRCT
+ N TIUTYP,TIUVMETH,TIUPATNM,TIUNREC,DFN,TIUNDAD,TIUTNM
  S TIUOD0=$G(^TIU(8925,+TIUDA,0)),TIUOD12=$G(^(12)),TIUOD13=$G(^(13))
  S TIUOD14=$G(^TIU(8925,+TIUDA,14)),TIUOD15=$G(^(15)),TIUOD16=$G(^(16))
  S TIUOD17=$G(^TIU(8925,+TIUDA,17))
@@ -49,8 +49,6 @@ RETRACT(TIUDA,TIUDAD,COPYSTAT,NEWDAD,SKIPADD) ; Retract document
  . S:'+$G(TIUDAD) TIUNDAD=DA
  . S TIUNREC=$G(TIUNREC)_$S(+$G(TIUNREC):",",1:"")_DA
  . D STATUS(TIUDA)
- S ONRTRCT=$$ONRTRCT^TIULC1(+$G(^TIU(8925,TIUDA,0)))
- I ONRTRCT]"" X ONRTRCT
  ; If SKIPADD is TRUE, bypass retraction of addenda...
  I +$G(SKIPADD) G RETRAX
 RTADD ; Retract all addenda
@@ -84,7 +82,7 @@ COPY12(DA,TIUD12,TIU) ; Copy 12-node
  N DR,DIE S DIE=8925
  S DR="1201////"_+$$NOW^XLFDT_";1202////"_+$P(TIUD12,U,2)_";1203////"_$P(TIUD12,U,3)_";1204////"_$P(TIUD12,U,4)_";1205////"_$P(TIUD12,U,5)
  S DR=DR_";1206////"_$P(TIUD12,U,6)_";1207////"_$P(TIUD12,U,7)_";1208////"_$P(TIUD12,U,8)_";1209////"_$P(TIUD12,U,9)
- S DR=DR_";1210////"_$P(TIUD12,U,10)_";1211////"_$P(TIUD12,U,11)_";1212////"_$P(TIUD12,U,12)
+ S DR=DR_";1210////"_$P(TIUD12,U,10)_";1211////"_$P(TIUD12,U,11)
  D ^DIE
  Q
 COPY13(DA,TIUD13,TIU,STATUS) ; Copy 13-node
@@ -129,6 +127,8 @@ COPY15(DA,TIUD15) ; Copy 15-node
 STATUS(DA) ; Set original's status to "RETRACTED"
  N DIE,DR,DIC
  S DIE=8925,DR=".05///RETRACTED" D ^DIE
+ ;IHS/MSC/MGH Added to set retraction date in V NOTE
+ D RETRACT^BTIURB(DA)
  D ALERTDEL^TIUALRT(DA),DELIRT^TIUDIRT(DA)
  Q
 ATTACH(TIUDA,TIUDADD) ; Attach TIUDADD as addendum to TIUDA
@@ -138,7 +138,7 @@ ATTACH(TIUDA,TIUDADD) ; Attach TIUDADD as addendum to TIUDA
  S DR=".01////81;.02////^S X=$P(TIUD0,U,2);.03////^S X=$P(TIUD0,U,3);.04////^S X=$$DOCCLASS^TIULC1(81)"
  S DR=DR_";.06////^S X=TIUDA;.07////^S X=$P(TIUD0,U,7);.08////^S X=$P(TIUD0,U,8)"
  D ^DIE
- S DR="1205////^S X=$P(TIUD12,U,5);1211////^S X=$P(TIUD12,U,11);1212////^S X=$P(TIUD12,U,12)"
+ S DR="1205////^S X=$P(TIUD12,U,5);1211////^S X=$P(TIUD12,U,11)"
  D ^DIE
  S DR="1301////^S X="_$$REFDTA(TIUDA,TIUDADD,TIUD0)
  S DR=DR_";1401////^S X=$P(TIUD14,U);1402////^S X=$P(TIUD14,U,2)"
@@ -179,7 +179,7 @@ UPDTADD(TIUDA) ; Addenda for reassigned original are updated
  . . S DR=".02////"_$P(TIUD0,U,2)_";.03////"_$S($P(TIUD0,U,3)="":"@",1:$P(TIUD0,U,3))_";.04////"_$P(TIUD0,U,4)_";.07////"_$P(TIUD0,U,7)_";.08////"_$S(+$P(TIUD0,U,8):$P(TIUD0,U,8),1:"@")_";.13////"_$P(TIUD0,U,13)
  . . S DR=DR_";1401////"_$P(TIUD14,U)_";1402////"_$P(TIUD14,U,2)
  . . S DIE=8925 D ^DIE
- . . S DR="1205////"_$P(TIUD12,U,5)_";1211////"_$P(TIUD12,U,11)_";1212////"_$P(TIUD12,U,12)
+ . . S DR="1205////"_$P(TIUD12,U,5)_";1211////"_$P(TIUD12,U,11)
  . . D ^DIE
  . . S DR="1301////^S X="_$$REFDTA^TIURD2(TIUDA,DA,TIUD0)
  . . D ^DIE W "."
@@ -191,7 +191,7 @@ UPDTADD(TIUDA) ; Addenda for reassigned original are updated
  . . I +$P($G(^TIU(8925,DA,14)),U,6) D
  . . . D AUDREASS^TIURB1(+$P(^TIU(8925,DA,14),U,6),.TIUD0,.TIUD12)
  Q
-VLOC(LOCDA)     ; Resolve location pointer
+VLOC(LOCDA) ; Resolve location pointer
  Q $P($G(^SC(LOCDA,0)),U)
 GETSIG() ; Challenge user for Electronic Signature, when appropriate
  N X,X1,X2,TIUY S TIUY=0

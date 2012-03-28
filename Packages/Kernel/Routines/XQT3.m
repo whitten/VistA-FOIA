@@ -1,4 +1,5 @@
-XQT3 ;SEA/MJM Create menu templates (cont.);11/20/89  11:12 AM ;01/09/2001  13:33
+XQT3 ;SEA/MJM Create menu templates (cont.);11/20/89  11:12 AM ;01/09/2001  13:33 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**46,37,155**;Jul 10, 1995
 STORE ;See if this is what the User wants and if so store it
  W @IOF,!,"You have chosen the following options in this order:",!!

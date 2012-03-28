@@ -1,27 +1,24 @@
-IBDFN3 ;ALB/CJM - ENCOUNTER FORM - (entry points for reports); 5/21/93
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**20,25,45**;APR 24, 1997
+IBDFN3 ;ALB/CJM - ENCOUNTER FORM - (entry points for reports);5/21/93
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
 RXPROF ;Outpatient Pharmacy Action Profile and Information Profile
  ;INPUTS:
  ;PSDAYS = number of days to print the medication profile for
  ;PSTYPE=1 for the Action Profile, =0 for the Information Profile
- ;PSONOPG=2 variable needed to indicate to Profiles to not close device
- ;     and not to form feed
- ;PSOSITE= Division -- ien from file 40.8, not always same as in file 59
  ;DFN
  ;
  N IBDFN,ADDR,ADDRFL,CLASS,CNDT,DRUG,HDFL,I,II,J,L,LINE,P,PAGE,PSDOB,PSIIX,PSNAME,PSOI,PSSN,PSIX,PGM,PRF,PSDATE,VAL,VAR,RX,RX0,RX2,ST,ST0,PSDAY,RF,RFS
- N PSOPRINT,X1,X2,ZTSK,X,Y,PSII,PSDT,LMI,PSCNT,PSDIS,RXCNTLN,ELN,FN,CNT,VAERR,LN,PCLASS,PSOIFSUP,PSOINST,PSOSITE,PSONOPG,DUOUT,DTOUT,DIRUT
+ N PSOPRINT,X1,X2,ZTSK,X,Y,PSII,PSDT,LMI,PSCNT,PSDIS,RXCNTLN,ELN,FN,CNT,VAERR,LN,PCLASS,PSOIFSUP,PSOINST,PSOSITE
  Q:(+$G(DFN)=0)
  S IBDFN=DFN
  S X1=DT,X2=-PSDAYS D C^%DTC S (PSDATE,PSDAY)=X
  S LINE=$TR($J(" ",IOM)," ","-")
  ;
- ; -- get site name, turn on barcoding, set to not close device
- S PSOINST=$P($$SITE^VASITE,"^",3)
- S PSOPAR=1,PSONOPG=2
- I $G(IBCLINIC)]"" S PSOSITE=$P($G(^SC(IBCLINIC,0)),"^",15)
- I $G(PSTYPE)=0 S PAGE=1 D DFN^PSOSD1 ; -- Informational Profile
- I $G(PSTYPE)=1 S PAGE=1 D DFN^PSOSD1 ; -- Action Profile
+ ; -- turn on barcoding for action profiles create parameter and check
+ S PSOINST=$S($D(^DD("SITE",1)):$P(^(1),"^"),1:"000"),PSOPAR=1
+ S PAGE=1 D HD^PSOSD2,PAT^PSOSD
+ ;
+ ; -- print OTHER MED INSTRUCTIONS and DUE's create parameter and check
+ I PSTYPE,$L($T(RXPAD^PSOSD1)) D RXPAD^PSOSD1,ENSTUFF^PSODACT
  W:$Y @IOF
  ;
  S DFN=IBDFN

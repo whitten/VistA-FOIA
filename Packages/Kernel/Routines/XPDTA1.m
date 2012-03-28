@@ -1,5 +1,5 @@
 XPDTA1 ;SFISC/RSD - Build Actions for Kernel Files Cont. ;06/24/2008
- ;;8.0;KERNEL;**44,68,85,131,302,399,507**;Jul 10, 1995;Build 3
+ ;;8.0;KERNEL;**44,68,85,131,302,399,507**;Jul 10, 1995;Build 13
  ;Per VHA Directive 2004-038, this routine should not be modified.
  Q
  ;^XTMP("XPDT",XPDA,"KRN",XPDFILE,DA) is the global root

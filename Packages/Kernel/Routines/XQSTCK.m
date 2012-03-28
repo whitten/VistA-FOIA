@@ -1,4 +1,5 @@
-XQSTCK ;Luke/SEA - Stack utilities ;3/11/94  13:50 [ 07/30/94  10:48 PM ]
+XQSTCK ;Luke/SEA - Stack utilities ;3/11/94  13:50 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 PUSH(XQY,XQPSM,XQY0) ;Add an option to the stack
  S XQSTPT=^XUTL("XQ",$J,"T")

@@ -1,5 +1,6 @@
-%ZISTCP ;ISC-SF/RWF - DEVICE HANDLER TCP/IP CALLS ;06/23/2004  09:09
- ;;8.0;KERNEL;**36,34,59,69,118,225,275**;Jul 10, 1995
+%ZISTCP ;ISC-SF/RWF - DEVICE HANDLER TCP/IP CALLS ;06/23/2004  09:09 [ 09/29/2005  11:43 AM ]
+ ;;8.0;KERNEL;**36,34,59,69,118,225,275,1012**;Jul 10, 1995
+ ;ROUTINE CONTAINS IHS MOD AT CONT+4 AND LONT+11
  Q
  ;
 CALL(IP,SOCK,TO) ;Open a socket to the IP address <procedure>
@@ -26,7 +27,8 @@ CMSM ;Open MSM Socket
 CONT ;Open OpenM socket
  I $$VERSION^%ZOSV'<5 S %A=$ZUTIL(68,55,1)
  S NIO="|TCP|"_SOCK
- O NIO:(IP:SOCK:"-M"::512:512):TO G:'$T NOOPN ;Make work like DSM
+ ;line below changed from "-M" to "S" for GUI Patient Chart
+ O NIO:(IP:SOCK:"S"::512:512):TO G:'$T NOOPN ;Make work like DSM
  U NIO D VAR(NIO)
  Q
 CGTM ;Open GT.M Socket
@@ -113,7 +115,8 @@ LONT ;Open port in Accept mode with standard terminators, standard buffers.
  . R *NEWCHAR:60 S %ZA=$ZA,%ZB=$ZB S:$T %A=1 Q:%A
  . S POP=$$EXIT
  I POP C NIO Q
- U NIO:(::"-M") ;Work like DSM
+ ;line below changed from "-M" to "S" to work with GUI Patient Chart
+ U NIO:(::"S") ;Work like DSM
  Q
  ;
 LVXD ;Open port and listen

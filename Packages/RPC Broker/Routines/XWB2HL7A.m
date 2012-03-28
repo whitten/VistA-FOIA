@@ -1,5 +1,5 @@
 XWB2HL7A ;;ISF/AC - Remote RPCs via HL7. ;03/26/09  16:22
- ;;1.1;RPC BROKER;**12,54**;Mar 28, 1997;Build 5
+ ;;1.1;RPC BROKER;**12,54**;Mar 28, 1997;Build 6
  ;Per VHA Directive 2004-038, this routine should not be modified.
 RPCINFO ;RPC Information
  ;Msg Type: SPQ - stored procedure request (event Q01)

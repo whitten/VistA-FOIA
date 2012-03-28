@@ -1,4 +1,6 @@
-LRACM2F ;MILW/JMC - LIST CUMULATIVE PATIENTS FOR SELECTED LOCATIONS ; 5/15/92
+LRACM2F ; IHS/DIR/FJE - LIST CUMULATIVE PATIENTS FOR SELECTED LOCATIONS ;  [ 07/22/2002  12:29 PM ]
+ ;;5.2;LR;**1001,1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;**1**;Sep 27, 1994
 EN ;Print list of cumulative patients for range of locations.
  K ^TMP($J),%DT,LR,DIR,LRLLOC
@@ -54,7 +56,8 @@ DQ ; Dequeue entry point.
  . . . I $Y+5>IOSL D HDR Q:LREND  W !!," LOCATION: ",L," (Continued)",?43,"LRDFN",!
  . . . S X=^LR(LRDFN,0),LRDPF=$P(X,"^",2),DFN=$P(X,"^",3) D PT^LRX
  . . . S Y=^LRO(69,LRDT,1,"AR",L,P,LRDFN),LRCTRR=LRCTRR+1,LRCTRR(1)=LRCTRR(1)+Y
- . . . W !,LRCTRR,?5,$E(PNM,1,20),?28,SSN,?42,$J(LRDFN,6),?50,$S(Y:"Processed",1:"")
+ . . . ;W !,LRCTRR,?5,$E(PNM,1,20),?28,SSN,?42,$J(LRDFN,6),?50,$S(Y:"Processed",1:"")
+ . . . W !,LRCTRR,?5,$E(PNM,1,20),?28,HRCN,?42,$J(LRDFN,6),?50,$S(Y:"Processed",1:"")  ;IHS/OIRM TUC/AAB 1/7/98
  . . . W ?61,"File: ",LRDPF,?72,$E(LRWRD,1,8)
  . S LRCTRR(0)=LRCTRR(0)+LRCTRR,LRCTRR=0
  I 'LREND D

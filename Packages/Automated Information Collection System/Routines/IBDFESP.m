@@ -1,20 +1,18 @@
 IBDFESP ;ALB/AAS - AICS EDIT SITE PARAMS ; 19-DEC-95
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**15,25**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 EDIT ; -- edit site parameters
- I '$D(DT) D DT^DICRW
- N DIC,DIE,DA,DR,X,Y,HOLD,HOLD2
+ N DIC,DIE,DA,DR,X,Y,HOLD
  I $G(^IBD(357.09,1,0))="" D CREATE
  S DIE="^IBD(357.09,",DA=1
  S HOLD=$P($G(^IBD(357.09,DA,0)),"^",8,9)
- S HOLD2=$P($G(^IBD(357.09,DA,0)),"^",12)
  W !!,"Edit AICS Site Parameters"
  W !!,"Form Tracking Purge Parameters"
- S DR=".02;.03;1.01;W !!,""Data Entry Parameters"";.04;.06;.07;W !!,""Print Parameters"";.05//YES;.1//30;.13//12;.14//25;W !!,""Scanning Parameters"";I '$D(^XUSEC(""IBD MANAGER"",DUZ)) S Y=1.02;.08//20;.09//5;.12//2;1.02;.11"
+ S DR=".02;.03;1.01;W !!,""Data Entry Parameters"";.04;.06;.07;W !!,""Print Parameters"";.05//YES;.1//30;W !!,""Scanning Parameters"";I '$D(^XUSEC(""IBD MANAGER"",DUZ)) S Y=1.02;.08//20;.09//5;1.02"
  D ^DIE
  ;
  ; -- if scanning parameters have changed, force a regen. of all fs
- I (HOLD'=$P($G(^IBD(357.09,DA,0)),"^",8,9))!(HOLD2'=$P($G(^IBD(357.09,DA,0)),"^",12)) D
+ I HOLD'=$P($G(^IBD(357.09,DA,0)),"^",8,9) D
  .W !!,$C(7),"***SCANNING PERCENTAGES HAVE CHANGED***"
  .W !!,"In order for scanning % changes to take affect, you MUST DELETE ALL",!,"Form Specification files from EVERY workstation.  Delete EF*.FS files using",!,"the FILE, DELETE FORMSPEC options on the AICS Workstation screen!"
  .S ZTRTN="FSPEC^IBDFESP",ZTDESC="IBD - REGENERATE FORM SPECS",ZTDTH=$H,ZTIO="" D ^%ZTLOAD

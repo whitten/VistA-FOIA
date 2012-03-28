@@ -1,4 +1,4 @@
-NURSPA3 ; GENERATED FROM 'NURS-P-STF' PRINT TEMPLATE (#574) ; 04/03/98 ; (continued)
+NURSPA3 ; GENERATED FROM 'NURS-P-STF' PRINT TEMPLATE (#3774) ; 11/29/04 ; (continued)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,11 +11,10 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- S X=$G(^NURSF(210,D0,20,D1,0)) D N:$X>34 Q:'DN  W ?34,$E($P(X,U,4),1,30)
  D N:$X>14 Q:'DN  W ?14 W "TYPE OF EXPERIENCE: "
  D N:$X>34 Q:'DN  W ?34,$E($P(X,U,1),1,30)
  D N:$X>18 Q:'DN  W ?18 W "TITLE/POSITION: "
- D N:$X>34 Q:'DN  W ?34 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^NURSF(211.3,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,10)
+ D N:$X>34 Q:'DN  W ?34 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^NURSF(211.3,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,10)
  D N:$X>0 Q:'DN  W ?0 W "DATE PREVIOUS ASSIGNMENT STARTED: "
  D N:$X>34 Q:'DN  W ?34 S Y=$P(X,U,5) D DT
  D N:$X>2 Q:'DN  W ?2 W "DATE PREVIOUS ASSIGNMENT ENDED: "
@@ -33,7 +32,7 @@ I1R ;
  G J1R
 J1 ;
  D T Q:'DN  D N D N:$X>3 Q:'DN  W ?3 W "PRIVILEGE: "
- S X=$G(^NURSF(210,D0,16,D1,0)) D N:$X>14 Q:'DN  W ?14 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^NURSF(212.6,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,50)
+ S X=$G(^NURSF(210,D0,16,D1,0)) D N:$X>14 Q:'DN  W ?14 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^NURSF(212.6,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,50)
  D N:$X>0 Q:'DN  W ?0 W "DATE GRANTED: "
  D N:$X>14 Q:'DN  W ?14 S Y=$P(X,U,2) D DT
  D N:$X>4 Q:'DN  W ?4 W "COMMENTS: "
@@ -43,7 +42,8 @@ A2 ;
  S X=$G(^NURSF(210,D0,16,D1,1,D2,0)) S DIWL=15,DIWR=78 D ^DIWP
  Q
 A2R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  Q
 J1R ;
  K Y K DIWF

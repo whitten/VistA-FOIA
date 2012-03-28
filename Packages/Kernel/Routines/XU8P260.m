@@ -1,5 +1,5 @@
-XU8P260 ;OAK-BP/BDT ;STATE FILE CORRECTION; [11/13/02 7:35am]
- ;;8.0;KERNEL;**260**;Jul 10, 1995
+XU8P260 ;OAK-BP/BDT ;STATE FILE CORRECTION; [ 01/09/2004   4:23 PM ]
+ ;;8.0;KERNEL;**260,1010**;Jul 10, 1995
  ;Correct misspelling for Chittenden county of Vermont
 CRTP ;
  N X

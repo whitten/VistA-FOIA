@@ -1,5 +1,6 @@
-LRPXAPP ;SLC/STAFF Test Lab APIs ;11/12/03  15:44
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXAPP ;VA/SLC/STAFF - Test Lab APIs ;11/12/03  15:44
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
  ; - This routine shows examples of calling APIs in LRPXAPI.
  ; - This routine is provided for documentation and testing.

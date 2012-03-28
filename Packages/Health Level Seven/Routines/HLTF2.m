@@ -1,7 +1,6 @@
-HLTF2 ;AISC/SAW/MTC-Process Message Text File Entries (Cont'd) ;10/17/2007  09:44
- ;;1.6;HEALTH LEVEL SEVEN;**25,122**;Oct 13, 1995;Build 14
- ;Per VHA Directive 2004-038, this routine should not be modified.
- ;
+HLTF2 ;AISC/SAW/MTC-Process Message Text File Entries (Cont'd) ;02/24/97  13:56
+ ;;1.6;HEALTH LEVEL SEVEN;**1**;APR 04, 1997
+ ;;1.6;HEALTH LEVEL SEVEN;**25**;Oct 13, 1995
 MERGEIN(LLD0,LLD1,MTIEN,HDR,MSA) ;Merge Data From Communication Server
  ;Module Logical Link File into Message Text File
  ;
@@ -26,9 +25,6 @@ MERGEIN(LLD0,LLD1,MTIEN,HDR,MSA) ;Merge Data From Communication Server
  I LLD0'="XM",'$G(LLD1) Q
  N FLG,HLCHAR,HLEVN,HLFS,I,X,X1,HLDONE
  S (FLG,HLCHAR,HLEVN,X)=0
- ;
- ; patch HL*1.6*122: MPI-client/server
- F  L +^HL(772,+$G(MTIEN)):10 Q:$T  H 1
  ;
  ;Move data from Logical Link file to Message Text file
  I LLD0'="XM" D
@@ -55,10 +51,6 @@ MERGEIN(LLD0,LLD1,MTIEN,HDR,MSA) ;Merge Data From Communication Server
  ..S I=I+1,^HL(772,MTIEN,"IN",I,0)=XMRG
  S ^HL(772,MTIEN,"IN",0)="^^"_I_"^"_I_"^"_$$DT^XLFDT_"^"
  ;Update statistics in Message Text file for this entry
- ;
- ; patch HL*1.6*122: MPI-client/server
- L -^HL(772,+$G(MTIEN))
- ;
  D STATS^HLTF0(MTIEN,HLCHAR,HLEVN)
  Q
 MERGEOUT(MTIEN,LLD0,LLD1,HDR) ;Merge Text in Message Text File into
@@ -88,9 +80,6 @@ MERGEOUT(MTIEN,LLD0,LLD1,HDR) ;Merge Text in Message Text File into
  N I,X
  S I=0
  ;
- ; patch HL*1.6*122: MPI-client/server
- F  L +^HLCS(870,+$G(LLD0),2,+$G(LLD1)):10 Q:$T  H 1
- ;
  ;-- move header into 870 from HDR array
  S X="" F  S X=$O(@HDR@(X)) Q:'X  D
  . S I=I+1,^HLCS(870,LLD0,2,LLD1,1,I,0)=@HDR@(X)
@@ -103,106 +92,4 @@ MERGEOUT(MTIEN,LLD0,LLD1,HDR) ;Merge Text in Message Text File into
  ;-- update 0 node of message and format arrays
  S ^HLCS(870,LLD0,2,LLD1,1,0)="^^"_I_"^"_I_"^"_$$DT^XLFDT_"^"
  ;
- ; patch HL*1.6*122: MPI-client/server
- L -^HLCS(870,+$G(LLD0),2,+$G(LLD1))
- ;
  Q
-OUT(HLDA,HLMID,HLMTN) ;File Data in Message Text File for Outgoing Message
- ;Version 1.5 Interface Only
- ;
- ; patch HL*1.6*122: HLTF routine splitted, moves sub-routines,
- ; OUT, IN, and ACK to HLTF2 routine.
- ; 
- Q:'$D(HLFS)
- ;
- I HLMTN="ACK"!(HLMTN="MCF")!(HLMTN="ORR") Q:'$D(HLMSA)  D ACK(HLMSA,"I") Q
- ;
- ;-- if message contained MSA find inbound message
- I $D(HLMSA),$D(HLNDAP),$P(HLMSA,HLFS,3)]"" D
- . N HLDAI
- . S HLDAI=0
- . F  S HLDAI=$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),$P(HLMSA,HLFS,3),HLDAI)) Q:'HLDAI!($P($G(^HL(772,+HLDAI,0)),U,4)="I")
- . I 'HLDAI K HLDAI
- ;
- D STUFF^HLTF0("O")
- ;
- N HLAC S HLAC=$S($D(HLERR):4,'$P(HLNDAP0,"^",10):1,1:2) D STATUS^HLTF0(HLDA,HLAC,$G(HLMSG))
- D:$D(HLCHAR) STATS^HLTF0(HLDA,HLCHAR,$G(HLEVN))
- ;
- ;-- update status if MSA and found inbound message
- I $D(HLMSA),$D(HLDAI) D
- .N HLERR,HLMSG I $P(HLMSA,HLFS,4)]"" S HLERR=$P(HLMSA,HLFS,4)
- .S HLAC=$P(HLMSA,HLFS,2)
- .I HLAC'="AA" S HLMSG=$S(HLAC="AR":"Application Reject",HLAC="AE":"Application Error",1:"")_" - "_HLERR
- .S HLAC=$S(HLAC'="AA":4,1:3) D STATUS^HLTF0(HLDAI,HLAC,$G(HLMSG))
- Q
- ;
-IN(HLMTN,HLMID,HLTIME) ;File Data in Message Text File for Incoming Message
- ;Version 1.5 Interface Only
- ;
- ; patch HL*1.6*122: HLTF routine splitted, moves sub-routines,
- ; OUT, IN, and ACK to HLTF2 routine.
- ; 
- Q:'$D(HLFS)
- I HLMTN="ACK"!(HLMTN="MCF")!(HLMTN="ORR") Q:'$D(HLMSA)  D ACK(HLMSA,"O",$G(HLDA)) Q
- ;
- N HLDAI S HLDA=0
- I $D(HLNDAP),HLMID]"" D
- .F  S HLDA=+$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),HLMID,HLDA)) Q:'HLDA!($P($G(^HL(772,+HLDA,0)),U,4)="I")
- .I HLDA D
- ..S HLDT=+$P($G(^HL(772,HLDA,0)),"^"),HLDT1=$$HLDATE^HLFNC(HLDT)
- ..K ^HL(772,HLDA,"IN")
- .I $D(HLMSA),$P(HLMSA,HLFS,3)]"" D
- ..S HLDAI=0
- ..F  S HLDAI=$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),$P(HLMSA,HLFS,3),HLDAI)) Q:'HLDAI!($P($G(^HL(772,+HLDAI,0)),U,4)="O")
- ..I 'HLDAI K HLDAI
- ;
- ; patch HL*1.6*122: MPI-client/server
- ; I 'HLDA D CREATE(.HLMID,.HLDA,.HLDT,.HLDT1) K HLZ
- I 'HLDA D CREATE^HLTF(.HLMID,.HLDA,.HLDT,.HLDT1) K HLZ
- ;
- D STUFF^HLTF0("I")
- N HLAC S HLAC=$S($D(HLERR):4,1:1) D STATUS^HLTF0(HLDA,HLAC,$G(HLMSG))
- ;
- D MERGE15^HLTF1("G",HLDA,"HLR",HLTIME)
- ;
- I '$D(HLERR),$D(HLMSA),$D(HLDAI) D
- .N HLAC,HLERR,HLMSG I $P(HLMSA,HLFS,4)]"" S HLERR=$P(HLMSA,HLFS,4)
- .S HLAC=$P(HLMSA,HLFS,2) I HLAC'="AA" S HLMSG=$S(HLAC="AR":"Application Reject",1:"Application Error")_" - "_HLERR
- .S HLAC=$S(HLAC'="AA":4,1:3) D STATUS^HLTF0(HLDAI,HLAC,$G(HLMSG))
- Q
- ;
-ACK(HLMSA,HLIO,HLDA) ;Process 'ACK' Message Type - Version 1.5 Interface Only
- ;
- ; patch HL*1.6*122: HLTF routine splitted, moves sub-routines,
- ; OUT, IN, and ACK to HLTF2 routine.
- ; 
- ; To determine the correct message to link the ACK, HLIO is used.
- ; For an ack from DHCP (original message from remote system) then
- ; HLIO should be "I" so that the correct inbound message is ack-ed. For
- ; an inbound ack (original message outbound from DHCP) HLIO should be
- ; "O". This distinction must be made due to the possible duplicate
- ; message ids from a bi-direction interface.
- ;
- ; Input : MSA - MSA from ACK message.
- ;         HLIO - Either "I" or "O" : See note above.
- ;Output : None
- ;
- N HLAC,HLMIDI
- ;-- set up required vars
- S HLAC=$P(HLMSA,HLFS,2),HLMIDI=$P(HLMSA,HLFS,3)
- ;-- quit
- Q:HLMIDI']""!(HLAC']"")!('$D(HLNDAP))
- ;-- find message to ack
- I '$G(HLDA) S HLDA=0 D
- . F  S HLDA=+$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),HLMIDI,HLDA)) Q:'HLDA!($P($G(^HL(772,+HLDA,0)),U,4)=HLIO)
- ;-- quit if no message
- Q:'$D(^HL(772,+HLDA,0))
- ;-- check for error
- I $P(HLMSA,HLFS,4)]"" N HLERR S HLERR=$P(HLMSA,HLFS,4)
- I $D(HLERR),'$D(HLMSG) N HLMSG S HLMSG="Error During Receipt of Acknowledgement Message"_$S(HLAC="AR":" - Application Reject",HLAC="AE":" - Application Error",1:"")_" - "_HLERR
- ;-- update status
- S HLAC=$S(HLMTN="MCF":2,HLAC'="AA":4,1:3)
- D STATUS^HLTF0(HLDA,HLAC,$G(HLMSG))
- Q
- ;

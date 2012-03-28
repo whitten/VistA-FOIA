@@ -1,5 +1,5 @@
 DPTDUP ;SEA/AMF-ALB/RMO - CHECK FOR DUPLICATES ON NEW PATIENT ENTRY ; 22 JUN 87 1:00 pm
- ;;5.3;Patient File;**50**;Aug 13, 1993
+ ;;5.3;Patient File;**50,1009**;Aug 13, 1993
  ; after statistics test, take out all reference to DPTKD,DPTKS
 CHK ;
  K DPTD S DPTD=0,DPTN=DPTNM I $P(DPTN,",",1)?.E1P.E S DPTT=$P(DPTN,",",1) D PUNC S DPTN=DPTT_","_$P(DPTN,",",2,99)

@@ -1,11 +1,11 @@
-DGBTE1 ;ALB/SCK/GAH - BENEFICIARY TRAVEL FIND OLD CLAIM DATES  ; 10/10/06 11:17am
- ;;1.0;Beneficiary Travel;**8,12,13**;September 25, 2001;Build 11
+DGBTE1 ;ALB/SCK - BENEFICIARY TRAVEL FIND OLD CLAIM DATES  ;11/23/92@0800  03/19/93
+ ;;5.3;Registration;**35,60,90**;Aug 13, 1993
 DATE ;  get date for claim, either new or past date
  K ^TMP("DGBT",$J),^TMP("DGBTARA",$J),DIR
  I 'DGBTNEW S DIR("A",2)="Enter a 'P' to display Past CLAIM dates for editing."
  S DIR("A",3)="Time is required when adding a new CLAIM.",DIR("A",4)="",DIR("A",1)="",DIR("A")="Select TRAVEL CLAIM DATE/TIME",DIR("?")="^D HELP^DGBTE1A"
  S DIR(0)="F",DIR("B")="NOW" D ^DIR K DIR G ERR1:$D(DIRUT)
- S CHZFLG=0,%DT="EXR",DTSUB=$S(Y="N":"NOW",Y="P":"OLD",Y="p":"OLD",1:"OTHR")_"^DGBTE1A" D @DTSUB K DTSUB
+ S CHZFLG=0,%DT="EXR",DTSUB=$S(Y="N":"NOW",Y="P":"OLD",Y="p":"OLD",1:"OTHR") D @DTSUB^DGBTE1A K DTSUB
  G ERR1:$D(DTOUT),DATE:Y1<0 S DGBTA=Y1 G SET:CHZFLG
 DATE1 ;  for past claims, set DGBTDT to inverse date of claim date
  I $D(^DGBT(392,"C",DFN)) D
@@ -70,19 +70,7 @@ CERT ;  get last BT certification,  get date, then get eligibility
  . X ^DD("DD") ; date conversion, y=cert date (internal)
  . S DGBTCD=Y,X=DGBTCA,X2="0$",X3=8 K Y D COMMA^%DTC S DGBTCA=X K X,X2,X3
 APPTS ;  search patient file for appointments through claim date (DTI+1),  adddates to array DGBTCL 
- N ERRCODE,DGARRAY,CLIEN,APTDT S DGARRAY("FLDS")="2;3;10;18"
- S DGARRAY(4)=DFN,I=$$SDAPI^SDAMA301(.DGARRAY)
- ; I<0 = Error, I<0 = # of Records retrieved
- I I<0 S ERRCODE=$O(^TMP($J,"SDAMA301","")),I1=1,DGBTCL("ERROR")=^TMP($J,"SDAMA301",ERRCODE)
- I I>0 D
- .S CLIEN=""
- .F  S CLIEN=$O(^TMP($J,"SDAMA301",DFN,CLIEN)) Q:'CLIEN  D
- ..S APTDT=DGBTDTI\1
- ..F  S APTDT=$O(^TMP($J,"SDAMA301",DFN,CLIEN,APTDT)) Q:'APTDT!(APTDT>(DGBTDTI+1))  D
- ...S SDATA=^TMP($J,"SDAMA301",DFN,CLIEN,APTDT)
- ...S DGBTCL(APTDT)=$P($P(^TMP($J,"SDAMA301",DFN,CLIEN,APTDT),U,2),";",2)_U_$P($P(SDATA,U,3),";")
- ...S DGBTCL(APTDT)=DGBTCL(APTDT)_U_$P($P(SDATA,U,18),";")_U_$P($P(SDATA,U,10),";")
- K ^TMP($J,"SDAMA301"),DGARRAY,CLIEN,APTDT
+ F I=0:0 S I=$O(^DPT(DFN,"S",I)) Q:'I!(I>(DGBTDTI+1))  I $P(I,".")=$P(DGBTDTI,".") S DGBTCL(I)=^(I,0)
 EXIT ; exit routine
  Q
 ERR1 ;  error condition

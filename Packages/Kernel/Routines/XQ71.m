@@ -1,4 +1,4 @@
-XQ71 ;SEA/AMF,MJM - Lookup response to menu prompt ;04/16/2002  13:47
+XQ71 ;SEA/AMF,MJM - Lookup response to menu prompt ;04/16/2002  13:47 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**154,157**;Jul 10, 1995
 CHK ;See if this option is locked, out of order, etc.
  S XQJMP=0,XQA=1,XQCY=XQY S:'$D(XQNOXUTL) XQCY0=XQY0 D ^XQCHK I XQCY<0 S XQY=-1

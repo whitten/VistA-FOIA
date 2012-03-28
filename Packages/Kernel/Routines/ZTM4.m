@@ -1,4 +1,5 @@
-%ZTM4 ;SEA/RDS-TaskMan: Manager, (Waiting List) ;06/19/2000  09:32
+%ZTM4 ;SEA/RDS-TaskMan: Manager, (Waiting List) ;06/19/2000  09:32 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**1,118,127,162**;Jul 03, 1995
  ;
  ;^%ZTSK(ZTSK) must be locked before call

@@ -1,4 +1,6 @@
-LRAPCWK ;AVAMC/REG - STUFF CYTOPATH WORKLOAD ;8/3/94  08:05
+LRAPCWK ; IHS/DIR/FJE - STUFF CYTOPATH WORKLOAD 08:05 ; [ 8/3/94 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 ASK W ! S %DT("A")="Date/time Specimen(s) Processed: " D W^LRAPWU I LRK<1 W $C(7),!!,"Processing workload not recorded.  Is this what you want " S %=2 D YN^LRU Q:%<2  G ASK
  K A F A=0:0 S A=$O(^LR(LRDFN,LRSS,LRI,.1,A)) Q:'A  S A(A)=$P(^(A,0),"^",2)

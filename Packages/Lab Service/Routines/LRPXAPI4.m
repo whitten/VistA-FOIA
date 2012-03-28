@@ -1,5 +1,6 @@
-LRPXAPI4 ;SLC/STAFF Lab Extract API code - Exact Match ;9/29/03  21:17
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXAPI4 ;VA/SLC/STAFF - Lab Extract API code: Exact Match ;9/29/03  21:17
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 EXACT(DFN,DATE,CONDS) ; from LRPXAPI5
  ; check if conditions are met for date/time

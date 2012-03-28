@@ -1,4 +1,4 @@
-MCARORD ; GENERATED FROM 'MCRHDEATH' PRINT TEMPLATE (#1005) ; 10/04/96 ; (FILE 701, MARGIN=80)
+MCARORD ; GENERATED FROM 'MCRHDEATH' PRINT TEMPLATE (#3729) ; 11/29/04 ; (FILE 701, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(1005,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3729,"DXS")
+ S I(0)="^MCAR(701,",J(0)=701
  D N:$X>0 Q:'DN  W ?0 W "DEATH - ADMIN."
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 W "Lost or death status:"
  S X=$G(^MCAR(701,D0,9)) D N:$X>23 Q:'DN  W ?23 S Y=$P(X,U,1) W:Y]"" $S($D(DXS(1,Y)):DXS(1,Y),1:Y)
@@ -26,7 +27,7 @@ BEGIN ;
  D N:$X>0 Q:'DN  W ?0 W "Chart type:"
  S X=$G(^MCAR(701,D0,8)) D N:$X>23 Q:'DN  W ?23 S Y=$P(X,U,25) W:Y]"" $S($D(DXS(4,Y)):DXS(4,Y),1:Y)
  D N:$X>0 Q:'DN  W ?0 W "Observer:"
- D N:$X>23 Q:'DN  W ?23 S Y=$P(X,U,26) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,25)
+ D N:$X>23 Q:'DN  W ?23 S Y=$P(X,U,26) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,25)
  D N:$X>0 Q:'DN  W ?0 W "DEC number:"
  D N:$X>23 Q:'DN  W ?23,$E($P(X,U,28),1,25)
  D N:$X>0 Q:'DN  W ?0 W "Visit number:"

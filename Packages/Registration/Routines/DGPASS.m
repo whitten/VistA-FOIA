@@ -1,4 +1,4 @@
-DGPASS ;ALB/JDS - ABSENCE LIST ; 01 JAN 86 @0800
+DGPASS ;ALB/JDS - ABSENCE LIST ; 01 JAN 86 @0800 [ 03/17/2004  1:55 PM ]
  ;;5.3;Registration;**162**;Aug 13, 1993
  ;
 EN D QUIT S %DT="AEPT",%DT("A")="Enter date of Absence: " D ^%DT G:Y'>0 QUIT G EN:+Y>(DT+1) S DGT=+Y,DG2=DGT,DGT=$S(DGT[".":DGT,1:DGT_".2400"),DG2=DGT
@@ -28,7 +28,9 @@ SET S VAIP("D")=DGDAT D IN5^VADPT S:VAIP(1)']"" DGFL=1 Q:VAIP(1)']""  S DGADM=VA
  S DGTYP=$P(DGX,"^",18),DGTP=$S(DGTYP=1:"PASS",DGTYP=2!(DGTYP=26):"AA",DGTYP=3!(DGTYP=25):"UA",DGTYP=13!(DGTYP=43)!(DGTYP=44)!(DGTYP=45):"ASIH",1:""),DGCD=0,X=+DGX\1 D:X]"" DAT S:DGCD DGLV=DGCD
  I "^25^26^"[("^"_+VAIP(4)_"^") S DGTP=$S(+VAIP(4)=25:"UA",1:"AA")
  S DGCD=0 S X=$S($P(DGX,"^",13):$P(DGX,"^",13),1:"") D:X]"" DAT S DGRT=$S(DGCD:DGCD,1:"")
- S DGW=$S($P(DGX,"^",5)]""&($P(DGX,"^",5)'?.N):$P(DGX,"^",5),$P(DGX,"^",5)]""&($P(DGX,"^",5)?.N):$P(^DIC(4,$P(DGX,"^",5),0),"^",1),1:$P(^DIC(42,$P(DGX,"^",6),0),"^"))
+ ;IHS/ITSC/WAR 3/17/04 Changed to $$GET1^DIQ
+ ;S DGW=$S($P(DGX,"^",5)]""&($P(DGX,"^",5)'?.N):$P(DGX,"^",5),$P(DGX,"^",5)]""&($P(DGX,"^",5)?.N):$P(^DIC(4,$P(DGX,"^",5),0),"^",1),1:$P(^DIC(42,$P(DGX,"^",6),0),"^"))
+ S DGW=$S($P(DGX,"^",5)]""&($P(DGX,"^",5)'?.N):$P(DGX,"^",5),$P(DGX,"^",5)]""&($P(DGX,"^",5)?.N):$$GET1^DIQ(405,+DGIFN,.05),1:$P(^DIC(42,$P(DGX,"^",6),0),"^"))
  I DGFL Q  ;already returned...don't store
  I $D(DGDFN(DFN)) Q  ;patient already stored once
  I $D(DGASIH) S DGDFN(DFN)=DFN,^UTILITY($J,"DG",DGDV,DGP,DFN)=VA("PID")_"^"_DGLV_"^"_DGW Q

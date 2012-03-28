@@ -1,4 +1,6 @@
-LRMIXR2 ;SLC/BA - X-REF FOR DISPLAY SCREEN ^LAB(62.06,"AS", ; 8/5/87  10:40 ;
+LRMIXR2 ; IHS/DIR/FJE - X-REF FOR DISPLAY SCREEN ^LAB(62.06,"AS", 8/5/87 10:40 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 ALT ;sets "AS" x-ref alternate screen when ALTERNATE SCREEN, ORGANISM (SCREEN), or SPECIMEN (SCREEN) is entered
  S K0=DA(1),K1=DA,J4=X I $L($P(^LAB(62.06,K0,0),U,2)) S J1=$P(^(0),U,2) I $D(^LAB(62.06,K0,3,K1,0)),$L($P(^(0),U,2)),$L($P(^(0),U,3)) S J2=$P(^(0),U,2),J3=$P(^(0),U,3) D SETUP

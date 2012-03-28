@@ -1,6 +1,7 @@
 VADPT32 ;ALB/MRL/MJK - PATIENT VARIABLES [IN5], CONT.; 12 DEC 1988
- ;;5.3;Registration;;Aug 13, 1993
+ ;;5.3;Registration;**1004**;Aug 13, 1993
  ;Inpatient variables [Version 5.0 and above]
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
  ;
 BLD ; build array of mvt in reverse order up one before E mvt
  K ^UTILITY("VADPTZ",$J,DFN) S (VANN,VAQ,VAZ,VACC)=0

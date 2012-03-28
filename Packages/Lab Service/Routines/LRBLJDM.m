@@ -1,6 +1,6 @@
-LRBLJDM ;AVAMC/REG/CYM - MULTIPLE COMP PREP, INVENTORY ;5/21/97  14:56 ; 12/7/00 7:12am
- ;;5.2;LAB SERVICE;**90,247,267**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJDM ; IHS/DIR/AAB - MULTIPLE COMP PREP, INVENTORY 5/21/97 14:56 ; [ 04/29/98 10:25 AM ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**90**;Sep 27, 1994
  S X=^LAB(66,LRV,0),LRP(LRV)=$P(X,"^")_"^"_$P(X,"^",10)_"^"_$P(X,"^",11)_"^"_$P(X,"^",18),LRZ=$P(X,"^",19)
 C S DIC="^LAB(66,LRE(4),3,",DIC(0)="AEQMZ" D ^DIC K DIC I Y>0 S (X,Y)=+Y,X=^LAB(66,X,0),LRP(Y)=$P(X,"^")_"^"_$P(X,"^",10)_"^"_$P(X,"^",11)_"^"_$P(X,"^",18) D:'$P(^LAB(66,LRE(4),3,Y,0),"^",2) ONLY D:$D(LRP(Y)) CK G C
  G:'$D(LRP) OUT S S=0 W !,"You have selected the following component(s): " S X=0 F X(1)=0:1 S X=$O(LRP(X)) Q:'X  W !,$P(LRP(X),"^"),?40,"vol(ml):",$J($P(LRP(X),"^",2),5) S S=S+$P(LRP(X),"^",2)
@@ -30,47 +30,7 @@ SET S C=0 F A=0:0 S A=$O(^LRD(65,LRX,9,A)) Q:'A  S:$P(^(A,0),"^",3)=2 C=C+1
 D I LRCAPA,'$O(^LAB(66,LRV,9,0)) W $C(7),!,!!,"Must enter WKLD CODES in BLOOD PRODUCT FILE (#66)",!,"for ",$P(^LAB(66,LRV,0),U)," to divide unit.",! D OUT Q
  R !,"Enter number of aliquots (1-5): ",A:DTIME I A=""!(A[U) D OUT Q
  S A=+A I A>5!(A<1) W !!,"Answer must be 1,2,3,4, or 5",! G D
- ; Insert logic for ISBT128 units so that splitting follows ISBT128 naming conventions
- G:$$ISBTSPLT(LRX,A) D
- S LR("C")=A,LRM=LRM\A,LRV(10)=LRV(10)/A S:LRV(10)["." LRV(10)=$P(LRV(10),".")_"."_$E($P(LRV(10),".",2),1,2)
- I $$ISISBT($P(LRE,U,4)) D
- .N LRBLPCOD,CNT
- .S LRBLPCOD=$$GET1^DIQ(66,$P(LRE,U,4),.05)
- .S LRV(11)=""
- .S I=0 F CNT=0:1 S I=$O(^LRD(65,LRX,16,I)) Q:'I  ; Count pre-existing child units
- .F B=1:1:LR("C") S $E(LRBLPCOD,($L(LRBLPCOD)-1))=$C(64+CNT+B),LRV=$$FIND1^DIC(66,,,LRBLPCOD,"D"),LRV(1)=$$GET1^DIQ(66,LRV,.01) D S
- I '$$ISISBT($P(LRE,U,4)) F B=1:1:LR("C") S LRV(11)=$C(64+B) D S
+ S LR("C")=A,LRM=LRM\A,LRV(10)=LRV(10)/A S:LRV(10)["." LRV(10)=$P(LRV(10),".")_"."_$E($P(LRV(10),".",2),1,2) F B=1:1:LR("C") S LRV(11)=$C(64+B) D S
  Q
  ;
 OUT D K^LRBLJD Q
- ;
-ISISBT(PROD) ; This function should only be called within this routine
- ; This function is a boolean of whether a product type is ISBT128 (true) or Codabar (false)
- Q $$GET1^DIQ(66,PROD,.29,"I")
- ;
-ISBTSPLT(UIEN,NUM) ; This function should only be called from within this routine
- ; This function checks for an appropriate number of split units for ISBT128 product types
- ; UIEN Unit Internal Entry Number
- ; PROD is the product code
- ; NUM is the number of aliquots requested by the user
- N ANS  ; This is the flag that determines whether the function fails the check
- N I,CHK,CODE,PROD,CNT
- I '$G(UIEN)!('$G(NUM)) Q 1  ; No go if parent unit or number is not indicated
- S PROD=$P(^LRD(65,UIEN,0),"^",4)
- S (ANS,I)=0
- I $$ISISBT(PROD) D  Q ANS
- .S CODE=$$GET1^DIQ(66,PROD,.05),CHK=0
- .I $E(CODE,($L(CODE)-1),$L(CODE))'="00" D  Q  ; Only parent units with '00' at the end of the end of the
- ..;                                           ; product code can be split
- ..S ANS=1
- ..W !,"This ISBT128 unit cannot be split because the product"
- ..W !,"code does not end in '00'.",*7
- .;
- .F CNT=0:1 S I=$O(^LRD(65,UIEN,16,I)) Q:'I  ; Get a count of any child units already created and add them in
- .;                                          ; in the search below
- .F I=1:1:NUM  S $E(CODE,($L(CODE)-1))=$C(64+CNT+I) Q:'$$FIND1^DIC(66,,,CODE,"D")  S CHK=CHK+1
- .I CHK'=NUM D
- ..S ANS=1
- ..W !,(NUM-CHK)," MORE DIVIDED BLOOD PRODUCT ENTR"_$S((NUM-CHK)>1:"IES",1:"Y")_" MUST BE CREATED BEFORE THE PRODUCT"
- ..W !,"TYPE YOU HAVE SELECTED CAN BE SPLIT INTO "_NUM_" UNIT"_$S(NUM>1:"S.",1:"."),*7
- Q ANS

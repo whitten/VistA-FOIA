@@ -1,9 +1,6 @@
 PSAPROC1 ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**12,21,50,60,70**; 10/24/97;Build 12
- ;
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**12,21**; 10/24/97
  ;This routine processes uploaded invoices.
- ;
- ;;References to ^PSDRUG( are covered by IA #2095
  ;
 CHK ;Check for invoices with a status of "OK" (uploaded & error free)
  ;& status of "" (uploaded & errors). 
@@ -36,10 +33,7 @@ NOERROR ;Display list of invoices that can be processed by selecting
  S DIR(0)="LO^1:"_PSACNT,DIR("A")="Select invoices to process",DIR("?",1)="Enter the number to the left of the invoice",DIR("?")="data to be processed or a range of numbers." W !
  S DIR("??")="^D SEL^PSAPROC1" D ^DIR K DIR G:Y="" EDIT I $G(DIRUT) S PSAOUT=1 Q
  S PSASEL=Y
- D PLOCK^PSAPROC8(1)  ;; < PSA*3*70 RJS
- I '$G(PSASEL) G EXIT^PSAPROC
 INVSEL F PSAPC=1:1 S PSA=+$P(PSASEL,",",PSAPC) Q:'PSA  D  Q:PSAOUT
- .I '$D(PSAOK(PSA)) Q  ;*50
  .S PSACTRL=$P(PSAOK(PSA),"^",3) Q:'$D(^XTMP("PSAPV",PSACTRL,"IN"))
  .S PSAIN=^XTMP("PSAPV",PSACTRL,"IN"),PSARECD=+$P(PSAIN,"^",6),PSALINES=0
  .D PROCESS
@@ -76,12 +70,12 @@ PROCESS ;Get date recd & line item data
  S PSAOK=0
 CS I PSACS D  Q:PSAOUT
  .S $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",9)="CS"
- .I $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",12)="" S PSACS(PSACTRL)="" D MASTER^PSAPROC9 Q:PSAOUT  S:$P(^XTMP("PSAPV",PSACTRL,"IN"),"^",12)'="" PSAOK=1 ;PSA*60
+ .I $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",12)="" K PSACS S PSACS(PSACTRL)="" D MASTER^PSAPROC9 Q:PSAOUT  S:$P(^XTMP("PSAPV",PSACTRL,"IN"),"^",12)'="" PSAOK=1
  .I PSACS=PSALNCNT S $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",10)="ALL CS" Q
  .I PSACS'=PSALNCNT S $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",10)=""
 NCS I 'PSACS S $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",9)="",$P(^("IN"),"^",10)="",$P(^("IN"),"^",12)="" D:$P(^("IN"),"^",7)="" GETLOC^PSAPROC9 Q:PSAOUT  S:$P(^XTMP("PSAPV",PSACTRL,"IN"),"^",7)'="" PSAOK=1
  ;
- I PSALNCNT=PSALINES S $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",8)="P" K PSAOK(PSA) W !!,"The invoice status has been changed to Processed!" D ^PSAPROC7 I 1 ;PSA*3*21 (1/3/01- file immediately);*50 
+ I PSALNCNT=PSALINES S $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",8)="P" K PSAOK(PSACTRL) W !!,"The invoice status has been changed to Processed!" D ^PSAPROC7 ;PSA*3*21 (1/3/01- file immediately)
  E  W !!,"** The invoice has not been placed in a Processed status!"
  D END^PSAPROC
  Q

@@ -1,4 +1,4 @@
-DGPTX14 ; ;07/14/09
+DGPTX14 ; ;10/29/04
  D DE G BEGIN
 DE S DIE="^DPT(D0,.02,",DIC=DIE,DP=2.02,DL=3,DIEL=1,DU="" K DG,DE,DB Q:$O(^DPT(D0,.02,DA,""))=""
  I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,1) S:%]"" DE(1)=% S %=$P(%Z,U,2) S:%]"" DE(3)=%
@@ -50,7 +50,7 @@ NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
 KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="DGPTX14",DQ=1+D G B
 1 S DW="0;1",DV="M*P10'X#",DU="",DLB="RACE",DIFLD=.01
- S DE(DW)="C1^DGPTX14",DE(DW,"INDEX")=1
+ S DE(DW)="C1^DGPTX14"
  S DU="DIC(10,"
  G RE:'D S DQ=2 G 2
 C1 G C1S:$D(DE(1))[0 K DB
@@ -63,17 +63,7 @@ C1S S X="" G:DG(DQ)=X C1F1 K DB
  S ^DPT(DA(1),.02,"B",$E(X,1,30),DA)=""
  S X=DG(DQ),DIC=DIE
  X ^DD(2.02,.01,1,2,1.3) I X S X=DIV S Y(1)=$S($D(^DPT(D0,.02,D1,0)):^(0),1:"") S X=$P(Y(1),U,2),X=X S DIU=X K Y S X=DIV S X=+$O(^DIC(10.3,"C","S",0)) S:X=0 X="" X ^DD(2.02,.01,1,2,1.4)
-C1F1 N X,X1,X2 S DIXR=398 D C1X1(U) K X2 M X2=X D C1X1("O") K X1 M X1=X
- D
- . D FC^DGFCPROT(.DA,2.02,.01,"KILL",$H,$G(DUZ),.X,.X1,.X2,$G(XQY0)) Q
- K X M X=X2 D
- . D FC^DGFCPROT(.DA,2.02,.01,"SET",$H,$G(DUZ),.X,.X1,.X2,$G(XQY0)) Q
- G C1F2
-C1X1(DION) K X
- S X(1)=$G(@DIEZTMP@("V",2.02,DIIENS,.01,DION),$P($G(^DPT(DA(1),.02,DA,0)),U,1))
- S X=$G(X(1))
- Q
-C1F2 Q
+C1F1 Q
 X1 S DIC("S")="I '$G(^(.02))" D ^DIC K DIC S DIC=$G(DIE),X=+Y K:Y<0 X S:$D(X) DINUM=X
  Q
  ;

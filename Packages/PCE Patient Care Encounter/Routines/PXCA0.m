@@ -1,10 +1,9 @@
 PXCA0 ;ISL/dee - Main routine for PCE Device Interface Module ;11/20/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**5,14,33,124**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**5,14,33**;Aug 12, 1996
  Q
  ;
  ;Variables:
  ;  PXCANPRV  Count of the number of providers
- ;  PXCANPOV  Count of the number of diagnoses
  ;  PXCADT  Encounter Date/Time
  ;  PXCAPAT   Pointer to the patient (9000001 & 2)
  ;  PXCAHLOC  Pointer to Hospital Location (44)
@@ -34,10 +33,10 @@ EN ;Entry called form PXCAEP.
  ;
 BUILD(PXCAGLB,PXCAERRS) ;Takes an PXCA array and builds the ^TMP(PXCAGLB,$J, array.
  ;
- N PXCANPRV,PXCANPOV
+ N PXCANPRV
  K PXKERROR
  K ^TMP(PXCAGLB,$J)
- S PXCANPRV=0,PXCANPOV=0
+ S PXCANPRV=0
  ;
  D PROCESS(.PXCA,1,PXCAERRS)
  ;

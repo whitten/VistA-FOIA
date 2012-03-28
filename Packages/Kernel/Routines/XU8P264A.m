@@ -1,5 +1,5 @@
-XU8P264A ;OAK-BP/BDT ;PERSON CLASS CODE UNDATE; [12/4/02 12:24pm]
- ;;8.0;KERNEL;**264**; Jul 10, 1995
+XU8P264A ;OAK-BP/BDT ;PERSON CLASS CODE UNDATE; [ 01/09/2004   4:23 PM ]
+ ;;8.0;KERNEL;**264,1010**; Jul 10, 1995
  ;;This routine updates Person Class file
  ;- Add sixty new entries.
  ;- Inactivate two existing entries.

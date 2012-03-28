@@ -1,4 +1,5 @@
-LRAPOLD ;AVAMC/REG - ENTER OLD AP ACCESSIONS ;8/12/95  08:04 ;
+LRAPOLD ;VA/AVAMC/REG - ENTER OLD AP ACCESSIONS ;8/12/95  08:04 ;
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**72,324**;Sep 27, 1994
  S IOP="HOME" D ^%ZIS W @IOF,?20,"Enter old pathology records",!!
  W $C(7),!,"This option skips entering accession number in the Accession Area file.",!?5,"Is this what you want " S %=2 D YN^LRU G:%'=1 END
@@ -12,7 +13,8 @@ DT W ! S %DT="AEXT",%DT(0)="-N",%DT("A")="Date (must be exact) specimen taken: "
 R W ! S %DT="AEXT",%DT(0)="-N",%DT("A")="Date (must be exact) specimen received: " D ^%DT K %DT G:X["?" R Q:Y<1  I Y<LRE W $C(7),!!,"Date received must be after date taken.",! G R
  S LRAD=Y,LRF=$E(LRAD,1,3) D D^LRU S LRD=Y D A G DT
 A R !!,"Enter Accession number: ",LRAN:DTIME Q:LRAN=""!(LRAN[U)  I LRAN'?1N.N!($L(LRAN)>5) W $C(7),!!,"Enter up to 5 numbers",!! G A
- I $D(^LR(LRXREF,LRF,LRABV,LRAN)) S X=+$O(^LR(LRXREF,LRF,LRABV,LRAN,0)) I $D(^LR(X,0)) S X=^(0) D ^LRUP W $C(7),!,"AC #",LRAN," in ",LRO(68)," for ",$E(LRF,2,3),!?5,"Patient: ",LRP,"  ID: ",SSN G A
+ ; I $D(^LR(LRXREF,LRF,LRABV,LRAN)) S X=+$O(^LR(LRXREF,LRF,LRABV,LRAN,0)) I $D(^LR(X,0)) S X=^(0) D ^LRUP W $C(7),!,"AC #",LRAN," in ",LRO(68)," for ",$E(LRF,2,3),!?5,"Patient: ",LRP,"  ID: ",SSN G A
+ I $D(^LR(LRXREF,LRF,LRABV,LRAN)) S X=+$O(^LR(LRXREF,LRF,LRABV,LRAN,0)) I $D(^LR(X,0)) S X=^(0) D ^LRUP W $C(7),!,"AC #",LRAN," in ",LRO(68)," for ",$E(LRF,2,3),!?5,"Patient: ",LRP,"  ID: ",HRCN G A      ; IHS/OIT/MKK - LR*5.2*1030
  I $D(^LR(LRDFN,LRSS,LRI,0)) S LRI=LRI-.00001 D FIX
  L +^LR(LRDFN,LRSS) S ^LR(LRDFN,LRSS,LRI,0)=LRE,^LR(LRDFN,LRSS,0)="^"_LRSF_"DA^"_LRI_"^"_($P(^LR(LRDFN,LRSS,0),"^",4)+1) L -^LR(LRDFN,LRSS)
  N LRAPOLDF

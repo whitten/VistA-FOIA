@@ -1,7 +1,7 @@
-LRBLJR ;AVAMC/REG/CYM - RELEASE FROM XMATCH ;6/20/96  12:11 ;
- ;;5.2;LAB SERVICE;**72,247,267,408**;Sep 27, 1994;Build 8
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- Q  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END I LRCAPA S X="UNIT RELEASE" D X^LRUWK G:'$D(X) END
+LRBLJR ; IHS/DIR/AAB - RELEASE FROM XMATCH 6/20/96 12:11 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
+ D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END I LRCAPA S X="UNIT RELEASE" D X^LRUWK G:'$D(X) END
 ASK K DIC,LRZ W ! D ^LRDPA G:LRDFN=-1 END K A,LRV D R G ASK
  ;
 R W ! S LRX=0 F A=1:1 S LRX=$O(^LRD(65,"AP",LRDFN,LRX)) Q:'LRX  I $D(^LRD(65,LRX,0)) S W=^(0),M=$P(^(2,LRDFN,0),"^",2),A(A)=LRX D:A=1 H D W
@@ -24,9 +24,9 @@ ALL S LRV(2)=1 D RES G:$D(LRZ) OUT F LRV=0:0 S LRV=$O(A(LRV)) Q:'LRV  D REL
  W !!?3,"All valid releases completed." Q
  ;
 W D:A#20=0 M S P=+$O(^LRD(65,LRX,3,0)) S P(A)=$S($D(^(P,0)):$P(^(0),"^",4),1:"")
- W A,")",?3,$P(W,"^"),?17,$J($P(W,"^",7),2),?20,$P(W,"^",8),?24,$E($P(^LAB(66,$P(W,"^",4),0),"^"),1,20),?45 S T=$P(W,"^",6) D T^LRBLJX W T,?58 I M S T=M D T^LRBLJX W T
- W ?70,$E(P(A),1,10),! Q
-H W !,"#",?3,"Unit ID",?17,"ABO/Rh",?24,"Component",?45,"Exp date",?58,"Xmatch date",?70,"Location",! Q
+ W A,")",?3,$P(W,"^"),?15,$J($P(W,"^",7),2),?18,$P(W,"^",8),?22,$E($P(^LAB(66,$P(W,"^",4),0),"^"),1,20),?43 S T=$P(W,"^",6) D T^LRBLJX W T,?55 I M S T=M D T^LRBLJX W T
+ W ?67,$E(P(A),1,12),! Q
+H W !,"#",?3,"Unit ID",?15,"ABO/Rh",?22,"Component",?43,"Exp date",?55,"Xmatch date",?67,"Location",! Q
 M R "Press RETURN",X:DTIME W $C(13),$J("",15),$C(13) Q
 RES R !,"Reason for release: ",X:DTIME I X=""!(X[U) S:X[U LRZ=1 K X G SET
  I X="TRANSFUSED" W $C(7),"   Not allowed, try again." G RES

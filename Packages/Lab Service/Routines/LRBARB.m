@@ -1,5 +1,5 @@
 LRBARB ;DALOI/JMC - INTERMEC 4000 Series 10 part label format ;8/29/94 12:36
- ;;5.2;LAB SERVICE;**161,218**;Sep 27, 1994
+ ;;5.2T9;LR;**161,218,1018**;Nov 17, 2004
  ; This routine will program the Intermec 4000 series for a 10 part 2.5X4.0 in
  ; label which can be used with LRLABELB routine to print a 10 part
  ; accession label which includes barcoded accession labels.

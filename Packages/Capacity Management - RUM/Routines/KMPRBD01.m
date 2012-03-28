@@ -1,16 +1,19 @@
-KMPRBD01 ;OAK/RAK - RUM Daily/Weekly Compression ;11/19/04  10:31
- ;;2.0;CAPACITY MANAGEMENT - RUM;**1**;May 28, 2003
+KMPRBD01 ;SFISC/RAK - RUM Daily/Weekly Compression ;1/20/00  07:35
+ ;;1.0;CAPACITY MANAGEMENT - RUM;**1**;Dec 09, 1998
  ;
 EN ;-- entry point for Background Driver.
  ;
  S:'$G(DT) DT=$$DT^XLFDT
+ ; Protect ^XTMP("KMPR") from the XQ82 background cleanup job
+ S ^XTMP("KMPR",0)=DT+10000
  ;
- N ENDT,STR
+ S:'$G(DT) DT=$$DT^XLFDT
  ;
- S STR=$$NOW^XLFDT
+ ; store daily stats in file #8971.1 (RESOURCE USAGE MONITOR).
+ S ^XTMP("KMPR","BACKGROUND","START")=$$FMTE^XLFDT($$NOW^XLFDT)
+ S ^XTMP("KMPR","BACKGROUND","STOP")=""
  D DAILY^KMPRBD02(+$H)
- ; store start, stop and delta times for daily background job
- D STRSTP^KMPDUTL2(2,1,1,STR)
+ S ^XTMP("KMPR","BACKGROUND","STOP")=$$FMTE^XLFDT($$NOW^XLFDT)
  ;
  ; clean up old "job" nodes.
  D CLEAN
@@ -18,10 +21,10 @@ EN ;-- entry point for Background Driver.
  ; if sunday do weekly compression
  I '$$DOW^XLFDT(DT,1) D 
  .; store weekly start/stop stats.
- .S STR=$$NOW^XLFDT
- .D WEEKLY^KMPRBD04(DT)
- .; store start, stop and delta times for weekly background job
- .D STRSTP^KMPDUTL2(2,2,1,STR)
+ .S ^XTMP("KMPR","BACKGROUND","WEEKLY","START")=$$FMTE^XLFDT($$NOW^XLFDT)
+ .S ^XTMP("KMPR","BACKGROUND","WEEKLY","STOP")=""
+ .D WEEKLY^KMPRBD02(DT)
+ .S ^XTMP("KMPR","BACKGROUND","WEEKLY","STOP")=$$FMTE^XLFDT($$NOW^XLFDT)
  ;
  ; check for errors.
  D ERRORS
@@ -31,9 +34,9 @@ EN ;-- entry point for Background Driver.
 CLEAN ;-- clean up old "JOB" nodes
  ;
  N JOB,NODE S NODE=""
- F  S NODE=$O(^KMPTMP("KMPR","JOB",NODE)) Q:NODE=""  D
+ F  S NODE=$O(^XTMP("KMPR","JOB",NODE)) Q:NODE=""  D
  .S JOB=0 F  S JOB=$O(^XTMP("KMPR","JOB",NODE,JOB)) Q:'+JOB  D
- ..I '$D(^XUTL("XQ",JOB)) K ^KMPTMP("KMPR","JOB",NODE,JOB)
+ ..I '$D(^XUTL("XQ",JOB)) K ^XTMP("KMPR","JOB",NODE,JOB)
  ;
  ; Store the number of active user jobs into ^XTMP("KMPR","ACTIVE")
  ; D CLUSTER^%ZKMPRC1
@@ -68,9 +71,9 @@ ERRORS ; check and process errors.
  ...F I=0:0 S I=$O(^XTMP("KMPR","ERR",H,N,O,"MSG",I)) Q:'I  D 
  ....S TEXT(LN)=^XTMP("KMPR","ERR",H,N,O,"MSG",I),LN=LN+1
  S XMTEXT="TEXT("
- S XMY("G.KMP2-RUM@ISC-ALBANY.VA.GOV")=""
+ S XMY("G.KMP2-RUM@DOMAIN.NAME")=""
  D ^XMD
  ;
- K ^KMPTMP("KMPR","ERR")
+ K ^XTMP("KMPR","ERR")
  ;
  Q

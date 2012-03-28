@@ -1,5 +1,5 @@
 DGJSUM ;ALB/MAF - Interface routine with Discharge Summary Package - Jan 26 1993
- ;;1.0;Incomplete Records Tracking;;Jun 25, 2001
+ ;;5.3;Registration;**112**;Aug 13, 1993
 CHECK(DFN,DGJTDT,DGJPARM,DGJIRTDA,DGJT,DGJFLG,DGJTYP) ;Check to see if there is an IRT entry for a deficiency type.
  ;Input variables:  DFN
  ;                  DGJTDT  = Event Date

@@ -1,7 +1,22 @@
 DGPMV31 ;ALB/MIR - CONTINUE ADMIT PROCESS ; 12 SEP 89 @12
  ;;5.3;Registration;**43,114,418**;Aug 13, 1993
+ ;IHS/ANMC/LJF  3/08/2001 bypassed setting entry in PTF file
+ ;                        delete service & provider if timed out
+ ;              7/26/2001 Added check for DGQUIET to write statements
+ ;
  I '$P(DGPMA,"^",6)!(DGPMN&DGPMOUT) D KILL G DQ
  S Y=DGPMDA_"^1" I 'DGPMOUT S:DGPMN DIE("NO^")="" D SPEC^DGPMV36 I '$D(^DGPM("APHY",DGPMDA)) D KILL G DQ
+ ;
+ ;IHS/ANMC/LJF 3/08/2001 added code to check for timing out of admit
+ ; must have required fields from service entry (providers & service)
+ NEW X,Y,BDGSAV
+ S X=$O(^DGPM("APHY",DGPMDA,0)) I 'X D KILL G DQ
+ S Y=$G(^DGPM(X,0))                    ;service node
+ I ('$P(Y,U,9))!('$P(Y,U,19))!('$P($G(^DGPM(X,"IHS")),U,2)) D  D DQ
+ . S BDGSAV=DGPMDA S DGPMDA=X D KILL   ;delete service transfer
+ . S DGPMDA=BDGSAV D KILL              ;delete admission
+ ;IHS/ANMC/LJF 3/08/2001 end of changes
+ ;
  I $D(DGPMSVC) S DGPMDER=0 ;FOR DISPO^DGPMV - from disposition
  I DGPMN,$D(^DGS(41.1,+DGPMSA,0)) S DA=DGPMSA,DR="17////"_DGPMDA,DIE="^DGS(41.1," D ^DIE
  I DGPMN D ^DGPMVBUL,CK^DGBLRV
@@ -17,6 +32,7 @@ UP I $P(DGPMA,"^",21)&$S(+DGPMA'=+DGPMP:1,$P(DGPMA,"^",6,7)'=$P(DGPMP,"^",6,7):1
  . . W ?32,"APPLIED: ",$$FMTE^XLFDT($P(X,"^",2)),?63,"BEDSECTION: ",$P(X,"^",5)
  W !!,"Please delete from the waiting list if necessary.",!
 PTF S PTF=$P(DGPMA,"^",16)
+ I $$IHS^BDGF G DQ  ;IHS/ANMC/LJF 3/08/2001
  N DGELA
  S DGELA=+$P($G(^DGPT(+PTF,101)),U,8)
  S DR="",DIE="^DGPT(" S:$S('$D(^DGPT(+PTF,0)):0,$P(^(0),"^",2)'=+DGPMA:1,1:0) DR=DR_"2////"_+DGPMA_";" S DR=DR_"20;20.1////^S X=$$ELIG^DGUTL3(DFN,2,DGELA)",DA=PTF I $D(^DGPT(+DA,0)) K DQ,DG D ^DIE G DQ
@@ -31,7 +47,8 @@ PTF S PTF=$P(DGPMA,"^",16)
  D ^DIE
  ;
  D ADM^DGPMVODS
-DQ I DGPMA'=DGPMP W !,"Patient Admi",$S($P(DGPMP,"^",4)']"":"tted",1:"ssion Updated"),!
+DQ ;I DGPMA'=DGPMP W !,"Patient Admi",$S($P(DGPMP,"^",4)']"":"tted",1:"ssion Updated"),!              ;IHS/ANMC/LJF 7/26/2001
+ I DGPMA'=DGPMP,'$D(DGQUIET) W !,"Patient Admi",$S($P(DGPMP,"^",4)']"":"tted",1:"ssion Updated"),!  ;IHS/ANMC/LJF 7/26/2001
  Q
 DICS S DGER=0 I DGPMTYP=40 S DGER=1 Q  ;no TO ASIH!
  I $P(^DGPM(DA,0),"^",18)=40 S DGER=1 Q  ;don't let them change from TO ASIH!
@@ -48,7 +65,8 @@ ASIH ;update corresponding transfer and NHCU/DOM discharge episodes
  K DGX2 S X1=+DGPMA,X2=30 D C^%DTC S DA=$S($D(^DGPM(+$P(DGX,"^",14),0)):$P(^(0),"^",17),1:"")
  S DIE="^DGPM(",DR=".01///"_X I $D(^DGPM(+DA,0)) S ^UTILITY("DGPM",$J,3,DA,"P")=$S($D(^UTILITY("DGPM",$J,3,DA,"P")):^("P"),1:^DGPM(DA,0)) K DQ,DG D ^DIE S ^UTILITY("DGPM",$J,3,DA,"A")=^DGPM(DA,0)
  Q
-KILL S DIK="^DGPM(",DA=DGPMDA W !,"Incomplete admission...Deleted" D ^DIK K DIK S DGPMA="" Q
+KILL ;S DIK="^DGPM(",DA=DGPMDA W !,"Incomplete admission...Deleted" D ^DIK K DIK S DGPMA="" Q              ;IHS/ANMC/LJF 7/26/2001
+ S DIK="^DGPM(",DA=DGPMDA W:'$D(DGQUIET) !,"Incomplete admission...Deleted" D ^DIK K DIK S DGPMA="" Q  ;IHS/ANMC/LJF 7/26/2001
  ;
 SA Q:'$D(^DGS(41.1,"B",DFN))  S DGCT=0
  F DGI=0:0 S DGI=$O(^DGS(41.1,"B",DFN,DGI)) Q:'DGI  S J=$S($D(^DGS(41.1,DGI,0)):^(0),1:0),Y=$P(J,"^",2) I Y X ^DD("DD") I '$P(J,"^",13),'$P(J,"^",17) S DGCT=DGCT+1 D WR

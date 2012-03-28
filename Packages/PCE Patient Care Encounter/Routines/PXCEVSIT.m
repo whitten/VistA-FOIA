@@ -1,5 +1,5 @@
-PXCEVSIT ;slc/dee,ISA/KWP-Used in editing a visit ; 1/7/02 11:36am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**9,23,70,116,147,151**;Aug 12, 1996
+PXCEVSIT ;slc/dee,ISA/KWP-Used in editing a visit ;04/30/99
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**9,23,70**;Aug 12, 1996
  Q
  ;
  ;********************************
@@ -43,13 +43,12 @@ EVISITDT(REQTIME,DEFAULT) ;
  S DIR("A")=$P(PXCETEXT,"~",4)
  S:$P(PXCETEXT,"~",8)]"" DIR("?")=$P(PXCETEXT,"~",8)
  D ^DIR
- I '$D(DIRUT),'$D(DUOUT),+VADM(6),$P(Y,".")>+VADM(6) S (DIRUT,DUOUT)=1 W VADM(7) R Y:10
  K DIR,DA
  Q
  ;
  ;
 EHOSPLOC ;
- N HLOC,PXRES
+ N HLOC
  I $P(PXCEAFTR(0),"^",22)'="" D
  . N DIERR,PXCEDILF,PXCEINT,PXCEEXT
  . S PXCEINT=$P(PXCEAFTR($P(PXCETEXT,"~",1)),"^",$P(PXCETEXT,"~",2))
@@ -64,16 +63,12 @@ EHOSPLOC ;
  ;Only hospital locations that are not dispositioning clinics
  ;
  ;not occasion of service and not dispositioning clinics
- ;S DIR("S")="I '+$G(^(""OOS""))&'$O(^PX(815,1,""DHL"",""B"",Y,0))"
- ;Exclude disposition clinics from the above listed condition.
- S DIR("S")="I '+$G(^(""OOS""))" ;PX*1*116
+ S DIR("S")="I '+$G(^(""OOS""))&'$O(^PX(815,1,""DHL"",""B"",Y,0))"
  D ^DIR
  K DIR,DA
  I $D(DTOUT)!$D(DUOUT) S (PXCEEND,PXCEQUIT)=1 Q
  I +Y'>0,PXCECAT'="HIST" D HELPHLOC W !,$C(7) G EHOSPLOC
  S HLOC=$S(+Y>0:+Y,1:"")
- I HLOC'="" S PXRES=$$CLNCK^SDUTL2(HLOC,1) I 'PXRES D  G EHOSPLOC
- .W !,$C(7),?5,"Clinic MUST be corrected before continuing."
  S $P(PXCEAFTR(0),"^",22)=HLOC
  ;
  ;Get the eligibility and appointment type
@@ -145,7 +140,7 @@ EPAT ;
  I X="@" S Y="@"
  E  I $D(DTOUT)!$D(DUOUT) S (PXCEEND,PXCEQUIT)=1 Q  ;for visit
  S $P(PXCEAFTR(0),"^",5)=$P(Y,"^")
- S PXCEPAT=$P(Y,"^") D PATINFO^PXCEPAT(.PXCEPAT) I $D(DTOUT)!$D(DUOUT) S (PXCEEND,PXCEQUIT)=1  ;PX*1*147
+ S PXCEPAT=$P(Y,"^") D PATINFO^PXCEPAT(.PXCEPAT)
  Q
  ;
 SKIP ;Just returns used when need a edit routine that does nothing.

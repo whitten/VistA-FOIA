@@ -1,7 +1,6 @@
-A1B2XFR ;ALB/MIR - SET STATUS TO DON'T SEND IF EDITED ; 14 JAN 91
+A1B2XFR ;ALB/MIR - SET STATUS TO DON'T SEND IF EDITED ; 14 JAN 91 [ 06/29/2001  1:08 PM ]
  ;;Version 1.55 (local for MAS v5 sites);;
  ;
- ;A1B2TAG - Line tag to call
  ;
  ;   call - PAT for updates to the ODS PATIENT file fields
  ;          REG for updates to the ODS REGISTRATION file fields

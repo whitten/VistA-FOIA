@@ -1,5 +1,5 @@
-XU8P317 ;BP-OAK/BDT - PERSON CLASS MODIFIED; 8/19/03 5:33am
- ;;8.0;KERNEL;**317**;Jul 10, 1995
+XU8P317 ;BP-OAK/BDT - PERSON CLASS MODIFIED; 8/19/03 5:33am [ 01/09/2004   4:23 PM ]
+ ;;8.0;KERNEL;**317,1010**;Jul 10, 1995
  ;Inactivate records 24 and 25.
  ;Edit CLASSIFICATION field for records 144 and 145.
  ;Edit SPECIALTY CODE field for records 144 and 145

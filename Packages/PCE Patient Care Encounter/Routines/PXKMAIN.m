@@ -1,5 +1,5 @@
 PXKMAIN ;ISL/JVS,ISA/Zoltan - Main Routine for Data Capture ;9/11/98
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,59,73,88,69,117,130,124,174,164**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,59,73,88,69,117**;Aug 12, 1996
  ;+This routine is responsible for:
  ;+
  ;+LOCAL VARIABLE LIST:
@@ -19,9 +19,9 @@ PXKMAIN ;ISL/JVS,ISA/Zoltan - Main Routine for Data Capture ;9/11/98
  ;+ PXKPIEN  = IEN of v file or the visit file
  ;+ PXKREF   = The original reference we are ordering off of
  ;+ PXKRT    = name of the node in the v file
- ;+ PXKRTN   = routine name for the file routine
+ ;+ PXKRTN   = routine name for the "f"ile routine
  ;+ PXKSOR   = the data source for this entry
- ;+ PXKSUB   = the subscript the data is located on the v file
+ ;+ PXKSUB   = the subscript the data is located on the the v file
  ;+ PXKVST   = the visit IEN
  ;+ PXKDUZ   = the DUZ of the user
  ;+ *PXKHLR* = A variable set by calling routine so that duplicate
@@ -93,10 +93,7 @@ BEFORE ...S PXKBEF(PXKSUB)=$G(@PXKREF@(PXKCAT,PXKSEQ,PXKSUB,"BEFORE"))
  ..I $D(PXKAV),'$D(PXKBV) S PXKSORR=PXKSOR_"-A "_PXKDUZ,PXKFGAD=1 I PXKCAT["VST" S PXKFGAD=0
  ..I '$D(PXKAV),$D(PXKBV) S PXKFGDE=1,PXKFVDLM="" D
  ...S PXKRT=$P($T(GLOBAL^@PXKRTN),";;",2)_"("_PXKPIEN_")" I $D(@PXKRT) D DELETE^PXKMAIN1,EN1^PXKMASC S PXFG=1 K PXKRT Q
- ..I 'PXKFGAD,'PXKFGDE D
- ...I PXKCAT="VST" D CQDEL
- ...D CLEAN^PXKMAIN1
- ...I $D(PXKAV) S PXKSORR=PXKSOR_"-E "_PXKDUZ,PXKFGED=1 I PXKCAT="VST",'$D(PXKBV),$D(PXKVST) S PXKFGED=0
+ ..I 'PXKFGAD,'PXKFGDE D CLEAN^PXKMAIN1 I $D(PXKAV) S PXKSORR=PXKSOR_"-E "_PXKDUZ,PXKFGED=1 I PXKCAT="VST",'$D(PXKBV),$D(PXKVST) S PXKFGED=0
  ..I 'PXKFGAD,'PXKFGDE,'PXKFGED,PXKCAT["VST" D EN1^PXKMASC
  ..I PXKFGAD=1 D  Q:PXFG
  ...D ERROR^PXKMAIN1
@@ -122,12 +119,6 @@ EXIT ;--EXIT
 EVENT ;--ENTRY POINT TO POST EXECUTE PCE'S EVENT
  ;Setting the variable PXKNOEVT=1 will stop the event from being
  ;fired off whenever any data is sent into PCE
- ;
- ;PX*1*124  AUTO-POPULATE THE ENCOUNTER SC/EI BASED ON THE ENCOUNTER DX'S
- ;PX*1.0*164 Relocate the PXCECCLS call
- I $D(^TMP("PXKCO",$J)) D
- . S PXKVVST=+$O(^TMP("PXKCO",$J,0))
- . I $G(PXKVVST) D VST^PXCECCLS(PXKVVST) ;PX*1.0*174
  ;
  I $G(PXKNOEVT) K ^TMP("PXKCO",$J) Q
  N PXP59LOC
@@ -177,8 +168,3 @@ L2 ; Get values from visit 0 node (PX0).
 UNLOCK ; Unlock (use info in PXP59LOC)--Patch PX*1.0*59.
  L -@PXP59LOC
  Q
- ;
-CQDEL ;Classification question deletion check
- I PXKCAT'="VST" Q
- S PXJ="" F  S PXJ=$O(PXKBV(800,PXJ)) Q:'PXJ  I PXKBV(800,PXJ)'="" I '$D(PXKAV(800,PXJ)) S PXKAV(800,PXJ)="@"
- K PXJ Q

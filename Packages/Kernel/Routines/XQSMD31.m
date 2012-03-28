@@ -1,5 +1,5 @@
 XQSMD31 ;SEA/MJM - Secure Menu Delegation (Cont.) ;01/19/2006
- ;;8.0;KERNEL;**372**;Jul 10, 1995;Build 3
+ ;;8.0;KERNEL;**372**;Jul 10, 1995;Build 5
  ;Continued from XQSMD3
 DOIT ;Set up the parameters for a calls to %XY^%RCR and XQSMD2
  S %X=XQPERX

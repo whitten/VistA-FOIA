@@ -1,7 +1,7 @@
-GMRAPL ;HIRMFO/WAA- PRINT ALLERGY LIST BY LOCATION ;5/2/97  14:13
- ;;4.0;Adverse Reaction Tracking;**7,33**;Mar 29, 1996;Build 5
-EN1 ; This routine will loop through the GMRA patient allergy file
- ; to find all patient within the date range that meet the criteria
+GMRAPL ;HIRMFO/WAA- PRINT ALLERGY LIST BY LOCATION ;5/2/97  14:13 [ 05/03/2002  10:30 AM ]
+ ;;4.0;Adverse Reaction Tracking;**7**;Mar 29, 1996
+EN1 ; This routine will loop thourgh the GMRA patient allergy file
+ ; to find all patient within the date range that meet the critera
  ; and then display all the data for those patients first by location
  ; then by date/time range of the reaction.
  ; First select a starting date.
@@ -31,13 +31,15 @@ GET ; This sub routine is to find all the reaction with in this observed
  ..; Get patient name and location.
  ..S GMRATYP=$P(GMRAPA(0),U,20) ; Get the reaction types FDO
  ..S (GMRANAM,GMRALOC,GMRAVIP)=""
- ..Q:'$$PRDTST^GMRAUTL1($P($G(GMRAPA(0)),U))  ;GMRA*4*33 Exclude test patient from report if production or legacy environment
  ..D VAD^GMRAUTL1($P(GMRAPA(0),U),$P(GMRAPA(0),U,4),.GMRALOC,.GMRANAM,"","","","",.GMRAVIP)
+ ..S DFN=$P(GMRAPA(0),U),APSPHRN=$$HRCN^APSGFUNC ;IHS/ITSC/ENM 05/03/02
  ..I GMRALOC'="",+$G(^DIC(42,GMRALOC,44)) S GMRALOC=$P($G(^SC(+$G(^DIC(42,GMRALOC,44)),0)),U)
  ..I GMRALOC="" S GMRALOC="Out Patients"
  ..;Data format is as follows....
  ..;^TMP($J,"GMRAPL",Ward location,Patient,PID,Reaction Type(FDO),Reaction)
- ..S ^TMP($J,"GMRAPL",$E(GMRALOC,1,30),$E(GMRANAM,1,30),GMRAVIP,GMRATYP,GMRAPA)=""
+ ..;IHS/ITSC/ENM 05/03/02 HRN SET
+ ..S ^TMP($J,"GMRAPL",$E(GMRALOC,1,30),$E(GMRANAM,1,30),APSPHRN,GMRATYP,GMRAPA)=""
+ ..;S ^TMP($J,"GMRAPL",$E(GMRALOC,1,30),$E(GMRANAM,1,30),GMRAVIP,GMRATYP,GMRAPA)=""
  ..Q
  .Q
  Q
@@ -105,6 +107,6 @@ DATE(PROMPT,GMADATE) ; Date sub routine
  S DATE=Y
  Q DATE
 EXIT ;EXIT ROUTINE DATA
- K ^TMP($J,"GMRAPL")
+ K ^TMP($J,"GMRAPL"),APSPHRN ;IHS/ITSC/ENM 05/03/02
  D KILL^XUSCLEAN
  Q

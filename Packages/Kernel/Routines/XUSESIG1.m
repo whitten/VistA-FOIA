@@ -1,5 +1,6 @@
-XUSESIG1 ;SF/RWF - More E-Sig functions. ;10/10/96  09:42
- ;;8.0;KERNEL;**14,55**;Jul 10, 1995
+XUSESIG1 ;SF/RWF - More E-Sig functions. ;10/10/96  09:42 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
+ ;;8.0;KERNEL;**14**;Jul 10, 1995
  W !,"NO ENTRY FROM THE TOP." Q
  ;
 ESBLOCK(IEN) ;EF. Return the E-SIG block data.

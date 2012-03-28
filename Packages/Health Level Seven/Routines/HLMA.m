@@ -1,5 +1,5 @@
-HLMA ;AISC/SAW-Message Administration Module ;02/26/2009  15:42
- ;;1.6;HEALTH LEVEL SEVEN;**19,43,58,63,66,82,91,109,115,133,132,122,140,142**;Oct 13, 1995;Build 17
+HLMA ;AISC/SAW-Message Administration Module ;09/13/2006
+ ;;1.6;HEALTH LEVEL SEVEN;**19,43,58,63,66,82,91,109,115,133**;Oct 13, 1995;Build 13
  ;Per VHA Directive 2004-038, this routine should not be modified.
 GENERATE(HLEID,HLARYTYP,HLFORMAT,HLRESLT,HLMTIEN,HLP) ;
  ;Entry point to generate a deferred message
@@ -34,20 +34,13 @@ GENERATE(HLEID,HLARYTYP,HLFORMAT,HLRESLT,HLMTIEN,HLP) ;
  ;  HLP("SECURITY") = A 1 to 40 character string
  ;   HLP("CONTPTR") = Continuation pointer, a 1 to 180 character string
  ; HLP("NAMESPACE") = Passed in by application namespace - HL*1.6*91
- ; HLP("EXCLUDE SUBSCRIBER",<n=1,2,3...>)=<subscriber protocol ien> or
- ;   <subscriber protocol name> - A list of protocols to dynamically
- ;   drop from the event protocol's subscriber multiple.
  ;
  ;can't have link open when generating new message
  N HLTCP,HLTCPO,HLPRIO,HLMIDAR
- ; patch HL*1.6*142- to protect application who call this entry
- N HLSUP
  S HLPRIO="D"
  S HLRESLT=""
  ;Check for required parameters
-CONT ;
- I $G(HLEID)']""!($G(HLARYTYP)']"")!($G(HLFORMAT)']"") D  G EXIT
- . S HLRESLT="0^7^"_$G(^HL(771.7,7,0))_" at GENERATE^HLMA entry point"
+CONT I $G(HLEID)']""!($G(HLARYTYP)']"")!($G(HLFORMAT)']"") S HLRESLT="0^7^"_$G(^HL(771.7,7,0))_" at GENERATE^HLMA entry point" G EXIT
  I 'HLEID S HLEID=$O(^ORD(101,"B",HLEID,0)) I 'HLEID S HLRESLT="0^1^"_$G(^HL(771.7,1,0)) G EXIT
  N HLRESLT1,HLRESLTA S (HLRESLTA,HLRESLT1)=""
  I "GL"'[$E(HLARYTYP) S HLRESLT="0^4^"_$G(^HL(771.7,4,0)) G EXIT
@@ -83,11 +76,6 @@ CONT ;
  ;HLMIDAR is array of message IDs, only set for broadcast messages
  I HLMIDAR K HLMIDAR("N") M HLRESLT=HLMIDAR
  S HLRESLT=HLRESLT_"^"_HLRESLT1
- ;
- ; patch HL*1.6*122
- S HLRESLT("HLMID")=$G(HLMIDAR("HLMID"))
- S HLRESLT("IEN773")=$G(HLMIDAR("IEN773"))
- ;
  ;Execute exit action for event driver protocol
  I HLEXROU]"" X HLEXROU
 EXIT ;Update status if Message Text file entry has been created
@@ -98,17 +86,13 @@ EXIT ;Update status if Message Text file entry has been created
 DIRECT(HLEID,HLARYTYP,HLFORMAT,HLRESLT,HLMTIENO,HLP) ;
  ;Entry point to generate an immediate message, must be TCP Logical Link
  ;Input:
- ;  The same as GENERATE,with one additional subscript to the HLP input 
- ;  array:
+ ;  The same as GENERATE,with one additional subscript to the HLP input array:
  ; 
  ;  HLP("OPEN TIMEOUT") (optional, pass by reference) a number between 
  ;    1 and 120 that specifies how many seconds the DIRECT CONNECT should
- ;    try to open a connection before failing.  It is killed upon 
- ;    completion.
+ ;    try to open a connection before failing.  It is killed upon completion.
  ; 
  N HLTCP,HLTCPO,HLPRIO,HLSAN,HLN,HLMIDAR,HLMTIENR,ZMID,HLDIRECT
- ; patch HL*1.6*140- to protect application who call this entry
- N IO,IOF,ION,IOT,IOST,POP
  S HLRESLT=""
  ;HLMTIENO=ien passed in, batch message
  S HLMTIEN=$G(HLMTIENO)
@@ -140,8 +124,6 @@ PING ;ping another VAMC to test Link
  S HLDP=+Y,HLDPNM=Y(0,0),HLDPDM=$P($$PARAM^HLCS2,U,2)
  ;I $P($G(^HLCS(870,HLDP,400)),U)="" W !,"Missing IP Address" Q
  D SETUP^HLCSAC G:HLCS PINGQ
- ; patch HL*1.6*122
- G:$$DONTPING^HLMA4 PINGQ
  ;PING header=MSH^PING^domain^PING^logical link^datetime
  S INPUT(1)="MSH^PING^"_HLDPDM_"^PING^"_HLDPNM_"^"_$$HTE^XLFDT($H)
  D OPEN^HLCSAC
@@ -150,15 +132,7 @@ PING ;ping another VAMC to test Link
  . N $ETRAP,$ESTACK S $ETRAP="D PINGERR^HLMA"
  . ;non-standard HL7 header; start block,header,end block
  . S HLX1=$H
- . ;
- . ; HL*1.6*122 start
- . ; replace flush character '!' with @IOF (! or #)
- . ; W $C(11)_INPUT(1)_$C(28)_$C(13),! ;HL*1.6*115, restored ! char
- . ; patch HL*1.6*140, flush character- HLTCPLNK("IOF")
- . ; W $C(11)_INPUT(1)_$C(28)_$C(13),@IOF
- . W $C(11)_INPUT(1)_$C(28)_$C(13),@HLTCPLNK("IOF")
- . ; HL*1.6*122 end
- . ;
+ . W $C(11)_INPUT(1)_$C(28)_$C(13),! ;HL*1.6*115, restored ! char
  . ;read response
  . R X:HLDREAD
  . S HLX2=$H
@@ -184,22 +158,12 @@ DNS ;
  I 'HLQUIET W !,"Calling DNS"
  N HLDOM,HLIP S HLCS=""
  S HLDOM=$P(^HLCS(870,HLDP,0),U,7)
- ; patch HL*1.6*122 start
- S HLDOM("DNS")=$P($G(^HLCS(870,+$G(HLDP),0)),"^",8)
- ; I 'HLDOM,'HLQUIET W !,"Domain Unknown" Q
- I 'HLDOM,($L(HLDOM("DNS"),".")<3) D  Q
- . I 'HLQUIET W !,"Domain Unknown"
- . S HLCS="-1^Connection Fail"
- ; patch HL*1.6*122 end
+ I 'HLDOM,'HLQUIET W !,"Domain Unknown" Q
  I HLDOM S HLDOM=$P(^DIC(4.2,HLDOM,0),U)
- ; patch HL*1.6*122
- ; I HLDOM]"" D  Q:'POP
- I HLDOM]""!($L(HLDOM("DNS"),".")>2) D  Q:'POP
+ I HLDOM]"" D  Q:'POP
  . I HLDOM["VA.GOV"&(HLDOM'[".MED.") S HLDOM=$P(HLDOM,".VA.GOV")_".MED.VA.GOV"
  . I HLTCPORT=5000 S HLDOM="HL7."_HLDOM
  . I HLTCPORT=5500 S HLDOM="MPI."_HLDOM
- . ; patch HL*1.6*122
- . I ($L(HLDOM("DNS"),".")>2) S HLDOM=HLDOM("DNS")
  . I 'HLQUIET W !,"Domain, "_HLDOM
  . I 'HLQUIET W !,"Port: ",HLTCPORT
  . S HLIP=$$ADDRESS^XLFNSLK(HLDOM)

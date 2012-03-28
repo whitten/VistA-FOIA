@@ -1,4 +1,4 @@
-SDAMQ2 ;ALB/MJK - AM Background Utilities (cont.) ; 12/1/91
+SDAMQ2 ;ALB/MJK - AM Background Utilities (cont.) ; 12/1/91 [ 05/03/2004  3:51 PM ]
  ;;5.3;Scheduling;**132**;Aug 13, 1993
  ;
 CHK(SDBEG,SDEND,SDPCE) ; -- check if all dates are processed

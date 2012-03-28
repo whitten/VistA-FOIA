@@ -1,8 +1,16 @@
 XUS ;SFISC/STAFF - SIGNON ;2/13/07  14:44
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1016**;APR 1, 2003;Build 3
  ;;8.0;KERNEL;**16,26,49,59,149,180,265,337,419,434**;Jul 10, 1995;Build 6
  ;Sign-on message numbers are 30810.51 to 30810.99
+ ;THIS ROUTINE CONTAINS A LOCAL IHS MODIFICATION BY IHS/HQW/JLS 12/24/97
+ ; 
  S U="^" D INTRO^XUS1A()
  K  K ^XUTL("ZISPARAM",$I)
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;This line is commented out to prevent setting of GUI variables
+ ;Original modification by IHS/HQW/JLS 12/24/97 PER WALLY FORT VA/SF/ISC
+ ;S XQXFLG("GUI")=$G(ZUGUI1)_"^"_$G(ZUGUI2)
+ ;----- END IHS MODIFICATION
  S U="^",XQXFLG("GUI")="^"
  W ! S $Y=0 D SET1(1) I POP S XUM=3 G NO ;Sets DUZ("LANG")
  S XUSTMP(51)=$$EZBLD^DIALOG(30810.51),XUSTMP(52)=$$EZBLD^DIALOG(30810.52)
@@ -149,7 +157,7 @@ UVALID() ;EF. Is it valid for this user to sign on?
  I $P(XUSER(0),U,11),$P(XUSER(0),U,11)'>DT Q 11 ;Access Terminated
  I $D(DUZ("ASH")) Q 0 ;If auto handle, Allow to sign-on p434
  I $P(XUSER(0),U,7) Q 5 ;Disuser flag set
- I '$L($P(XUSER(1),U,2)) Q 21 ;p419, p434
+ ;I '$L($P(XUSER(1),U,2)) Q 21 ;p419, p434  ;XU*8.0*1017 - IHS/OIT/FBD - 3/24/2011 - COMMENTED LINE TO RE-ENABLE NULL VERIFY CODE TOLERANCE FOR IHS
  Q 0
  ;
 DEVPAS() ;EF. Ask device password

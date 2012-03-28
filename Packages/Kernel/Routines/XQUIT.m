@@ -1,4 +1,5 @@
-XQUIT ;SEA/LUKE - Jump Utilities (Part II)  ;06/23/98  11:28
+XQUIT ;SEA/LUKE - Jump Utilities (Part II)  ;06/23/98  11:28 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1005,1007**;APR 1, 2003 
  ;;8.0;KERNEL;**46,87**;Jul 10, 1995
  ;XQUIT has been set in an entry action
  ;

@@ -1,5 +1,5 @@
-GMPTU ; ISL Miscellaneous Lexicon Utilities      ; 10-25-96
- ;;2.0;LEXICON UTILITY;**2**;Aug 15, 1996
+GMPTU ; VA/SLC/KER Miscellaneous Lexicon Utilities      ; 05-15-96
+ ;;2.0;LEXICON UTILITY;;Sep 23, 1996
  ;
  ; Replaces Clinical Lexicon Utility v 1.0 GMPTU and re-directs
  ; call to Lexicon Utility v 2.0 LEXU

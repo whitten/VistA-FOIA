@@ -1,4 +1,5 @@
-LRAPESON ;DALOI/WTY- AP TURN ESIG ON;10/25/01
+LRAPESON ;VA/DALOI/WTY- AP TURN ESIG ON;10/25/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**259**;Sep 27, 1994
  ;
  ;This routine is used to activate the electronic signature flag

@@ -1,4 +1,5 @@
-XPDKEY ;SFISC/RWF,RSD - Tools to work on KEYS ;9/21/95  13:47
+XPDKEY ;SFISC/RWF,RSD - Tools to work on KEYS ;9/21/95  13:47 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**5**;Jul 10, 1995
  Q
  ;XPDOLD=current Key name,  XPDNEW=new Key name

@@ -1,11 +1,12 @@
 LROLOVER ;SLC/CJS/DALISC/FHS - ROLL OVER DAILY LAB ACCESSION NUMBERS ;2/19/91  11:07 ;
- ;;5.2;LAB SERVICE;**65,98,160,153,201**;Sep 27, 1994
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
+ ;;5.2;LAB SERVICE;**65,98,160,153**;Sep 27, 1994
 EN S:$D(ZTQUEUED) ZTREQ="@"
  I $D(^LAB(69.9,1,"RO")),^("RO")=+$H W:'$D(ZTQUEUED) !!?20,"ROLLOVER NOT REQUIRED ",!!,$C(7) Q
+ S U="^"
  I $P($G(^LAB(69.9,1,"RO")),U,2) W:'$D(ZTQUEUED) !,"ROLLOVER IS RUNNING. " Q
  S $P(^LAB(69.9,1,"RO"),U,2)=1
- D DT^DICRW S LRDT0=$$FMTE^XLFDT(DT,"5Z")
- L +^LRO(68) S X="T-1",%DT="X" D ^%DT S LRYDT=Y,LRAD=DT
+ L +^LRO(68) S X="T-1",%DT="X" D ^%DT S LRYDT=Y D DT^LRX S LRAD=DT
 LRAA F LRAA=0:0 S LRAA=$O(^LRO(68,LRAA)) Q:LRAA<1  I $D(^LRO(68,LRAA,0))#2 D LRAN:$P(^(0),U,3)="D"&('$P(^(0),U,10)) W:'$D(ZTQUEUED) !,$P($G(^LRO(68,LRAA,0)),U),?40," Completed ... "
  D ROLLAH
  S ^LAB(69.9,1,"RO")=+$H L -^LRO(68)
@@ -19,7 +20,7 @@ LRAN S LRPWL=$P(^LRO(68,LRAA,0),U,4),LRSS=$P(^(0),U,2) S:'$D(^LRO(68,LRAA,1,0)) 
  Q
 OVER Q:'$O(^LRO(68,LRAA,1,LRYDT,1,LRAN,4,0))
  D VERCHK
- Q:$D(^LRO(68,LRAA,1,DT,1,LRAN,0))#2  ;DON'T ROLL OVER SOMEONE
+ Q:$D(^LRO(68,LRAA,1,DT,1,LRAN,0))  ;DON'T ROLL OVER SOMEONE
 REQ S (LRTS,LRMOVE)=0 F  S LRTS=$O(^LRO(68,LRAA,1,LRYDT,1,LRAN,4,LRTS)) Q:LRTS<.5!($G(LRMOVE))  D
  . Q:'$D(^(LRTS,0))#2  Q:$P(^(0),U,5)!('$D(^LAB(60,+LRTS,0))#2)
  . S LRMOVE=$S($P($G(^LAB(60,+LRTS,0)),U,17):1,'$L($P(^(0),U,5)):1,1:0)
@@ -100,7 +101,8 @@ UID ;These fields are also set in rtn LRX
 ROLLAH ; Checks results stored in LAH global pending verification, updates accession date
  ; on zeroth node to reflect accessions that have rolled over in ACCESSION file #68.
  N LRAA,LRAD,LRAN,LRLL,LRSQ,LRX,LRYDT,X,Y
- S X="T-1",%DT="X" D ^%DT S LRYDT=Y D DT^LRX S LRAD=DT
+ S X="T-1",%DT="X" D ^%DT S LRYDT=Y D DT^LRX
+ S LRAD=$$DT^XLFDT
  S LRLL=0
  F  S LRLL=$O(^LAH(LRLL)) Q:'LRLL  D
  . L +^LAH(LRLL)
@@ -110,8 +112,8 @@ ROLLAH ; Checks results stored in LAH global pending verification, updates acces
  . . S LRAA=+$P(LRX,"^",3),LRAN=+$P(LRX,"^",5)
  . . I 'LRAA!('LRAN) Q  ; No accession area/number
  . . I $P(LRX,"^",4)'=LRYDT Q  ; Not previous accession date
- . . I $P($G(^LRO(68,LRAA,0)),"^",3)'="D"!($P(^LRO(68,LRAA,0),"^",10)) Q  ;Not a "daily" accession area using rollover.
- . . I '$D(^LRO(68,LRAA,1,LRAD,1,LRAN,0))#2 Q  ; Accession doesn't exist.
+ . . I $P($G(^LRO(68,LRAA,0)),"^",3)'="D"!($P($G(^LRO(68,LRAA,0)),"^",10)) Q  ;Not a "daily" accession area using rollover.
+ . . I '$D(^LRO(68,LRAA,1,LRAD,1,LRAN,0)) Q  ; Accession doesn't exist.
  . . I $P(LRX,"^",4)<$P($G(^LRO(68,LRAA,1,LRAD,1,LRAN,0)),"^",3) Q  ; This entry not within range of accession's original accession date.
  . . I $P($G(^LRO(68,LRAA,1,LRAD,1,LRAN,0)),"^")'=$P($G(^LRO(68,LRAA,1,+$P($G(^LRO(68,LRAA,1,LRAD,1,LRAN,0)),"^",3),1,LRAN,0)),"^") Q  ; LRDFN of original and rolled over accesion do not match.
  . . S $P(^LAH(LRLL,1,LRSQ,0),"^",4)=LRAD ; Move accession date to accession's current date.

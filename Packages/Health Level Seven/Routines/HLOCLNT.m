@@ -1,6 +1,5 @@
-HLOCLNT ;ALB/CJM- Client for sending messages - 10/4/94 1pm ;02/10/2011
- ;;1.6;HEALTH LEVEL SEVEN;**126,130,131,134,137,139,143,147,155**;Oct 13, 1995;Build 4
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOCLNT ;ALB/CJM- Client for sending messages - 10/4/94 1pm
+ ;;1.6;HEALTH LEVEL SEVEN;**126,130,131**;Oct 13, 1995;Build 10
  ;
  ;GET WORK function for the process running under the Process Manager
 GETWORK(QUE) ;
@@ -17,27 +16,19 @@ GETWORK(QUE) ;
  ;
  N LINK,QUEUE
  S LINK=$G(QUE("LINK")),QUEUE=$G(QUE("QUEUE"))
-TRY I (LINK]""),(QUEUE]"") D
+ I (LINK]""),(QUEUE]"") D
  .L -^HLB("QUEUE","OUT",LINK,QUEUE)
- .I $$IFSHUT^HLOTLNK($P(LINK,":")) S QUEUE="" Q
  .I '$$CNNCTD(LINK),$$FAILING(.LINK) S QUEUE="" Q
  .F  S QUEUE=$O(^HLB("QUEUE","OUT",LINK,QUEUE)) Q:(QUEUE="")  I '$$STOPPED^HLOQUE("OUT",QUEUE) L +^HLB("QUEUE","OUT",LINK,QUEUE):0  Q:$T
  I (LINK]""),(QUEUE="") D
  .F  S LINK=$O(^HLB("QUEUE","OUT",LINK)) Q:LINK=""  D  Q:$L(QUEUE)
- ..Q:$$IFSHUT^HLOTLNK($P(LINK,":"))
  ..I '$$CNNCTD(LINK),$$FAILING(.LINK) Q
  ..S QUEUE="" F  S QUEUE=$O(^HLB("QUEUE","OUT",LINK,QUEUE)) Q:(QUEUE="")  I '$$STOPPED^HLOQUE("OUT",QUEUE) L +^HLB("QUEUE","OUT",LINK,QUEUE):0 Q:$T
  I LINK="" D
  .F  S LINK=$O(^HLB("QUEUE","OUT",LINK)) Q:LINK=""  D  Q:$L(QUEUE)
- ..Q:$$IFSHUT^HLOTLNK($P(LINK,":"))
  ..I '$$CNNCTD(LINK),$$FAILING(.LINK) Q
  ..S QUEUE="" F  S QUEUE=$O(^HLB("QUEUE","OUT",LINK,QUEUE)) Q:(QUEUE="")  I '$$STOPPED^HLOQUE("OUT",QUEUE) L +^HLB("QUEUE","OUT",LINK,QUEUE):0 Q:$T
  S QUE("LINK")=LINK,QUE("QUEUE")=QUEUE,QUE("DOWN")=$G(LINK("DOWN"))
- ;
- ;** P147 START CJM
- I $L(QUEUE),($R(100)>$$GETPRTY^HLOQUE(QUE("QUEUE"),QUE("LINK"))) G TRY
- ;** P148 END CJM
- ;
  Q:$L(QUEUE) 1
  D:$G(HLCSTATE("CONNECTED")) CLOSE^HLOT(.HLCSTATE)
  Q 0
@@ -56,7 +47,6 @@ FAILING(LINK) ;
  Q SET
  ;
 LINKDOWN(HLCSTATE) ;
- N TO
  D:$G(HLCSTATE("CONNECTED")) CLOSE^HLOT(.HLCSTATE)
  I $D(HLCSTATE("LINK","NAME")),$D(HLCSTATE("LINK","PORT")) D
  .S TO=HLCSTATE("LINK","NAME")_":"_HLCSTATE("LINK","PORT")
@@ -65,37 +55,39 @@ LINKDOWN(HLCSTATE) ;
  Q
  ;
 ERROR ;error trap
-ZB3 ;
- ;
- S $ETRAP="Q:$QUIT """" Q"
- ;
+ S $ETRAP="D UNWIND^%ZTER"
  D END
  D LINKDOWN(.HLCSTATE)
  ;
- ;return to the Process Manager error trap
+ ;while debugging quit on all errors - this will return the process to the Process Manager error trap
+ I $G(^HLTMP("LOG ALL ERRORS")) QUIT
+ ;
+ ;don't log some common errors
+ I ($ECODE["READ")!($ECODE["NOTOPEN")!($ECODE["DEVNOTOPN")!($ECODE["WRITE")!($ECODE["OPENERR") D
+ .;
+ E  D
+ .D ^%ZTER
+ ;
+ ;a lot of errors of the same type may indicate an endless loop, so keep a count
+ S ^TMP("HL7 ERRORS",$J,$ECODE)=$G(^TMP("HL7 ERRORS",$J,$ECODE))+1
+ ;
+ QUIT:($G(^TMP("HL7 ERRORS",$J,$ECODE))>100)  ;return to the Process Manager error trap
  D UNWIND^%ZTER
- Q:$QUIT "" Q
+ Q
  ;
 DOWORK(QUEUE) ;sends the messages on the queue
-ZB0 ;
  N $ETRAP,$ESTACK S $ETRAP="G ERROR^HLOCLNT"
- N MSGIEN,DEQUE,SUCCESS,MSGCOUNT,MAXIMUM
+ N MSGIEN,DEQUE,SUCCESS,MSGCOUNT
  S DEQUE=0
  S SUCCESS=1
- ;
- ;
  I '$$CNNCTD(QUEUE("LINK")),'$$CONNECT^HLOCLNT1($P(QUEUE("LINK"),":"),$P(QUEUE("LINK"),":",2),30,.HLCSTATE) Q
+ ;
  S (MSGCOUNT,MSGIEN)=0
- S MAXIMUM=$$GETPRTY^HLOQUE(QUEUE("QUEUE"),QUEUE("LINK"))*2
- F  S MSGIEN=$O(^HLB("QUEUE","OUT",QUEUE("LINK"),QUEUE("QUEUE"),MSGIEN)) D  Q:'SUCCESS  Q:MSGCOUNT>MAXIMUM  Q:$$STOPPED^HLOQUE("OUT",QUEUE("QUEUE"))  Q:$$IFSHUT^HLOTLNK($P(QUEUE("LINK"),":"))
- .S:'MSGIEN SUCCESS=0
-ZB4 .;
- .Q:'SUCCESS
+ F  S MSGIEN=$O(^HLB("QUEUE","OUT",QUEUE("LINK"),QUEUE("QUEUE"),MSGIEN)) Q:'MSGIEN  D  Q:'SUCCESS  Q:MSGCOUNT>1000
  .N UPDATE
- .S ^HLB(MSGIEN,"TRIES")=$G(^HLB(MSGIEN,"TRIES"))+1
- .S SUCCESS=0
+ .I $$INC^HLOSITE($NA(^HLB(MSGIEN,"TRIES"))) S SUCCESS=0
  .S:$$TRANSMIT(.HLCSTATE,MSGIEN,.UPDATE) SUCCESS=1
- .Q:('SUCCESS)!('$D(UPDATE))
+ .Q:('SUCCESS)!('$D(UPDATE))  ;'$D(UPDATE) with SUCCESS=1 means that the message is to be removed from the queue without actually being transmitted
  .D DEQUE(.UPDATE)
  .S MSGCOUNT=MSGCOUNT+1
  .D:HLCSTATE("COUNTS")>4 SAVECNTS^HLOSTAT(.HLCSTATE)
@@ -103,13 +95,7 @@ ZB4 .;
  .;if the queue was on the down list, and not since shutdown, mark it as up, since a message has been successfully transmitted across it
  .I $G(QUEUE("DOWN"))!$$FAILING(QUEUE("LINK")),'$$IFSHUT^HLOTLNK(QUEUE("LINK")) S QUEUE("DOWN")=0,^HLB("QUEUE","OUT",QUEUE("LINK"))="" K ^HLTMP("FAILING LINKS",QUEUE("LINK"))
  ;
-ZB5 ;
-END ;
- ;** P155 START
- I HLCSTATE("LINK","SINGLE THREADED"),HLCSTATE("CONNECTED") D CLOSE^HLOT(.HLCSTATE)
- ;** P155 END
- ;
- D DEQUE()
+END D DEQUE()
  D SAVECNTS^HLOSTAT(.HLCSTATE)
  Q
 CNNCTD(LINK) ;
@@ -119,9 +105,6 @@ CNNCTD(LINK) ;
  Q 0
  ;
 DEQUE(UPDATE) ;
- ;**P143 START CJM
-ZB25 ;
- ;**P143 END CJM
  I $D(UPDATE) S DEQUE=DEQUE+1,DEQUE(+UPDATE)=$P(UPDATE,"^",2,99) S:$G(UPDATE("MSA"))]"" DEQUE(+UPDATE,"MSA")=UPDATE("MSA") S:$G(UPDATE("ACTION"))]"" DEQUE(+UPDATE,"ACTION")=UPDATE("ACTION")
  I '$D(UPDATE)!(DEQUE>15) D
  .N MSGIEN S MSGIEN=0
@@ -129,7 +112,6 @@ ZB25 ;
  ..N NODE,TIME
  ..D DEQUE^HLOQUE(QUEUE("LINK"),QUEUE("QUEUE"),"OUT",MSGIEN)
  ..S TIME=$P(DEQUE(MSGIEN),"^")
- ..Q:'TIME
  ..S NODE=QUEUE("LINK")_"^"_QUEUE("QUEUE")_"^"_$P(DEQUE(MSGIEN),"^",2,99)
  ..S ^HLTMP("CLIENT UPDATES",$J,TIME,MSGIEN)=NODE
  ..S:$G(DEQUE(MSGIEN,"MSA"))]"" ^HLTMP("CLIENT UPDATES",$J,TIME,MSGIEN,"MSA")=DEQUE(MSGIEN,"MSA")
@@ -151,25 +133,16 @@ TRANSMIT(HLCSTATE,MSGIEN,UPDATE) ;
  S SUCCESS=0
  S HLCSTATE("ATTEMPT")=0
  ;
- ;start saving updates needed after the message is transmitted
- S UPDATE=MSGIEN
  Q:'$$GETMSG^HLOCLNT2(MSGIEN,.HLMSTATE) 1  ;returns 1 so the message will be removed from the queue
- I HLMSTATE("DT/TM"),HLMSTATE("STATUS","ACCEPTED")!(HLMSTATE("HDR","ACCEPT ACK TYPE")="NE") D  Q 1  ;the message was already transmitted
-ZB20 .;**P143 START CJM
- .;**P143 END CJM
+ I HLMSTATE("DT/TM"),HLMSTATE("STATUS","ACCEPTED")!(HLMSTATE("HDR","ACCEPT ACK TYPE")="NE") Q 1  ;the message was already transmitted
  ;
- ;**P143 START CJM
- I HLMSTATE("ACK BY")]"",HLMSTATE("STATUS")]"",$G(^HLB(MSGIEN,"TRIES"))>1 Q 1  ;The app ack was already returned, so don't keep transmitting
- ;**P143 END CJM
- ;
- S UPDATE=UPDATE_"^"_$$NOW^XLFDT
+ ;start saving updates needed after the message is transmitted
+ S UPDATE=MSGIEN_"^"_$$NOW^XLFDT
 RETRY D
  .S HLCSTATE("ATTEMPT")=HLCSTATE("ATTEMPT")+1
- .I 'HLCSTATE("CONNECTED") D OPEN^HLOT(.HLCSTATE) Q:'HLCSTATE("CONNECTED")
+ .I 'HLCSTATE("CONNECTED") D OPEN^HLOT(.HLCSTATE)
  .;
  .;try to send the message
- .;
- .;
  .Q:'$$WRITEMSG^HLOCLNT1(.HLCSTATE,.HLMSTATE)
  .;does the message need an accept ack?
  .I HLMSTATE("HDR","ACCEPT ACK TYPE")="AL" D
@@ -177,36 +150,18 @@ RETRY D
  ..Q:'$$READACK^HLOCLNT1(.HLCSTATE,.HDR,.MSA)
  ..;does the MSA refer to the correct control id?
  ..S FS=$E(HDR(1),4)
- ..I $P(MSA,FS,3)'=HLMSTATE("ID") D  Q
-ZB21 ...;**P143 START CJM
- ...;**P43 END CJM
+ ..Q:$P(MSA,FS,3)'=HLMSTATE("ID")
  ..N ACKID,ACKCODE
  ..S ACKCODE=$P(MSA,FS,2)
  ..S ACKID=$S($E(HDR(1),1,3)="MSH":$P(HDR(2),FS,5),1:$P(HDR(2),FS,6))
  ..S $P(UPDATE,"^",5)=1
  ..S UPDATE("MSA")=ACKID_"^"_MSA
- ..I '(ACKCODE="CA") D
- ...S $P(UPDATE,"^",3)="ER",$P(UPDATE,"^",4)=2
-ZB22 ...;**P143 START CJM
- ...;**P143 END CJM
+ ..I '(ACKCODE="CA") S $P(UPDATE,"^",3)="SE",$P(UPDATE,"^",4)=2
  ..I ACKCODE="CA",HLMSTATE("HDR","APP ACK TYPE")="NE" S $P(UPDATE,"^",3)="SU",$P(UPDATE,"^",4)=$S(HLMSTATE("BATCH"):"2",1:1)
- ..I ($P(UPDATE,"^",3)="ER") S $P(UPDATE,"^",6)=$P(HLMSTATE("HDR",1),FS,5) ;errors need the application for xref
+ ..I ($P(UPDATE,"^",3)="SE") S $P(UPDATE,"^",6)=$P(HLMSTATE("HDR",1),FS,5) ;errors need the application for xref
  ..;
- ..;if it's from a sequence queue, timestamp the queue
- ..I $L($G(HLMSTATE("STATUS","SEQUENCE QUEUE"))) D
- ...L +^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE")):200
- ...I $P($G(^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE"))),"^")'=MSGIEN L -^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE")) Q
- ...I ACKCODE="CA" D
- ....S $P(^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE")),"^",2)=$$FMADD^XLFDT($P(UPDATE,"^",2),,,$$TIMEOUT^HLOAPP($$GETSAP^HLOCLNT2(MSGIEN))) L -^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE"))
-ZB23 ....;**P143 START CJM
- ....;**P143 END CJM
- ...;if the message wasn't accepted, need to notify without waiting
- ...S $P(^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE")),"^",2)=$P(UPDATE,"^",2)
- ...L -^HLB("QUEUE","SEQUENCE",HLMSTATE("STATUS","SEQUENCE QUEUE"))
- ..;
- ..;does the app need notification of accept ack?
+ ..;did the app request notification of accept ack?
  ..S UPDATE("ACTION")=HLMSTATE("ACCEPT ACK RESPONSE")
- ..;
  ..S SUCCESS=1
  .E  D  ;accept ack wasn't requested
  ..S SUCCESS=1

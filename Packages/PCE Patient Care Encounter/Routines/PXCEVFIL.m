@@ -1,9 +1,8 @@
-PXCEVFIL ;ISL/dee - Main routine to edit a visit or v-file entry ;10/15/04 11:50am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**9,30,22,73,88,89,104,147,124,169**;Aug 12, 1996
+PXCEVFIL ;ISL/dee - Main routine to edit a visit or v-file entry ;3/28/97
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**9,30,22,73,88,89,104**;Aug 12, 1996
  ;
  Q
 EN(PXCECAT) ; -- main entry point for PXCE pxcecat EDIT
- I PXCECAT="SIT"!(PXCECAT="HIST") D PATINFO^PXCEPAT(.PXCEPAT) Q:$D(DIRUT)
  I PXCECAT'="SIT",PXCECAT'="APPM",PXCECAT'="HIST" Q:'$D(PXCEFIEN)!'$D(PXCEVIEN)!'$D(PXCEPAT)
  E  Q:(PXCEVIEW["P"&'$D(PXCEPAT))!(PXCEVIEW["H"&'$D(PXCEHLOC))!("~H~P~"'[("~"_$P(PXCEVIEW,"^")_"~"))
  I PXCECAT="CSTP",$L($T(DATE^SCDXUTL)),$$DATE^SCDXUTL(+$G(^AUPNVSIT(PXCEVIEN,0))) W !!,$C(7),"Stop Codes can not be added to encounters after "_$$FMDATE^SCDXUTL Q
@@ -45,11 +44,6 @@ DOONE2 ;
  K PXKERROR
  S PXCENOER=0
  D EDIT^PXCEVFI1
- I 'PXCEQUIT,PXCECAT="SIT",$P($G(PXCEAFTR(0)),"^")]"",$P($G(PXCEAFTR(0)),"^",22)]"" D
- . I $D(^DPT(DFN,"S",$P(PXCEAFTR(0),"^"),0)),$P($G(^DPT(DFN,"S",$P(PXCEAFTR(0),"^"),0)),"^")=$P(PXCEAFTR(0),"^",22),$P(^DPT(DFN,"S",$P(PXCEAFTR(0),"^"),0),"^",2)["C" D
- .. S PXCEQUIT=1,$P(PXCEAFTR(0),"^")=""
- .. W !,$C(7),"Cannot create encounter for appointment date/time and clinic that was previously cancelled, NOTHING was STORED"
- .. D WAIT^PXCEHELP
  I ($P(PXCEAFTR(0),"^")]"") D
  . I PXCEQUIT D
  .. I 'PXCEFIEN,PXCECAT="CPT" D
@@ -155,5 +149,5 @@ MODUPD ;Update the MODIFIER list for the currently edited CPT code when all
 REMOVE(DA) ;REMOVE INCOMPLETE CPT ENTRY
  N DIK
  S DIK="^AUPNVCPT("
- I $G(DA) D ^DIK ;PX*1*124
+ D ^DIK
  Q

@@ -1,6 +1,5 @@
-HLCSHDR4 ;SFIRMFO/LJA - Reset MSH Segment Fields ;10/09/2007 15:05
- ;;1.6;HEALTH LEVEL SEVEN;**93,108,122**;Oct 13, 1995;Build 14
- ;Per VHA Directive 2004-038, this routine should not be modified
+HLCSHDR4 ;SFIRMFO/LJA - Reset MSH Segment Fields ;3/24/2004 14:27
+ ;;1.6;HEALTH LEVEL SEVEN;**93,108**;Oct 13, 1995
  ;
 DEBUG(STORE) ; If HLP set up for debugging, capture VIEW...
  ; HLMSH773 -- req
@@ -111,9 +110,6 @@ SET(NEW,VAR,PCE) ; This subroutine performs these actions:
  ;
  ; Change was made, but not by M code.  Must be by array...
  S $P(HLMSH91,U,PCE)=PRE,$P(HLMSH91,U,PCE+1)="A"
- ;
- ; patch HL*1.6*122: for "^" as component separater
- S $P(HLMSH91,U,PCE+2,999)=""
  ;
  ; Upgrade ^HLMA(#,0)...
  QUIT:PCE'=1&(PCE'=5)  ;->

@@ -1,4 +1,5 @@
-XQT5 ;SEA/MJM - Menu Template Utilities ;11/17/94  08:53
+XQT5 ;SEA/MJM - Menu Template Utilities ;11/17/94  08:53 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 NO1 ;Check 1st menu to see if the tree is still good

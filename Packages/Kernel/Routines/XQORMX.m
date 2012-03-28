@@ -1,4 +1,5 @@
-XQORMX ; SLC/KCM - Compile Formatted Menus ;2/3/94  09:58 ;
+XQORMX ; SLC/KCM - Compile Formatted Menus ;2/3/94  09:58 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 SET ;From: XQORM (when navigating file 19)  Entry: DA  Exit: DA
  ;NOTE:  Lock ^DIC(19,DA) when calling

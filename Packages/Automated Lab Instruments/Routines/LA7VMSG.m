@@ -1,5 +1,5 @@
-LA7VMSG ;DALOI/JMC - LAB ORU (Observation Result) message builder ; 12-12-96
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,50,56,46,64**;Sep 27, 1994
+LA7VMSG ;VA/DALOI/JMC - LAB ORU (Observation Result) message builder ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,50,56,46,64,1027**;NOV 01, 1997
  ;
 ORU ; Bleed the ORU (Observation Result) message queue
  ; Tasked by LRCAPV2

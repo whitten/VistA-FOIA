@@ -1,4 +1,5 @@
-XUTMUSE1 ;SEA/RDS - TM; Option XUTMUSER, Print ;4/20/95  11:34
+XUTMUSE1 ;SEA/RDS - TM; Option XUTMUSER, Print ;4/20/95  11:34 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 DEVICE ;ACT Subroutine--Allow User To Select Device For Output

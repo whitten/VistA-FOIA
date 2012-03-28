@@ -1,5 +1,7 @@
-XTKERM4 ;SF/RWF - Kermit utility parts ;11/8/93  11:46 ;
+XTKERM4 ;SF/RWF - Kermit utility parts ;11/8/93  11:46 ; [ 11/22/95  1:20 PM ]
  ;;7.3;TOOLKIT;;Apr 25, 1995
+ ;IHS/OHPRD/FJE 11/22/95 modified for use with HL7
+ ;IHS/OHPRD/FJE tests for XTKHL7 variable to determine if IO needed
 INIT ;Init kermit paramiters
  S (XTKS("PN"),XTKR("PN"))=0
  S XTKRDAT="~+ @-#N1" D RPAR S XTKSDAT="~+ @-#N1" D SPAR
@@ -29,9 +31,10 @@ SFILE ;Get file to send.
  S XTKERR=0,XTKDA=+Y,XTKDIC="^DIZ(8980,"_XTKDA_",2,",XTKFILE=$P(Y,U,2),DIE=DIC,DA=+Y,DR="1///NOW;3" D ^DIE
  S XTKMODE=$P(^DIZ(8980,XTKDA,0),U,4) K DIC,DIE,DR,DA
  Q
-RFILE ;Recive file
- W !!,"If you enter 'XXX' for the file name it will be replaced by the name sent."
- K DIC S XTKERR=1,DLAYGO=8980,DIC="^DIZ(8980,",DIC(0)="AEMQLZ",DIC("A")="RECIEVE TO KERMIT FILE:",DIC("DR")="2//YES;3//TEXT" D ^DIC Q:Y'>0
+RFILE ;Receive file   IHS/OHPRD/FJE corrected spelling
+ I '$D(XTKHL7) W !!,"If you enter 'XXX' for the file name it will be replaced by the name sent."  ;IHS/OHPRD/FJE If $D added to bypass IO if for HL7
+ I '$D(XTKHL7) K DIC S XTKERR=1,DLAYGO=8980,DIC="^DIZ(8980,",DIC(0)="AEMQLZ",DIC("A")="RECIEVE TO KERMIT FILE:",DIC("DR")="2//YES;3//TEXT" D ^DIC Q:Y'>0  ;IHS/OHPRD/FJE If added to test for XTKHL7
+ I $D(XTKHL7) K DIC S XTKERR=1,DIADD=1,DLAYGO=8980,DIC="^DIZ(8980,",DIC(0)="MLZ",DIC("DR")="2///YES;3///TEXT",X="XXX" D ^DIC K DIADD Q:Y'>0  ;IHS/OHPRD/FJE added If for HL7 to bypass fm IO
  S XTKDA=+Y,XTKFILE=$P(Y,U,2) I '$P(Y,U,3) S DA=+Y,DIE=DIC,DR="1///NOW;2;3" D ^DIE S Y(0)=^DIZ(8980,XTKDA,0)
  S XTKERR=0,XTKDIC="^DIZ(8980,"_XTKDA_",2,",XTKR("RFN")=$P(Y(0),U,3),XTKMODE=$P(Y(0),U,4)
  S @(XTKDIC_"0)")="" K DIC,DIE,DA,DR

@@ -1,4 +1,5 @@
-XQ4 ;SF/GFT,SEA/JLI - Menu Diagram with entry/exit actions ;3/19/91  10:07 ;5/13/93  11:15 AM
+XQ4 ;SF/GFT,SEA/JLI - Menu Diagram with entry/exit actions ;3/19/91  10:07 ;5/13/93  11:15 AM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  S:'$D(XQ4) XQ4=0 W !! D INIT
  K DIC R "Select USER (U.xxxxx) or OPTION (O.xxxxx) name: ",X:DTIME G:'$T OUT I "O."=$E(X,1,2)!("o."=$E(X,1,2)) S X=$E(X,3,99),DIC=19,DIC(0)="QEMZ",FL="OP" G:X=""!(X["^") OUT D ^DIC G:Y'>0 XQ4 S D0=+Y G OPT

@@ -1,11 +1,11 @@
-TIUPUTC ; SLC/JER - Document filer - captioned header ;5/20/05
- ;;1.0;TEXT INTEGRATION UTILITIES;**3,21,81,100,113,112,173,184**;Jun 20, 1997
+TIUPUTC ; SLC/JER - Document filer - captioned header ;2/7/00
+ ;;1.0;TEXT INTEGRATION UTILITIES;**3,21,81,100**;Jun 20, 1997
  ;
 MAIN ; ---- Controls branching.
  ;      Attempts to file upload documents in the target file.
  ;      Requires DA = IEN of 8925.2 upload buffer entry.
  N TIUDA,TIUBGN,TIUI,TIUHSIG,TIULIM,TIULCNT,TIULINE,TIUREC,TIUPOST
- N TIUTYPE,TIUINST K ^TMP("TIUPUTC",$J)
+ N TIUTYPE K ^TMP("TIUPUTC",$J)
  I '$D(TIUPRM0)!'$D(TIUPRM1) D SETPARM^TIULE
  S TIUHSIG=$P(TIUPRM0,U,10),TIUBGN=$P(TIUPRM0,U,12)
  I TIUHSIG']"" D MAIN^TIUPEVNT(DA,1,1) Q
@@ -71,8 +71,6 @@ STUFREC(HEADER,RECORD) ; ---- Stuffs record with known fixed fields;
  ; ---- Set up FDA Array:
  S TIUI=0
  F  S TIUI=$O(HEADER(TIUI)) Q:+TIUI'>0  D
- . ; if field is Author/Dictator and title is OPERATION REPORT, ignore uploaded data *173
- . I (TIUI=1202!(TIUI=1209)),TIUREC("TYPE")=$$CHKFILE^TIUADCL(8925.1,"OPERATION REPORT","I $P(^(0),U,4)=""DOC""") S @FDARR@(1303)="U" Q
  . S:TIUI'=.001 @FDARR@(TIUI)=$$TRNSFRM^TIULX(.RECORD,TIUI,HEADER(TIUI))
  I $D(FDA) D FILE^DIE(FLAGS,"FDA","TIUMSG")
  I $D(TIUMSG) D
@@ -100,7 +98,7 @@ PREPROC(DA) ; ---- Strip controls & white space from headers
  F  S TIUI=$O(^TIU(8925.2,+DA,"TEXT",TIUI)) Q:+TIUI'>0  D
  . S X=$G(^TIU(8925.2,+DA,"TEXT",TIUI,0))
  . S:X[TIUHSIG TIUHLIN=1 S:X[TIUBGN TIUHLIN=0
- . S:TIUHLIN ^TIU(8925.2,+DA,"TEXT",TIUI,0)=$$STRIP^TIUUPLD(X)
+ . S:TIUHLIN ^TIU(8925.2,+DA,"TEXT",TIUI,0)=$$STRIP^TIULS(X)
  Q
 DADTYPE(DA) ; ---- Get type of original document for addenda
  N TIUDAD,Y
@@ -119,7 +117,7 @@ FINISH ; ---- Finish document: feedback, postfile code, merge boil,
  S TIUDONE=1
  S TIUTYPE=$S(+$$ISADDNDM^TIULC1(TIUREC("#")):+$$DADTYPE(TIUREC("#")),1:TIUREC("TYPE"))
  S TIUPOST=$$POSTFILE^TIULC1(TIUTYPE)
- I TIUPOST]"" X TIUPOST K ^TMP("TIUPRFUP",$J)
+ I TIUPOST]"" X TIUPOST
  I TIUREC("FILE")=8925,+$G(TIUREC("BOILON")) D
  . N TIU D GETTIU^TIULD(.TIU,TIUREC("#"))
  . D MERGTEXT^TIUEDI1(TIUREC("#"),.TIU)

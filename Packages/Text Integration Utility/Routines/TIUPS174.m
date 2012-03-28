@@ -1,5 +1,5 @@
-TIUPS174 ; SLC/AJB - Report for notes w/blank text ; 06/28/04
- ;;1.0;TEXT INTEGRATION UTILITIES;**174,177**;Jun 20, 1997
+TIUPS174 ; SLC/AJB - Report for notes w/blank text ;17-Mar-2010 13:36;DU
+ ;;1.0;TEXT INTEGRATION UTILITIES;**174,177,1007**;Jun 20, 1997;Build 5
  ;
  Q
 REPORT ; control segment
@@ -88,10 +88,13 @@ GATHER ;
  Q
 TIUSSN() ;
  ; DBIA #10061
- N DFN,VA,VADM,VAERR
+ N DFN,VA,VADM,VAERR,HRCN
  S DFN=$P($G(^TIU(8925,DA,0)),U,2)
- D DEM^VADPT
- Q $P(VA("PID"),"-",3)
+ ;IHS/MSC/MGH  Changed to use HRCN number
+ ;D DEM^VADPT
+ ;Q $P(VA("PID"),"-",3)
+ S HRCN=$$HRCN^TIUR2(DFN,+$G(DUZ(2)))
+ Q HRCN
 SPACER(TEXT,LENGTH,REV) ;
  N SPACER
  S SPACER=""
@@ -115,7 +118,7 @@ TEXT ;
  ;;"                Current Date:  "_($$HTE^XLFDT($H))
  ;;""
  ;;"Doc #       Entry Date/Time                 Title"
- ;;"Missing     Reference Date/Time             Patient"             
+ ;;"Missing     Reference Date/Time             Patient"
  ;;"Status      Signature Date/Time             Author/Dictator"
  ;;"------      -------------------             ---------------"
  ;;EOM

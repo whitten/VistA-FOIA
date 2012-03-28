@@ -1,23 +1,5 @@
-PXRMDLG3 ; SLC/PJH - Reminder Dialog Edit/Inquiry ;07/29/2004
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
- ;
- ;
- ;Display national dialog
-START N NLINE,NSEL
- S NLINE=0,NSEL=0
- ;
- ;Group header
- I $P($G(^PXRMD(801.41,PXRMDIEN,0)),U,4)="G" D
- .D DLINE(PXRMDIEN,"","")
- ;Other components
- D DETAIL(PXRMDIEN,"")
- ;Create headings
- D CHGCAP^VALM("HEADER1","Item  Seq.")
- D CHGCAP^VALM("HEADER2","Dialog Details/Findings")
- D CHGCAP^VALM("HEADER3","Type")
- S VALMCNT=NLINE
- S ^TMP("PXRMDLG",$J,"VALMCNT")=VALMCNT
-EXIT Q
+PXRMDLG3 ; SLC/PJH - Reminder Dialog Edit/Inquiry ;04/04/2002
+ ;;1.5;CLINICAL REMINDERS;**8**;Jun 19, 2000
  ;
  ;Additional Findings
  ;-------------------
@@ -106,9 +88,6 @@ FDESC(FIEN) ;
  I FGLOB["ICD9" D  Q
  .S FTYP="DIAGNOSIS",FGLOB=U_FGLOB_FITEM_",0)"
  .S FNAME=$P($G(@FGLOB),U,3)
- I FGLOB["WV" D  Q
- .S FTYP="WH NOTIFICATION PURPOSE",FGLOB=U_FGLOB_FITEM_",0)"
- .S FNAME=$P($G(@FGLOB),U)
  ;Procedure CPT
  I FGLOB["ICPT" D  Q
  .S FTYP="PROCEDURE",FGLOB=U_FGLOB_FITEM_",0)"

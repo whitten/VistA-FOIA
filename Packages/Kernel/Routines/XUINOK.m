@@ -1,6 +1,14 @@
 XUINOK ;SFISC/RWF - CHECK TO SEE IF OK TO LOAD ;06/02/95  12:23
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1016**;APR 1, 2003;Build 5
  ;;8.0;KERNEL;;Jul 10, 1995
+ ;THIS ROUTINE CONTAINS A LOCAL IHS MODIFICATION BY IHS/MFD
  N Y
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;This new line of code was added to make sure the variables DUZ and
+ ;DUZ(0) are defined to prevent install from aborting.  Original 
+ ;modification done by IHS/MFD
+ S DUZ=1,DUZ(0)="@"
+ ;----- END IHS MODIFICATION
  I $S($D(DUZ)[0:1,$D(DUZ(0))[0:1,'DUZ:1,1:0) W !!,*7,">> DUZ and DUZ(0) must be defined as an active user to initialize." G EXIT
  ;
  W !,"I'm checking to see if it is OK to install KERNEL v",$P($T(+2),";",3)," in this account.",!

@@ -1,11 +1,10 @@
 PSJHVARS ;BIR/RSB-SAVE/RESTORE VARIABLES FOR HIDDEN MENUS  ;24 Feb 99 / 10:42 AM
- ;;5.0; INPATIENT MEDICATIONS ;**16,22,30,58,181**;16 DEC 97;Build 190
+ ;;5.0; INPATIENT MEDICATIONS ;**16,22,30,58**;16 DEC 97
  ;
  ; Reference to ^ORD(101 is supported by DBIA 872.
  ; Reference to ^%RCR is supported by DBIA 10022.
  ; Reference to ^DIR is supported by DBIA 10026.
  ;
- ; PSJ*5*181 added: P(24),P(25) & PSGS0Y (it's zero & not O)
  ;PSJHIDFG will be defined if the user already in the hidden menu.
  I $$HIDCHK() D  Q
  . W !,"HIDDEN MENUS MAY NOT BE CALLED RECURSIVELY!" S XQORQUIT=1
@@ -166,8 +165,6 @@ LIST ;
  ;;P(21)
  ;;P(22)
  ;;P(23)
- ;;P(24)
- ;;P(25)
  ;;P("21FLG")
  ;;P("CLRK")
  ;;P("CUM")
@@ -302,7 +299,6 @@ LIST ;
  ;;PSGSM
  ;;PSGSOXT
  ;;PSGSOY
- ;;PSGS0Y
  ;;PSGSS
  ;;PSGSSH
  ;;PSGST

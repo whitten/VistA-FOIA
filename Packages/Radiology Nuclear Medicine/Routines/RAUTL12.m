@@ -1,5 +1,5 @@
 RAUTL12 ;HISC/CAH,FPT,GJC-Utility Routine ;12/23/97  09:25
- ;;5.0;Radiology/Nuclear Medicine;**75**;Mar 16, 1998;Build 4
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
 IMGTY(X,Y,Z) ; Determines the Imaging Type
  ; 'X' ->  either 'e', 'l', or 'p'
@@ -28,7 +28,6 @@ IMGTY(X,Y,Z) ; Determines the Imaging Type
  . S RAXYZ=$P($G(^RA(79.2,B,0)),U)
  . Q
  Q RAXYZ
- ;
 LOCK(X,Y) ; Lock the data global
  ; 'X' is the global root
  ; 'Y' is the record number
@@ -43,7 +42,6 @@ LOCK(X,Y) ; Lock the data global
  . S ^TMP("RAD LOCKS",$J,RADUZ,X,Y)=""
  . Q
  Q RALCKFLG
- ;
 UNLOCK(X,Y) ; Unlock the data global
  N XY S RADUZ=+$G(DUZ),XY=X_Y L -@(XY_")")
  K ^TMP("RAD LOCKS",$J,RADUZ,X,Y)
@@ -53,22 +51,6 @@ EXTRA(RAQI) ;Input is RAQI (Modifier)
  ;RAPORT = PORTABLE, and RAOR = OPERATING ROOM.
  S RAQI=$P($G(^RAMIS(71.2,RAQI,0)),U,2) S:RAQI="b" RABILAT="" S:RAQI="p" RAPORT="" S:RAQI="o" RAOR=""
  Q
-  ;
-DESDT(RAPRI) ; Obtain 'Date Desired (NOT appt date)' by DIR call.
- ; Input: IEN of procedure
- ; The 'Date Desired' is passed back in internal format.
- ; 75.1 -> Rad Orders File    Fld 21 -> Date desired
- N DIR,DIROUT,DIRUT,DUOUT,DTOUT,X,Y
- I '$D(RAPKG),($D(ORVP)),($D(ORL)),($D(ORNP)) D PROCMSG^RAUTL5(RAPRI)
- F  D  Q:Y'=""
- .S DIR("?",1)="The 'Date Desired' field contains the date for which the rad/nuc med exam"
- .S DIR("?",2)="is requested. 'Date Desired' is required and should not be interpreted as"
- .S DIR("?")="an appointment date."
- .S DIR(0)="75.1,21" D ^DIR
- .S:$D(DTOUT)#2!($D(DUOUT)#2) Y=-1
- .Q
- Q Y
- ;
 PTLOC() ; Current patient location.  Used for entry: 'CURRENT PATIENT
  ; LOCATION' in the Label Print Fields file. (78.7)
  ; 'X' is the patient's DFN.  DFN must be a positive integer.
@@ -89,7 +71,21 @@ PTLOC() ; Current patient location.  Used for entry: 'CURRENT PATIENT
  S A=+$P($G(^RAO(75.1,X,0)),"^",22),B=$G(^SC(A,0)),C=$P(B,"^",3)
  Q:B']""!("WOR"[C) "OP Unknown/"_Y5
  Q $P(B,"^")_" (Req'g Loc)"
- ;
+DESDT(RAPRI) ; Obtain 'Date Desired (NOT appt date)' by DIR call.
+ ; IEN of procedure is passed in.  Check common procedure; if
+ ; common check Requested Date.  If not common, or Requested Date
+ ; null, default to today.  Date Desired passed back in internal format.
+ ; 75.1 -> Rad Orders File    Fld 21 -> Date desired
+ N DIR,DIROUT,DIRUT,DUOUT,DTOUT,RA,RAPROC,RAREQDT,X,Y
+ I '$D(RAPKG),($D(ORVP)),($D(ORL)),($D(ORNP)) D PROCMSG^RAUTL5(RAPRI)
+ I $D(^RAMIS(71.3,"B",RAPRI)) D  ; This is a common procedure
+ . S RAPROC=+$O(^RAMIS(71.3,"B",RAPRI,0)),RA(0)=$G(^RAMIS(71.3,RAPROC,0))
+ . S RAREQDT=$S($P(RA(0),"^",7)]"":$P(RA(0),"^",7),1:"TODAY")
+ . Q
+ S DIR(0)="75.1,21",DIR("B")=$S($D(RAREQDT):RAREQDT,1:"TODAY") D ^DIR
+ I $D(DIRUT) S (RAOUT,RAREQDT)=""
+ E  S RAREQDT=Y
+ Q RAREQDT
 IMG() ; Select one/many/all imaging types.  This code will be used for ALL
  ; the options under the Procedure File Listings option as exported by
  ; Rad/Nuc Med version 5.  I-Types are not screened.
@@ -99,7 +95,6 @@ IMG() ; Select one/many/all imaging types.  This code will be used for ALL
  S RADIC("A")="Select Imaging Type: ",RADIC("B")="All"
  S RAUTIL="RA I-TYPE" W !! D EN1^RASELCT(.RADIC,RAUTIL)
  Q $S($D(^TMP($J,"RA I-TYPE"))\10:1,1:0)
- ;
 LOC(RAX) ; Select one/many/all imaging locations.  L-Types are not
  ; screened.  Passes back '1' if L-Type(s) are selected, '0' if nothing
  ; selected.  Used for the option: 'Location Parameter List' (4^RASYS)

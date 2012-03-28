@@ -1,4 +1,6 @@
-LRMITSPC ;SLC/STAFF - MICRO TREND PROCESS COUNT ;10/17/92  23:16
+LRMITSPC ; IHS/DIR/FJE - MICRO TREND PROCESS COUNT 23:16 ; 
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  ; from LRMITSPE
  ; returns counts of isolates and susceptibilities in ^TMP($J,n1,"C"

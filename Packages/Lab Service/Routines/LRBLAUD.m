@@ -1,6 +1,6 @@
-LRBLAUD ;TOG/CYM  -  AUDIT TRAIL MULTIPLE FIELDS  9/3/97  14:32
- ;;5.2;LAB SERVICE;**90,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLAUD ; IHS/DIR/AAB - AUDIT TRAIL MULTIPLE FIELDS 9/3/97 14:32 ; [ 9/3/97 9:28 AM ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**90**;Sep 27, 1994
  ;
  ;
  ;  Routine is called by file 65 edit template LRBLIXR

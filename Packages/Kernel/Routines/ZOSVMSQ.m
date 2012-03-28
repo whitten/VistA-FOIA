@@ -1,4 +1,5 @@
-%ZOSV ;SFISC/AC - $View commands for M/SQL (ISM VAX) systems.  ;12/15/95  08:53
+%ZOSV ;SFISC/AC - $View commands for M/SQL (ISM VAX) systems.  ;12/15/95  08:53 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**13**;Jul 03, 1995
 ACTJ() ;
  N Y,% S Y=$V(204,-2,4),%="" F Y=0:1:Y-1 S %=$ZJ(%) Q:%=""

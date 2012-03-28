@@ -1,5 +1,5 @@
 ORB31 ; slc/CLA - Routine to support OE/RR 3 notifications ;6/28/00  12:00 [ 04/02/97  11:12 AM ]
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**6,31,88,105,139,173,220,215,329**;Dec 17, 1997;Build 8
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**6,31,88,105,139,173**;Dec 17, 1997
 QUEUE(ORN,ORBDFN,ORNUM,ORBADUZ,ORBPMSG,ORBPDATA,ORBH,ORBD,ORDGPMA) ;
  ;queue up notif for Taskman processing
  ;ORN       notification ien from file 100.9
@@ -32,7 +32,7 @@ QUEUE(ORN,ORBDFN,ORNUM,ORBADUZ,ORBPMSG,ORBPDATA,ORBH,ORBD,ORDGPMA) ;
  D ^%ZTLOAD
  Q
 DUP(ORN,ORBDFN,ORBPMSG,ORNUM) ;ext funct return "1" if a duplicate notif w/in 1 min.
- N ORBDUP,ORBNOW,ORBLAST,ORLNUM,ORSAMEP,ORSAMEREC
+ N ORBDUP,ORBNOW,ORBLAST,ORLNUM,ORSAMEP
  S ORBDUP=0
  S ORSAMEP=0
  S ORBNOW=$$NOW^XLFDT
@@ -43,17 +43,11 @@ DUP(ORN,ORBDFN,ORBPMSG,ORNUM) ;ext funct return "1" if a duplicate notif w/in 1 
  .S ORLNUM=$P(ORBLAST,"^",2)
  .S ORBLAST=$P(ORBLAST,"^")
  .I $L($G(ORNUM)),$L($G(ORLNUM)),($$ORDERER^ORQOR2(ORNUM)=$$ORDERER^ORQOR2(ORLNUM)) S ORSAMEP=1 ;same provider as last order that triggered this notif
- .S ORSAMEREC=1 I ORN=6,($$RECIP($G(ORNUM))'=$$RECIP($G(ORLNUM))) S ORSAMEREC=0
  .;if last occurrence of this "NOT" notif was w/in past 1 min, its a dup
- .I ORBNOW<$$FMADD^XLFDT(ORBLAST,"","",1,""),ORSAMEP=1,ORSAMEREC=1 S ORBDUP=1  ;dup
+ .I ORBNOW<$$FMADD^XLFDT(ORBLAST,"","",1,""),ORSAMEP=1 S ORBDUP=1  ;dup
  .E  S ^XTMP("ORBDUP",ORBDFN_";"_ORN_";"_ORBPMSG)=ORBNOW_"^"_ORNUM  ;refresh last pt/noti occ.
  D DUPCLN(ORBNOW)  ;clean up old ^XTMP("ORBUP") entries
  Q ORBDUP
-RECIP(ORNUM) N ORI,RECIP
- Q:'ORNUM 0
- S ORI=0 F  S ORI=$O(^OR(100,ORNUM,8,ORI)) Q:'ORI  D
- .I '$P($G(^OR(100,ORNUM,8,ORI,3)),U,6)&($P($G(^OR(100,ORNUM,8,ORI,3)),U,9)) S RECIP=$P($G(^OR(100,ORNUM,8,ORI,3)),U,9)
- Q $G(RECIP)
 REGDEV(ORBDA) ;send to regular recipient devices
  N ORBDT,ORBD
  S ORBD=""
@@ -72,7 +66,6 @@ PRINTD ;print queued notification to device - setup via REGDEV^ORB3
  I $E(IOST,1,2)'="C-" W @IOF
  Q
 FWD(ORY,ORBLST,ORBRECIP,ORBTYPE,ORBCOMNT) ; forward a notification
- I ORBLST="" S ORY=0 Q
  S ORBLST(1)=ORBLST
  D FORWARD^XQALFWD(.ORBLST,.ORBRECIP,ORBTYPE,ORBCOMNT)
  S ORY=1
@@ -120,13 +113,17 @@ TMDEV(ORBTM) ;returns Device for a team in format device ien^device name
  S ORBTDEVN=$P(Y,U,2)
  K DIC,Y,X
  Q ORBTDEV_U_ORBTDEVN
-ENTITY(ORNUM) ;ext funct. rtns entity for parameter use
+ENTITY(ORNUM,ENTDUZ) ;ext funct. rtns entity for parameter use
  N ORBENT
  S ORBENT="DIV^SYS^PKG"
- I $L($G(ORNUM)) D  ;if order number use pt's location division
- .N ORDIV
- .S ORDIV=0,ORDIV=$$ORDIV(ORNUM)
- .I +$G(ORDIV)>0 S ORBENT=ORDIV_";DIC(4,^SYS^PKG"
+ ;use orderer's DUZ if notif triggered by ORMTIME:
+ I +$G(ENTDUZ)<1 S ORBENT="SYS^PKG" D
+ .I $L($G(ORNUM)) D  ;if order number use orderer's division
+ ..N ORNDUZ,ORDIV
+ ..S ORNDUZ=$$ORDERER^ORQOR2(ORNUM)
+ ..Q:'$L($G(ORNDUZ))
+ ..S ORDIV=0,ORDIV=$O(^VA(200,ORNDUZ,2,ORDIV))
+ ..I +$G(ORDIV)>0 S ORBENT=ORDIV_";DIC(4,^SYS^PKG"
  Q ORBENT
  ;
 ADT(ORN,ORBDFN,ORBPRIM,ORBATTD,ORDGPMA) ;get inpt primary and attending for ADT notifs
@@ -142,30 +139,3 @@ ADT(ORN,ORBDFN,ORBPRIM,ORBATTD,ORDGPMA) ;get inpt primary and attending for ADT 
  .D INP^VADPT  ;get new VAIN array for appropriate visit
  .S ORBPRIM=+$P(VAIN(2),U),ORBATTD=+$P(VAIN(11),U)
  Q
- ;
-DEFDIV(ORDUZ) ; Return user's default division, if specified.
- ;
- N ORDD,ORDIV,ORGOOD,ORZ,ORZERR
- ;
- S ORDIV=""
- S Y=0,(ORDD,ORGOOD)=0             ; Initialize variables.
- ;
- ; Get list of divisions from NEW PERSON file multiple:
- D LIST^DIC(200.02,","_ORDUZ_",","@;.01;1","QP","","","","","","","ORZ","ORZERR")
- I $P(ORZ("DILIST",0),U)=0 Q       ; No Divisions listed.
- ;
- F  S ORDD=$O(ORZ("DILIST",ORDD)) Q:+ORDD=0!'($L(ORDD))  D  Q:ORGOOD
- .; See if current entry being processed is "Default" (done if so):
- .I $P(ORZ("DILIST",ORDD,0),U,3)["Y" S ORDIV=$P(ORZ("DILIST",ORDD,0),U,1,2),ORGOOD=1
- Q ORDIV
- ;
-ORDIV(ORNUM) ; Return order's division based upon patient's location when order was placed
- ;
- Q:+$G(ORNUM)<1 ""
- Q:'$D(^OR(100,ORNUM,0)) ""
- N ORDIV,PTLOC
- S ORDIV=""
- S PTLOC=+$P(^OR(100,ORNUM,0),U,10)
- Q:$G(PTLOC)<1 ""
- S ORDIV=$P(^SC(PTLOC,0),U,4)  ;DBIA #10040
- Q ORDIV

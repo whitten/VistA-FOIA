@@ -1,5 +1,5 @@
 XUDHGUI ;ISF/STAFF,SLC/KCM - Device Utilites for Windows Calls ;03/24/10  10:34
- ;;8.0;KERNEL;**220,542**;Jul 10, 1995;Build 5
+ ;;8.0;KERNEL;**220,542**;Jul 10, 1995;Build 6
  ;
 DEVICE(LST,FROM,DIR,RMAR) ; Return a subset of entries from the Device file
  ; Return up to 20 entries.

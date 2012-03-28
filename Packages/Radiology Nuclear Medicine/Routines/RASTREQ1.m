@@ -1,5 +1,5 @@
 RASTREQ1 ;HISC/CAH,GJC AISC/MJK-Cont. of RASTREQ status reqmts ck ;5/29/97  12:52
- ;;5.0;Radiology/Nuclear Medicine;**34,85**;Mar 16, 1998;Build 4
+ ;;5.0;Radiology/Nuclear Medicine;**34**;Mar 16, 1998
  ;
  ; STUFF -- Called from UP1^RAUTL1 for editing an exam
  ; LOOP  -- Called from RASTREQ for status tracking
@@ -14,10 +14,6 @@ RASTREQ1 ;HISC/CAH,GJC AISC/MJK-Cont. of RASTREQ status reqmts ck ;5/29/97  12:5
  ;checks to see what the next status would be
  ;RABEFORE = status level BEFORE change
  ;RAAFTER = status level AFTER change
- ;
- ; 06/11/2007 BAY/KAM RA*5*85 Remedy Call 174790 Change exam cancel
- ;            to allow only descendent with stub/images
- ;
 STUFF ; initialize RAOR=-1 to assume NO change if early quit
  S RAJ=$G(^RADPT(DA(2),"DT",DA(1),"P",DA,0)),RAOR=-1
  S RABEFORE=$P($G(^RA(72,+$P(RAJ,U,3),0)),U,3)
@@ -51,9 +47,8 @@ CANCEL ; cancel an exam
  ; in case Fileman enter/edit was used directly on the EXAM STATUS field
  ; if either check fails, set RAAFTER=RABEFORE so status can't change
  I $D(^RA(72,+$P(RAJ,U,3),0)),$P(^(0),"^",6)'="y" W !,"This exam is in the '",$P(^(0),"^"),"' status and cannot be 'CANCELLED'" S RAAFTER=RABEFORE Q
- ; ok to cancel descendent exam w images if stub rpt and user has RA MGR key
- ; 06/11/2007 *85 Added descendent check to next line
- I $P(RAJ,U,17)'="",$$STUB^RAEDCN1($P(RAJ,U,17)),($$PSET^RAEDCN1(RADFN,RADTI,RACNI)),$D(^XUSEC("RA MGR",+$G(DUZ))) Q
+ ; ok to cancel exam w images if stub rpt and user has RA MGR key
+ I $P(RAJ,U,17)'="",$$STUB^RAEDCN1($P(RAJ,U,17)),$D(^XUSEC("RA MGR",+$G(DUZ))) Q
  ; can't cancel exam if report isn't stub
  I $P(RAJ,U,17)'="" W !,"A report has been filed for this case.  Therefore cancellation is not allowed !" S RAAFTER=RABEFORE
  Q

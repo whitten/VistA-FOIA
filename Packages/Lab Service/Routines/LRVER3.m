@@ -1,5 +1,5 @@
-LRVER3 ;DALOI/CJS/JAH - DATA VERIFICATION ;8/10/04
- ;;5.2;LAB SERVICE;**42,100,121,140,171,153,221,286,291,406**;Sep 27, 1994;Build 1
+LRVER3 ;DALOI/CJS/FHS-DATA VERIFICATION ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**42,100,121,140,171,153,221,286,1027**;NOV 01, 1997
  ;
  D V1
  I $D(LRLOCKER)#2 L -@(LRLOCKER) K LRLOCKER
@@ -50,6 +50,7 @@ L10 ;
  S LRCMTDSP=$$CHKCDSP^LRVERA
  K LRSA,LRSB,LRORU3
  F LRSB=1:0 S LRSB=$O(^LR(LRDFN,LRSS,LRIDT,LRSB)) Q:LRSB<1  D
+ . Q:LRSB=9009027                      ; IHS/OIT/MKK LR*5.2*1027 - Skip E-SIG ENTRY 
  . S LRSB(LRSB)=^(LRSB),LRSB(LRSB,"P")=$P(LRSB(LRSB),U,3)
  . I $D(LRNOVER) S LRNOVER(LRSB)=""
  S LREDIT=1
@@ -78,13 +79,14 @@ NOVER I $O(LRNOVER(0)) D  G EXIT
  N CNT S CNT=1
 AGAIN ;
  R !,"Approve for release by entering your initials: ",LRINI:DTIME
- I $E(LRINI)="^" W !!?5,$C(7),"Nothing verified!" D READ G EXIT
+ ; I $E(LRINI)="^" W !!?5,$C(7),"Nothing verified!" D READ G EXIT
+ ;----- BEGIN IHS/OIT/MKK LR*5.2*1027
+ I $E(LRINI)="^" W !!?5,$C(7),"*** Nothing verified! ***" H 2 W *7,! D READ G EXIT
+ ;----- END IHS/OIT/MKK LR*5.2*1027
  I LRINI'=LRUSI,$$UP^XLFSTR(LRINI)=$$UP^XLFSTR(LRUSI) S LRINI=LRUSI
  I $S($E(LRINI)="?":1,LRINI'=LRUSI&(CNT<2):1,1:0) W !,$C(7),"Please enter your correct initials" S:$E(LRINI)="?" CNT=0 S CNT=CNT+1 G AGAIN
  I LRINI'=LRUSI W !!?5,$C(7),"Nothing verified!" D READ G EXIT
 V11 I $D(XRTL) D T0^%ZOSV ; START RESPONSE TIME LOGGING
- I +LRDPF=2&($G(LRSS)'="BB")&('$$CHKINP^LRBEBA4(LRDFN,LRODT)) D
- .D BAWRK^LRBEBA(LRODT,LRSN,1,.LRBEY,.LRTEST)
  D VER^LRVER3A
  I $P(LRPARAM,U,14),$P($G(^LRO(68,LRAA,0)),U,16) D LOOK^LRCAPV1
  N LRX
@@ -108,7 +110,7 @@ CHG ; Check for changes, save results and create audit trail
  S LRUP=""
  F  S LRCHG=$O(LRSB(LRCHG)) Q:LRCHG<1  D
  . I '$D(LRSA(LRCHG)) S LRUP=1 Q
- . I $P(LRSA(LRCHG),"^")=""!($P(LRSA(LRCHG),"^")="pending") S LRSA(LRCHG,3)=1,LRUP=1 Q
+ . I $P(LRSA(LRCHG),"^")=""!($P(LRSA(LRCHG),"^")="pending") S LRUP=1 Q
  . I $P(LRSA(LRCHG),"^")'=$P(LRSB(LRCHG),"^") S LRUP=1,$P(LRSA(LRCHG,2),"^")=1 ; results changed
  . I $P(LRSA(LRCHG),"^",2)'=$P(LRSB(LRCHG),"^",2) S LRUP=1,$P(LRSA(LRCHG,2),"^",2)=1 ; normalcy flag changed
  . I $P(LRSA(LRCHG),"^",5)'=$P(LRSB(LRCHG),"^",5) D  ; units/normals changed

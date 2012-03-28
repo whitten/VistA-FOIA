@@ -1,6 +1,5 @@
-HLCSLM ;SFCIOFO/AC - HL7 LINK MANAGER ;03/19/2008  10:01
- ;;1.6;HEALTH LEVEL SEVEN;**49,57,109,123,140**;Oct 13, 1995;Build 5
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLCSLM ;SFCIOFO/AC - HL7 LINK MANAGER ;06/14/2005  10:29
+ ;;1.6;HEALTH LEVEL SEVEN;**49,57,109,123**;Oct 13, 1995
  ;
 EN ;Entry point for start up task
  N %,HLEVLCHK,HLTSKCNT
@@ -15,9 +14,7 @@ LOOP ;
  I $$CKLMSTOP G EXIT
  D SAVDOLRH
  D CHECKMST^HLEVMST ;HL*1.6*109 - Make sure event monitor current
- ; patch HL*1.6*140
- ; H 10
- H 5
+ H 10
  G LOOP
  ;
 EXIT N HLJ,X

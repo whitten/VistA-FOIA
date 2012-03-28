@@ -1,6 +1,5 @@
-HLOMSG ;ALB/CJM-HL7 - APIs for files 777/778 ;07/31/2008
- ;;1.6;HEALTH LEVEL SEVEN;**126,134,137,138**;Oct 13, 1995;Build 34
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOMSG ;ALB/CJM-HL7 - APIs for files 777/778 ;02/04/2004
+ ;;1.6;HEALTH LEVEL SEVEN;**126**;Oct 13, 1995
  ;
 GETMSG(IEN,MSG) ;
  ;Description: given the message ien=MSGIEN (required), it returns the MSG array containing information about the message, defined below.
@@ -42,7 +41,6 @@ GETMSG(IEN,MSG) ;
  ;     "PORT" - remote port over which the message was transmitted
  ;     "PURGE" - scheduled purge dt/tm
  ;     "QUEUE" - the queue that the message was placed on
- ;     "SEQUENCE QUEUE" - the sequence queue (optional)
  ;
  K MSG
  Q:'$G(IEN) 0
@@ -51,6 +49,7 @@ GETMSG(IEN,MSG) ;
  S NODE=$G(^HLB(IEN,0))
  S MSG("ID")=$P(NODE,"^")
  S MSG("BODY")=$P(NODE,"^",2)
+ Q:'MSG("BODY") 0
  S MSG("DIRECTION")=$S($E($P(NODE,"^",4))="O":"OUT",$E($P(NODE,"^",4))="I":"IN",1:"")
  S MSG("ACK TO")=$P(NODE,"^",3)
  S MSG("ACK BY")=$P(NODE,"^",7)
@@ -69,9 +68,6 @@ GETMSG(IEN,MSG) ;
  .S MSG("STATUS","ERROR TEXT")=$P(NODE,"^",21)
  .S MSG("STATUS","APP ACK RESPONSE")=$P(NODE,"^",10,11)
  .I MSG("STATUS","APP ACK RESPONSE")="^" S MSG("STATUS","APP ACK RESPONSE")=""
- .;** START 138 cjm
- .I MSG("DIRECTION")="IN" S MSG("STATUS","ACTION")=MSG("STATUS","APP ACK RESPONSE")
- .;**END 138 CJM
  .S MSG("STATUS","ACCEPT ACK RESPONSE")=$P(NODE,"^",12,13)
  .I MSG("STATUS","ACCEPT ACK RESPONSE")="^" S MSG("STATUS","ACCEPT ACK RESPONSE")=""
  .S MSG("STATUS","ACCEPT ACK'D")=$P(NODE,"^",17)
@@ -82,15 +78,6 @@ GETMSG(IEN,MSG) ;
  .S MSG("STATUS","ACCEPT ACK ID")=$P(NODE4,"^",2)
  .S MSG("STATUS","ACCEPT ACK MSA")=$P(NODE4,"^",3,99)
  ;
- S MSG("LINE COUNT")=0
- S MSG("HDR",1)=$G(^HLB(IEN,1))
- S MSG("HDR",2)=$G(^HLB(IEN,2))
- I 'MSG("BODY") D  Q 0
- .S MSG("DT/TM CREATED")=""
- .S MSG("BATCH")=""
- .S MSG("MESSAGE TYPE")=""
- .S MSG("EVENT")=""
- ;
  S NODE=$G(^HLA(MSG("BODY"),0))
  S MSG("DT/TM CREATED")=+NODE
  S MSG("BATCH")=+$P(NODE,"^",2)
@@ -98,12 +85,9 @@ GETMSG(IEN,MSG) ;
  I 'MSG("BATCH") D
  .S MSG("MESSAGE TYPE")=$P(NODE,"^",3)
  .S MSG("EVENT")=$P(NODE,"^",4)
- I MSG("DIRECTION")="OUT" D
- .N NODE5
- .S NODE5=$G(^HLB(IEN,5))
- .S MSG("STATUS","SEQUENCE QUEUE")=$P(NODE5,"^")
- .S MSG("STATUS","MOVED TO OUT QUEUE")=$P(NODE5,"^",2)
- .S MSG("STATUS","SEQUENCE EXCEPTION RAISED")=$P(NODE5,"^",3)
+ S MSG("LINE COUNT")=0
+ S MSG("HDR",1)=$G(^HLB(IEN,1))
+ S MSG("HDR",2)=$G(^HLB(IEN,2))
  Q 1
  ;
 HLNEXT(MSG,SEG) ;
@@ -212,8 +196,6 @@ ADDMSG2(HLMSTATE,MSH) ;
  ;   HLMSTATE() - (pass by reference, required)
  ;
  N FS,CS,VALUE
- I (HLMSTATE("UNSTORED LINES")+200)>HLMSTATE("SYSTEM","BUFFER"),$$SAVEMSG^HLOF778(.HLMSTATE) ;first stores body in 777, then headers in file 778
- ;
  S HLMSTATE("BATCH","CURRENT MESSAGE")=HLMSTATE("BATCH","CURRENT MESSAGE")+1
  S FS=$E(MSH(1),4)
  S CS=$E(MSH(1),5)
@@ -224,5 +206,5 @@ ADDMSG2(HLMSTATE,MSH) ;
  S HLMSTATE("CURRENT SEGMENT")=0
  S HLMSTATE("LINE COUNT")=0
  S HLMSTATE("UNSTORED LINES")=HLMSTATE("UNSTORED LINES")+200
- ;I HLMSTATE("UNSTORED LINES")>HLMSTATE("SYSTEM","BUFFER"),$$SAVEMSG^HLOF778(.HLMSTATE) ;first stores stuff in 777, then headers in file 778
+ I HLMSTATE("UNSTORED LINES")>HLMSTATE("SYSTEM","BUFFER"),$$SAVEMSG^HLOF778(.HLMSTATE) ;first stores stuff in 777, then headers in file 778
  Q

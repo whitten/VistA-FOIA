@@ -1,6 +1,5 @@
-RARTR ;HISC/CAH COLUMBIA/REB AISC/MJK,RMO-Queue/print Reports ;06/10/09  06:30
- ;;5.0;Radiology/Nuclear Medicine;**5,13,16,27,43,55,75,92,99**;Mar 16, 1998;Build 5
- ;Supported IA #2056 reference to GET1^DIQ
+RARTR ;HISC/CAH COLUMBIA/REB AISC/MJK,RMO-Queue/print Reports ;11/27/98  09:05
+ ;;5.0;Radiology/Nuclear Medicine;**5,13,16,27,43**;Mar 16, 1998
 PRT ; Begin print/build of e-mail message
  ;
  ; ** NOTE: If the layout of this output is changed  **
@@ -14,26 +13,11 @@ PRT ; Begin print/build of e-mail message
  ; **            Secondary Diagnostic Codes:         **
  ; **            Primary Interpreting Staff:         **
  ;
- Q:'$D(^RARPT(+$G(RARPT),0))
- ; Use and Set if running in the foreground and Writing to the device
- I '$D(RAUTOE) D
- . U IO
- . S RAFFLF=IOF
- . S RAORIOF=RAFFLF
- ;
- W:$Y>0&('$D(RAUTOE)) @RAFFLF   ; If RAUTOE defined build mail msg
- S X=$G(^RARPT(+$G(RARPT),0))   ;  RAORIOF=RAFFLF
- ;
+ S RAFFLF=IOF U:'$D(RAUTOE) IO Q:'$D(^RARPT(+$G(RARPT),0))
+ W:$Y>0&('$D(RAUTOE)) @RAFFLF ;If RAUTOE defined build mail msg
+ S X=$G(^RARPT(+$G(RARPT),0)),RAORIOF=RAFFLF
  ;S RAFFLF=$S('$D(ORACTION):RAFFLF,ORACTION'=8:RAFFLF,1:"!")
  D INIT ; setup exam/report variables
- ;start p99
- I $$PTSEX^RAUTL8(RADFN)="F",'$D(RAUTOE) D
- .N RA700332,RA700380 S RA700332=$$GET1^DIQ(70.03,$G(RACNI)_","_$G(RADTI)_","_$G(RADFN),32)
- .W:RA700332'="" !,"Pregnancy Screen: ",RA700332
- .S RA700380=$$GET1^DIQ(70.03,$G(RACNI)_","_$G(RADTI)_","_$G(RADFN),80)
- .I (RA700332'="Patient answered no"),(RA700380'="") S RA700380="Pregnancy Screen Comment: "_RA700380 D OUTTEXT^RAUTL9(RA700380,"",1,75,"","!","")
- .W !
- ;end of p99
  I RAY0<0!(RAY1<0)!(RAY2<0)!(RAY3<0) K RAFFLF Q  ; data nodes missing
  ;
 PRT1 I $D(RAUTOE) D
@@ -54,7 +38,7 @@ PRT1 I $D(RAUTOE) D
  . D MODS^RAUTL2,OUT1^RARTR3
  . D:+$P(RAY3,"^",28) RDIO^RARTUTL(+$P(RAY3,"^",28))  Q:$D(RAOOUT)
  . D:+$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"RX",0)) PHARM^RARTUTL(RACNI_","_RADTI_","_RADFN_",")
- . ;W:'$D(RAUTOE) !
+ . W:'$D(RAUTOE) !
  . S:$D(RAUTOE) ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))=""
  . Q
  I $P(RAY3,"^",25)>1 D
@@ -139,19 +123,13 @@ END K:$D(RAOOUT) XQAID,XQAKILL
  K RAVERS,RAFOOT,RAY0,RAY1,RAY2,RAY3,RALOC,RAFMT,RAMOD,RASTFL,RALB,RALBR
  K RALBRT,RALBS,RALBST,RAV,RAP,RATAB,RAXX,VAL,VAR,RADFN,RADTI,RACN,RADTE
  K RARPT,RAHDFM,RAFTFM,RAV,RAIOF,RABTCH,RAOOUT,RAPIR,RAPIS,VAERR,Z
- ; K RASTRSK S RAFFLF=RAORIOF K RAORIOF,RAFFLF,RAERRFLG
- ; 05/15/08 BAY/KAM Patch RA*5*92 Added Conditional Kill to next line
- ; to support an AMIE interface (IA 708)
- K RASTRSK,RAORIOF,RAFFLF,RAERRFLG K:'($D(RAMIE)#2) DFN
- ;the next kill line corrects the CPRS V27 report display issue when repeated
- ;on same patient P92
- K %,DIW,DIWF,DIWI,DIWL,DIWT,DIWTC,DIWX,RAACNT,RADUPHX,RANUM,RAREZON,RAST
+ K RASTRSK S RAFFLF=RAORIOF K RAORIOF,RAFFLF,RAERRFLG
  Q
 Q ; Queue the report
  S ZTDTH=$H,ZTRTN="DQ^RARTR",ZTSAVE("RARPT")="" S:$D(RARTMES) ZTSAVE("RARTMES")=""
  D ZIS^RAUTL Q:RAPOP
  ;
-DQ S U="^",X="T",%DT="" D ^%DT K %DT S DT=Y G PRT
+DQ S U="^",X="T",%DT="" D ^%DT S DT=Y G PRT
  ;
 INIT ; initialize exam/report variables
  ; main variables set:

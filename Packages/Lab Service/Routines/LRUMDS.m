@@ -1,4 +1,6 @@
-LRUMDS ;AVAMC/REG - MD SELECTED PATIENT GROUPS ;10/15/91  19:22 ;
+LRUMDS ; IHS/DIR/FJE - MD SELECTED PATIENT GROUPS 10/15/91 19:22 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!?19,"1. Single patient",!?19,"2. Group of patients",!?19,"3. Patients for a ward",!?19,"4. Patients for a clinic" R !,"Select 1,2,3 or 4: ",X:DTIME I X=""!(X[U) K X Q
  I X<1!(X>4) W $C(7) G LRUMDS

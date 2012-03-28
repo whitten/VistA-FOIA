@@ -1,7 +1,13 @@
-DGPMV36 ;ALB/MIR - TREATING SPECIALTY TRANSFER, CONTINUED ; SEP 15 1989@12
+DGPMV36 ;ALB/MIR - TREATING SPECIALTY TRANSFER, CONTINUED ; [ 03/15/2002  10:14 AM ]
  ;;5.3;Registration;;Aug 13, 1993
+ ;IHS/ANMC/LJF  2/21/2001 Used IHS input templates
+ ;              3/09/2001 Added IHS ^utility nodes for event driver
+ ;              7/06/2001 Removed stuffing of DX into comments
+ ;              7/25/2001 Added check for silent API
+ ;              7/26/2001 Added check for DGQUIET to write statements
  ;
- I '$P(DGPMA,"^",9) S DGPMA="",DIK="^DGPM(",DA=DGPMDA D ^DIK K DIK W !,"Incomplete Treating Specialty Transfer...Deleted"
+ ;I '$P(DGPMA,"^",9) S DGPMA="",DIK="^DGPM(",DA=DGPMDA D ^DIK K DIK W !,"Incomplete Treating Specialty Transfer...Deleted"  ;IHS/ANMC/LJF 7/26/2001
+ I '$P(DGPMA,"^",9) S DGPMA="",DIK="^DGPM(",DA=DGPMDA D ^DIK K DIK W:'$D(DGQUIET) !,"Incomplete Treating Specialty Transfer...Deleted"  ;IHS/ANMC/LJF 7/26/2001
  Q
  ;
 DICS ; -- check that it is a PROVIDER/SPECIALTY change
@@ -41,18 +47,31 @@ NEW ; -- add a specialty mvt
  S X=DGPMPHY0,Y=+X_U_DGPMT_U_$P(X,U,3),$P(Y,U,14)=$P(X,U,14),$P(Y,U,24)=DGPMPHY
  S X=+X,DGPM0ND=Y D NEW^DGPMV3
  S DGPMSP=$S(+Y>0:+Y,1:"") S DGPMN=(+Y>0)
- I DGPMSP,$P(DGPMPHY0,"^",2)=1,$P(DGPMPHY0,"^",10)]"" S DR="99///"_$P(DGPMPHY0,"^",10),DA=DGPMSP,DIE="^DGPM(" D ^DIE
+ ;I DGPMSP,$P(DGPMPHY0,"^",2)=1,$P(DGPMPHY0,"^",10)]"" S DR="99///"_$P(DGPMPHY0,"^",10),DA=DGPMSP,DIE="^DGPM(" D ^DIE   ;IHS/ANMC/LJF 7/6/2001
  K DIE,DIC,DA,DR,DGPM0ND
  Q
 EDIT ; -- edit specialty mvt
  N DGPMX,DGPMP
  I DGPMN S (DGPMP,^UTILITY("DGPM",$J,6,DGPMSP,"P"))="",DIE("NO^")=""
  I 'DGPMN S (DGPMP,^UTILITY("DGPM",$J,6,DGPMSP,"P"))=^DGPM(DGPMSP,0)
+ ;
+ ;IHS/ANMC/LJF 3/09/2001 add IHS ^utility nodes
+ I DGPMN S ^UTILITY("DGPM",$J,6,DGPMSP,"IHSP")=""
+ I 'DGPMN S ^UTILITY("DGPM",$J,6,DGPMSP,"IHSP")=$G(^DGPM(DGPMSP,"IHS"))
+ ;IHS/ANMC/LJF 3/09/2001 end of changes
+ ;
  S Y=DGPMSP D PRIOR
  S DGPMN=(+DGPMP=+DGPMPHY0) ;set to 1 no dt/time change to bypass x-refs
- S DGPMX=+DGPMPHY0,DA=DGPMSP,DIE="^DGPM(",DR="[DGPM SPECIALTY TRANSFER]"
+ ;
+ ;IHS/ANMC/LJF 2/21/2001 changed to IHS input template
+ ;S DGPMX=+DGPMPHY0,DA=DGPMSP,DIE="^DGPM(",DR="[DGPM SPECIALTY TRANSFER]"
+ S DGPMX=+DGPMPHY0,DA=DGPMSP,DIE="^DGPM(",DR="[BDGPM SPECIALTY TRANSFER]"
+ I $G(BDGAPI) S DR="[BDGPM SPECIALTY TRANSFER API]"  ;IHS/ANMC/LJF 7/25/2001
+ ;IHS/ANMC/LJF 2/21/2001 end of change
+ ;
  K DQ,DG D ^DIE
  S ^UTILITY("DGPM",$J,6,DGPMSP,"A")=$S($D(^DGPM(DGPMSP,0)):^(0),1:"")
+ S ^UTILITY("DGPM",$J,6,DGPMSP,"IHSA")=$G(^DGPM(DGPMSP,"IHS"))  ;IHS/ANMC/LJF 3/09/2001
  S Y=DGPMSP D AFTER
  Q
  ;

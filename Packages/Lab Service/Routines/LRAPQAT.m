@@ -1,4 +1,5 @@
-LRAPQAT ;AVAMC/REG/CYM - TC CODE SEARCH ;7/31/97  09:38
+LRAPQAT ; IHS/DIR/AAB - TC CODE SEARCH 09:38 ; [ 05/28/98 2:04 PM ]
+ ;;5.2;LR;**1002,1003**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72,85,173**;Sep 27, 1994
  D END,A^LRAPD G:'$D(Y) END D W G:%'=1 END
  W ! F B=1:1 D ASK Q:Z=""!(Z[U)
@@ -21,7 +22,8 @@ D S LRE=0 F LRF=0:0 S LRE=$O(^TMP($J,LRA,LRDFN,LRD,LRE)) Q:LRE=""!(LR("Q"))  D:$
 X S LRZ=LRZ+1,A=$P(X,"^",6) S:A="" A="?" I Y="" S LRM("NONE")=LRM("NONE")+1,^TMP($J,"NONE",LRDFN,+X,A)="" D B Q
  I $D(LRM(Y)) S ^TMP($J,Y,LRDFN,+X,A)="",LRM(Y)=LRM(Y)+1 D B
  Q
-B S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,LR)=$P(X,"^",2),X=^DIC(LR,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU S ^TMP("LRAP",$J,$P(X,"^"),LRDFN)=SSN_"^"_$S(LR=2:Y,1:"")_"^"_$P(X,"^",3)_"^"_$P(X,"^",2) Q
+B ;S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,LR)=$P(X,"^",2),X=^DIC(LR,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU S ^TMP("LRAP",$J,$P(X,"^"),LRDFN)=SSN_"^"_$S(LR=2:Y,1:"")_"^"_$P(X,"^",3)_"^"_$P(X,"^",2) Q
+ S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,LR)=$P(X,"^",2),X=^DIC(LR,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU S ^TMP("LRAP",$J,$P(X,"^"),LRDFN)=HRCN_"^"_$S(LR=2:Y,1:"")_"^"_$P(X,"^",3)_"^"_$P(X,"^",2) Q  ;IHS/DIR TUC/AAB 5/4/98
  ;
 ASK W !,"Select a number from 0 to 9 (Choice# ",B,"): " R Z:DTIME Q:Z=""!(Z[U)  I Z'?1N W $C(7),!!?18,"Only numbers 0,1,2,3,4,5,6,7,8 or 9 allowed.",!?18,"A repeat selection replaces the original one.",! G ASK
 A S L(1)="S",L=68,X=Z D ^LRUB
@@ -32,7 +34,8 @@ C W !,"ENTER IDENTIFYING COMMENT: ",X,"// " R X(1):DTIME I '$T!(X(1)[U) W $C(7),
  S LRM(Z,0)=X(1),LRM(Z)=0 Q
 H2 I $D(LR("F")),$E(IOST,1,2)="C-" D M^LRU Q:LR("Q")
  D F^LRU W !,LRO(68)," -TC Code Search from ",LRSTR," to ",LRLST Q
-H D H2 W !,"Patient",?35,"SSN",?45,"Acc#",?60,"Date obtained",!,LR("%") Q
+H ;D H2 W !,"Patient",?35,"SSN",?45,"Acc#",?60,"Date obtained",!,LR("%") Q
+ D H2 W !,"Patient",?35,"HRCN",?45,"Acc#",?60,"Date obtained",!,LR("%") Q  ;IHS/DIR TUC/AAB 5/4/98
 H1 D H W !!,"TC Code: ",LRA," ",LRM(LRA,0) Q
  ;
 END K ^TMP("LRAP",$J) D V^LRU Q

@@ -1,6 +1,7 @@
-LRBLJP ;AVAMC/REG - BB INVENTORY PRINT OPTS ;3/9/94  13:03 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJP ; IHS/DIR/FJE - BB INVENTORY PRINT OPTS 3/9/94 13:03 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
 S K DIC W ! S DIC=65,DIC(0)="AEFQM" D ^DIC G:X=""!(X[U) END S DIC="^LRD(65,",DA=+Y,DR="0:ZZ" D EN^DIQ G S
  ;
 P W ! S DIC=65,DIC(0)="AEFQM",L=0 D ^DIC G:X=""!(X[U)!($A(X)=46) END S X=$P(Y,U,2),FLDS="[CAPTIONED]",BY="UNIT ID",(FR,TO)=X,DHD="Unit inquiry "_$$INS^LRU D EN1^DIP K DIC Q

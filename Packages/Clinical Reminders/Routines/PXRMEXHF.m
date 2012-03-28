@@ -1,6 +1,6 @@
-PXRMEXHF ; SLC/PKR - Routines to select and deal with host files. ;12/02/2009
- ;;2.0;CLINICAL REMINDERS;**12,17**;Feb 04, 2005;Build 102
- ;============================================
+PXRMEXHF ; SLC/PKR - Routines to select and deal with host files. ;09/24/2001
+ ;;1.5;CLINICAL REMINDERS;**5,7**;Jun 19, 2000
+ ;======================================================================
 CHF(SUCCESS,LIST,PATH,FILE) ;Put the repository entries in LIST into the
  ;host file specified by PATH and FILE.
  N GBL,LIEN,RIEN
@@ -19,125 +19,126 @@ CHF(SUCCESS,LIST,PATH,FILE) ;Put the repository entries in LIST into the
  . S SUCCESS(LIEN)=$$GATF^%ZISH(GBL,4,PATH,FILE)
  Q
  ;
- ;============================================
-GETEHF(EXT) ;Get an existing host file.
- ;Build a list of all .EXT files in the current directory.
- N DEXT,DIR,DIROUT,DIRUT,DTOUT,DUOUT,FILESPEC,FILELIST,PATH,X,Y
- I EXT="" D
- . S DIR(0)="FAU"_U_"1:32"
- . S DIR("A")="Enter a file extension: "
- . S DIR("?")="A file specification has the format name.extension."
- . D ^DIR
- . S EXT=Y
- I $D(DIRUT) Q ""
- S DEXT="*."_EXT
- S FILESPEC(DEXT)=""
+ ;======================================================================
+GETEHF() ;Get an existing host file.
+ ;Build a list of all .PRD files in the current directory.
+ N FILESPEC,FILELIST,PATH
+ S FILESPEC("*.PRD")=""
  S PATH=$$PWD^%ZISH
+ N DIR,X,Y
+ K DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="FAU"_U_"1:32"
  S DIR("A")="Enter a path: "
  S DIR("B")=PATH
  S DIR("?",1)="A host file is a file on your host system."
- S DIR("?",2)="A complete host file consists of a path, file name, and extension."
+ S DIR("?",2)="A complete host file consists of a path, file name, and extension"
  S DIR("?",3)="A path consists of a device and directory name."
- I $G(EXT)'="" S DIR("?",4)="The default extension is "_EXT_"."
+ S DIR("?",4)="The default extension is prd (Packed Reminder Definition)."
  S DIR("?")="The default path is "_PATH
- D ^DIR
- I $D(DIRUT) Q ""
+ D ^DIR K DIR
+ I $D(DIROUT) S DTOUT=1
+ I $D(DIRUT) S DTOUT=1
+ I $D(DTOUT)!($D(DUOUT)) Q ""
  S PATH=Y
  S Y=$$LIST^%ZISH(PATH,"FILESPEC","FILELIST")
  I Y D
- . W !,"The following "_EXT_" files were found in ",PATH
+ . W !,"The following PRD files were found in ",PATH
  . S FILE=""
- . F  S FILE=$O(FILELIST(FILE)) Q:FILE=""  W !,?2,FILE
- E  W !,"No "_EXT_" files were found in path ",PATH
+ . F  S FILE=$O(FILELIST(FILE)) Q:FILE=""  D
+ .. W !,?2,FILE
+ E  W !,"No PRD files were found in path ",PATH
  ;
- K DIR,X,Y
+ K DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="FAOU"_U_"1:32"
  S DIR("A")="Enter a file name: "
- S DIR("?",1)="A file name has the format NAME.EXTENSION, the default extension is "_EXT
+ S DIR("?",1)="A file name has the format NAME.EXTENSION, the default extension is PRD"
  S DIR("?",2)="Therefore if you type in FILE for the file name, the host file will be"
- S DIR("?")="  "_PATH_"FILE."_EXT
- D ^DIR
- I $D(DIRUT) Q ""
+ S DIR("?")="  "_PATH_"FILE.PRD"
+ D ^DIR K DIR
+ I $D(DIROUT) S DTOUT=1
+ I $D(DIRUT) S DTOUT=1
+ I $D(DTOUT)!($D(DUOUT)) Q ""
  S FILE=Y
  ;Add the default extension if there isn't one.
- I FILE'["." S FILE=FILE_"."_EXT
+ I FILE'["." S FILE=FILE_".PRD"
  Q PATH_U_FILE
  ;
- ;============================================
-GETHFN(EXT) ;Get the name of a host file to store repository entries in.
- N DIR,DIROUT,DIRUT,DTOUT,DUOUT,FILE,HFNAME,PATH,X,Y
+ ;======================================================================
+GETHFS() ;Get the name of a host file to store repository entries in.
+ N DIROUT,DIRUT,DTOUT,DUOUT,FILE,HFNAME,PATH
 GETHF ;As a default set the path to the current directory.
  S PATH=$$PWD^%ZISH
+ N DIR,X,Y
+ K DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="FAU"_U_"1:32"
  S DIR("A")="Enter a path: "
  S DIR("B")=PATH
  S DIR("?",1)="A host file is a file on your host system."
- S DIR("?",2)="A complete host file consists of a path, file name, and extension."
+ S DIR("?",2)="A complete host file consists of a path, file name, and extension"
  S DIR("?",3)="A path consists of a device and directory name."
- I $G(EXT)'="" S DIR("?",4)="The default extension is "_EXT_"."
+ S DIR("?",4)="The default extension is prd (Packed Reminder Definition)."
  S DIR("?")="The default path is "_PATH
- D ^DIR
- I $D(DIRUT) Q 0
+ D ^DIR K DIR
+ I $D(DIROUT) S DTOUT=1
+ I $D(DIRUT) S DTOUT=1
+ I $D(DTOUT)!($D(DUOUT)) Q 0
  S PATH=Y
- K DIR,X,Y
+ K DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="FAU"_U_"1:32"
  S DIR("A")="Enter a file name: "
- I $G(EXT)'="" D
- . S DIR("?",1)="A file name has the format NAME.EXTENSION, the default extension is "_EXT
- . S DIR("?",2)="Therefore if you type in FILE for the file name, the host file will be"
- . S DIR("?")="  "_PATH_"FILE."_EXT
- E  D
- . S DIR("?",1)="A file name has the format NAME.EXTENSION"
- . S DIR("?")="There is no default extension so you must input the complete file name."
- D ^DIR
- I $D(DIRUT) Q 0
+ S DIR("?",1)="A file name has the format NAME.EXTENSION, the default extension is PRD"
+ S DIR("?",2)="Therefore if you type in FILE for the file name, the host file will be"
+ S DIR("?")="  "_PATH_"FILE.PRD"
+ D ^DIR K DIR
+ I $D(DIROUT) S DTOUT=1
+ I $D(DIRUT) S DTOUT=1
+ I $D(DTOUT)!($D(DUOUT)) Q 0
  S FILE=Y
  ;Add the default extension if there isn't one.
- I FILE'["." S FILE=FILE_"."_EXT
- I $P(FILE,".",2)="" W !,"The file name must include an extension." G GETHF
+ I FILE'["." S FILE=FILE_".PRD"
  S HFNAME=PATH_FILE
+ K DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="YAO"
- S DIR("A")="Host file is "_HFNAME_" is this correct?: "
+ S DIR("A")="Will save selected entries to host file "_HFNAME_"?: "
  S DIR("B")="Y"
- K X,Y
- D ^DIR
- I $D(DIRUT) Q 0
+ D ^DIR K DIR
+ I $D(DIROUT) S DTOUT=1
+ I $D(DIRUT) S DTOUT=1
+ I $D(DTOUT)!($D(DUOUT)) Q 0
  I 'Y G GETHF
  Q PATH_U_FILE
  ;
- ;============================================
+ ;======================================================================
 LHF(SUCCESS,PATH,FILE) ;Load a host file containing repository entries into
  ;the repository.
- N CURRL,CSUM,DATEP,DONE,EXTYPE,FDA,GBL,IENROOT,IND,LINE
- N MSG,NENTRY,NLINES,RETMP,RNAME,SITE,SOURCE,SSOURCE,US,USER,VRSN
- K ^TMP($J,"EXHF")
- S GBL="^TMP($J,""EXHF"",1,0)"
+ N CURRL,CSUM,DATEP,DONE,FDA,GBL,IENROOT,IND,LINE,MSG,NENTRY,NLINES
+ N RETMP,RNAME,SITE,SOURCE,SSOURCE,US,USER,VRSN
+ K ^TMP("PXRMEXHF",$J)
+ S GBL="^TMP(""PXRMEXHF"",$J,1,0)"
  S GBL=$NA(@GBL)
  S SUCCESS=$$FTG^%ZISH(PATH,FILE,GBL,3)
  I 'SUCCESS Q
  ;Make sure it has the correct format.
- I (^TMP($J,"EXHF",1,0)'["xml")!(^TMP($J,"EXHF",2,0)'="<REMINDER_EXCHANGE_FILE_ENTRY>") D  Q
+ I (^TMP("PXRMEXHF",$J,1,0)'["xml")!(^TMP("PXRMEXHF",$J,2,0)'="<REMINDER_EXCHANGE_FILE_ENTRY>") D  Q
  . W !,"This host file does not have the correct format!"
  . H 2
  . S SUCCESS=0
- . K ^TMP($J,"EXHF")
+ . K ^TMP("PXRMEXHF",$J)
  W !,"Loading host file ",PATH,FILE
- S RETMP="^TMP($J,""EXLHF"")"
+ S RETMP="^TMP(""PXRMEXLHF"",$J)"
  S (CURRL,DONE,NENTRY,NLINES,SSOURCE)=0
  F  Q:DONE  D
  . S CURRL=CURRL+1
- . I '$D(^TMP($J,"EXHF",CURRL,0)) S DONE=1 Q
- . S LINE=^TMP($J,"EXHF",CURRL,0)
+ . I '$D(^TMP("PXRMEXHF",$J,CURRL,0)) S DONE=1 Q
+ . S LINE=^TMP("PXRMEXHF",$J,CURRL,0)
  . S NLINES=NLINES+1
- . S ^TMP($J,"EXLHF",NLINES,0)=LINE
+ . S ^TMP("PXRMEXLHF",$J,NLINES,0)=LINE
  . I LINE["<PACKAGE_VERSION>" S VRSN=$$GETTAGV^PXRMEXU3(LINE,"<PACKAGE_VERSION>")
- . I LINE["<EXCHANGE_TYPE>" S EXTYPE=$$GETTAGV^PXRMEXU3(LINE,"<EXCHANGE_TYPE>",1)
  . I LINE="<SOURCE>" S SSOURCE=1
  . I SSOURCE D
- .. I LINE["<NAME>" S RNAME=$$GETTAGV^PXRMEXU3(LINE,"<NAME>",1)
- .. I LINE["<USER>" S USER=$$GETTAGV^PXRMEXU3(LINE,"<USER>",1)
- .. I LINE["<SITE>" S SITE=$$GETTAGV^PXRMEXU3(LINE,"<SITE>",1)
+ .. I LINE["<NAME>" S RNAME=$$GETTAGV^PXRMEXU3(LINE,"<NAME>")
+ .. I LINE["<USER>" S USER=$$GETTAGV^PXRMEXU3(LINE,"<USER>")
+ .. I LINE["<SITE>" S SITE=$$GETTAGV^PXRMEXU3(LINE,"<SITE>")
  .. I LINE["<DATE_PACKED>" S DATEP=$$GETTAGV^PXRMEXU3(LINE,"<DATE_PACKED>")
  . I LINE="</SOURCE>" D
  .. S SSOURCE=0
@@ -147,7 +148,7 @@ LHF(SUCCESS,PATH,FILE) ;Load a host file containing repository entries into
  .. S NLINES=0
  .. S NENTRY=NENTRY+1
  ..;Make sure it has the correct format.
- .. I (^TMP($J,"EXLHF",1,0)'["xml")!(^TMP($J,"EXLHF",2,0)'="<REMINDER_EXCHANGE_FILE_ENTRY>") D  Q
+ .. I (^TMP("PXRMEXLHF",$J,1,0)'["xml")!(^TMP("PXRMEXLHF",$J,2,0)'="<REMINDER_EXCHANGE_FILE_ENTRY>") D  Q
  ... W !,"There is a problem reading this host file try a new copy of it."
  ... S SUCCESS=0
  ... H 2
@@ -165,20 +166,19 @@ LHF(SUCCESS,PATH,FILE) ;Load a host file containing repository entries into
  ... D UPDATE^PXRMEXPU(.US,.FDA,.IENROOT)
  ... S SUCCESS(NENTRY)=US
  ...;Create the description and save the data.
- ... N DESCT,DESL,KEYWORDT
+ ... N DESCT,KEYWORDT
  ... D DESC^PXRMEXU3(RETMP,.DESCT)
  ... D KEYWORD^PXRMEXU3(RETMP,.KEYWORDT)
- ... S DESL("RNAME")=RNAME,DESL("SOURCE")=SOURCE,DESL("DATEP")=DATEP
- ... S DESL("VRSN")=VRSN
- ... D DESC^PXRMEXU1(IENROOT(1),.DESL,"DESCT","KEYWORDT")
- ... M ^PXD(811.8,IENROOT(1),100)=^TMP($J,"EXLHF")
- .. K ^TMP($J,"EXLHF")
+ ... D DESC^PXRMEXU1(IENROOT(1),RNAME,SOURCE,DATEP,"DESCT","KEYWORDT")
+ ... M ^PXD(811.8,IENROOT(1),100)=^TMP("PXRMEXLHF",$J)
+ .. K ^TMP("PXRMEXLHF",$J)
  ;
  ;Check the success of the entry installs.
  S SUCCESS=1
  S IND=""
  F  S IND=$O(SUCCESS(IND)) Q:+IND=0  D
  . I 'SUCCESS(IND) S SUCCESS=0 Q
- K ^TMP($J,"EXHF"),^TMP($J,"EXLHF")
+ K ^TMP("PXRMEXHF",$J)
+ K ^TMP("PXRMEXLHF",$J)
  Q
  ;

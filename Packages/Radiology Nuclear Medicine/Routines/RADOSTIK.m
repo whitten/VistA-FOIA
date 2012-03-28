@@ -1,10 +1,5 @@
 RADOSTIK ;HISC/GJC-Routine to print dosage tickets ;8/1/97  14:07
- ;;5.0;Radiology/Nuclear Medicine;**65**;Mar 16, 1998;Build 8
- ;
- ;Supported IA #2056 reference to GET1^DIQ
- ;Supported IA #10103 reference to NOW^XLFDT and FMTE^XLFDT
- ;Supported IA #10104 reference to CJ^XLFSTR and REPEAT^XLFSTR
- ;Supported IA #2053 reference to FILE^DIE
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
 EN1(RADFN,RADTI,RACNI) ; the usual suspects
  N I,RA1,RADTIK,RARDIO,RAY2,RAY3
@@ -55,7 +50,7 @@ PRINT ; Print out dosage ticket(s).  If more than one rpharm, print one
  . W !,"Study                   : ",$E($$GET1^DIQ(71,+$P(RAY3,"^",2)_",",.01),1,50)
  . S RA702=$G(^RADPTN(RARDIO,"NUC",RA1,0))
  . W !!,"Radiopharmaceutical     : "
- . S RAX=$$EN1^RAPSAPI(+$P(RA702,"^"),.01) S:RAX="" RANOTE=""
+ . S RAX=$$GET1^DIQ(50,+$P(RA702,"^")_",",.01) S:RAX="" RANOTE=""
  . W $S(RAX]"":RAX,1:"*****") K RAX
  . W !,"Form                    : ",$$GET1^DIQ(70.21,RA1_","_RARDIO_",",15)
  . D GETS^DIQ(71.9,+$P(RA702,"^",13)_",","*","","RA719")

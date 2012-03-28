@@ -1,4 +1,5 @@
-LADKERM2 ;SLC/RWF/DLG - BUILD A KERMIT FILE TO SEND  ;2/8/90  14:50 ;
+LADKERM2 ; IHS/DIR/FJE - BUILD A KERMIT FILE TO SEND 2/8/90 14:50 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;Call with X=data, LAKTYPE=record type, TSK=instrument #
  ;Files the records in ^LA(TSK,"O",n)

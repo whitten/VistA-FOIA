@@ -1,5 +1,10 @@
-TIUPEVNT ; SLC/JER - Event logger for upload/filer ;3/30/05
- ;;1.0;TEXT INTEGRATION UTILITIES;**3,21,81,131,113,184**;Jun 20, 1997
+TIUPEVNT ; SLC/JER - Event logger for upload/filer ;4/11/02
+ ;;1.0;TEXT INTEGRATION UTILITIES;**3,21,81,131**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/26/2003 include chart # in filing alerts messages
+ ;                        changed PID to HRCN
+ ;                        added code to escape from alert processing
+ ;                        added ability to delete filing errors
+ ;
 MAIN(BUFDA,ETYPE,ECODE,TIUTYPE,FDA,MSG) ; ---- Controls branching
  N EVNTDA
  ; ---- ETYPE = 1: Filing error event
@@ -17,7 +22,7 @@ LOG(BUFDA,ETYPE,ECODE,TIUTYPE,EVNTDA,FDA,MSG) ; ---- Register event in
  Q:+Y'>0
  ; ---- File upload log record
  S DIE=DIC,(EVNTDA,DA)=+Y,ERRMSG=$$ERRMSG(ETYPE,ECODE,TIUTYPE,.FDA,.MSG)
- S DR=".02////"_$P(BUFREC,U,2)_";.03////"_TIUTYPE_";.04////"_ERRMSG_";.06////"_$S(+ETYPE:0,1:"")_";.08////"_ETYPE_";.09////"_$S($G(TIUINST):TIUINST,1:DUZ(2))
+ S DR=".02////"_$P(BUFREC,U,2)_";.03////"_TIUTYPE_";.04////"_ERRMSG_";.06////"_$S(+ETYPE:0,1:"")_";.08////"_ETYPE
  D ^DIE K DA
  I ETYPE'=1 Q
  ; ---- Store Header of failed record in log
@@ -56,13 +61,15 @@ ERRMSG(ETYPE,ECODE,TIUTYPE,FDA,MSG) ; ---- Set error messages
  ; ---- Set filing error message
  I +ETYPE=1,+ECODE D  G ERRMSX
  . S DIC=8925.3,DIC(0)="MXZ",X="`"_ECODE D ^DIC
- . S Y="FILING ERROR: "_$G(TIUTYPE)_" "_$P(Y(0),U,2)
+ . ;S Y="FILING ERROR: "_$G(TIUTYPE)_" "_$P(Y(0),U,2)               ;IHS/ITSC/LJF 02/26/2003
+ . S Y="FILING ERROR: "_$$GETHRCN_" "_$G(TIUTYPE)_" "_$P(Y(0),U,2)  ;IHS/ITSC/LJF 02/26/2003 add chart # to alert message
  ; ---- If target file is 8925, get info on entry & set missing fld msg
  I $G(MSG("DIERR",1,"PARAM","FILE"))=8925 D  G ERRMSX
  . N TIU,DA S DA=+$O(FDA(8925,"")) D GETTIU^TIULD(.TIU,DA)
  . S Y=$$NAME^TIULS(TIU("PNM"),"LAST,FI MI ")
  . S:$G(TIUHDR("TIUTITLE"))]"" TIUTYPE=TIUHDR("TIUTITLE")
- . S Y=Y_TIU("PID")_": "_$$DATE^TIULS(+TIU("EDT"),"MM/DD/YY ")_$G(TIUTYPE)_" is missing fields."
+ . ;S Y=Y_TIU("PID")_": "_$$DATE^TIULS(+TIU("EDT"),"MM/DD/YY ")_$G(TIUTYPE)_" is missing fields."  ;IHS/ITSC/LJF 02/26/2003
+ . S Y=Y_TIU("HRCN")_": "_$$DATE^TIULS(+TIU("EDT"),"MM/DD/YY ")_$G(TIUTYPE)_" is missing fields."  ;IHS/ITSC/LJF 02/26/2003 chgd to HRCN
  ; ---- Otherwise get message from FM Filer error msg array
  S Y=$G(MSG("DIERR",1,"TEXT",1))
 ERRMSX Q Y
@@ -90,7 +97,7 @@ ALERT(BUFDA,ERRMSG,EVNTDA) ; ---- Send alerts for filing errors
  Q
 DISPLAY ; ---- Alert followup action for filing errors
  N DIC,INQUIRE,RETRY,DWPK,EVNTDA,TIU K XQAKILL,RESCODE,TIUTYPE,TIUDONE
- N TIUEVNT,TIUSKIP,TIUBUF,PRFILERR
+ N TIUEVNT,TIUSKIP,TIUBUF
  I '$D(TIUPRM0)!'$D(TIUPRM1) D SETPARM^TIULE
  ; Set EVNTDA for backward compatibility, TIUEVNT for PN resolve code
  S (EVNTDA,TIUEVNT)=+$P(XQADATA,";",3)
@@ -109,16 +116,21 @@ DISPLAY ; ---- Alert followup action for filing errors
  . . ; Redundant if all RESCODEs do RESOLVE:
  . . I +$G(TIUDONE),+$G(TIUEVNT) D RESOLVE(+$G(TIUEVNT))
  . W !!,"Filing error resolution code could not be found for this document type.",!,"Please edit the buffered data directly and refile."
+ ;
+ I $G(INQUIRE)=U K XQX1 Q           ;IHS/ITSC/LJF 02/26/2003 added escape from alert processing
+ ;
  W !!,"You may now edit the buffered upload data in an attempt to resolve error:",!,$P(XQADATA,";",2),!
  I '$$READ^TIUU("EA","Press RETURN to continue and edit the buffer or '^' to exit: ") G DISPX
  S DIC="^TIU(8925.2,"_TIUBUF_",""TEXT"",",DWPK=1 D EN^DIWE
  S RETRY=$$READ^TIUU("YO","Now would you like to retry the filer","YES","^D FIL^TIUDIRH")
- ; -- If refiling, tell Patient Record Flag LOOKUP to ask for flag link:
- I +RETRY S PRFILERR=1
- ; -- Refile
- I +RETRY D ALERTDEL(TIUBUF)
- I +RETRY D RESOLVE(TIUEVNT,1)
- I +RETRY D FILE^TIUUPLD(TIUBUF)
+ I +RETRY D ALERTDEL(TIUBUF),RESOLVE(TIUEVNT,1),FILE^TIUUPLD(TIUBUF)
+ ;
+ ;IHS/ITSC/LJF 02/26/2003 add ability to delete record completely
+ I ('RETRY) NEW DELETE D
+ . S DELETE=$$READ^TIUU("YO","Would you like to DELETE this record completely","NO","^D DELHELP^BTIUH2")
+ . I +DELETE D ALERTDEL(+XQADATA),BUFPURGE^TIUPUTC(+XQADATA)
+ ;IHS/ITSC/LJF 02/26/2003 end of new code
+ ;
 DISPX K XQX1
  Q
 WRITEHDR(EVNTDA) ; ---- Write header to screen
@@ -151,3 +163,10 @@ INQRHELP ; Help for Upload Error Inquire to Patient Record prompt
  W !,"If not, answer NO to proceed and edit the buffered data directly without"
  W !,"prompts, or enter '^' to come back and resolve the error later."
  Q
+ ;
+GETHRCN() ; IHS/ITSC/LJF 02/26/2003 pull chart # from upload header
+ NEW I,X,Y,Z
+ F I=1:1 Q:'$D(^TIU(8925.2,+BUFDA,"TEXT",I))!$D(Z)  S X=^(I,0) D
+ . Q:X'?1"HRCN:".E  S Y("  ")="",Z=$$REPLACE^XLFSTR(X,.Y)
+ Q $G(Z)
+ ;

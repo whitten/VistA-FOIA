@@ -1,5 +1,5 @@
 XPDCOMG ;SFISC/RSD - compare globals ;08/14/2008
- ;;8.0;KERNEL;**304,506**;Jul 10, 1995;Build 11
+ ;;8.0;KERNEL;**304,506**;Jul 10, 1995;Build 19
  ;Per VHA Directive 2004-038, this routine should not be modified.
 EN D IX,FIA:'$D(DIRUT),KRN:'$D(DIRUT)
  Q

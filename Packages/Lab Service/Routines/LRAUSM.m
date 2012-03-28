@@ -1,4 +1,5 @@
-LRAUSM ;AVAMC/REG - AUTOPSY SNOMED SEARCH ;8/14/95  09:53
+LRAUSM ;AVAMC/REG - AUTOPSY SNOMED SEARCH ;8/14/95  09:53 [ 04/11/2003  12:11 PM ]
+ ;;5.2T9;LR;**1002,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**72,253**;Sep 27, 1994
  S IOP="HOME",LR("S")=$P(^LRO(69.2,LRAA,0),U,8) D ^%ZIS W @IOF,?20,LRAA(1)," search by ",S(7)," code"
  S (LR,LR(1),LR(2),LR(3))=0
@@ -35,7 +36,9 @@ PRT S LRPF=^DIC($P(^LR(LRDFN,0),"^",2),0,"GL"),LRFLN=+$P(@(LRPF_"0)"),"^",2),DFN
  D SSN^LRU
  S LRAC=$P(LR(4),"^",6),LRAN=+$P(LRAC," ",3),X1=$P(LR(4),"^"),X2=DOB D ^%DTC S AGE=X\365.25
  S:AGE<1 AGE="<1"
- S ^TMP($J,LRYR,LRAN)=LRAC_"^"_AGE_"^"_SEX_"^"_LRP_"^"_SSN(1)_"^"_+$E($P(LR(4),"^"),4,5)_"/"_+$E($P(LR(4),"^"),6,7)_"^"_LRFLN,^TMP($J,"B",LRP,LRYR,LRAN)=""
+ ;S ^TMP($J,LRYR,LRAN)=LRAC_"^"_AGE_"^"_SEX_"^"_LRP_"^"_SSN(1)_"^"_+$E($P(LR(4),"^"),4,5)_"/"_+$E($P(LR(4),"^"),6,7)_"^"_LRFLN,^TMP($J,"B",LRP,LRYR,LRAN)=""
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ S ^TMP($J,LRYR,LRAN)=LRAC_"^"_AGE_"^"_SEX_"^"_LRP_"^"_HRCN_"^"_+$E($P(LR(4),"^"),4,5)_"/"_+$E($P(LR(4),"^"),6,7)_"^"_LRFLN,^TMP($J,"B",LRP,LRYR,LRAN)=""  ;IHS/ANMC/CLS 11/1/95
  Q
 CK ;from LRAPC, LRAPSM
  I X'?1PUN.PUN!($L(X)>7) S A("B")=1 G SHW

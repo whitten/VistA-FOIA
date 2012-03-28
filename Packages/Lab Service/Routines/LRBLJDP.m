@@ -1,6 +1,6 @@
-LRBLJDP ;AVAMC/REG -  PRINT UNIT DISPOSITION ;10/11/95  07:47 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJDP ; IHS/DIR/AAB - PRINT UNIT DISPOSITION 10/11/95 07:47 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END K LR S X=$P(^DD(65,4.1,0),U,3) F Y=1:1 S Z=$P(X,";",Y) Q:Z=""  S LR($P(Z,":"))=$P(Z,":",2)
  K LR("T")
 ASK R !!,"Select DISPOSITION: ",X:DTIME G:X=""!(X[U) END I '$D(LR(X)) D SEL G ASK

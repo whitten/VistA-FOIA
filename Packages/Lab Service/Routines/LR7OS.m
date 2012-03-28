@@ -1,4 +1,6 @@
-LR7OS ;slc/dcm - Silent Report utilities ;8/11/97
+LR7OS ; IHS/DIR/AAB - Silent Report utilities ; [ 8/11/97 ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**121**;Sep 27, 1994
 S(X,Y,Z) ;Pad over
  ;X=Column #

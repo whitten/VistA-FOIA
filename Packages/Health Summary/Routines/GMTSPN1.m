@@ -1,5 +1,5 @@
-GMTSPN1 ; SLC/KER - Progress Note Header/Sig/Text/Prob ; 5/17/06 2:03pm
- ;;2.7;Health Summary;**12,35,45,49,81**;Oct 20, 1995;Build 23
+GMTSPN1 ; SLC/KER - Progress Note Header/Sig/Text/Prob ; 02/27/2002
+ ;;2.7;Health Summary;**12,35,45,49**;Oct 20, 1995
  Q
  ;                          
  ; External References
@@ -8,17 +8,14 @@ GMTSPN1 ; SLC/KER - Progress Note Header/Sig/Text/Prob ; 5/17/06 2:03pm
  ; Write Headers
 WH ;   Note Header
  Q:$D(GMTSQIT)  I GMTSCNT>1 D CKP^GMTSUP Q:$D(GMTSQIT)  W !
- W $G(PN("DATE")),?18,"Local Title: ",$$UP^XLFSTR($G(PN("DOCTYPE"))),!
- I $D(PN("VHATYPE")) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?15,"Standard Title: ",PN("VHATYPE"),!
+ W $G(PN("DATE")),?21,"Title:  ",$$UP^XLFSTR($G(PN("DOCTYPE")))
  S (ADATE,PDATE)=$G(PN("DATE")),(ATYPE,PTYPE)=$G(PN("DOCTYPE")),(ASUB,PSUB)=$G(PN("SUBJ"))
- I $D(PN("AUTH")) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?20,PN("AUTH"),!
- I PN("SUBJ")'="" D CKP^GMTSUP Q:$D(GMTSQIT)  W ?19,"Subject:  ",PN("SUBJ"),!
+ I $D(PN("AUTH")) D CKP^GMTSUP Q:$D(GMTSQIT)  W !?20,PN("AUTH")
+ I PN("SUBJ")'="" D CKP^GMTSUP Q:$D(GMTSQIT)  W !?19,"Subject:  ",PN("SUBJ")
  Q
 WDH ;   Discharge Summary Header
  Q:$D(GMTSQIT)  I GMTSCNT>1 D CKP^GMTSUP Q:$D(GMTSQIT)  W !
  D CKP^GMTSUP Q:$D(GMTSQIT)  W ADMIT,?12,"-",?14,DISCHG,?56,"Status: ",STATUS,!
- I $D(PN("DOCTYPE")) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?9,"Local Title: ",PN("VHATYPE"),!
- I $D(PN("VHATYPE")) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?6,"Standard Title: ",PN("VHATYPE"),!
  D CKP^GMTSUP Q:$D(GMTSQIT)  W ?3,"Last Tr Specialty: ",TSPEC,?49,"Dict'd By: ",AUTHOR,!
  D CKP^GMTSUP Q:$D(GMTSQIT)  W ?47,"Approved By: ",ATTNDNG,!
  Q
@@ -26,13 +23,12 @@ WDBH ;   Brief Discharge Summary Header
  D CKP^GMTSUP Q:$D(GMTSQIT)  W "Admitted",?11,"Disch'd",?23,"Dictated By",?38,"Approved By",?53,"Cosigned",?64,"Status",!! Q
 WAH ;   Addendum Header
  Q:$D(GMTSQIT)  I GMTSCNT>1 D CKP^GMTSUP Q:$D(GMTSQIT)  W !
- W PN("DATE"),?18,"Local Title: ",$$UP^XLFSTR(PN("DOCTYPE")),!
- I $D(PN("VHATYPE")) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?15,"Standard Title: ",PN("VHATYPE"),!
+ W PN("DATE"),?21,"Title:  ",$$UP^XLFSTR(PN("DOCTYPE"))
  I $L($G(ADATE)),$L($G(ATYPE)) D  Q:$D(GMTSQIT)
- . I $D(GMTSREF) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?23,"Ref:  ",$E(ATYPE,1,25),?55,"Dated:  ",ADATE,!
- I $D(PN("AUTH")) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?20,PN("AUTH"),!
- I PN("SUBJ")'="" D CKP^GMTSUP Q:$D(GMTSQIT)  W ?19,"Subject:  ",PN("SUBJ"),!
- I '$L($G(PN("SUBJ"))),$L($G(ASUB)) D CKP^GMTSUP Q:$D(GMTSQIT)  W ?19,"Subject:  ",$G(ASUB),!
+ . I $D(GMTSREF) D CKP^GMTSUP Q:$D(GMTSQIT)  W !,?23,"Ref:  ",$E(ATYPE,1,25),?55,"Dated:  ",ADATE
+ I $D(PN("AUTH")) D CKP^GMTSUP Q:$D(GMTSQIT)  W !?20,PN("AUTH")
+ I PN("SUBJ")'="" D CKP^GMTSUP Q:$D(GMTSQIT)  W !?19,"Subject:  ",PN("SUBJ")
+ I '$L($G(PN("SUBJ"))),$L($G(ASUB)) D CKP^GMTSUP Q:$D(GMTSQIT)  W !?19,"Subject:  ",$G(ASUB)
  Q
 ST(X) ;   Sub-Titles
  N GMTS,GMTS1,GMTS2,GMTST,GMTSB S GMTST=$G(X) Q:'$L(GMTST)
@@ -43,8 +39,7 @@ ST(X) ;   Sub-Titles
  Q
 WIH ;   Interdisciplinary Note Header
  Q:$D(GMTSQIT)  I GMTSCNT>1 D CKP^GMTSUP Q:$D(GMTSQIT)  W !
- W PN("DATE"),?18,"Local Title: ",$$UP^XLFSTR(PN("DOCTYPE"))
- I $D(PN("VHATYPE")) D CKP^GMTSUP Q:$D(GMTSQIT)  W !?15,"Standard Title: ",PN("VHATYPE"),!
+ W PN("DATE"),?21,"Title:  ",$$UP^XLFSTR(PN("DOCTYPE"))
  S ADATE=$G(PN("DATE")),ATYPE=$G(PN("DOCTYPE")),ASUB=$G(PN("SUBJ"))
  I $L($G(PDATE)),$L($G(PTYPE)) D  Q:$D(GMTSQIT)
  . I $D(GMTSREF) D CKP^GMTSUP Q:$D(GMTSQIT)  W !,?23,"Ref:  ",$E(PTYPE,1,25),?55,"Dated:  ",PDATE
@@ -54,8 +49,7 @@ WIH ;   Interdisciplinary Note Header
  Q
 WAIH ;   Addendum to Interdisciplinary Note Header
  Q:$D(GMTSQIT)  I GMTSCNT>1 D CKP^GMTSUP Q:$D(GMTSQIT)  W !
- W PN("DATE"),?18,"Local Title: ",$$UP^XLFSTR(PN("DOCTYPE"))
- I $D(PN("VHATYPE")) D CKP^GMTSUP Q:$D(GMTSQIT)  W !?15,"Standard Title: ",PN("VHATYPE"),!
+ W PN("DATE"),?21,"Title:  ",$$UP^XLFSTR(PN("DOCTYPE"))
  I $L($G(ADATE)),$L($G(ATYPE)) D  Q:$D(GMTSQIT)
  . I $D(GMTSREF) D CKP^GMTSUP Q:$D(GMTSQIT)  W !,?23,"Ref:  ",$E(ATYPE,1,25),?55,"Dated:  ",ADATE
  I $L($G(PDATE)),$L($G(PTYPE)) D  Q:$D(GMTSQIT)

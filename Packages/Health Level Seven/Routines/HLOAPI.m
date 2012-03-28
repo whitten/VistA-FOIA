@@ -1,28 +1,26 @@
-HLOAPI ;ALB/CJM-HL7 - Developer API's for sending & receiving messages ;05/12/2009
- ;;1.6;HEALTH LEVEL SEVEN;**126,133,138,139,146**;Oct 13, 1995;Build 16
+HLOAPI ;ALB/CJM-HL7 - Developer API's for sending & receiving messages ;09/13/2006
+ ;;1.6;HEALTH LEVEL SEVEN;**126,133**;Oct 13, 1995;Build 13
  ;Per VHA Directive 2004-038, this routine should not be modified.
  ;
-NEWMSG(PARMS,HLMSTATE,ERROR) ;; Starts a new message.
- ;;
- ;;** External API **
- ;;  
- ;;Input: 
- ;;   PARMS( *pass by reference*
- ;;     "COUNTRY")=3 character country code (optional)
- ;;     "CONTINUATION POINTER" -indicates a fragmented message
- ;;     "EVENT")=3 character event type (required)
- ;;     "FIELD SEPARATOR")=field separator (optional, defaults to "|")
- ;;     "ENCODING CHARACTERS")= 4 HL7 encoding characters (optional,defaults to "^~\&")
- ;;     "MESSAGE STRUCTURE" - MSH 9, component 3 - a code from the standard HL7 table (optional)
- ;;     "MESSAGE TYPE")=3 character message type (required)
- ;;     "PROCESSING MODE" - MSH 11, component 2 - a 1 character code (optional)
- ;;     "VERSION")=the HL7 Version ID, for example, "2.4" (optional, defaults to 2.4)
- ;;Output:
- ;;  Function- returns 1 on success, 0 on failure
- ;;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
- ;;  PARMS - left defined when the function returns
- ;;  ERROR (optional, pass by reference) - returns an error message on failure
- ;;
+NEWMSG(PARMS,HLMSTATE,ERROR) ;
+ ;Starts a new message.  
+ ;Input: 
+ ;   PARMS( *pass by reference*
+ ;     "COUNTRY")=3 character country code (optional)
+ ;     "CONTINUATION POINTER" -indicates a fragmented message
+ ;     "EVENT")=3 character event type (required)
+ ;     "FIELD SEPARATOR")=field separator (optional, defaults to "|")
+ ;     "ENCODING CHARACTERS")= 4 HL7 encoding characters (optional,defaults to "^~\&")
+ ;     "MESSAGE STRUCTURE" - MSH 9, component 3 - a code from the standard HL7 table (optional)
+ ;     "MESSAGE TYPE")=3 character message type (required)
+ ;     "PROCESSING MODE" - MSH 11, component 2 - a 1 character code (optional)
+ ;     "VERSION")=the HL7 Version ID, for example, "2.4" (optional, defaults to 2.4)
+ ;Output:
+ ;  Function- returns 1 on success, 0 on failure
+ ;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
+ ;  PARMS - left defined when the function returns
+ ;  ERROR (optional, pass by reference) - returns an error message on failure
+ ;
  ;
  N DATA,I,SYSTEM,SUCCESS
  S SUCCESS=0
@@ -50,19 +48,20 @@ NEWMSG(PARMS,HLMSTATE,ERROR) ;; Starts a new message.
  .S SUCCESS=1
  Q SUCCESS
  ;
-NEWBATCH(PARMS,HLMSTATE,ERROR) ;;Starts a new batch message.  
- ;;Input: 
- ;;  PARMS( *pass by reference*
- ;;   "COUNTRY")=3 character country code (optional)
- ;;   "FIELD SEPARATOR")=field separator (optional, defaults to "|")
- ;;   "ENCODING CHARACTERS")= 4 HL7 encoding characters (optional,defaults to "^~\&") 
- ;;   "VERSION")=the HL7 Version ID, for example, "2.4" (optional, defaults to 2.4)
- ;;Output:
- ;;  Function - returns 1 on success, 0 on failure
- ;;  PARMS - left defined when the function returns
- ;;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
- ;;  ERROR (optional, pass by reference) - returns an error message on failure
- ;;
+NEWBATCH(PARMS,HLMSTATE,ERROR) ;
+ ;Starts a new batch message.  
+ ;Input: 
+ ;  PARMS( *pass by reference*
+ ;   "COUNTRY")=3 character country code (optional)
+ ;   "FIELD SEPARATOR")=field separator (optional, defaults to "|")
+ ;   "ENCODING CHARACTERS")= 4 HL7 encoding characters (optional,defaults to "^~\&") 
+ ;   "VERSION")=the HL7 Version ID, for example, "2.4" (optional, defaults to 2.4)
+ ;Output:
+ ;  Function - returns 1 on success, 0 on failure
+ ;  PARMS - left defined when the function returns
+ ;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
+ ;  ERROR (optional, pass by reference) - returns an error message on failure
+ ;
  ;
  N DATA,I,SYSTEM,SUCCESS
  S SUCCESS=0
@@ -88,24 +87,25 @@ NEWBATCH(PARMS,HLMSTATE,ERROR) ;;Starts a new batch message.
  .S SUCCESS=1
  Q SUCCESS
  ;
-SET(SEG,VALUE,FIELD,COMP,SUBCOMP,REP) ;;Sets a value to the array SEG(), used for building segments.
- ;;Input:
- ;; SEG - (required, pass by reference) - this is the array where the segment is being built.
- ;; VALUE - the individual value to be set into the segment
- ;; FIELD - the sequence # of the field (optional, defaults to 0)
- ;;     *NOTE: FIELD=0 is used to denote the segment type.
- ;; COMP - the # of the component (optional, defaults to 1)
- ;; SUBCOMP - the # of the subcomponent (optional, defaults to 1)
- ;; REP - the occurrence# (optional, defaults to 1)  For a non-repeating field, the occurrence # need not be provided, because it would be 1.
- ;;Output: 
- ;;  SEG array
- ;;
- ;;  Example:
- ;;    D SET(.SEG,"MSA",0) creates an MSA segment 
- ;;    D SET(.SEG,"AE",1) will place the value into the array position
- ;;    reserved for the 1st field,1st occurence,1st comp,1st subcomp
- ;;
- ;;Implementation Note - This format is used for the segment array built by calls to SET: SEGMENT(<SEQ #>,<occurrence #>,<component #>,<subcomponent #>)=<subcomponent value> 
+SET(SEG,VALUE,FIELD,COMP,SUBCOMP,REP) ;
+ ;Sets a value to the array SEG(), used for building segments.
+ ;Input:
+ ; SEG - (required, pass by reference) - this is the array where the segment is being built.
+ ; VALUE - the individual value to be set into the segment
+ ; FIELD - the sequence # of the field (optional, defaults to 0)
+ ;     *NOTE: FIELD=0 is used to denote the segment type.
+ ; COMP - the # of the component (optional, defaults to 1)
+ ; SUBCOMP - the # of the subcomponent (optional, defaults to 1)
+ ; REP - the occurrence# (optional, defaults to 1)  For a non-repeating field, the occurrence # need not be provided, because it would be 1.
+ ;Output: 
+ ;  SEG array
+ ;
+ ;  Example:
+ ;    D SET(.SEG,"MSA",0) creates an MSA segment 
+ ;    D SET(.SEG,"AE",1) will place the value into the array position
+ ;    reserved for the 1st field,1st occurence,1st comp,1st subcomp
+ ;
+ ;Implementation Note - This format is used for the segment array built by calls to SET: SEGMENT(<SEQ #>,<occurrence #>,<component #>,<subcomponent #>)=<subcomponent value> 
  ;
  S:'$G(FIELD) FIELD=0
  S:'$G(COMP) COMP=1
@@ -114,31 +114,23 @@ SET(SEG,VALUE,FIELD,COMP,SUBCOMP,REP) ;;Sets a value to the array SEG(), used fo
  S SEG(FIELD,REP,COMP,SUBCOMP)=$G(VALUE)
  Q
  ;
-ADDSEG(HLMSTATE,SEG,ERROR,TOARY) ;; Adds a segment to the message.
- ;;Input:
- ;;  HLMSTATE() - (pass by reference, required) This array is a workspace for HLO.  The application MUST NOT touch it!
- ;;  SEG() - (pass-by-reference, required) Contains the data.  It be created prior to calling $$ADDSEG.
- ;;
- ;;Note#1:  The message control segments, including the MSH and BHS segments, are added automatically.
- ;;Note#2:  The 0th field must be a 3 character segment type
- ;;Note#3: ***SEG is killed upon successfully adding the segment***
- ;;
- ;;Output:
- ;;   HLMSTATE() - (pass-by-reference, required) This array is used by the HL7 package to track the progress of the message.
- ;;  FUNCTION - returns 1 on success, 0 on failure
- ;;  TOARY (optional, pass by reference) returns the built segment in
- ;;        this format:
- ;;         TOARY(1)
- ;;         TOARY(2)
- ;;         TOARY(3), etc.
- ;;    If the segment fits on a single line, only TOARY(1) is returned.
- ;;
- ;;  ERROR (optional, pass by reference) - returns an error message on failure
- ;;
+ADDSEG(HLMSTATE,SEG,ERROR) ;Adds a segment to the message.
+ ;Input:
+ ;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
+ ;  SEG() - (pass by reference, required) Contains the data.  It must be built by calls to SET prior to calling $$ADDSEG.
+ ;
+ ;Note#1:  The message control segments, including the MSH and BHS segments, are added automatically.
+ ;Note#2:  The 0th field must be a 3 character segment type
+ ;Note#3: ***SEG is killed upon successfully adding the segment***
+ ;
+ ;Output:
+ ;   HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.
+ ;  FUNCTION - returns 1 on success, 0 on failure
+ ;  ERROR (optional, pass by reference) - returns an error message on failure
+ ;
  ;
  K ERROR
- N TYPE
- K TOARY
+ N TOARY,TYPE
  ;
  S TYPE=$G(SEG(0,1,1,1)) ;segment type
  ;
@@ -153,60 +145,25 @@ ADDSEG(HLMSTATE,SEG,ERROR,TOARY) ;; Adds a segment to the message.
  I $$BUILDSEG^HLOPBLD(.HLMSTATE,.SEG,.TOARY,.ERROR) D ADDSEG^HLOMSG(.HLMSTATE,.TOARY) K SEG Q 1
  Q 0
  ;
- ;**P146 START CJM
-MOVESEG(HLMSTATE,SEG,ERROR) ;Adds a segment built in the 'traditional' way as an array of lines into the message.
- ;;Input:
- ;;  HLMSTATE() - (pass by reference, required) This array is a workspace for HLO. 
- ;;  SEG() - (pass-by-reference, required) Contains the segment.  The segement.  If the segment is short enough it should consist of only SEG or SEG(1).  If longer, additional lines can be added as SEG(<n>). 
- ;;
- ;;Note#1:  The message control segments, including the MSH, BHS & FTS segments, are added automatically, so may not be added by MOVESEG.
- ;;
- ;;Output:
- ;;   HLMSTATE() - (pass-by-reference, required) This array is the workspace used by HLO.
- ;;  FUNCTION - returns 1 on success, 0 on failure
- ;;
- ;;  ERROR (optional, pass by reference) - returns an error message on failure
- ;;
+ADDMSG(HLMSTATE,PARMS,ERROR) ;
+ ;Begins a new message in the batch.
+ ;Input:
+ ;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
+ ;  PARMS( *pass by reference*
+ ;    "EVENT")=3 character event type (required)
+ ;    "MESSAGE TYPE")=3 character message type (required)
  ;
- K ERROR
- N TYPE,NEWCOUNT,OLDCOUNT,TOARY
+ ;Output:
+ ;   FUNCTION - returns 1 on success, 0 on failure
+ ;   HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.
+ ;   PARMS - left defined when this function returns
+ ;   ERROR (optional, pass by reference) - returns an error message on failure
  ;
- S NEWCOUNT=1
- I $L($G(SEG)) S TOARY(1)=SEG,NEWCOUNT=2
- S OLDCOUNT=0
- F  S OLDCOUNT=$O(SEG(OLDCOUNT)) Q:'OLDCOUNT  S TOARY(NEWCOUNT)=SEG(OLDCOUNT),NEWCOUNT=NEWCOUNT+1
- S TYPE=$P($G(TOARY(1)),HLMSTATE("HDR","FIELD SEPARATOR")) ;segment type
- ;
- ;if a 'generic' app ack MSA was built, add it as the first segment before this one
- I $D(HLMSTATE("MSA")) D
- .I TYPE'="MSA" N TOARY S TOARY(1)=HLMSTATE("MSA") D ADDSEG^HLOMSG(.HLMSTATE,.TOARY)
- .K HLMSTATE("MSA")
- ;
- I ($L(TYPE)'=3) S ERROR="INVALID SEGMENT TYPE" Q 0
- I (TYPE="MSH")!(TYPE="BHS")!(TYPE="BTS")!(TYPE="FHS")!(TYPE="FTS") S ERROR="INVALID SEGMENT TYPE" Q 0
- I HLMSTATE("BATCH"),'HLMSTATE("BATCH","CURRENT MESSAGE") S ERROR="NO MESSAGES IN BATCH, SO SEGMENTS NOT ALLOWED" Q 0
- D ADDSEG^HLOMSG(.HLMSTATE,.TOARY)
- Q 1
- ;**P146 END CJM
- ;
-ADDMSG(HLMSTATE,PARMS,ERROR) ;; Begins a new message in the batch.
- ;;Input:
- ;;  HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.  The application MUST NOT touch it!
- ;;  PARMS( *pass by reference*
- ;;    "EVENT")=3 character event type (required)
- ;;    "MESSAGE TYPE")=3 character message type (required)
- ;;
- ;;Output:
- ;;   FUNCTION - returns 1 on success, 0 on failure
- ;;   HLMSTATE() - (pass by reference, required) This array is used by the HL7 package to track the progress of the message.
- ;;   PARMS - left defined when this function returns
- ;;   ERROR (optional, pass by reference) - returns an error message on failure
- ;;
  N I
  K ERROR
  ;if a 'generic' app ack MSA was built, add it as the first segment before this one
  I $D(HLMSTATE("MSA")) D
- .N TOARY S TOARY(1)=HLMSTATE("MSA") D ADDSEG^HLOMSG(.HLMSTATE,.TOARY)
+ .I TYPE'="MSA" N TOARY M TOARY=HLMSTATE("MSA") D ADDSEG^HLOMSG(.HLMSTATE,.TOARY) K TOARY
  .K HLMSTATE("MSA")
  I $L($G(PARMS("EVENT")))'=3 S ERROR="EVENT TYPE INVALID" Q 0
  I $L($G(PARMS("MESSAGE TYPE")))'=3 S ERROR="MESSAGE TYPE INVALID" Q 0
@@ -220,15 +177,12 @@ GETSYS(HLMSTATE) ;
  S HLMSTATE("SYSTEM","BUFFER")=SYS("USER BUFFER")
  Q
  ;
-MOVEMSG(HLMSTATE,ARY) ;;
+MOVEMSG(HLMSTATE,ARY) ;
  ;If a message was built in the 'old' way, and resides in an array, this  routine will move it into file 777 (HL7 Message Body)
  ;Input:
  ;  HLMSTATE (pass by reference) the array created by calling $$NEWMSG or $$NEWBATCH
  ;  ARY - is the name of the array, local or global, where the message was built, used to reference the array by indirection.
- ;Output:
- ;  HLMSTATE (pass by reference) Is updated with information about the
- ;            message.
- ;;
+ ;
  N I S I=0
  F  S I=$O(@ARY@(I)) Q:'I  D
  .N SEG,J,J2

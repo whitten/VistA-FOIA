@@ -1,5 +1,9 @@
-SDAMWI ;ALB/MJK - Unscheduled Appointments ; 5/3/05 5:50pm
- ;;5.3;Scheduling;**63,94,241,250,296,380,327**;Aug 13, 1993
+SDAMWI ;ALB/MJK - Unscheduled Appointments ; 13 Jun 2001  4:02 PM
+ ;;5.3;Scheduling;**63,94,241,250,296**;Aug 13, 1993
+ ;IHS/ANMC/LJF 7/6/2000 added screen for principal clinics under WI
+ ;            11/29/2000 added screen for clinics with prohibited access
+ ;            12/07/2000 added last reg update to walkin
+ ;             9/10/2001 added IHS1 line label to ask clinic again
  ;
 EN(DFN,SC) ; -- main entry point
  ;    input: DFN ; SC := clinic#
@@ -12,9 +16,7 @@ EN(DFN,SC) ; -- main entry point
  I $D(^SC(SC,"I")) S Y=^("I"),SDIN=+Y,SDRE=+$P(Y,U,2),SDRE1=$$FDATE^VALM1(SDRE)
  I $D(SDIN),SDIN,SDIN'>DT,SDRE,SDRE>DT W !!?5,*7,"o  Clinic is inactive from ",$$FTIME^VALM1(SDIN)," to "_SDRE1 D PAUSE^VALM1 S SDY=0 G ENQ
  I $D(SDIN),SDIN,SDIN'>DT,'SDRE W !!?5,*7,"o  Clinic is inactive as of ",$$FTIME^VALM1(SDIN) D PAUSE^VALM1 S SDY=0 G ENQ
- N SDRES S SDRES=$$CLNCK^SDUTL2(SC,1)
- I 'SDRES W !,?5,*7,"o  Clinic MUST be corrected before continuing." D PAUSE^VALM1 S SDY=0 G ENQ
- I '$$TIME(.DFN,.SC,.SDT) D WL^SDM1(SC) S SDY=0 G ENQ ;SD/327
+ I '$$TIME(.DFN,.SC,.SDT) S SDY=0 G ENQ
  S Y=SDT D ^SDM4 I X="^" S SDY=0 G ENQ
  ; ** SD*5.3*250 MT Blocking check removed
  ;S X="EASMTCHK" X ^%ZOSF("TEST") I $T N EASACT S EASACT="W" I $$MT^EASMTCHK(DFN,+$G(SDAPTYP),EASACT) D PAUSE^VALM1 S SDY=0 G ENQ
@@ -70,9 +72,16 @@ CL(DFN) ; -- make wi appt
  ;    input: DFN
  ; returned: success or fail := 1/0
  ;
+ W !?5,"Last Registration Update: ",$$LASTREG^BDGF2(DFN)  ;IHS/ANMC/LJF 12/07/2000
+IHS1 ;IHS/ANMC/LJF 9/10/2001 added line label    
  S DIC="^SC(",DIC(0)="AEMQ",DIC("A")="Select Clinic: ",DIC("S")="I $P(^(0),U,3)=""C"",'$G(^(""OOS""))"
+ S DIC("S")=DIC("S")_",'$D(^SC(""AIHSPC"",+Y))"  ;IHS/ANMC/LJF 7/6/2000
  D ^DIC K DIC
  I Y<0 S SDY=0 G CLQ
+ ;
+ ;IHS/ANMC/LJF 11/29/2000;9/10/2001
+ I $D(^SC(+Y,"SDPROT")),$P(^("SDPROT"),U)="Y",'$D(^SC(+Y,"SDPRIV",DUZ)),'$D(^SC($$PC^BSDU(+Y),"SDPRIV",DUZ)) W !,"Access to ",$$GET1^DIQ(44,+Y,.01)," is prohibited!",!,"Only users with a special code may access this clinic." D PAUSE^BDGF G IHS1
+ ;
  S SC=+Y S SDY=$$EN(.DFN,.SC)
 CLQ Q SDY
  ;

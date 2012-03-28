@@ -1,5 +1,5 @@
-PXBDCPT ;ISL/JVS,ESW - DISPLAY CPT ;3/5/04 10:39am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,73,89,108,121,124**;Aug 12, 1996
+PXBDCPT ;ISL/JVS,ESW - DISPLAY CPT ; 12/5/02 11:28am
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,73,89,108**;Aug 12, 1996
  ;
  ;
 EN0 ;---Main entry point
@@ -15,7 +15,7 @@ HEAD ;--HEADER ON LIST
  ;I PXBCNT<11 D DISCPT1^PXBDCPT
  ;I PXBCNT<21&(PXBCNT>10) D DISCPT2^PXBDCPT
  ;I PXBCNT>20&(PXBCNT<31) D DISCPT3^PXBDCPT
- ;I PXBCNT>30&('$D(PXBNCPT))
+ ;I PXBCNT>30&('$D(PXBNCPT)) 
  D DISCPT4^PXBDCPT("BEGIN")
  ;I PXBCNT>30&($D(PXBNCPT)) D DISCPT4^PXBDCPT("SAME")
  Q
@@ -25,7 +25,7 @@ HEAD ;--HEADER ON LIST
 ARRAY ;Set all CPT codes and modifiers into ^TMP("PXBDCPT",$J,"DSP"
  ;for display
  ;
- N PXSQ,ENTRY,PXMD,PXDESC,PX124,PXC,PXD
+ N PXSQ,ENTRY,PXMD,PXDESC
  S PXTMP="^TMP(""PXBDCPT"""_","_$J_","_"""DSP"")"
  K @PXTMP
  S (PXTLNS,PXSQ)=0
@@ -42,17 +42,8 @@ ARRAY ;Set all CPT codes and modifiers into ^TMP("PXBDCPT",$J,"DSP"
  .F  S PXMD=$O(PXBSAM(PXSQ,"MOD",PXMD)) Q:'PXMD  D
  ..S PXTLNS=PXTLNS+1
  ..S PXMOD=PXBSAM(PXSQ,"MOD",PXMD)
- ..S PXDESC=$P($$MODP^ICPTMOD($E(ENTRY,1,5),PXMOD,"E",IDATE),U,2) ;PX*108
+ ..S PXDESC=$P($$MODP^ICPTMOD($E(ENTRY,1,5),PXMOD,"E"),U,2) ;PX*108
  ..S @PXTMP@(PXTLNS,0)=0_U_PXMOD_U_$E(PXDESC,1,54)
- .S PXTLNS=PXTLNS+1
- .S @PXTMP@(PXTLNS,0)="-22^"_$P(ENTRY,U,22)
- .F PX124=5:1:12 D
- ..S PXC=$P(ENTRY,U,PX124) Q:PXC=""
- ..S PXD=$$ICDDX^ICDCODE(PXC) Q:PXD<1
- ..S PXC=PXC_"    "_$P(PXD,U,4)
- ..S PXTLNS=PXTLNS+1,@PXTMP@(PXTLNS,0)=-PX124_U_PXC
- ..I $G(PXBREQ(+PXD,"I"))="" S PXBREQ(+PXD,"I")=$P($$XLATE^PXBGPOV(PXBVST,+PXD),U,4,20)
- ..S PXTLNS=PXTLNS+1,@PXTMP@(PXTLNS,0)="I^"_PXBREQ(+PXD,"I")
  Q
 DISCPT1 ;--Display the CPT Data
  ;
@@ -74,7 +65,7 @@ DISCPT1 ;--Display the CPT Data
  .F  S PXSIEN=$O(PXBSAM(J,"MOD",PXSIEN)) Q:PXSIEN=""  D
  ..N PXWRAP,PXMOD,PXDESC,PXLN
  ..S PXMOD=PXBSAM(J,"MOD",PXSIEN)
- ..S PXDESC=$P($$MOD^ICPTMOD(PXMOD,"E",IDATE),U,3)
+ ..S PXDESC=$P($$MOD^ICPTMOD(PXMOD,"E"),U,3)
  ..D WRAP^PXCEVFI4(PXDESC,58,.PXWRAP)
  ..F PXLN=1:1 Q:$G(PXWRAP(PXLN))=""  D
  ...W:PXLN=1 !,?4,"CPT Modifier: "_PXMOD
@@ -100,10 +91,7 @@ DISCPT2 ;--display of cpt data two columns more that 10 entries.
  .S ENTRY(J)=$G(PXBSAM(J)) I $D(PXBNCPT($P(ENTRY(J),U,1))) S $P(ENTRY(J),U,1)=$P(ENTRY(J),U,1)_"*"
  F J=1:1:10 D
  .W !,J,?4,$P(ENTRY(J),U,1),?11,$P(ENTRY(J),U,2),?14,$E($P(ENTRY(J),U,4),1,24)
- .D BAWRITE(ENTRY(J))
- .I $D(ENTRY(J+10)) D
- ..W ?39,IOVL,(J+10),?44,$P(ENTRY(J+10),U,1),?51,$P(ENTRY(J+10),U,2),?54,$E($P(ENTRY(J+10),U,4),1,24)
- ..D BAWRITE(ENTRY(J))
+ .I $D(ENTRY(J+10)) W ?39,IOVL,(J+10),?44,$P(ENTRY(J+10),U,1),?51,$P(ENTRY(J+10),U,2),?54,$E($P(ENTRY(J+10),U,4),1,24)
  W IOG0
  Q
  ;
@@ -121,17 +109,12 @@ DISCPT3 ;--display of cpt data three colums more that 20 entries.
  .S ENTRY(J)=$G(PXBSAM(J)) I $D(PXBNCPT($P(ENTRY(J),U,1))) S $P(ENTRY(J),U,1)=$P(ENTRY(J),U,1)_"*"
  F J=1:1:10 D
  .W !,J,?4,$P(ENTRY(J),U,1),?11,$P(ENTRY(J),U,2),?14,$E($P(ENTRY(J),U,4),1,10)
- .D BAWRITE(ENTRY(J))
- .I $D(ENTRY(J+10)) D 
- ..W ?25,IOVL,(J+10),?30,$P(ENTRY(J+10),U,1),?37,$P(ENTRY(J+10),U,2),?40,$E($P(ENTRY(J+10),U,4),1,10)
- ..D BAWRITE(ENTRY(J+10))
- .I $D(ENTRY(J+20)) D
- ..W ?51,IOVL,(J+20),?56,$P(ENTRY(J+20),U,1),?63,$P(ENTRY(J+20),U,2),?66,$E($P(ENTRY(J+20),U,4),1,10)
- ..D BAWRITE(ENTRY(J+20))
+ .I $D(ENTRY(J+10)) W ?25,IOVL,(J+10),?30,$P(ENTRY(J+10),U,1),?37,$P(ENTRY(J+10),U,2),?40,$E($P(ENTRY(J+10),U,4),1,10)
+ .I $D(ENTRY(J+20)) W ?51,IOVL,(J+20),?56,$P(ENTRY(J+20),U,1),?63,$P(ENTRY(J+20),U,2),?66,$E($P(ENTRY(J+20),U,4),1,10)
  W IOG0
  Q
  ;
-DISCPT4(SIGN)   ;--Display the CPT Data
+DISCPT4(SIGN) ;--Display the CPT Data
  ;
  ;SIGN=
  ; '+' add 10 to the starting point in ^TMP("PXBDCPT",$J)
@@ -175,7 +158,7 @@ HEAD4 ;--HEADER ON LIST
  D UNDOFF^PXBCC
  ;
  ;
- N PXSIEN,PXDESC,PXMOD,PXQ,PXLNS,PX,PL
+ N PXSIEN,PXDESC,PXMOD,PXQ,PXLNS
  S J=PXBSTART,PXQ=""
  S PXLNS=0
  F  S J=$O(@PXTMP@(J)) Q:J=""  D  Q:PXQ
@@ -183,26 +166,11 @@ HEAD4 ;--HEADER ON LIST
  .I '(PXLNS#11) D  Q
  ..S ^TMP("PXBDCPT",$J,"START")=PXBSTART
  ..S PXQ=1
- .I +@PXTMP@(J,0)>0 D  Q
+ .I +@PXTMP@(J,0) D
  ..W !,$P(^(0),U),?4,$P(^(0),U,2),?15,$P(^(0),U,3)
  ..W ?25,$P(^(0),U,4),?55,$P(^(0),U,5)
- .I +@PXTMP@(J,0)<0 D  Q
- ..S PX=-$P(^(0),U,1)
- ..I PX=22 W !?4,"Ordering Provider:  ",$P(^(0),U,2) Q
- ..I PX<20 W !?4,"Diagnosis "_(PX-4)_":  ",$P(^(0),U,2) Q
- .I $P(@PXTMP@(J,0),U)="I" D CIA^PXBDPOV($P(^(0),U,2,16)) Q
- .I $P(@PXTMP@(J,0),U)=0 D
+ .E  D
  ..W !?4,"CPT Modifier: "_$P(^(0),U,2)_"  "_$P(^(0),U,3)
  I SIGN'="BEGIN" W !!
- Q
- ;
-BAWRITE(PXD)    ;WRITE BA INFO
- N PX,PD,PP
- W !?4,"Ordering Provider:  ",$P(PXD,U,22)
- F PX=1:1:8 D
- .S PD=$P(PXD,U,PX+5),PP=$$XLATE^PXBGPOV(PXBVST,PD)
- .Q:'PD!'PP
- .W:PD !?4,"Diagnosis:  ",PD
- .D CIA^PXBDPOV($P(PP,U,4,16))
  Q
  ;

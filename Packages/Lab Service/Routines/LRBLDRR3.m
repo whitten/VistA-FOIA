@@ -1,6 +1,6 @@
-LRBLDRR3 ;DALISC/CYM   DONOR AUDIT TRAIL ; 2/26/96  14:30
- ;;5.2;LAB SERVICE;**90,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDRR3 ; IHS/DIR/AAB - DONOR AUDIT TRAIL 2/26/96 14:30 ; [ 2/26/96 10:10 AM ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**90**;Sep 27, 1994
  ;
  ; Routine called by file 65.5 input template LRBLDCP
  ; Multiple field arrays are built and totaled before and after

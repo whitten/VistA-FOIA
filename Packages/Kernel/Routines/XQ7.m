@@ -1,4 +1,5 @@
-XQ7 ;SF-ISC..SEA/JLI - MICROSURGERY OF XUTL MENU TREES ;01/09/2001  13:29
+XQ7 ;SF-ISC..SEA/JLI - MICROSURGERY OF XUTL MENU TREES ;01/09/2001  13:29 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**44,60,155**;Jul 10, 1995
 REDO ; All changes to an option come here, i.e., menu text, locks, prohibited times, etc.
  S XQFLAG=DA

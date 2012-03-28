@@ -1,8 +1,8 @@
 DGBTOA5 ;ALB/SCK - BENEFICIARY TRAVEL OUTPUTS FRONT END/STATISTICS; 2/22/93@10:00 7/2/93
- ;;1.0;Beneficiary Travel;**5**;September 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
  Q
 START ;
- N X3 K DIR
+ K DIR
  S (DGBTBG,DGBTEND)=0 W @IOF
 OPT ; display report options for reports, front-end for claims reports
  W !?18,"BENEFICIARY TRAVEL REPORT OUTPUTS",!

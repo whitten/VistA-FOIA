@@ -1,6 +1,6 @@
-XUS1 ;SF-ISC/STAFF - SIGNON ;08/11/10  16:07
- ;;8.0;KERNEL;**9,59,111,165,150,252,265,419,469,523,543**;Jul 10, 1995;Build 15
- ;Per VHA Directive 2004-038, this routine should not be modified.
+XUS1 ;SF-ISC/STAFF - SIGNON ;02/03/10  16:01
+ ;;8.0;KERNEL;**9,59,111,165,150,252,265,419,469,523,1007,1017**;Jul 10, 1995;Build 3
+ ;THIS ROUTINE CONTAINS IHS MODIFICATIONS
  ;User setup
 USER ;
  K XUTEXT S XUM=$$USER^XUS1A(),$Y=0
@@ -13,6 +13,14 @@ USER ;
 SET ;
  S Y=$$CHKDIV()
  I $P(Y,U,2)>0,$D(^DIC(4,0)) D ASKDIV
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Modified by IHS/DSD/AEF 10/07/02 based on original midification by
+ ;IHS/HQW/MFD 12/14/1997
+ ;Add 2 lines to make sure Y is set to a division and display the
+ ;division
+ I 'Y S Y=+$$IHSDIV(DUZ)
+ I Y W !,"Site set to ",$P($G(^DIC(4,+Y,0)),U),!
+ ;----- END IHS MODIFICATION
  S DUZ(2)=+Y D DUZ^XUS1A
  ;Check verify code
  I $$VCHG D CVC^XUS2 G:$D(DUOUT) H^XUS
@@ -29,7 +37,14 @@ VCHG() ;Check if the Verify code needs to be changed
  ;
 ASKDIV ;Ask the user for the Division, return Y
  N X
- S DIC="^VA(200,DUZ,2,",DIC(0)="AEMQ",DIC("P")="200.02P",X=$O(^VA(200,DUZ,2,"AX1",1,0)) S:X>0 DIC("B")=$P($$NS^XUAF4(X),U)
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Modified by IHS/DSD/AEF 10/07/02 based on original modification by
+ ;IHS/HQW/MFD 12/14/1997
+ ;This line is commented out and replaced by the line below. This
+ ;modified line ensures that the default division is set.
+ ;S DIC="^VA(200,DUZ,2,",DIC(0)="AEMQ",DIC("P")="200.02P",X=$O(^VA(200,DUZ,2,"AX1",1,0)) S:X>0 DIC("B")=$P($$NS^XUAF4(X),U)
+ S DIC="^VA(200,DUZ,2,",DIC(0)="AEMQ",DIC("P")="200.02P",DIC("B")=$P($$IHSDIV(DUZ),U,2)
+ ;----- END IHS MODIFICATION
  D ^DIC I Y'>0 W !,*7,"You must select one." G ASKDIV
  Q
  ;
@@ -44,8 +59,9 @@ CHKDIV(CD) ;ef,sr Check if user needs to select Division.
  Q %_"^"_%1
  ;
 ENQ ;Get terminal type
- S XUT1="" I XUTT X XUEOFF R X:0 X ^%ZOSF("TYPE-AHEAD") W $C(27,91,99) X "R *X:2 I X=27 F  R X#1:2 S XUT1=XUT1_X Q:'$T!(X=""c"")"
- ;Removed code for Wyse 75
+ S XUT1="" I XUTT X XUEOFF R X:0 X ^%ZOSF("TYPE-AHEAD") W $C(27,91,99) R *X:2 I X=27 F  R X#1:2 S XUT1=XUT1_X Q:'$T!(X="c")
+ ;Commented out the next line as Wyse 75 are not used
+ ;I XUTT,(XUT1'["[") R X:0 S XUT1="" W *5 R *X:2 R:$T XUT1:2 S X=$S(X=6:"C-WYSE 75",1:$C(X)_XUT1),XUT1=""
  X XUEON I XUTT,XUT1["[" S Y=$O(^%ZIS(3.22,"B",XUT1,0)) I Y>0 S X=$P($G(^%ZIS(3.22,Y,0)),"^",2)
  I X?1.ANP S DIC="^%ZIS(2,",DIC(0)="MO" D ^DIC I Y>0 S XUIOP(1)=$P(Y,U,2),$P(XUIOP,";",2)=XUIOP(1),^VA(200,DUZ,1.2)=+Y
  I '$D(XUIOP(1)),$D(^VA(200,DUZ,1.2)) S X=+^(1.2) I X>0,$D(^%ZIS(2,X,0)) S $P(XUIOP,";",2)=$P(^(0),U)
@@ -56,12 +72,18 @@ NEXT ;Jump to the next routine
  S X=$G(^DISV(DUZ)) ;Add kill by session or day here
  S ^DISV(DUZ)=$H
  ;Removed UCI jump p469
+ ;S X=%UCI,N1=XUCI I PGM["[" S X=$P(PGM,"[",2,4),PGM=$P(PGM,"[",1)
+ ;S:X["""" X=$P(X,"""",2) S:X?.E1"]"&(X'["[") X=$E(X,1,$L(X)-1) S XUM=14,XUM(0)=X
+ ;S %UCI=X I "PRODMGR"'[X,$D(^%ZOSF("UCICHECK")) X ^("UCICHECK") G NO:Y="" S:N1=Y %UCI=""
+ ;S XUM=15,XUM(0)=PGM G NO:PGM'?1AP.AN
+ ;G NO:":"_XUA_":"'[(":"_PGM_":")
  D AUDIT
  S X=$S($D(^VA(200,DUZ,0)):$P($P(^(0),U),","),1:"Unk"),X=$E(X,1,10)_"_"_($J#10000) D SETENV^%ZOSV ;Set Process Name
  ;S X=$P(XOPT,U,16) X:X ^%ZOSF("PRIORITY")
  D LOG:DUZ,KILL
+ ;I %UCI]"" K ^XUTL("XQ",$J) S $P(^VA(200,DUZ,1.1),U,3)=0 G GO^%XUCI
  K ^XUTL("OR",$J),^UTILITY($J),%UCI
- G ^XQ
+ G ^XQ ;@(U_PGM)
  ;
 SAVE ;
  N X
@@ -87,7 +109,7 @@ SLOG(P5,P6,P7,P8,P10,P14,P15) ;
  S:$D(DUZ("VISITOR")) $P(N,U,14,15)=DUZ("VISITOR") ;p523
  S:$G(DUZ(2))>0 $P(N,"^",17)=DUZ(2)
  S:$D(DUZ("REMAPP")) $P(N,U,18)=$P(DUZ("REMAPP"),U) ;p523
- F I=XL1:.00000001 L +^XUSEC(0,I):$G(DILOCKTM,5) Q:'$D(^XUSEC(0,I))  L -^XUSEC(0,I)
+ F I=XL1:.00000001 L +^XUSEC(0,I):1 Q:'$D(^XUSEC(0,I))  L -^XUSEC(0,I)
  S ^XUSEC(0,I,0)=N
  L -^XUSEC(0,I)
  S $P(^XUSEC(0,0),"^",3,4)=I_U_(1+$P(^XUSEC(0,0),"^",4))
@@ -118,3 +140,36 @@ DD(Y) Q $$FMTE^XLFDT(Y,1)
 KILL N %UCI,PGM,U,XQUR,XMCHAN G KILL1^XUSCLEAN
  Q
 NO G NO^XUS
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Modified by IHS/DSD/AEF 10/07/2002 based on original modification by
+ ;IHS/HQW/MFD 12/14/1997
+ ;New IHSDIV extrinsic function is added to set the default division
+IHSDIV(DUZ)        ;EXTRINSIC FUNCTION
+ ;----- RETURN DEFAULT DIVISION
+ ;
+ ;      INPUT:  DUZ = USER'S IEN
+ ;
+ ;      OUTPUT: DIVISIONIEN^DIVISIONAME
+ ;
+ N X,Y,Z
+ S (X,Y,Z)=""
+ ;
+ ;Default Division in file 200, "AX1" x-ref
+ I '$G(X) S X=$O(^VA(200,DUZ,2,"AX1",1,0))
+ ;
+ ;If only one division get that one
+ I '$G(X) D
+ . S Z=$O(^VA(200,DUZ,2,0))
+ . I '$O(^VA(200,DUZ,2,Z)) S X=Z
+ ;
+ ;Last division signed on to
+ I '$G(X) D
+ . S Z="^VA(200,DUZ,2,"
+ . S X=$G(^DISV(DUZ,Z))
+ ;
+ ;First ^AUTTSITE
+ I '$G(X) S X=$P($G(^AUTTSITE(1,0)),U)
+ ;
+ I X,$D(^DIC(4,X,0)) S Y=X_U_$P($$NS^XUAF4(X),U)
+ Q Y
+ ;----- END IHS MODIFICATION

@@ -1,5 +1,5 @@
-HLOCLNT2 ;ALB/CJM- Performs message updates for the client - 10/4/94 1pm ;06/16/2009
- ;;1.6;HEALTH LEVEL SEVEN;**126,130,131,133,134,137,143**;Oct 13, 1995;Build 3
+HLOCLNT2 ;ALB/CJM- Performs message updates for the client - 10/4/94 1pm ;09/13/2006
+ ;;1.6;HEALTH LEVEL SEVEN;**126,130,131,133**;Oct 13, 1995;Build 13
  ;Per VHA Directive 2004-038, this routine should not be modified.
  ;
 GETWORK(WORK) ;
@@ -52,9 +52,8 @@ DOWORK(WORK) ;
  ;
 UPDATE(MSGIEN,TIME,PARMS) ;
  S:PARMS("STATUS")]"" $P(^HLB(MSGIEN,0),"^",20)=PARMS("STATUS")
- I PARMS("STATUS")="ER" D
- .S ^HLB("ERRORS",PARMS("RECEIVING APP"),TIME,MSGIEN_"^")=""
- .D COUNT^HLOESTAT("OUT",PARMS("RECEIVING APP"),$$GETSAP(MSGIEN),$$GETMTYPE(MSGIEN))
+ S:PARMS("STATUS")="SE" ^HLB("ERRORS","SE",PARMS("RECEIVING APP"),TIME,MSGIEN)=""
+ S:PARMS("STATUS")="AE" ^HLB("ERRORS","AE",PARMS("RECEIVING APP"),TIME,MSGIEN_"^")=""
  S:PARMS("ACCEPT ACK") $P(^HLB(MSGIEN,0),"^",17)=PARMS("ACCEPT ACK")
  S $P(^HLB(MSGIEN,0),"^",16)=TIME
  S:PARMS("MSA")]"" ^HLB(MSGIEN,4)=TIME_"^"_PARMS("MSA")
@@ -100,7 +99,6 @@ GETMSG(IEN,MSG) ;
  ;
  ;    "ID" - message id from the header
  ;    "IEN" - ien, file 778
- ;    "STATUS","SEQUENCE QUEUE")=name of the sequence queue (optional)
  ;
  K MSG
  Q:'$G(IEN) 0
@@ -110,12 +108,6 @@ GETMSG(IEN,MSG) ;
  S MSG("BODY")=$P(NODE,"^",2)
  S MSG("ID")=$P(NODE,"^")
  Q:'MSG("BODY") 0
- ;
- ;**P143 START CJM
- S MSG("ACK BY")=$P(NODE,"^",7)
- S MSG("STATUS")=$P(NODE,"^",20)
- ;**P143 END CJM
- ;
  S MSG("STATUS","ACCEPTED")=$P(NODE,"^",17)
  S MSG("DT/TM")=$P(NODE,"^",16)
  S MSG("STATUS","QUEUE")=$P(NODE,"^",6)
@@ -152,38 +144,4 @@ GETMSG(IEN,MSG) ;
  .S MSG("HDR","BATCH CONTROL ID")=MSG("ID")
  .S MSG("HDR","ACCEPT ACK TYPE")=$E($P($P(MSG("HDR",2),FS,4),"ACCEPT ACK TYPE=",2),1,2)
  .S MSG("HDR","APP ACK TYPE")=$E($P($P(MSG("HDR",2),FS,4),"APP ACK TYPE=",2),1,2)
- S MSG("STATUS","SEQUENCE QUEUE")=$P($G(^HLB(IEN,5)),"^")
  Q 1
- ;
-GETMTYPE(MSGIEN) ;returns <message type>~<event> OR "BATCH"
- Q:'$G(MSGIEN) "UNKNOWN"
- N FS,CS,HDR1,HDR2
- S HDR1=$G(^HLB(IEN,1))
- I $E(HDR1,1,3)="BHS" Q "BATCH"
- S HDR2=$G(^HLB(IEN,2))
- S FS=$E(HDR1,4)
- S CS=$E(HDR1,5)
- Q $P($P(HDR2,FS,4),CS)_"~"_$P($P(HDR2,FS,4),CS,2)
- ;
-GETEVENT(MSGIEN) ; returns event if not a batch message
- Q:'$G(MSGIEN) ""
- N FS,CS,HDR1,HDR2
- S HDR1=$G(^HLB(MSGIEN,1))
- I $E(HDR1,1,3)="BHS" Q ""
- S HDR2=$G(^HLB(MSGIEN,2))
- S FS=$E(HDR1,4)
- S CS=$E(HDR1,5)
- Q $P($P(HDR2,FS,4),CS,2)
- ;
-GETSAP(MSGIEN) ;
- ;
- ;
- Q:'$G(MSGIEN) "UNKNOWN"
- N FS,CS,HDR1,REP,ESCAPE,SUBCOMP
- S HDR1=$G(^HLB(MSGIEN,1))
- S FS=$E(HDR1,4)
- S CS=$E(HDR1,5)
- S REP=$E(HDR1,6)
- S ESCAPE=$E(HDR1,7)
- S SUBCOMP=$E(HDR1,8)
- Q $$DESCAPE^HLOPRS1($P($P(HDR1,FS,3),CS),FS,CS,SUBCOMP,REP,ESCAPE)

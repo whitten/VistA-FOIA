@@ -1,5 +1,5 @@
-DID2 ;SFISC/GFT-MODIFIED DD ;9:41 AM  23 Dec 2002
- ;;22.0;VA FileMan;**7,105**;Mar 30, 1999
+DID2 ;SFISC/GFT-MODIFIED DD ;9:41 AM  23 Dec 2002 [ 12/09/2003  4:47 PM ]
+ ;;22.0;VA FileMan;**7,105,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  I $D(DINM) G DZ:X'["C"!(X["X")!'$D(^DD(F(Z),DJ(Z),9.1)) S %Y=X,X=^(9.1),W=" --  "_X D ^DIM,W1^DIDH1:'$D(X) S X=%Y G Q:M=U G DZ
  F I=9.2:.1 Q:'$D(^(I))#2  W ! S W=I_" = "_^(I) D W G Q:M=U

@@ -1,10 +1,5 @@
 RADD2 ;HISC/GJC/CAH-Radiology Data Dictionary Utility Routine ;5/14/97  10:31
- ;;5.0;Radiology/Nuclear Medicine;**84,47**;Mar 16, 1998;Build 21
- ;
- ;Integration Agreements
- ;----------------------
- ;EN^DDIOL(10142); FILE^DIE(2053);NOTE^ORX3(868);MES^XPDUTL(10141)
- ;
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 EN1(RAX,RAY) ; Input transform for the .01 field (Procedure) for the Rad/Nuc
  ; Med Common Procedure file i.e, ^RAMIS(71.3
  ; Procedure must not have an inactive date before today in file 71
@@ -59,8 +54,7 @@ EN2() ; called from ^DD(74,0,"ID","WRITE")
  ; display long case #'s in the same print set as current record
  N RA1,RA2
  S RA1=0,RA2=""
- ; F  S RA1=$O(^RARPT(Y,1,"B",RA1)) Q:'RA1  S RA2=RA2_$S(RA2="":"-",1:",-")_$P(RA1,"-",2)
- F  S RA1=$O(^RARPT(Y,1,"B",RA1)) Q:'RA1  S RA2=RA2_$S(RA2="":"-",1:",-")_$P(RA1,"-",$L(RA1,"-"))  ;P47 to accommodate possible SSAN format
+ F  S RA1=$O(^RARPT(Y,1,"B",RA1)) Q:'RA1  S RA2=RA2_$S(RA2="":"-",1:",-")_$P(RA1,"-",2)
  Q RA2
 USUAL(RADA,RAX) ; To insure that the USUAL DOSE value falls between the
  ; HIGH ADULT DOSE and the LOW ADULT DOSE.
@@ -106,15 +100,3 @@ MEDOSE(RAY,RADT) ; Determine if this individual (RAY) is authorized to
  ; date individual is authorized.
  Q:+$P(RAUTH,"^")&($S('$P(RAUTH,"^",4):1,$P(RAUTH,"^",4)'<RADT:1,1:0)) 1
  Q 0
- ;
-PRIDXIXK(DA,X) ;This subroutine executes the KILL logic for the 'new style' AD cross-
- ;reference on the 'PRIMARY DIAGNOSTIC CODE' (data dictionary: 70.03; field: 13)
- ;Input: DA - an array where DA(2)=RADFN, DA(1)=RADTI, & DA=RACNI
- ;        X - the primary diagnostic code value (this field points to file 78.3)
- N RACNI,RADFN,RADTI,RAFDA,RAIENS,RAX
- S RADFN=DA(2),RADTI=DA(1),RACNI=DA,RAX=X ;save the variables just in case
- S RAIENS=DA_","_DA(1)_","_DA(2)_",",RAFDA(70.03,RAIENS,20)="@"
- D FILE^DIE(,"RAFDA") ;delete data in 'DIAGNOSTIC PRINT DATE' (DD: 70.03; field: 20)
- K ^RADPT("AD",RAX,RADFN,RADTI,RACNI)
- Q
- ;

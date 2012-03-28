@@ -1,6 +1,6 @@
-LRBLDRR1 ;AVAMC/REG/CYM - LABEL-RELEASE COMPONENTS COND'T ;11/5/97  09:28 ;
- ;;5.2;LAB SERVICE;**72,90,97,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDRR1 ; IHS/DIR/AAB - LABEL-RELEASE COMPONENTS COND'T 11/5/97 09:28 ; [ 05/28/98 2:04 PM ]
+ ;;5.2;LR;**1002,1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72,90,97**;Sep 27, 1994
 A W !!,"Select COMPONENT by number (",B," choice",$S(B=1:"",1:"s"),"): " R X:DTIME I X[U!(X="") D FRE Q
  I X'?1N.N!(X<1)!(X>B) W $C(7),!?5,"Enter a number up to ",B G A
  W " ",$P(F(X),U,4) I '$L($P(F(X),"^",5))!('$L($P(F(X),"^",6))) W $C(7),!,"No Date/time Stored &/or Expiration date entered." D FRE Q

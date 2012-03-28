@@ -1,5 +1,7 @@
 XQALERT ;ISC-SF.SEA/JLI - ALERT HANDLER ;5/4/05  10:25
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1016**;APR 1, 2003;Build 5
  ;;8.0;KERNEL;**1,65,125,173,285,366**;Jul 10, 1995
+ ;THIS ROUTINE CONTAINS IHS MODIFICATION BY IHS/ANMC/LJF 5/14/98
  ;;
  Q
  ;
@@ -27,7 +29,13 @@ DISPLAY ;SR. Display any new alerts
  . I $P(X,U,5)="D" S XQA=$P(X,U,2) K ^XTV(8992,DUZ,"XQA",XQI) D  S XQX=XQX-1 D:XQA'="" D
  . . I $G(XQXX)>0,$G(XQXY)>0 S $P(^XTV(8992.1,XQXX,20,XQXY,0),U,5)=XQXDAT
  . K XQXX,XQXY
- I XQX>0 W:XQX1=0 !!,"You have PENDING ALERTS" W !?10,"Enter  ""VA to jump to VIEW ALERTS option",! ; ISL-0898-51279
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;This line was commented out and replaced by the line below to show the
+ ;number of pending alerts a user has.  Original modification was done
+ ;by IHS/ANMC/LFJ 5/14/98
+ ;I XQX>0 W:XQX1=0 !!,"You have PENDING ALERTS" W !?10,"Enter  ""VA to jump to VIEW ALERTS option",! ; ISL-0898-51279
+ I XQX>0 W:XQX1=0 !!,"You have ",XQX," PENDING ALERTS" W !?10,"Enter  ""VA to jump to VIEW ALERTS option",! ; ISL-0898-51279
+ ;----- END IHS MODIFICATION
  W:XQX1>0 !
  K XQI,XQX,XQX1,DIR,XQA,Y
  Q

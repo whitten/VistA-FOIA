@@ -1,4 +1,5 @@
-DINIT11B ;SFISC/GFT,DCM,TKW-INITIALIZE VA FILEMAN ;8/6/99  09:04
+DINIT11B ;SFISC/GFT,DCM,TKW-INITIALIZE VA FILEMAN ;8/6/99  09:04 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**7**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 DD F I=1:1 S X=$T(DD+I),Y=$P(X," ",3,99) G ^DINIT11C:X?.P S @("^DD("_$E($P(X," ",2),3,99)_")=Y")

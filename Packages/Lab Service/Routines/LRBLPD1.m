@@ -1,10 +1,10 @@
-LRBLPD1 ;SLC/DCM - BB PT INFO for OE/RR pt lists ;12/10/90  12:21
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPD1 ; IHS/DIR/FJE - BB PT INFO for OE/RR pt lists 12:21 ; [ 12/10/90 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
 OERR ;
  I '$D(^DPT(DFN,"LR")) W !,"No Lab Data for: "_$P(^(0),"^") Q
- S LRDFN=$$LRDFN^LR7OR1(DFN) I 'LRDFN W !,"No Lab Data for: "_$P(^DPT(DFN,0),"^") Q
- S LRDPF="2^DPT(" I '$D(^LR(LRDFN,0)) W !,"No Lab Data for: "_$P(^DPT(DFN,0),"^") Q
+ S LRDFN=^DPT(DFN,"LR"),LRDPF="2^DPT(" I '$D(^LR(LRDFN,0)) W !,"No Lab Data for: "_$P(^DPT(DFN,0),"^") Q
  S LRQ=1 D INI
  S DIWL=5,DIWR=IOM-5,DIWF="W",C(1.7)="RBC Antibody present:",C(1)="RBC Antigen present :",C(1.5)="RBC Antigen absent  :"
  D S^LRU I $A(IOST)=80 S A(1)=0 D L^LRU,H

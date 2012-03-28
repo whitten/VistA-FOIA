@@ -1,4 +1,5 @@
-XQORM1 ; SLC/KCM - Display selections & prompt ;12/22/93  14:43
+XQORM1 ; SLC/KCM - Display selections & prompt ;12/22/93  14:43 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 DISP ;From: XQORM
  N L,M,N,T

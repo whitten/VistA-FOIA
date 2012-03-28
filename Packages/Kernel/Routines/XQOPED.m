@@ -1,4 +1,5 @@
-XQOPED ;SEA/Luke - Option Editor ;04/27/98  12:26
+XQOPED ;SEA/Luke - Option Editor ;04/27/98  12:26 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1005,1007**;APR 1, 2003 
  ;;8.0;KERNEL;**46**;Jul 10, 1995
  ;
 IN ;Called from the Pre Action of the XQEDTOPT form

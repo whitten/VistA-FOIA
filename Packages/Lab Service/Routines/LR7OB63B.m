@@ -1,4 +1,6 @@
-LR7OB63B ;slc/dcm - Get Micro (Parasite, Virology, TB, Mycology) ;8/11/97
+LR7OB63B ; IHS/DIR/AAB - Get Micro (Parasite, Virology, TB, Mycology) ; [ 8/11/97 ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**121**;Sep 27, 1994
  ;
 MI ;Microbiology

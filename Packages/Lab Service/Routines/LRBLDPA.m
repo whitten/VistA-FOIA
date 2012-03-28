@@ -1,6 +1,6 @@
-LRBLDPA ;AVAMC/REG/CYM - BLOOD DONOR PRINT ;6/26/96  08:57 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDPA ; IHS/DIR/AAB - BLOOD DONOR PRINT 6/26/96 08:57 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END S (LRN,LR("Q"))=0,DIC="^LRE(",DIC(0)="AEQMZ",DIC("A")="Select DONOR: " D ^DIC K DIC G:X=""!(X[U) END S LR=+Y
  I $O(^LRE(LR,5,0)) W !!,"Select a single donation date " S %=2 D YN^LRU G:%<1 END I %=1 K ^TMP($J) S (A,C)=0 D L G:'$D(LRI) END W !!,"Include workload information " S %=2 D YN^LRU Q:%<1  S:%=1 LRN=1
  K DIC,DIE,DR S ZTRTN="QUE^LRBLDPA" W ! D BEG^LRUTL G:POP!($D(ZTSK)) END

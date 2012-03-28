@@ -1,4 +1,5 @@
-HLCSRPT4 ;OIFO-O/LJA - Error Listing code ;3/18/02 10:19
+HLCSRPT4 ;OIFO-O/LJA - Error Listing code ;3/18/02 10:19 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**85**;Oct 13, 1995
  ;
  ; Patch HL*1.6*85 created a significant amount of code; enough

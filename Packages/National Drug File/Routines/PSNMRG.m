@@ -1,5 +1,5 @@
-PSNMRG ;BIR/CCH&WRT-merges NDF fields into PSDRUG ; 04/18/01 14:56
- ;;4.0; NATIONAL DRUG FILE;**2,22,27,51,55,59,60,65,84**; 30 Oct 98
+PSNMRG ;BIR/CCH&WRT-merges NDF fields into PSDRUG ;23-Apr-2007 11:07;SM
+ ;;4.0; NATIONAL DRUG FILE;**2,22,27,51,55,59,60,65,84,1002**; 30 Oct 98
  ;
  ;Reference to ^PS(50.3 supported by DBIA #2612
  ;Reference to ^PSDRUG supported by DBIA #2352,#221
@@ -8,6 +8,7 @@ PSNMRG ;BIR/CCH&WRT-merges NDF fields into PSDRUG ; 04/18/01 14:56
  ;Reference to ^PS(59 supported by DBIA #1976
  ;IA 3621 - DRG^PSSHUIDG(DA)
  ;IA 4394 - DRG^PSSDGUPD(DA)  HL7 V.2.4 dispensing machines
+ ; Modified - IHS/MSC/PLS - 04/23/07 - Line SET+21
  ;
  W !,"This option will merge NDF fields into your local drug file. This will also",!,"produce an Error Report for entries in the translation file which are not",!,"in the local file if they should exist."
  W " These exceptions will not be merged.",!
@@ -53,10 +54,12 @@ SET I $D(PSNFL) Q:PSNFL
  I $D(^PSDRUG("AOC")) S PP=0 F  S PP=$O(^PSDRUG("AOC",PP)) Q:'PP  S COD="" F  S COD=$O(^PSDRUG("AOC",PP,COD)) Q:COD=""  I $D(^PSDRUG("AOC",PP,COD,PSNB)) K ^PSDRUG("AOC",PP,COD,PSNB)
  S PRIM=$P($G(^PSDRUG(PSNB,2)),"^") S:PRIM ^PSDRUG("AOC",PRIM,$P(^PS(50.605,CLDA,0),"^",1),PSNB)=""
  I $$PATCH^XPDUTL("PSS*1.0*57") D DRG^PSSHUIDG(PSNB)
- N XX,DNSNAM,DNSPORT,DVER,DMFU S XX=""
- F XX=0:0 S XX=$O(^PS(59,XX)) Q:'XX  D
- .S DVER=$$GET1^DIQ(59,XX_",",105,"I"),DMFU=$$GET1^DIQ(59,XX_",",105.2)
- .I DVER="2.4" S DNSNAM=$$GET1^DIQ(59,XX_",",2006),DNSPORT=$$GET1^DIQ(59,XX_",",2007) I DNSNAM'=""&(DMFU="YES") D DRG^PSSDGUPD(PSNB,"",DNSNAM,DNSPORT)
+ ; IHS/MSC/PLS - 04/23/07 - The following four lines commented out for
+ ; patch 1002.
+ ;N XX,DNSNAM,DNSPORT,DVER,DMFU S XX=""
+ ;F XX=0:0 S XX=$O(^PS(59,XX)) Q:'XX  D
+ ;.S DVER=$$GET1^DIQ(59,XX_",",105,"I"),DMFU=$$GET1^DIQ(59,XX_",",105.2)
+ ;.I DVER="2.4" S DNSNAM=$$GET1^DIQ(59,XX_",",2006),DNSPORT=$$GET1^DIQ(59,XX_",",2007) I DNSNAM'=""&(DMFU="YES") D DRG^PSSDGUPD(PSNB,"",DNSNAM,DNSPORT)
  Q
 SETAPC K ^PSDRUG("APC",PP,COD,PSNB) S ^PSDRUG("APC",PP,$P(^PS(50.605,CLDA,0),"^",1),PSNB)="" S FLAG=1
  Q

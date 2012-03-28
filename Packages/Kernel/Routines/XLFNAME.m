@@ -1,4 +1,4 @@
-XLFNAME ;CIOFO-SF/TKW,MKO-Utilities for person name fields ;10:12 AM  29 Jan 2003
+XLFNAME ;CIOFO-SF/TKW,MKO-Utilities for person name fields ;10:12 AM  29 Jan 2003 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**134,211,240**;Jul 10, 1995
  ;
 STDNAME(XUNAME,XUFLAG,XUAUD) ;Standardize name XUNAME

@@ -1,6 +1,7 @@
-LRBLJPA1 ;AVAMC/REG/CYM - UNIT FINAL DISPOSITION ;02/11/98  09:24 ;
- ;;5.2;LAB SERVICE;**72,203,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJPA1 ; IHS/DIR/AAB - UNIT FINAL DISPOSITION 02/11/98 09:24 ; [ 07/07/1998 12:41 PM ]
+ ;;5.2;LR;**1002,1006**;SEP 01, 1998
+ ;
+ ;;5.2;LAB SERVICE;**72,203**;Sep 27, 1994
  D FIELD^DID(65,4.1,"","POINTER","LRD") S LRD=LRD("POINTER")
  D FIELD^DID(65.02,.04,"","POINTER","LRT") S LRT=LRT("POINTER")
  D FIELD^DID(65.03,.02,"","POINTER","LRTINS") S LRTINS=LRTINS("POINTER")
@@ -27,8 +28,10 @@ Y Q:'Y  S Y=$TR($$FMTE^XLFDT(Y,"5M"),"@"," ")
  I $L($P(Y,"/"))=1 S $P(Y,"/")="0"_$P(Y,"/") ;-->pad for 2 digit day
  I $L($P(Y,"/",2))=1 S $P(Y,"/",2)="0"_$P(Y,"/",2) ;-->pad for 2 digit month
  Q
-P Q:'$D(^LR(X,0))  S X(1)=^(0),Y=$P(X(1),"^",3),(LRDPF,X)=$P(X(1),"^",2),X=^DIC(X,0,"GL"),Y=@(X_Y_",0)"),SSN=$P(Y,"^",9) D SSN^LRU Q
-T S X=+Z,(Y,X(1))="" D P W !,"Pt transfused:",$P(Y,"^")," ssn:",SSN," ABO:",$P(X(1),"^",5)," Rh:",$P(X(1),"^",6)
+P ;Q:'$D(^LR(X,0))  S X(1)=^(0),Y=$P(X(1),"^",3),(LRDPF,X)=$P(X(1),"^",2),X=^DIC(X,0,"GL"),Y=@(X_Y_",0)"),SSN=$P(Y,"^",9) D SSN^LRU Q
+ Q:'$D(^LR(X,0))  S X(1)=^(0),(DFN,Y)=$P(X(1),"^",3),(LRDPF,X)=$P(X(1),"^",2),X=^DIC(X,0,"GL"),Y=@(X_Y_",0)"),SSN=$P(Y,"^",9) D SSN^LRU Q  ;IHS/ANMC/CLS 11/1/95
+T ;S X=+Z,(Y,X(1))="" D P W !,"Pt transfused:",$P(Y,"^")," ssn:",SSN," ABO:",$P(X(1),"^",5)," Rh:",$P(X(1),"^",6)
+ S X=+Z,(Y,X(1))="" D P W !,"Pt transfused:",$P(Y,"^")," HRCN:",HRCN," ABO:",$P(X(1),"^",5)," Rh:",$P(X(1),"^",6)  ;IHS/ANMC/CLS 11/1/95
  W:$P(Z,"^",2)]"" " Physician:",$P(Z,"^",2) W:$P(Z,"^",6) "(",$P(Z,"^",6),")" S X=$P(Z,"^",5) W:$P(Z,"^",4) " Tx record#:",$P(Z,"^",4)
  W !,"Tx reaction:",$S(X=0:"NO",X:"YES",1:"")," Rx specialty: ",$P(Z,"^",3) W:$P(Z,"^",7) "(",$P(Z,"^",7),")" D H4
  I $O(^LRD(65,LRI,7,0)) W !,"Transfusion comment(s):" F LRA=0:0 S LRA=$O(^LRD(65,LRI,7,LRA)) Q:'LRA!(LR("Q"))  D:$Y>(IOSL-6) H3 Q:LR("Q")  W !,^LRD(65,LRI,7,LRA,0)
@@ -42,7 +45,8 @@ H1 D H Q:LR("Q")  W !,LRP,?14,LRC,"  (continued from pg ",LRQ-1,")" Q
 H2 D H1 Q:LR("Q")  W !,"Disposition comment(s):" Q
 H3 D H1 Q:LR("Q")  W !,"Transfusion comment(s):" Q
 H4 D:$Y>(IOSL-6) H1 Q
-AU I X D P W !,"Restricted for:",$P(Y,"^")," ",SSN
+AU ;I X D P W !,"Restricted for:",$P(Y,"^")," ",SSN
+ I X D P W !,"Restricted for:",$P(Y,"^")," ",HRCN  ;IHS/ANMC/CLS 11/1/95
  I W(2)]""!(W(3)]"") W ! W:W(2)]"" "Pos/incomplete screen tests:",$P($P(LRE,W(2)_":",2),";") W:W(3)]"" ?40,"Donation type:",$P($P(LRF,W(3)_":",2),";")
  Q
 W W !,"Date re-entered: ",Y," Previous disposition: ",$P(Z,"^",2),"  Date: " S Y=$P(Z,"^",3) D Y W Y,!?3,"Previous disp entering person: ",$P(^VA(200,$P(Z,"^",4),0),"^")

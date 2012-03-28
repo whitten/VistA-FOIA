@@ -1,5 +1,6 @@
-LR7OSAP4 ;slc/dcm - Silent AP API ;3/22/2007
- ;;5.2;LAB SERVICE;**365**;Sep 27, 1994;Build 9
+LR7OSAP4 ;va/slc/dcm - Silent AP API ;3/22/2007
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**365**;Sep 27, 1994;Build 11
  ;
 EN(LRX,LRDFN,LRSS,LRI,GIOM)        ;Get Anatomic Path results from either TIU or Lab files
  ; LRX is the global where the output is placed. Calling package is responsible for cleaning this up

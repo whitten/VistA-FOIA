@@ -1,6 +1,9 @@
-PSBOML ;BIRMINGHAM/EFC-MEDICATION LOG ;Mar 2004
- ;;3.0;BAR CODE MED ADMIN;**3,11,50**;Mar 2004;Build 78
+PSBOML ;BIRMINGHAM/EFC-MEDICATION LOG ;22-Feb-2007 10:40;VX
+ ;;3.0;BAR CODE MED ADMIN;**3,11,1005**;Mar 2004
  ;
+ ; Modified - IHS/CIA/PLS - 06/21/04 - Line EN+6
+ ;            IHS/MSC/PLS - 02/22/07 - Line EN+35
+ ;                                     Added PTID API
  ; Reference/IA
  ; ^DPT/10035
  ;
@@ -11,7 +14,9 @@ EN ; Begin printing
  S PSBSTOP=$P(PSBRPT(.1),U,8)+$P(PSBRPT(.1),U,9)
  S PSBAUDF=$P(PSBRPT(.2),U,9)
  S PSBHDR(0)="Medication Log Report"
- S PSBHDR(1)="Continuing/PRN/Stat/One Time Medication/Treatment Record (Detailed Log) (VAF 10-2970 B, C, D)"
+ ; IHS/CIA/PLS - 06/21/04 - Removed reference to VA Form
+ ;S PSBHDR(1)="Continuing/PRN/Stat/One Time Medication/Treatment Record (Detailed Log) (VAF 10-2970 B, C, D)"
+ S PSBHDR(1)="Continuing/PRN/Stat/One Time Medication/Treatment Record (Detailed Log)"
  ;
  ; Patient Report
  ;
@@ -38,7 +43,9 @@ EN ; Begin printing
  .F  S PSBTMPG=$Q(@PSBTMPG) Q:PSBTMPG=""  Q:$QS(PSBTMPG,1)'="PSBO"!($QS(PSBTMPG,2)'=$J)  D
  ..S DFN=$QS(PSBTMPG,5)
  ..I $Y>(IOSL-14) W $$WDHDR(PSBWRD)
- ..W !,$P(^DPT(DFN,0),U),"  (",$P(^(0),U,9),")"
+ ..; IHS/MSC/PLS - 02/22/07 - Next line commented out, following line added
+ ..;W !,$P(^DPT(DFN,0),U),"  (",$P(^(0),U,9),")"
+ ..W !,$P(^DPT(DFN,0),U),"  (",$$PTID(DFN),")"
  ..W !,"Ward: ",$G(^DPT(DFN,.1),"***"),"  Rm-Bed: ",$G(^DPT(DFN,.101),"***"),!
  ..S X=$O(^PSB(53.79,"AADT",DFN,PSBSTRT-.0000001))
  ..I X>PSBSTOP!(X="") W !!?10,"<<<< NO MEDICATIONS FOUND FOR THIS TIME FRAME >>>>",!! Q
@@ -89,8 +96,7 @@ LINE(PSBIEN) ; Displays the med log entry in PSBIEN
  .W !?16,"PRN Reason: ",?30,$$GET1^DIQ(53.79,PSBIEN_",",.21)
  .W !?16,"PRN Effectiveness: "
  .I $P($G(^PSB(53.79,PSBIEN,.2)),U,2)="" W "<No PRN Effectiveness Entered>" Q
- .N PSBEIECMT S PSBEIECMT="" I $P($G(^PSB(53.79,PSBIEN,.2)),U,2)'="",$P(PSBRPT(.2),U,8)=0 S PSBEIECMT=$$PRNEFF^PSBO(PSBEIECMT,PSBIEN)
- .W $$WRAP^PSBO(20,100,$$GET1^DIQ(53.79,PSBIEN_",",.22)_PSBEIECMT)
+ .W $$WRAP^PSBO(20,100,$$GET1^DIQ(53.79,PSBIEN_",",.22))
  .W !?20,"Entered By: ",$$GET1^DIQ(53.79,PSBIEN_",",.23)
  .W " Date/Time: ",$$GET1^DIQ(53.79,PSBIEN_",",.24)
  .W " Minutes: ",$$GET1^DIQ(53.79,PSBIEN_",",.25)
@@ -135,3 +141,8 @@ SUB() ; Med Log Sub Header
  W !,$TR($J("",IOM)," ","-")
  Q ""
  ;
+ ;
+PTID(DFN,TYP) ;
+ N VADM,VAERR,VA
+ D DEM^VADPT
+ Q $S($G(TYP):$G(VA("BID")),1:$G(VA("PID")))

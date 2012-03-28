@@ -1,8 +1,9 @@
-DGPMXA1 ; ;04/03/03
+DGPMXA1 ; ;10/29/04
  D DE G BEGIN
 DE S DIE="^DGPM(",DIC=DIE,DP=405,DL=1,DIEL=0,DU="" K DG,DE,DB Q:$O(^DGPM(DA,""))=""
- I $D(^("ODS")) S %Z=^("ODS") S %=$P(%Z,U,1) S:%]"" DE(1)=%
- I $D(^("USR")) S %Z=^("USR") S %=$P(%Z,U,3) S:%]"" DE(2)=% S %=$P(%Z,U,4) S:%]"" DE(4)=%
+ I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,10) S:%]"" DE(1)=%
+ I $D(^("ODS")) S %Z=^("ODS") S %=$P(%Z,U,1) S:%]"" DE(4)=%
+ I $D(^("USR")) S %Z=^("USR") S %=$P(%Z,U,3) S:%]"" DE(5)=% S %=$P(%Z,U,4) S:%]"" DE(7)=%
  K %Z Q
  ;
 W W !?DL+DL-2,DLB_": "
@@ -50,26 +51,42 @@ SAVEVALS S @DIEZTMP@("V",DP,DIIENS,DIFLD,"O")=$G(DE(DQ)) S:$D(^("F"))[0 ^("F")=$
 NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
 KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="DGPMXA1",DQ=1
-1 S DW="ODS;1",DV="S",DU="",DLB="ODS AT ADMISSION",DIFLD=11500.01
+1 S DW="0;10",DV="RFX",DU="",DLB="DIAGNOSIS [SHORT]",DIFLD=.1
+ G RE
+X1 K:$L(X)>30!($L(X)<3)!(X[";") X
+ I $D(X),X'?.ANP K X
+ Q
+ ;
+2 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=2 G A
+3 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=3 D X3 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
+X3 D DFN^DGYZODS S:'DGODS Y=102
+ Q
+4 S DW="ODS;1",DV="S",DU="",DLB="ODS AT ADMISSION",DIFLD=11500.01
  S DU="1:YES;0:NO;"
  S Y="1"
  S X=Y,DB(DQ)=1,DE(DW,"4/")="" G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
  G RD:X="@",Z
-X1 Q
-2 S DW="USR;3",DV="RP200'",DU="",DLB="LAST EDITED BY",DIFLD=102
+X4 Q
+5 S DW="USR;3",DV="RP200'a",DU="",DLB="LAST EDITED BY",DIFLD=102
+ S DE(DW)="C5^DGPMXA1"
  S DU="VA(200,"
  S X=DUZ
  S Y=X
  S X=Y,DB(DQ)=1,DE(DW,"4/")="" G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
  G RD:X="@",Z
-X2 Q
-3 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=3 G A
-4 S DW="USR;4",DV="RD",DU="",DLB="LAST EDITED ON",DIFLD=103
+C5 G C5S:$D(DE(5))[0 K DB
+ S X=DE(5),DIIX=2_U_DIFLD D AUDIT^DIET
+C5S S X="" G:DG(DQ)=X C5F1 K DB
+ I $D(DE(5))'[0!(^DD(DP,DIFLD,"AUDIT")'="e") S X=DG(DQ),DIIX=3_U_DIFLD D AUDIT^DIET
+C5F1 Q
+X5 Q
+6 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=6 G A
+7 D:$D(DG)>9 F^DIE17,DE S DQ=7,DW="USR;4",DV="RD",DU="",DLB="LAST EDITED ON",DIFLD=103
  S %=$P($H,",",2),X=DT_(%\60#60/100+(%\3600)+(%#60/10000)/100)
  S Y=X
  S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
  G RD
-X4 S %DT="STX" D ^%DT S X=Y K:Y<1 X
+X7 S %DT="STX" D ^%DT S X=Y K:Y<1 X
  Q
  ;
-5 G 0^DIE17
+8 G 0^DIE17

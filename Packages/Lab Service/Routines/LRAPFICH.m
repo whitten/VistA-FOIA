@@ -1,4 +1,5 @@
 LRAPFICH ;AVAMC/REG/WTY/KLL - MICROFICH PATH REPORTS ;03/21/2002
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**72,173,248,259**;Sep 27, 1994
  ;
  D END ;Final path reports by accession number

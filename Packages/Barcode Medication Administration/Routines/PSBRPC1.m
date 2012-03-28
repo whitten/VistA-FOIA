@@ -1,11 +1,12 @@
-PSBRPC1 ;BIRMINGHAM/VN - BCMA RPC BROKER CALLS ;5/28/10 5:16pm
- ;;3.0;BAR CODE MED ADMIN;**42**;Mar 2004;Build 23
+PSBRPC1 ;BIRMINGHAM/VN-BCMA RPC BROKER CALLS ;19-Sep-2007 15:07;SM
+ ;;3.0;BAR CODE MED ADMIN;**1006**;Mar 2004
  ;
  ; Reference/IA
  ; ^%ZIS/812
  ; ^XUSEC/10076
  ; File 200/10060
  ;
+ ; Modified - IHS/MSC/PLS - 09/19/2007 - Line DEVICE+17 - Added OTH as a valid device type
 DEVICE(RESULTS,FROM,DIR) ;
  ;
  ; RPC: PSB DEVICE
@@ -23,9 +24,7 @@ DEVICE(RESULTS,FROM,DIR) ;
  .. Q:'$D(^%ZIS(1,IEN,0))
  .. S X0=$G(^%ZIS(1,IEN,0)),X1=$G(^(1)),X90=$G(^(90)),X91=$G(^(91)),X95=$G(^(95)),XSTYPE=$G(^("SUBTYPE")),XTIME=$G(^("TIME")),XTYPE=$G(^("TYPE"))
  .. I $E($G(^%ZIS(2,+XSTYPE,0)))'="P" Q  ;Printers only
- .. S X=$P(XTYPE,"^")                    ;Device Types
- .. I $G(DUZ("AG"))="V",X'="TRM",X'="HG",X'="HFS",X'="CHAN" Q
- .. I $G(DUZ("AG"))="I",X'="OTH" Q
+ .. S X=$P(XTYPE,"^") I X'="TRM",X'="HG",X'="HFS",X'="CHAN",X'="OTH" Q  ;Device Types
  .. S X=X0 I ($P(X,U,2)="0")!($P(X,U,12)=2) Q  ;Queuing allowed
  .. S X=+X90 I X,(X'>DT) Q  ;Out of Service
  .. I XTIME]"" S %A=$P(XTIME,"^"),%X=$P($H,",",2),%=%X\60#60+(%X\3600*100),%X=$P(%A,"-",2) I %X'<%A&(%'>%X&(%'<%A))!(%X<%A&(%'<%A!(%'>%X))) Q  ;Prohibited Times

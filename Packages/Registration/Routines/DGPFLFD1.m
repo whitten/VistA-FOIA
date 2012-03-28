@@ -1,5 +1,5 @@
-DGPFLFD1 ;ALB/KCL - PRF DISPLAY FLAG DETAIL BUILD LIST AREA ; 6/9/04 2:49pm
- ;;5.3;Registration;**425,554**;Aug 13, 1993
+DGPFLFD1 ;ALB/KCL - PRF DISPLAY FLAG DETAIL BUILD LIST AREA ; 7/31/03 3:01pm
+ ;;5.3;Registration;**425**;Aug 13, 1993
  ;
  ;no direct entry
  QUIT
@@ -80,36 +80,32 @@ FLAGDET(DGARY,DGPFF,DGLINE,DGCNT) ;This procedure will build the lines of FLAG d
  ;
  ;set flag name
  S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Flag Name: "_$P($G(DGPFF("FLAG")),U,2),11,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Flag Name: "_$P($G(DGPFF("FLAG")),U,2),18,,,,,.DGCNT)
  ;
  ;set flag category
  S DGLINE=DGLINE+1
  S DGTEMP=$S(DGPFF("PTR")["26.11":"II (LOCAL)",DGPFF("PTR")["26.15":"I (NATIONAL)",1:"UNKNOWN")
- D SET^DGPFLF1(DGARY,DGLINE,"Flag Category: "_DGTEMP,7,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Flag Category: "_DGTEMP,14,,,,,.DGCNT)
  ;
  ;set flag type
  S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Flag Type: "_$P($G(DGPFF("TYPE")),U,2),11,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Flag Type: "_$P($G(DGPFF("TYPE")),U,2),18,,,,,.DGCNT)
  ;
  ;set flag status
  S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Flag Status: "_$P($G(DGPFF("STAT")),U,2),9,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Flag Status: "_$P($G(DGPFF("STAT")),U,2),16,,,,,.DGCNT)
  ;
  ;set flag review frequency
  S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Review Freq Days: "_$P($G(DGPFF("REVFREQ")),U,2),4,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Review Frequency Days: "_$P($G(DGPFF("REVFREQ")),U,2),6,,,,,.DGCNT)
  ;
  ;set notification days
  S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Notification Days: "_$P($G(DGPFF("NOTIDAYS")),U,2),3,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Notification Days: "_$P($G(DGPFF("NOTIDAYS")),U,2),10,,,,,.DGCNT)
  ;
  ;set flag review mail group
  S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Review Mail Group: "_$P($G(DGPFF("REVGRP")),U,2),3,,,,,.DGCNT)
- ;
- ;set associated progress note title
- S DGLINE=DGLINE+1
- D SET^DGPFLF1(DGARY,DGLINE,"Progress Note Title: "_$E($P($G(DGPFF("TIUTITLE")),U,2),1,59),1,,,,,.DGCNT)
+ D SET^DGPFLF1(DGARY,DGLINE,"Review Mail Group: "_$P($G(DGPFF("REVGRP")),U,2),10,,,,,.DGCNT)
  ;
  ;set if principal investigator(s)
  I $D(DGPFF("PRININV")) D
@@ -119,15 +115,12 @@ FLAGDET(DGARY,DGPFF,DGLINE,DGCNT) ;This procedure will build the lines of FLAG d
  . . Q:$G(DGPFF("PRININV",DGSUB,0))="@"
  . . I DGCOUNT=1 D
  . . . S DGLINE=DGLINE+1
- . . . S DGTEMP="Principal"
- . . . D SET^DGPFLF1(DGARY,DGLINE,DGTEMP,5,,,,,.DGCNT)
- . . . S DGLINE=DGLINE+1
- . . . S DGTEMP="Investigator(s): "_$P($G(DGPFF("PRININV",DGSUB,0)),U,2)
- . . . D SET^DGPFLF1(DGARY,DGLINE,DGTEMP,5,,,,,.DGCNT)
+ . . . S DGTEMP="Principal Investigator(s): "_$P($G(DGPFF("PRININV",DGSUB,0)),U,2)
+ . . . D SET^DGPFLF1(DGARY,DGLINE,DGTEMP,2,,,,,.DGCNT)
  . . I DGCOUNT>1 D
  . . . S DGTEMP=$P($G(DGPFF("PRININV",DGSUB,0)),U,2)
  . . . S DGLINE=DGLINE+1
- . . . D SET^DGPFLF1(DGARY,DGLINE,DGTEMP,22,,,,,.DGCNT)
+ . . . D SET^DGPFLF1(DGARY,DGLINE,DGTEMP,29,,,,,.DGCNT)
  . . S DGCOUNT=DGCOUNT+1
  ;
  ;set flag description

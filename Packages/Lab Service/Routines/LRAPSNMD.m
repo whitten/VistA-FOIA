@@ -1,4 +1,5 @@
-LRAPSNMD ;DALOI/WTY - Display/print SNOMED codes;08/06/01
+LRAPSNMD ;VA/DALOI/WTY - Display/print SNOMED codes;08/06/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**259**;Sep 27, 1994
  ;
  Q

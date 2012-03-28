@@ -1,5 +1,5 @@
-LA7VIN4 ;DALOI/JMC - Process Incoming UI Msgs, continued ; 7/27/07 11:24am
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,67,66**;Sep 27, 1994;Build 30
+LA7VIN4 ;VA/DALOI/JMC - Process Incoming UI Msgs, continued ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997
  ;This routine is a continuation of LA7VIN1 and is only called from there.
  Q
  ;
@@ -88,10 +88,10 @@ OBR ; Process OBR segments
  . S X=$P($G(^LRO(68,LA7AA,0)),U,3)
  . S LA7AD=$S(X="D":DT,X="M":$E(DT,1,5)_"00",X="Y":$E(DT,1,3)_"0000",X="Q":$E(DT,1,3)_"0000"+(($E(DT,4,5)-1)\3*300+100),1:DT)
  . S LA7AN=+LA7SID
- . I LA7AN>0 D SETID^LA7VHLU1(LA76249,LA7ID,LA7AN) Q
- . D SETID^LA7VHLU1(LA76249,LA7ID,$S($G(LA7PNM)]"":LA7PNM,$G(LA7SSN)]"":LA7SSN,1:"NO ID"))
+ . I LA7AN>0 D SETID^LA7VHLU1(LA76249,LA7ID,LA7AN)
+ . E  D SETID^LA7VHLU1(LA76249,LA7ID,$S(LA7PNM]"":LA7PNM,LA7SSN]"":LA7SSN,1:"NO ID"))
  ;
- ; Zeroth node of accession area.
+ ; Zeroth node of acession area.
  S LA7AA(0)=$G(^LRO(68,+LA7AA,0))
  ; Accession's subscript
  S LA7SS=$P(LA7AA(0),"^",2)
@@ -119,8 +119,6 @@ OBR ; Process OBR segments
  ;
  ; Log error when specimen source does not match accession's specimen
  I LA70070'="",LA7SPEC'="",LA70070'=LA7SPEC D
- . ; Ignore if specimen related to lab control file #62.3
- . I $P($G(^LRO(68,LA7AA,1,LA7AD,1,LA7AN,0)),"^",2)=62.3 Q
  . N LA7OBR
  . S LA7OBR(15)=LA7SPEC ; backward compatible with old code
  . S LA7ERR=22,LA7QUIT=2
@@ -155,7 +153,7 @@ OBR ; Process OBR segments
  . . S LA7I=$O(^TMP("LA7 ORDER STATUS",$J,""),-1),LA7I=LA7I+1,LA7SAC(0)=LA7I
  . . I LA7ONLT="" S X=$$P^LA7VHLU(.LA7SEG,5,LA7FS),LA7X=$P(X,LA7CS),LA7X(0)=$P(X,LA7CS,2)
  . . E  S LA7X=LA7ONLT,LA7X(0)=LA7ONLT(0)
- . . S X=LA7LWL_"^"_LA7ISQN_"^"_LA7X_"^"_LA7X(0)_"^"_LA76248_"^"_LA76249_"^"_$G(LA7OTYPE)_"^"_LA7SAC_"^"_$P($G(LA7SM),"^",2)
+ . . S X=LA7LWL_"^"_LA7ISQN_"^"_LA7X_"^"_LA7X(0)_"^"_LA76248_"^"_LA76249_"^"_LA7OTYPE_"^"_LA7SAC_"^"_$P($G(LA7SM),"^",2)
  . . S ^TMP("LA7 ORDER STATUS",$J,LA7I)=X
  ;
  I LA7INTYP=10,$G(LA7SM)'="",$G(LA7UID)'="" D SMUPDT

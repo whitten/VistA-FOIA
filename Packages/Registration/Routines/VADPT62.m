@@ -1,5 +1,6 @@
 VADPT62 ;ALB/MJK - Patient ID Trigger Nodes ; 11 MAR 1991
- ;;5.3;Registration;;Aug 13, 1993
+ ;;5.3;Registration;**1004**;Aug 13, 1993
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
  ;
  ; This routine contains all the the 1 and 2 nodes for triggers
  ; on fields in the PATIENT ELIGIBILITIES multiple of the

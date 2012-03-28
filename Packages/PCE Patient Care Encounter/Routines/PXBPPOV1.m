@@ -1,5 +1,5 @@
-PXBPPOV1 ;ISL/JVS,ESW - PROMPT POV ;4/6/05 2:41pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,112,121,124**;Aug 12, 1996
+PXBPPOV1 ;ISL/JVS,ESW - PROMPT POV ; 1/14/03 1:42pm
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,112**;Aug 12, 1996
  ;
  ;
  ;
@@ -14,23 +14,10 @@ ADDM ;--------If Multiple POV entries have been entered.
  S NF=0,PXBLEN=0
  I DATA[",",$E(DATA,1)'["@" S NF=1 D
  .S PXBLEN=$L(DATA,",") F PXI=1:1:PXBLEN S PXBPIECE=$P(DATA,",",PXI) D
- ..S X=PXBPIECE,DIC=80,DIC(0)="IMZ",DIC("S")="I $P($$ICDDX^ICDCODE(Y,IDATE),U,10)" D ^DIC
+ ..S X=PXBPIECE,DIC=80,DIC(0)="IMZ" D ^DIC
  ..I Y=-1 S BAD(+$G(PXBPIECE))="" Q
  ..S $P(REQI,"^",5)=+Y
  ..S PXBNPOV(PXBPIECE)=""
- ..;
- ..;--Prompt for Primary or Secondary DIAGNOSIS
- ..W !,"For the DIAGNOSIS: ",PXBPIECE,"--"
- ..W $P($$ICDDX^ICDCODE(PXBPIECE,IDATE),U,2),!
- ..D WIN17^PXBCC(PXBCNT)
- ..D PRI^PXBPPOV1
- ..I $D(DIRUT) D RSET^PXBDREQ("POV") Q
- ..D ORD^PXBPPOV1
- ..N PXCEVIEN,PXCEAFTR,PXD
- ..S PXCEVIEN=PXBVST,PXD=$P(REQI,U,5)
- ..D WIN17^PXBCC(PXBCNT),GET800^PXCEC800 ;CI's
- ..S PXBREQ(PXD,"I")=$G(PXCEAFTR(800))
- ..;
  ..D EN0^PXBSTOR(PXBVST,PATIENT,REQI)
  ..D EN1^PXKMAIN
  ..D RSET^PXBDREQ("POV")
@@ -53,7 +40,7 @@ DELM ;--------If Multiple deleting
  ...I $D(GONE(PXBPIECE)) Q
  ...Q:PXBPIECE'?.N
  ...S $P(REQI,"^",9)=$O(PXBSKY(PXBPIECE,0)) ;-IEN
- ...S X=$P(PXBSAM(PXBPIECE),"^",1),DIC=80,DIC(0)="IZM",DIC("S")="I $P($$ICDDX^ICDCODE(Y,IDATE),U,10)" D ^DIC
+ ...S X=$P(PXBSAM(PXBPIECE),"^",1),DIC=80,DIC(0)="IZM" D ^DIC
  ...S $P(REQI,"^",5)=+Y K Y
  ...S GONE(PXBPIECE)=""
  ...D EN0^PXBSTOR(PXBVST,PATIENT,REQI)
@@ -63,7 +50,7 @@ DELM ;--------If Multiple deleting
  ....I $D(GONE(PXBJ)) Q
  ....I PXBJ'>0!(PXBJ'<(PXBCNT+1)) S BAD(PXBJ)="" Q
  ....S $P(REQI,"^",9)=$O(PXBSKY(PXBJ,0)) ;-IEN
- ....S X=$P(PXBSAM(PXBJ),"^",1),DIC=80,DIC(0)="IZM",DIC("S")="I $P($$ICDDX^ICDCODE(Y,IDATE),U,10)" D ^DIC
+ ....S X=$P(PXBSAM(PXBJ),"^",1),DIC=80,DIC(0)="IZM" D ^DIC
  ....S $P(REQI,"^",5)=+Y K Y
  ....S GONE(PXBJ)=""
  ....D EN0^PXBSTOR(PXBVST,PATIENT,REQI)
@@ -93,19 +80,6 @@ PPFIN ;--Finish off variables
  S $P(REQI,"^",6)=$P(PRI,"^",1)
  S $P(REQE,"^",6)=$P(PRI,"^",2)
 PPXIT ;--EXIT
- Q
-ORD ;--Prompt for ordering resulting DIAGNOSIS
- N DIR,Y,X,SEQ
- S SEQ=0 I $D(PXBKY(DATA)) S SEQ=+$O(PXBKY(DATA,""))
- W IOCUD,IOELALL,IOCUU
- S DIR("A")="Is this Diagnosis Ordering or Resulting:"
- S DIR("B")=$P($G(PXBKY(DATA,SEQ)),U,7)
- S DIR("?")="Resulting and/or Ordering indicators are only entered if at least one of each diagnosis type exists."
- S DIR(0)="SO^O:ORDERING;R:RESULTING;OR:BOTH O&R"
- D ^DIR I $G(DIRUT) G PPXIT
-ORFIN ;--Finish off variables
- S $P(REQI,"^",7)=Y
- S $P(REQE,"^",7)=$S(Y="O":"ORDERING",Y="R":"RESULTING",1:"BOTH O&R")
  Q
 PRBLM ;--Prompt for Problem list
  N DIR,Y,X,VALL

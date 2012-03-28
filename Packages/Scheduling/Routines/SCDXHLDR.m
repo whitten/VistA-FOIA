@@ -4,8 +4,10 @@ SCDXHLDR ;ALB/JLU;Ambulatory care event handler;4/30/96
  ;the Scheduling event driver and monitor the types of events.  When a
  ;check out, edit to a check out or deletion of a check out occurs this
  ;routine will update the Transmitted outpatient encounter file.
+ ;IHS/ANMC/LJF 6/16/2000 added quit-IHS does not transmit to Austin
  ;
 EN ;Main entry point
+ Q:$$IHS^BDGF  ;IHS
  ;
  I $D(SDSTPAMB) G ENQ ;this will stop the logging of events.
  I '$D(SDAMEVT) G ENQ

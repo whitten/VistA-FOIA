@@ -1,5 +1,6 @@
-SCRPO7 ;BP-CIOFO/KEITH - Historical Team Assignment Summary (cont.) ; 06 Jul 99  7:41 AM
+SCRPO7 ;BP-CIOFO/KEITH - Historical Team Assignment Summary (cont.) ; 06 Jul 99  7:41 AM [ 11/02/2000  8:59 AM ]
  ;;5.3;Scheduling;**177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed footer code for list template
  ;
 CKTEAM(SCTM) ;Build from team
  ;Input: SCTM=team ifn
@@ -173,7 +174,8 @@ COUNT ;Count division and report uniques
  ;
 FOOT ;Summary report footer
  N SCI
- F SCI=1:1:80 W ! Q:$Y>(IOSL-9)
+ ;F SCI=1:1:80 W ! Q:$Y>(IOSL-9)             ;IHS/ANMC/LJF 11/2/2000
+ I '$G(VALM) F SCI=1:1:80 W ! Q:$Y>(IOSL-9)  ;IHS/ANMC/LJF 11/2/2000
  W !,SCLINE
  W !,"NOTE: This report represents a count of team and team position assignments within the date range selected.  If a date range"
  W !?6,"larger than one day has been selected, the total unique patients and assignments may be greater than the maximum defined"

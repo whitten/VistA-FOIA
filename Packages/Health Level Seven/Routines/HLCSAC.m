@@ -1,4 +1,5 @@
-HLCSAC ;ISCSF/RWF - MPI direct connect client ;05/31/2000  09:40
+HLCSAC ;ISCSF/RWF - MPI direct connect client ;05/31/2000  09:40 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**43,64**;Jul 17,1995
  ;
 EN(HLDP,INPUT,OUTPUT) ;Call to do direct connect to MPI

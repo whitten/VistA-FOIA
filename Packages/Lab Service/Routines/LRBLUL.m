@@ -1,6 +1,7 @@
-LRBLUL ;AVAMC/REG - BB UTIL ;4/13/93  07:17 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLUL ; IHS/DIR/FJE - BB UTIL 4/13/93 07:17 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  ;from input transform 65,.01
  S X(1)=+$P($G(^LRD(65,DA,0)),"^",4),X(2)=0 F  S X(2)=$O(^LRD(65,"B",X,X(2))) Q:'X(2)  I $P(^LRD(65,X(2),0),"^",4)=X(1) D W Q
  Q

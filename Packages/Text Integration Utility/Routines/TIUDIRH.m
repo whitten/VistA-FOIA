@@ -1,5 +1,7 @@
 TIUDIRH ; SLC/SBW - Help for DIR call (READ^GMRDU) ;4/12/93
  ;;1.0;TEXT INTEGRATION UTILITIES;;Jun 20, 1997
+ ;IHS/ITSC/LJF  02/26/2003 removed reference to VA form #
+ ;
 REL ;Help for release from transcription or edit
  W !,"Enter either 'Y' or 'N'"
  W !,"To hold the document in a DRAFT state, where only you may see it, enter 'NO'."
@@ -57,6 +59,7 @@ REAS2 ;Help for reassign by MIS Manager if report is uneditable.
  Q
 CHART ;Help for mark printed summaries as chart copies.
  W !,"Enter either 'Y' or 'N'"
- W !,"If you enter YES, printed 10-1000s for summaries will be MARK as"
+ ;W !,"If you enter YES, printed 10-1000s for summaries will be MARK as"   ;IHS/ITSC/LJF 02/26/2003
+ W !,"If you enter YES, printed summaries will be MARKED as"               ;IHS/ITSC/LJF 02/26/2003
  W !,"CHART COPY."
  Q

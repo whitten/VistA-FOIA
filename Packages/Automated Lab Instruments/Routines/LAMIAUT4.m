@@ -1,4 +1,5 @@
 LAMIAUT4 ;SLC/FHS - EDIT OR VERIFY MICRO AUTO INSTRUMENTS; ;7/20/90  09:33
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;AUTOMATED LAB INSTRUMENTS;**153**;Sep 27, 1994
 EN ;
  Q:LREND  R !!," ('E'dit data, 'C'omments, 'O'rganism 'W'orklist) // ",LREDIT:DTIME Q:'$T

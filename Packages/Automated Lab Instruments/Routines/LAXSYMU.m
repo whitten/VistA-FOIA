@@ -1,4 +1,5 @@
-LAXSYMU ;MLD/ABBOTT/SLC/RAF - AxSYM INTERFACE Utility Routine; 6/12/96 0900
+LAXSYMU ;MLD/ABBOTT/SLC/RAF - AxSYM INTERFACE Utility Routine; 6/12/96 0900 [ 01/12/98  11:20 AM ]
+ ;;5.2;LA;**1001**;DEC 10, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;**11,19**;Sep 27, 1994
  ;
  ; This routine serves as general UTILITY routine for the AxSYM

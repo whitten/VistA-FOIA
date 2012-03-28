@@ -1,5 +1,6 @@
-GMRAPEM0 ;HIRMFO/WAA,FT-ALLERGY/ADVERSE REACTION PATIENT EDIT DRIVER ;9/22/06  09:35
- ;;4.0;Adverse Reaction Tracking;**2,5,17,21,36**;Mar 29, 1996;Build 9
+GMRAPEM0 ;HIRMFO/WAA,FT-ALLERGY/ADVERSE REACTION PATIENT EDIT DRIVER ;18-Mar-2011 11:02;MGH
+ ;;4.0;Adverse Reaction Tracking;**2,5,17,21,36,1002**;Mar 29, 1996;Build 32
+ ;IHS/MSC/MGH added data to enter source
 EN11 ; Entry point for GMRA USER E/E PAT REC DATA option
  ; GMRAUSER is a flag that indicates that this is a User
  ; If user has Verifier Key then user will act normal
@@ -14,6 +15,20 @@ EN1 ; Entry for ENTER/EDIT PATIENT REACTION DATA option
  Q
 EN21 ; Process patient data and determine if patient is NKA
  S GMRAOUT=$G(GMRAOUT,0)
+ ;IHS/MSC/MGH
+ ;Check and see if patient is marked unassessable, if so, ask if the user wishes resolve this issue
+ N GMRCK,VAL,Y,DIR,STOP
+ S GMRCK=$$INASSESS(DFN)
+ S STOP=0
+ I +GMRCK>0 D  Q:STOP=1
+ .D REACT^GMRAPAT(DFN)
+ .W !,"Patient has been marked as unassessable for allergies"
+ .W !,"Reason given is "_$P(GMRCK,U,2),!
+ .S DIR("A")="Can this pt. now be assessed"
+ .S DIR(0)="Y",DIR("B")="YES",DIR("?")="Enter Y to mark this pt as assesible, N to keep as inasessable"
+ .D ^DIR I $D(DIRUT) K DIRUT Q
+ .I Y=1 D CKIN^BEHOARMU(DFN) S STOP=1 Q
+ .I Y=0 D SET^GMRAOR8(DFN) S STOP=1 Q
  ; check patient assessment before enter/edit reaction
  I $$NKA^GMRANKA(DFN),$$NKASCR^GMRANKA(DFN) D  ;delete 120.86 entry if assessment=yes, but no active reactions in 120.8
  .N DA,DIK
@@ -29,6 +44,10 @@ EN21 ; Process patient data and determine if patient is NKA
  .I 'GMRARP S GMRACNT=$O(^TMP($J,"GMRASF","B"),-1) D
  ..I GMRACNT D SIGNOFF^GMRASIGN
  ..I 'GMRAOUT D IDBAND^GMRASIGN
+ ..;Add call for interface
+ ..N X
+ ..S X=$$FIND1^DIC(101,,"BX","GMRA ALLERGY UPDATE")_";ORD(101,"
+ ..D:X EN^XQOR ;Process protocols hanging off this protocol
  ..I GMRAOUT S GMRAOUT=2-GMRAOUT D:GMRAOUT&($D(^TMP($J,"GMRASF"))) ALERT^GMRASIGN K ^TMP($J,"GMRASF"),GMRACNT
  ..Q
  .Q
@@ -89,8 +108,13 @@ SELECT ;Select a patient reaction
  Q
 TYPE ; Select the type of the process to use this reaction
  S GMRAERR=0
- ; If reaction is not new check to see if user want to enter in error
+ ; IHS/MSC/MGH If reaction is not new check to see if user want to enter in error
  I 'GMRANEW W @IOF N GMRADFN D EN1^GMRAPEE0 I GMRAERR!GMRAOUT Q
+ ;Add source of information
+ I GMRANEW D
+ .S DA=GMRAPA,DIE=120.8,DR=9999999.11
+ .D ^DIE
+ .K DA,DIE,DR
  ;If reaction is observed and signed off
  I $P(GMRAPA(0),U,6)="o",$P(GMRAPA(0),U,12) D  Q:GMRAOUT
  .Q:$G(GMRAUSER,0)
@@ -122,6 +146,12 @@ OBSDATE .;
  .D EDIT^GMRAPEM4
  .I $P($G(^GMR(120.8,GMRAPA,0)),U,16) S GMRASLL(GMRAPA)=1
  .Q
+ ;Add the last modified data patch 8
+ N MIEN,FDA,IEN,ERR,X
+ S MIEN="+1,"_GMRAPA_","
+ S FDA(120.899999914,MIEN,.01)=$$NOW^XLFDT
+ S FDA(120.899999914,MIEN,.02)=DUZ
+ D UPDATE^DIE(,"FDA","IEN","ERR")
  Q
 EXIT S GMRAPA=0 F  S GMRAPA=$O(^TMP($J,"GMRASF","B",GMRAPA)) Q:GMRAPA<1  D UNLOCK^GMRAUTL(120.8,GMRAPA)
  K ^TMP($J,"GMRASF")
@@ -155,3 +185,15 @@ REQCOM() ;Function determines if comments required
  I +$P(^GMRD(120.84,+GMRASITE,0),U,4)=0 Q 1  ;Comments required?
  I $O(^GMR(120.8,GMRAPA,26,0)) Q 1
  Q 0
+INASSESS(DFN) ;Is pt unassessable
+ N Y,REASON,I,INIEN,REA2
+ S I=0
+ S Y=$O(^GMR(120.86,DFN,9999999.11,$C(0)),-1) I +Y D
+ .I $P($G(^GMR(120.86,DFN,9999999.11,Y,0)),U,4)="" D
+ ..S X1="Unassessable"
+ ..S INIEN=Y_","_DFN
+ ..S REASON=$$GET1^DIQ(120.869999911,INIEN,1)
+ ..I REASON'="" D
+ ...I REASON="OTHER" S REA2=$$GET1^DIQ(120.869999911,INIEN,5) S REASON=REASON_" "_REA2
+ ..S I="1^"_REASON
+ Q I

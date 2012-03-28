@@ -1,5 +1,5 @@
 PSAVER3 ;BIR/JMB-Verify Invoices - CONT'D ;9/5/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,19,21,64,70**; 10/24/97;Build 12
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,19,21**; 10/24/97
  ;This routine checks for verification errors, prints an error report,
  ;& changes data in DA ORDERS to verification if there are no errors.
  ;
@@ -40,7 +40,6 @@ SETLINE ;Set line as verified if all data is present.
  ;
 SUPPLY ;If it is a supply, automatically verify it.
  I '+$G(PSAERR),PSALNSU,'$G(PSAPRINT) D VERIFY,VERIFY1 Q
- Q:$G(PSASUP)&(+$G(PSAERR))  ;; <PSA*3*70 RJS
  ;
 NEWDRUG ;Store in array if drug is new to location/vault
  I +PSADRG D
@@ -132,7 +131,7 @@ STATUS ;Sets invoice's status to Verified
  ;
  ;PSA*3*3 (DAVE B)
  S DA=PSAIEN1,DA(1)=PSAIEN,DIE="^PSD(58.811,"_DA(1)_",1,",DR="2///V;12////^S X="_DUZ
- F  L +^PSD(58.811,PSAIEN,1,PSAIEN1,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.811,PSAIEN,1,PSAIEN1,0):0 I  Q
  D ^DIE L -^PSD(58.811,PSAIEN,1,PSAIEN1,0)
  K DIE
  Q
@@ -141,7 +140,7 @@ VERIFY ;Set line item to verified
  I PSADRG,$P($G(^PSDRUG(PSADRG,2)),"^",3)["N" S PSACSLN=1
  E  S PSACSLN=0
  K DA S DA=PSALINE,DA(1)=PSAIEN1,DA(2)=PSAIEN,DIE="^PSD(58.811,"_DA(2)_",1,"_DA(1)_",1,",DR="7///^S X="_DT_";8////^S X="_DUZ_";12///^S X=PSACSLN"
- F  L +^PSD(58.811,PSAIEN,1,PSAIEN1,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.811,PSAIEN,1,PSAIEN1,0):0 I  Q
  D ^DIE L -^PSD(58.811,PSAIEN,1,PSAIEN1,0)
  K DIE
  Q

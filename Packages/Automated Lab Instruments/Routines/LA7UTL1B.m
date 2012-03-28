@@ -1,5 +1,5 @@
-LA7UTL1B ;HOIFO/BH - Microbilogy Antibiotics & and Output global arragment  ; 3/11/03 10:45am  
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**69**;Sep 27, 1994
+LA7UTL1B ;VA/HOIFO/BH - Microbilogy Antibiotics & and Output global arragment  ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**69,1027**;NOV 01, 1997
  ;
  ; Pass back field name of Organism Antibiotic field.  If the Antibiotic
  ; field node is lonnger than six characters it is site specific and

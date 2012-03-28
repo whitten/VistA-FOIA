@@ -1,6 +1,16 @@
-HLOTCP ;ALB/CJM- TCP/IP I/O - 10/4/94 1pm ;03/01/2011
- ;;1.6;HEALTH LEVEL SEVEN;**126,131,134,137,138,139,146,153**;Oct 13, 1995;Build 11
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOTCP ;ALB/CJM- TCP/IP I/O ;7/10/2008 16:58
+ ;;1.6;HEALTH LEVEL SEVEN;**126,131,1006**;Oct 13, 1995;Build 10
+ ;
+ ; Modified - IHS/MSC/PLS - 02/25/08 - Line RETRY+38
+ ; IHS/CNI/VEN/TOAD - 10 July 2008 - explanation of mod by Rick Marshall,
+ ; VISTA Expertise Network: The e-Prescribing project requires that a
+ ; minor modification be made to the HLOTCP routine being delivered in
+ ; IHS HL*1.6*1006. This modification is a fix to support synchronous
+ ; acknowledgements, is needed for communication with the Cloverleaf
+ ; Interface Engine, and has been extensively tested on the OIT CCHIT
+ ; server. This modification has been in place for several months and
+ ; was used to successfully obtain e-prescribing certification from
+ ; Surescripts. Phil Salmon of Medsphere developed this mod.
  ;
 OPEN(HLCSTATE,LOGICAL) ;
  ;This may be called either in the context of a client or a server.
@@ -27,20 +37,16 @@ OPEN(HLCSTATE,LOGICAL) ;
  S HLCSTATE("WRITE SEGMENT")="WRITESEG^HLOTCP"
  S HLCSTATE("END MESSAGE")="ENDMSG^HLOTCP"
  S HLCSTATE("CLOSE")="CLOSE^HLOTCP"
- S HLCSTATE("TCP BUFFER")=""
- S HLCSTATE("TCP BUFFER $X")=0
  ;
  ;spawned by TaskMan multi-listener? If so, the device has already been opened
  I $G(HLCSTATE("SERVER")),$G(HLCSTATE("LINK","SERVER"))="1^M",$G(LOGICAL)="" D  Q
- .S HLCSTATE("DEVICE")=IO(0),HLCSTATE("FLUSH")="!",HLCSTATE("TCP BUFFER SIZE")=512
+ .S HLCSTATE("DEVICE")=IO(0),HLCSTATE("FLUSH")="!",HLCSTATE("TCP BUFFER SIZE")=510
  .S HLCSTATE("CONNECTED")=1
  ;
  ;if no IP, not a server, give DNS a shot
  I '$G(HLCSTATE("SERVER")),IP="" S DNSFLAG=1,IP=$$DNS(HLCSTATE("LINK","DOMAIN")),HLCSTATE("LINK","IP")=IP Q:IP=""
  ;
-RETRY ;
- ;
- I HLCSTATE("SYSTEM","OS")="DSM" D
+RETRY I HLCSTATE("SYSTEM","OS")="DSM" D
  .S HLCSTATE("TCP BUFFER SIZE")=512
  .I $G(LOGICAL)]"" S HLCSTATE("DEVICE")=LOGICAL
  .E  S HLCSTATE("DEVICE")=PORT
@@ -60,28 +66,29 @@ RETRY ;
  .S HLCSTATE("FLUSH")="!"
  .I $G(LOGICAL)]"" S HLCSTATE("DEVICE")=LOGICAL
  .E  S HLCSTATE("DEVICE")="|TCP|"_PORT
- .S HLCSTATE("TCP BUFFER SIZE")=512
+ .S HLCSTATE("TCP BUFFER SIZE")=510
  .I $G(HLCSTATE("SERVER")) D
  ..I HLCSTATE("SERVER")="1^S" D  Q
  ...;single server (no concurrent connections)
-ZB25 ...;
  ...O HLCSTATE("DEVICE"):(:PORT:"+A-S":::):HLCSTATE("OPEN TIMEOUT")
  ...I $T D
  ....N A
-ZB26 ....S HLCSTATE("CONNECTED")=1
+ ....S HLCSTATE("CONNECTED")=1
  ....U HLCSTATE("DEVICE")
- ....F  R *A:HLCSTATE("READ TIMEOUT") Q:$T  I $$CHKSTOP^HLOPROC S HLCSTATE("CONNECTED")=0 D CLOSE(.HLCSTATE) Q
-ZB27 ....;
- ...E  D
-ZB28 ....;
+ ....F  R *A:HLCSTATE("READ TIMEOUT") Q:$T  I $$CHKSTOP^HLOPROC S HLCSTATE("CONNECTED")=0 Q
+ ..;
  ..;multi-server spawned by OS - VMS TCP Services
  ..O HLCSTATE("DEVICE")::HLCSTATE("OPEN TIMEOUT") I '$T S HLCSTATE("CONNECTED")=0 Q
  ..S HLCSTATE("CONNECTED")=1
  ..U HLCSTATE("DEVICE"):(::"-S")
  ..;
  .E  D  ;client
- ..S HLCSTATE("TCP BUFFER SIZE")=512
- ..O HLCSTATE("DEVICE"):(IP:PORT:"-S":::):HLCSTATE("OPEN TIMEOUT")
+ ..S HLCSTATE("TCP BUFFER SIZE")=510
+ ..;
+ ..; ** IHS mod ** IHS/MSC/PLS - 02/25/08 - Fix for sync ACKs
+ ..;O HLCSTATE("DEVICE"):(IP:PORT:"-S":::):HLCSTATE("OPEN TIMEOUT")
+ ..O HLCSTATE("DEVICE"):(IP:PORT:"+A":::):HLCSTATE("OPEN TIMEOUT")
+ ..;
  ..I $T D
  ...S HLCSTATE("CONNECTED")=1
  E  D  ;any other system but Cache or DSM
@@ -91,8 +98,7 @@ ZB28 ....;
  .I HLCSTATE("CONNECTED") S HLCSTATE("DEVICE")=IO
  ;
  ;if not connected, not the server, give DNS a shot if not tried already
- I '$G(HLCSTATE("SERVER")),'HLCSTATE("CONNECTED"),'DNSFLAG S DNSFLAG=1,IP=$$DNS(HLCSTATE("LINK","DOMAIN")) I IP]"",IP'=HLCSTATE("LINK","IP") S HLCSTATE("LINK","IP")=IP Q:IP=""  G RETRY
- ;
+ I '$G(HLCSTATE("SERVER")),'HLCSTATE("CONNECTED"),'DNSFLAG S DNSFLAG=1,IP=$$DNS(HLCSTATE("LINK","DOMAIN")) I IP]"",IP'=HLCSTATE("LINK","IP") S HLCSTATE("LINK","IP")=IP G RETRY
  I HLCSTATE("CONNECTED"),DNSFLAG S $P(^HLCS(870,HLCSTATE("LINK","IEN"),400),"^")=IP
  Q
  ;
@@ -105,6 +111,7 @@ WRITEHDR(HLCSTATE,HDR) ;
  K HLCSTATE("BUFFER")
  S HLCSTATE("BUFFER","BYTE COUNT")=0
  S HLCSTATE("BUFFER","SEGMENT COUNT")=0
+ S HLCSTATE("FIRST WRITE")=1 ;so that FLUSH knows $X should be 0
  ;
  ;Start the message with <SB>, then write the header
  N SEG
@@ -125,34 +132,24 @@ WRITESEG(HLCSTATE,SEG) ;
 FLUSH ;flushes the HL7 package buffer, and the system TCP buffer when full
  N SEGMENT,MAX
  S SEGMENT=0
- ;
- S MAX=HLCSTATE("TCP BUFFER SIZE")-2
- ;
+ S MAX=HLCSTATE("TCP BUFFER SIZE")
  U HLCSTATE("DEVICE") I (HLCSTATE("SYSTEM","OS")="CACHE") S HLCSTATE("CONNECTED")=($ZA\8192#2) I 'HLCSTATE("CONNECTED") D CLOSE(.HLCSTATE)
  F  S SEGMENT=$O(HLCSTATE("BUFFER",SEGMENT)) Q:'SEGMENT  D
  .N I S I=0
  .F  S I=$O(HLCSTATE("BUFFER",SEGMENT,I)) Q:'I  D
- ..N LINE
+ ..N LINE,J
+ ..S J=$S(HLCSTATE("FIRST WRITE"):0,1:$X)
+ ..S HLCSTATE("FIRST WRITE")=0
  ..S LINE=HLCSTATE("BUFFER",SEGMENT,I)
- ..;put the line in the TCP buffer, or as much as will fit - flush the buffer when it gets full
- ..F  Q:LINE=""  D
- ...N INC
- ...;INC is how much space is left in the buffer
- ...S INC=MAX-HLCSTATE("TCP BUFFER $X")
- ...I '($L(LINE)>INC) D
- ....S HLCSTATE("TCP BUFFER")=HLCSTATE("TCP BUFFER")_LINE
- ....S HLCSTATE("TCP BUFFER $X")=HLCSTATE("TCP BUFFER $X")+$L(LINE)
- ....S LINE=""
- ...E  D
- ....S HLCSTATE("TCP BUFFER")=HLCSTATE("TCP BUFFER")_$E(LINE,1,INC)
- ....S HLCSTATE("TCP BUFFER $X")=MAX
- ....S LINE=$E(LINE,INC+1,99999)
- ...I HLCSTATE("TCP BUFFER $X")=MAX D
- ....W HLCSTATE("TCP BUFFER"),@HLCSTATE("FLUSH")
- ....S HLCSTATE("TCP BUFFER")="",HLCSTATE("TCP BUFFER $X")=0
+ ..F  Q:'(J+$L(LINE)>MAX)  D
+ ...W $E(LINE,1,MAX-J),@HLCSTATE("FLUSH")
+ ...S LINE=$E(LINE,(MAX-J)+1,99999)
+ ...S J=0
+ ..W:(LINE]"") LINE
  K HLCSTATE("BUFFER")
  S HLCSTATE("BUFFER","SEGMENT COUNT")=1
  S HLCSTATE("BUFFER","BYTE COUNT")=0
+ S HLCSTATE("FIRST WRITE")=0
  Q
  ;
 READSEG(HLCSTATE,SEG) ;
@@ -161,13 +158,9 @@ READSEG(HLCSTATE,SEG) ;
  ;  SEG - returns the segment (pass by reference)
  ;  Function returns 1 on success, 0 on failure
  ;
- K SEG
- ;**START P139 CJM - if the header segment has been read, and <EB> is encountered before the <CR>, then accept whatever came before <EB> as a segment
- Q:HLCSTATE("MESSAGE ENDED") 0
- ;**END P139
- ;
  N SUCCESS,COUNT,BUF
  S (COUNT,SUCCESS)=0
+ K SEG
  ;
  ;anything left from last read?
  S BUF=HLCSTATE("READ")
@@ -175,27 +168,11 @@ READSEG(HLCSTATE,SEG) ;
  I BUF]"" D  ;something was left!
  .S COUNT=1
  .I BUF[$C(13) D  Q
- ..S SEG(1)=$P(BUF,$C(13)),BUF=$P(BUF,$C(13),2,999999)
+ ..S SEG(1)=$P(BUF,$C(13)),BUF=$P(BUF,$C(13),2,9999)
  ..S SUCCESS=1
- .;**START P139 CJM
- .I HLCSTATE("MESSAGE STARTED"),BUF[$C(28) D  Q
- ..S SEG(1)=$P(BUF,$C(28)),BUF=$P(BUF,$C(28),2,999999)
- ..S SUCCESS=1
- ..S HLCSTATE("MESSAGE ENDED")=1
- .;**END P139 CJM
  .S SEG(1)=BUF,BUF=""
- ;
- ; *** Begin HL*1.6*146 - RBN ***
- ;I 'SUCCESS U HLCSTATE("DEVICE") F  R BUF:HLCSTATE("READ TIMEOUT") Q:'$T D Q:SUCCESS
- I 'SUCCESS U HLCSTATE("DEVICE") F  Q:'$$READ(.BUF)  D  Q:SUCCESS
- .;** End HL*1.6*146 - RBN ***
- .;
- .I BUF[$C(13) S SUCCESS=1,COUNT=COUNT+1,SEG(COUNT)=$P(BUF,$C(13)),BUF=$P(BUF,$C(13),2,999999) Q
- .;
- .;**START P139 CJM
- .I HLCSTATE("MESSAGE STARTED"),BUF[$C(28) S SUCCESS=1,HLCSTATE("MESSAGE ENDED")=1,COUNT=COUNT+1,SEG(COUNT)=$P(BUF,$C(28)),BUF=$P(BUF,$C(28),2,999999) Q
- .;**END P139 CJM
- .;
+ I 'SUCCESS U HLCSTATE("DEVICE") F  R BUF:HLCSTATE("READ TIMEOUT") Q:'$T  D  Q:SUCCESS
+ .I BUF[$C(13) S SUCCESS=1,COUNT=COUNT+1,SEG(COUNT)=$P(BUF,$C(13)),BUF=$P(BUF,$C(13),2,9999) Q
  .S COUNT=COUNT+1,SEG(COUNT)=BUF
  ;
  I SUCCESS D
@@ -231,88 +208,13 @@ READHDR(HLCSTATE,HDR) ;
  ;
 CLOSE(HLCSTATE) ;
  CLOSE HLCSTATE("DEVICE")
- ;**P146 START CJM
- I $G(HLCSTATE("READ TIMEOUT","CHANGED")) D PUTTIME(.HLCSTATE)
- ;**P146 END CJM
  Q
  ;
-ENDMSG(HLCSTATE)        ;
+ENDMSG(HLCSTATE) ;
  N SEG
  S SEG(1)=$C(28)
  I $$WRITESEG(.HLCSTATE,.SEG) D  Q 1
  .D FLUSH
- .I HLCSTATE("TCP BUFFER $X") D
- ..U HLCSTATE("DEVICE")
- ..W HLCSTATE("TCP BUFFER"),@HLCSTATE("FLUSH")
- ..S HLCSTATE("TCP BUFFER")=""
- ..S HLCSTATE("TCP BUFFER $X")=0
+ .U HLCSTATE("DEVICE")
+ .W:$X @HLCSTATE("FLUSH")
  Q 0
- ;
- ;**P146 START CJM
-READ(BUF) ;
- ;Performs a READ to BUF and returns the $T result as the function value.
- ;For client reads the timeout value is dynamically adjusted based
- ;on a random sample. For server reads the timeout is static.
- ;
- ;
-ZB31 ;
- N RETURN
- S RETURN=0
- ;for the server the timeout is static
- I $G(HLCSTATE("SERVER")) D
- .R BUF:HLCSTATE("READ TIMEOUT")
- .S RETURN=$T
- ;
- E  D  ;client
- .I ($R(100)<10) D
- ..;measure how long the READ really takes
- .. N T1,T2
- .. S T1=$$NOW^XLFDT
- .. R BUF:100
- ..I $T D
- ...S RETURN=1
- ...S T2=$$NOW^XLFDT
- ...D SETTIME($$FMDIFF^XLFDT(T2,T1,2))
- ..E  D
- ...S RETURN=0
- .E  D
- ..R BUF:HLCSTATE("READ TIMEOUT")
- ..S RETURN=$T
-ZB32 ;
- ;
- Q RETURN
- ;
-SETTIME(TIME) ;
- ;Re-sets the Read Timeout based on an algorithm that uses the
- ;new read time + the prior 4 historical values.
- ;
- N MAX,I,TEMP
- S HLCSTATE("READ TIMEOUT","HISTORICAL")=TIME_"^"_$P(HLCSTATE("READ TIMEOUT","HISTORICAL"),"^",1,4)
- S MAX=0
- F I=1:1:5 S TEMP=$P(HLCSTATE("READ TIMEOUT","HISTORICAL"),"^",I) I TEMP>MAX S MAX=TEMP
- S TEMP=MAX+5
- I TEMP<20 S TEMP=20
- I TEMP>60 S TEMP=60
- S HLCSTATE("READ TIMEOUT")=TEMP
- S HLCSTATE("READ TIMEOUT","CHANGED")=1
- Q
- ;
-GETTIME(HLCSTATE) ;
- ;Gets from ^HLTMP the current read timeout for the client link and the
- ;historical data that the timeout value is based on.
- N DATA
- S DATA=$G(^HLTMP("READ TIMEOUT",HLCSTATE("LINK","NAME")))
- I $P(DATA,"^")<20 D
- .S HLCSTATE("READ TIMEOUT")=20
- E  D
- .S HLCSTATE("READ TIMEOUT")=$P(DATA,"^")
- S HLCSTATE("READ TIMEOUT","HISTORICAL")=$P(DATA,"^",2,6)
- S HLCSTATE("READ TIMEOUT","CHANGED")=0
- Q
- ;
-PUTTIME(HLCSTATE) ;
- ;Stores to ^HLTMP the current read timeout for the client link and
- ;the historical data that the timeout value is based on.
- S ^HLTMP("READ TIMEOUT",HLCSTATE("LINK","NAME"))=HLCSTATE("READ TIMEOUT")_"^"_HLCSTATE("READ TIMEOUT","HISTORICAL")
- Q
- ;**P146 END CJM

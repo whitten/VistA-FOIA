@@ -1,4 +1,5 @@
-DICM3 ;SFISC/XAK,TKW-PROCESS INDIVIDUAL FILE FOR VAR PTR ;12/7/99  14:59
+DICM3 ;SFISC/XAK,TKW-PROCESS INDIVIDUAL FILE FOR VAR PTR ;12/7/99  14:59 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**16,4,20**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 DIC ; Does recursive ^DIC call to single pointed-to file.

@@ -1,4 +1,5 @@
 LR7OFAA ;slc/dcm - Setup Accession for AP orders ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,187**;Sep 27, 1994
  ;
 EN D DT K ZTSK S LRORDR=LRXZ

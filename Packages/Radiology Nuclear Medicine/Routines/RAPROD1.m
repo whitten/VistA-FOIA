@@ -1,7 +1,6 @@
 RAPROD1 ;HISC/FPT,GJC AISC/MJK,RMO-Detailed Exam View ;11/26/96  08:24
- ;;5.0;Radiology/Nuclear Medicine;**15,18,45,77**;Mar 16, 1998;Build 7
+ ;;5.0;Radiology/Nuclear Medicine;**15,18**;Mar 16, 1998
  ;last mof by SS for P18 JUN 29 ,00
- ;10/25/2006 BAY/KAM Remedy Call 161846, *77 - correct paging issue
 PER ; Display personnel information.
  K DIR,DIROUT,DIRUT,DTOUT,DUOUT N Y
  S DIR(0)="Y",DIR("B")="No"
@@ -12,24 +11,18 @@ PER ; Display personnel information.
  S RAXIT=0 D PERHDR
  S RAXIT=$$PERINFO(RADFN,RADTI,RACNI)
  I RAXIT D Q QUIT
- I $D(RACM) D CMHIST^RAPROD2(RADFN,RADTI,RACNI)
- I RAXIT D Q QUIT
-ACT R !!,"Do you wish to display activity log? No// ",X:DTIME S X=$E(X) S:'$T X="^" G Q:X="^" S:X="" X="N" G STAT:"Nn"[X I "Yy"'[X W:X'="?" $C(7) W !!?3,"Enter 'YES' if activity log should be displayed, or 'NO' if not." G ACT
+ACT R !!,"Do you wish to display activity log? No// ",X:DTIME S X=$E(X) S:'$T X="^" G Q:X="^" S:X="" X="N" G STAT:"Nn"[X I "Yy"'[X W:X'="?" *7 W !!?3,"Enter 'YES' if activity log should be displayed, or 'NO' if not." G ACT
  W !!?23,"*** Exam Activity Log ***",!?2,"Date/Time",?25,"Action",?60,"Computer User",!?3,"Technologist comment",!?2,"---------------------",?25,"------",?60,"-------------"
  N RA18RET S RADD=70.07 F I=0:0 S I=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"L",I)) Q:I'>0  I $D(^(I,0)) S RAY=^(0),Y=+RAY D ACT1 S RA18RET=$$PUTTCOM3^RAUTL11(RADFN,RADTI,RACNI,I,"",3,78,7,0,1,6,0) S:RA18RET=-1 RAXIT=1 Q:RA18RET=-1  ;P18
  I $D(RAXIT) I RAXIT D Q QUIT  ;P18
- ;
  G STAT:'RARPT W !!?22,"*** Report Activity Log ***",!?2,"Date/Time",?25,"Action",?60,"Computer User",!?2,"---------",?25,"------",?60,"-------------"
- ;10/25/2006 BAY/KAM Remedy Call 161846, *77 - added screen length check to next line
- S RADD=74.01 F I=0:0 S I=$O(^RARPT(RARPT,"L",I)) Q:I'>0  I $D(^(I,0)) S RAY=^(0),Y=+RAY D ACT1 I $$CONTIN^RAUTL11(7)=-1 S RAXIT=1 Q
- ;10/25/2006 BAY/KAM Remedy Call 161846, *77 Added next line
- I $G(RAXIT) D Q QUIT
+ S RADD=74.01 F I=0:0 S I=$O(^RARPT(RARPT,"L",I)) Q:I'>0  I $D(^(I,0)) S RAY=^(0),Y=+RAY D ACT1
  W ! S X="",$P(X,"=",80)="" W X K X
  G STAT
 ACT1 D D^RAUTL W !?2,Y,?25,$E($P($P(^DD(RADD,2,0),$P(RAY,"^",2)_":",2),";"),1,33),?60,$E($S($D(^VA(200,+$P(RAY,"^",3),0)):$P(^(0),"^"),1:"Unknown"),1,18) Q
  ;
 STAT G TEXT:'$D(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"T"))
-ASKSTA R !!,"Do you wish to display exam status tracking log? No// ",X:DTIME S X=$E(X) S:'$T X="^" G Q:X="^" S:X="" X="N" G TEXT:"Nn"[X I "Yy"'[X W:X'="?" $C(7) D  G ASKSTA
+ASKSTA R !!,"Do you wish to display exam status tracking log? No// ",X:DTIME S X=$E(X) S:'$T X="^" G Q:X="^" S:X="" X="N" G TEXT:"Nn"[X I "Yy"'[X W:X'="?" *7 D  G ASKSTA
  . W !!?3,"Enter 'YES' if exam status tracking log should be displayed, or 'NO' if not."
  . Q
  S RAXIT=0 D STATHDR ; print header
@@ -37,11 +30,11 @@ ASKSTA R !!,"Do you wish to display exam status tracking log? No// ",X:DTIME S X
  F I=0:0 S I=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"T",I)) Q:I'>0  I $D(^(I,0)) S RA=^(0),RAX1=+RA D STAT1 Q:$D(RAX2)&('$D(RAMTIME))  Q:RAXIT  S RAX2=RAX1
  Q:RAXIT  W ! S X="",$P(X,"=",80)="" W X K X
 TEXT S X=$E(RA("RST")) G Q:X="P"!(X="N")!(X="D")
-ASKTXT R !!,"Do you wish to display exam report text? No// ",X:DTIME S X=$E(X) S:'$T!(X="")!(X="^") X="N" G Q:"Nn"[X I "Yy"'[X W:X'="?" $C(7) W !!?3,"Enter 'YES' if report text should be displayed, or 'NO' if not." G ASKTXT
+ASKTXT R !!,"Do you wish to display exam report text? No// ",X:DTIME S X=$E(X) S:'$T!(X="")!(X="^") X="N" G Q:"Nn"[X I "Yy"'[X W:X'="?" *7 W !!?3,"Enter 'YES' if report text should be displayed, or 'NO' if not." G ASKTXT
  D DISP^RART1
 Q ; kill and quit
  K I,J,POP,RAMTIME,RAPRC,RAPRT,RADFN,RADTI,RACNI,RARPT,RANME,RASSN,RADATE,RADTE,RAST,RACN,RA,RAY,RACI,RADD,RADI,RAMOD,RAX,RAX1,RAX2,RAELAP,RACUM,Z
- K RAXIT,RACM
+ K RAXIT
  Q
 STAT1 ; display status tracking info
  K RAELAP I $D(RAX2) S X1=RAX1,X=RAX2 D ELAPSED^RAUTL1 Q:'$D(RAMTIME)  S RAELAP=Y D CUMUL

@@ -1,4 +1,5 @@
-LRARCR3 ;DALISC/CKA - WKLD REP GENERATOR-PRINT 1 ;
+LRARCR3 ; IHS/DIR/AAB - WKLD REP GENERATOR-PRINT 1 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**59**;August 31, 1995
  ;same as LRCAPR3 except references archived files
 EN ;

@@ -1,4 +1,5 @@
-XPDIPM ;SFISC/RSD - Load a Packman Message ;05/28/99  10:08
+XPDIPM ;SFISC/RSD - Load a Packman Message ;05/28/99  10:08 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**21,28,68,108**;Jul 05, 1995
  Q:'$D(^XMB(3.9,+$G(XMZ),0))
  N X,XPD,Y S XPD=0

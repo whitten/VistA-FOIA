@@ -1,6 +1,7 @@
-LRUD ;AVAMC/REG - STUFF DATA CHANGES ;3/10/95  14:39 ;
- ;;5.2;LAB SERVICE;**35,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRUD ; IHS/DIR/FJE - STUFF DATA CHANGES 3/10/95 14:39 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
+ ;;5.2;LAB SERVICE;**35**;Sep 27, 1994
 N S F("Z")=1
  S Z(2)="",N=$S($D(DUZ):DUZ,1:"") I N S Z(2)=$P(^VA(200,N,0),"^")
  S Z(3)=$S(A:F(A),1:F(0)),Z(3)=$P(^DD(Z(3),Z(7),0),"^")

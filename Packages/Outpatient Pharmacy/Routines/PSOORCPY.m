@@ -1,10 +1,12 @@
-PSOORCPY ;BIR/SAB-copy orders from backdoor ;10/17/96
- ;;7.0;OUTPATIENT PHARMACY;**10,21,27,32,46,100,117,148**;DEC 1997
+PSOORCPY ;BIR/SAB-copy orders from backdoor ;07-Mar-2011 15:08;SM
+ ;;7.0;OUTPATIENT PHARMACY;**10,21,27,32,46,100,117,1001,1006,1009,1010**;DEC 1997
  ;External references LK^ORX2 and ULK^ORX2 supported by DBIA 867
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External references L, UL, PSOL, and PSOUL^PSSLOCK supported by DBIA 2789
+ ; Modified - IHS/CIA/PLS - 11/01/04 - Line PSOORCPY+19
+ ;            IHS/MSC/PLS - 09/17/07 - Added support for CLININD and CLININD2
+ ;                          12/09/10 - Line PSOORCPY+43
  ;I '$D(^XUSEC("PSORPH",DUZ)) S VALMSG="Invalid Action Selection!",VALMBCK="" Q
- I $$LMREJ^PSOREJU1($P(PSOLST(ORN),"^",2),,.VALMSG,.VALMBCK) Q
  I $G(PSOBEDT) W $C(7),$C(7) S VALMSG="Invalid Action at this time !",VALMBCK="" Q
  I $G(PSONACT) W $C(7),$C(7) S VALMSG="No Pharmacy Orderable Item !",VALMBCK="" K PSOCOPY D ^PSOBUILD Q
  S PSOPLCK=$$L^PSSLOCK(PSODFN,0) I '$G(PSOPLCK) D LOCK S VALMSG=$S($P($G(PSOPLCK),"^",2)'="":$P($G(PSOPLCK),"^",2)_" is working on this patient.",1:"Another person is entering orders for this patient.") K PSOPLCK S VALMBCK="" Q
@@ -17,6 +19,14 @@ PSOORCPY ;BIR/SAB-copy orders from backdoor ;10/17/96
  S D=0 F  S D=$O(^PSRX(PSORXED("IRXN"),"INS1",D)) Q:'D  S PSORXED("SIG",D)=^PSRX(PSORXED("IRXN"),"INS1",D,0)
  I '$O(PSORXED("SIG",0)),$G(PSORXED("INS"))]"" S PSORXED("SIG",1)=PSORXED("INS")
  I $G(^PSRX(PSORXED("IRXN"),"TN"))]"" S PSODRUG("TRADE NAME")=^PSRX(PSORXED("IRXN"),"TN")
+ ; IHS/CIA/PLS - 11/01/04 - Populate IHS fields during copy function.
+ ; IHS/MSC/PLS - 09/17/07 - Added logic for CLININD and CLININD2
+ I $D(^PSRX(PSORXED("IRXN"),9999999)) D
+ .S PSORXED("AWP")=$P($G(^PSRX(PSORXED("IRXN"),9999999)),U,6)
+ .S PSORXED("BST")=$P($G(^PSRX(PSORXED("IRXN"),9999999)),U,7)
+ .S PSORXED("CM")=$P($G(^PSRX(PSORXED("IRXN"),9999999)),U,2)
+ .S PSORXED("CLININD")=$P($G(^PSRX(PSORXED("IRXN")=999999921)),U,1)
+ .S PSORXED("CLININD2")=$P($G(^PSRX(PSORXED("IRXN")=999999921)),U,2)
  F I=0:0 S I=$O(^PSRX(PSORXED("IRXN"),6,I)) Q:'I  S DOSE=^PSRX(PSORXED("IRXN"),6,I,0) D
  .Q:$P(DOSE,"^")']""!($P(DOSE,"^",8)']"")
  .S PSORXED("ENT")=PSORXED("ENT")+1
@@ -30,6 +40,7 @@ PSOORCPY ;BIR/SAB-copy orders from backdoor ;10/17/96
  .S PSORXED("NOUN",PSORXED("ENT"))=$P(DOSE,"^",4) K DOSE
  I $G(^PSDRUG($P(PSORXED("RX0"),"^",6),"I"))]"",^("I")<DT S VALMSG="Cannot COPY.  This drug has been inactivated!" S VALMBCK="R" G OUT
  I $P(^PSDRUG($P(PSORXED("RX0"),"^",6),2),"^",3)'["O" S VALMSG="Cannot Copy.  Drug no longer used by Outpatient!",VALMBCK="R" G OUT
+ I '$$SCREEN^APSPMULT(+$P(PSORXED("RX0"),"^",6),,1) S VALMSG="Cannot Copy. Drug is not available in facility",VALMBCK="R" G OUT   ;JDS/MSC M
  ;Check for invalid Dosage
  N PSOOCPRX,PSOOLPF,PSOOLPD,PSONOSIG S PSOOCPRX=PSORXED("IRXN") D CDOSE^PSORENW0
  I PSOOLPF D  S VALMBCK="R" G OUT

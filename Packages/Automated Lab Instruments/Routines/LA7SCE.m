@@ -1,5 +1,5 @@
-LA7SCE ;DALOI/JMC - Shipping Configuration Utility ;5/5/97  14:44
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,46,61,64**;Sep 27, 1994
+LA7SCE ;VA/DALOI/JMC - Shipping Configuration Utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,46,61,64,1027**;NOV 01, 1997
  Q
  ;
 SCFE ; Edit file #62.9, Shipping Configuration.

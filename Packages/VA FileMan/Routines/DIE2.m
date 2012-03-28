@@ -1,5 +1,5 @@
-DIE2 ;SFISC/GFT,XAK-DELETE AND ENTRY ;12:45 PM  17 Sep 2002
- ;;22.0;VA FileMan;**4,11,95**;Mar 30, 1999
+DIE2 ;SFISC/GFT,XAK-DELETE AND ENTRY ;12:45 PM  17 Sep 2002 [ 12/09/2003  4:45 PM ]
+ ;;22.0;VA FileMan;**4,11,95,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  D F,DL Q:$D(DTOUT)  G B^DIED:Y=2,A^DIED:Y,UP^DIE1:DL>1,Q^DIE1
  ;

@@ -1,18 +1,15 @@
-DGPTSPQ ;ALB/MTC - PTF Utility Con; 5/18/05 ; 11/26/03 9:56am
- ;;5.3;Registration;**195,397,565,664**;Aug 13, 1993;Build 15
+DGPTSPQ ;ALB/MTC - PTF Utility Con; 3/5/93 ; 8/30/01 11:22am
+ ;;5.3;Registration;**195,397**;Aug 13, 1993
  ;
 CHQUES ;-- This function will determine if the patient has any of the
  ;   following indicated : AO, IR, EC, MST, NTR
  ;   If so the array DGEXQ will contain:
  ;     DGEXQ(1)="" - AO
  ;     DGEXQ(2)="" - IR
- ;     DGEXQ(3)="" - SW Asia Conditions/EC
+ ;     DGEXQ(3)="" - EC
  ;     DGEXQ(4)="" - MST  ;added 6/17/98 for MST enhancement
  ;     DGEXQ(5)="" - NTR  ;treatment for Head/Neck CA
  ;                        ;ONLY if (#28.11) Nose Throat Radium entered
- ;     DGEXQ(6)="" - CV   ;treatment for possible combat related 
- ;                        ;condition
- ;     DGEXQ(7)="" - SHAD ;treatment for Project 112/SHAD
  ;   Otherwise they will be undefined.
  ; This routine is called from the PTF input templates.
  ;   The following variables are defined:
@@ -26,7 +23,6 @@ CHQUES ;-- This function will determine if the patient has any of the
  D CL^SDCO21(DFN,$P(DGHOLD,U,10),"",.SDCLY)
  ;
  ;-- if sc > 50% and treated for sc don't ask AO/IR
- ;-- ADD KILL OF SDCLY(6) TO SKIP COMBAT VETERAN QUESTION
  I $P($G(^DGPT(DGPTF,"M",+$G(DGMOV),0)),U,18)=1 K SDCLY(1),SDCLY(2)
  ;
  G:'$D(SDCLY) CHQ
@@ -34,16 +30,12 @@ CHQUES ;-- This function will determine if the patient has any of the
  I $D(SDCLY(1)) S DGEXQ(1)=""
  ; IR
  I $D(SDCLY(2)) S DGEXQ(2)=""
- ; SW Asia Conditions/EC
+ ; EC
  I $D(SDCLY(4)) S DGEXQ(3)=""
  ; MST
  I $D(SDCLY(5)) S DGEXQ(4)="" ;added 6/17/98 for MST enhancement
  ; NTR
  I $D(SDCLY(6)) S DGEXQ(5)=""
- ; CV
- I $D(SDCLY(7)) S DGEXQ(6)=""
- ; SHAD
- I $D(SDCLY(8)) S DGEXQ(7)=""
 CHQ Q
  ;
 501 ;-- This is the input transform logic for the following questions:
@@ -64,7 +56,7 @@ CHQ Q
  ;   for the <701> PTF record:  AO, IR, EC, MST, NTR
  ;   Process: Check if the desired indicator was answered on a <501>.
  ;   changed 6/17/98 for MST enhancement
- ;   INPUT DGFLAG - 1=AO, 2=IR, 3=EC, 4=MST, 5=NTR, 6=CV, 7=SHAD
+ ;   INPUT DGFLAG - 1=AO, 2=IR, 3=EC, 4=MST, 5=NTR
  N I
  S DGER=1
  ;-- loop thru <501>'s for indicator specified by DGFLAG
@@ -72,14 +64,14 @@ CHQ Q
  Q
  ;
 UP701 ;-- This function will loop thru the <501> and determine if any
- ;   of the SC, AO, IR, EC, MST, NTR, CV, and SHAD questions have been
- ;   answered.  If so, the cooresponding <701> will be updated.
+ ;   of the SC, AO, IR, EC, MST and NTR questions have been answered.
+ ;   If so, the cooresponding <701> will be updated.
  ;   An answer of "yes" will take presidence.
  ;
  ;   INPUT : DGPTF
  ;   changed 6/17/98 for MST emhancement
- N I,DGSC,DGAO,DGIR,DGEC,DGMOV,DGMST,DGNTR,DGCV,DGSHAD
- S (DGSC,DGAO,DGIR,DGEC,DGMST,DGNTR,DGCV,DGSHAD)="@"
+ N I,DGSC,DGAO,DGIR,DGEC,DGMOV,DGMST,DGNTR
+ S (DGSC,DGAO,DGIR,DGEC,DGMST,DGNTR)="@"
  ;-- loop thru <501>s
  S I=0 F  S I=$O(^DGPT(DGPTF,"M",I)) Q:'I  S DGMOV=$G(^(I,0)) I DGMOV'="" D
  .;-- sc
@@ -94,13 +86,9 @@ UP701 ;-- This function will loop thru the <501> and determine if any
  .I $P(DGMOV,U,29)'="",DGMST'="Y" S DGMST=$P(DGMOV,U,29)
  .;-- ntr
  .I $P(DGMOV,U,30)'="",DGNTR'="Y" S DGNTR=$P(DGMOV,U,30)
- .;-- cv
- .I $P(DGMOV,U,31)'="",DGCV'="Y" S DGCV=$P(DGMOV,U,31)
- .;-- shad
- .I $P(DGMOV,U,32)'="",DGSHAD'="Y" S DGSHAD=$P(DGMOV,U,32)
  ;-- update <701> fields
  ; changed 6/17/98 for MST enhancement
- S DR="79.25////^S X=DGSC;79.26////^S X=DGAO;79.27////^S X=DGIR;79.28////^S X=DGEC;79.29////^S X=DGMST;79.3////^S X=DGNTR;79.31////^S X=DGCV;79.32////^S X=DGSHAD"
+ S DR="79.25////^S X=DGSC;79.26////^S X=DGAO;79.27////^S X=DGIR;79.28////^S X=DGEC;79.29////^S X=DGMST;79.3////^S X=DGNTR"
  S DA=DGPTF,DIE="^DGPT("
  D ^DIE K DIE,DA,DR
 UPQ Q

@@ -1,8 +1,19 @@
-PSABRKU5 ;BIR/DB-Upload and Process Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**26,67**; 10/24/97;Build 15
+PSABRKU5 ;BIR/JMB-Upload and Process Prime Vendor Invoice Data - CONT'D ;7/23/97
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**26**; 10/24/97
  ;This routine checks for correct X12 formating.
  ;
 ORDER ;  check order of code sheets
+ ;  isa   <--------------+
+ ;    gs    <----------+ |
+ ;      st    <------+ | |
+ ;      | big        | | |
+ ;      | it1   <--+ | | |
+ ;      | ...      | | | |--repeats
+ ;      | it1   <--+ | | |
+ ;      | ctt        | | |
+ ;      se    <------+ | |
+ ;    ge    <----------+ |
+ ;  iea   <--------------+
  S PSANEXT=$P(PSADATA,"^")
  ;
  I PSALAST="GE",PSANEXT="GS" Q
@@ -19,10 +30,8 @@ ORDER ;  check order of code sheets
  ;
  I PSALAST="ST",PSANEXT'="BIG" D ORDERROR("ST",PSANEXT,"BIG") Q
  ;
- ;adding next two lines for new format
- I PSALAST="IT1",PSANEXT="PID" Q
- I PSALAST="PO4",PSANEXT'="IT1",PSANEXT'="CTT"&(PSANEXT'="TDS") D ORDERROR("PO4",PSANEXT,"CTT") Q
- ;End of PSA*3*67 Changes
+ I PSALAST="IT1",PSANEXT="IT1" Q
+ I PSALAST="IT1",PSANEXT'="CTT"&(PSANEXT'="TDS") D ORDERROR("IT1",PSANEXT,"CTT") Q
  Q
  ;
 ORDERROR(PSALAST,PSANEW,PSAEXPEC) ;Segments out of order

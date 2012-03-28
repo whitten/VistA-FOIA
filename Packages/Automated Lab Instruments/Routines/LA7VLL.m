@@ -1,5 +1,5 @@
-LA7VLL ;DALOI\JMC - Setup HL7 v1.6 Logical Link for Consolidation ; 12/3/1997
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,51,55,64**;Sep 27, 1994
+LA7VLL ;VA/DALOI/JMC - Setup HL7 v1.6 Logical Link for Consolidation ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,51,55,64,1027**;NOV 01, 1997
  ;
  ; Reference to HL LOGICAL LINK file (#870) supported by DBIA #1495, 1496, 2063
  ; Reference to PROTOCOL file (#101) supported by DBIA #872

@@ -1,5 +1,5 @@
 IBDFDE23 ;ALB/DHH - Select CPT Modifiers during Manual Data Entry ; MAY-18-1999
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**38,37**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**38**;APR 24, 1997
 MOD ;Entry point for selecting or modifying modifiers
  ;
  ;  -- called by IBDFDE21
@@ -59,23 +59,3 @@ ARRAY ; -- transfer modifier data to result array
 ERR ;Error message
  W !,X," is not a valid modifier for ",CODE,!
  Q
-GAFSCOR ;Enter GAF Score
- ;GAFCNT is newed in % of IBDFDE,IBDFDE6,IBDFDE7
- S GAFCNT=$G(GAFCNT)+1
- I GAFCNT=2 Q
- I GAFCNT>2 K GAFCNT Q
- S DIR(0)="N^1:100"
- S DIR("A")="Enter GAF Score "
- S DIR("?")="GAF Score is numeric from 1-100."
- D ^DIR
- I Y<1 D  G GAFSCOR
- . W "You must enter a GAF Score (1-100)!"
- . S GAFCNT=$G(GAFCNT)-1
- S IBDSEL(0)=$G(IBDSEL(0))+1
- S IBDSEL(IBDSEL(0))=IBDF("PI")_"^"_+Y_"^ ^^^^^GAF SCORE"
- S $P(PXCA("IBD GAF SCORE",0),"^")=+Y
- Q
- ;
-OKPROV(IEN)     ; Screen for provider lookup using person class
- Q ($D(^XUSEC("SD GAF SCORE",IEN)))
- ;

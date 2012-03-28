@@ -1,18 +1,23 @@
-PSORENW0 ;IHS/DSD/JCM-renew main driver continuation ;2/8/06 8:40am
- ;;7.0;OUTPATIENT PHARMACY;**11,27,32,59,64,46,71,96,100,130,237,206,251,375**;DEC 1997;Build 17
+PSORENW0 ;IHS/DSD/JCM-renew main driver continuation ;23-Oct-2009 11:05;SM
+ ;;7.0;OUTPATIENT PHARMACY;**11,27,32,59,64,46,71,96,100,130,1008**;DEC 1997
  ;External reference to ^PS(50.7 supported by DBIA 2223
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External references PSOL and PSOUL^PSSLOCK supported by DBIA 2789
- ;External reference to $$DS^PSSDSAPI supported by DBIA 5424
- ;
- ;PSO*237 was not adding to Clozapine Override file, fix
+ ; Modified - IHS/CIA/PLS - 01/06/04 - Line PROCESS+6 and new CANC label
+ ;                        - 04/05/04 - Line EDIT+1
+ ;                        - 04/20/04 - FILDATE+6
+ ;                        - 10/23/09 - FILDATE+8
 PROCESS ;
  D ^PSORENW1
  D INST2^PSORENW
  I $D(PSORX("BAR CODE")),PSODFN'=PSORENW("PSODFN") D NEWPT
  S PSORENW("DFLG")=0,PSORENW("FILL DATE")=PSORNW("FILL DATE")
  I $G(PSORNW("MAIL/WINDOW"))]"" S PSORENW("MAIL/WINDOW")=PSORNW("MAIL/WINDOW")
- W !!,"Now Renewing Rx # "_PSORENW("ORX #")_"   Drug: "_$P($G(^PSDRUG(+$G(PSORENW("DRUG IEN")),0)),"^"),!
+ ; IHS/CIA/PLS - 01/06/04 Removed last line feed
+ ;W !!,"Now Renewing Rx # "_PSORENW("ORX #")_"   Drug: "_$P($G(^PSDRUG(+$G(PSORENW("DRUG IEN")),0)),"^"),!
+ W !!,"Now Renewing Rx # "_PSORENW("ORX #")_"   Drug: "_$P($G(^PSDRUG(+$G(PSORENW("DRUG IEN")),0)),"^")
+ D PRINT^APSQLAB W !   ; IHS/CIA/PLS - 01/06/04 - Output Lab Data
+ D CANC                ; IHS/CIA/PLS - 01/06/04 - Output comments for cancelled scripts
  D CHECK G:PSORENW("DFLG") PROCESSX
  D FILDATE
  D DRUG G:PSORENW("DFLG")!PSORX("DFLG") PROCESSX
@@ -28,24 +33,21 @@ DSPL K PSOEDT,PSOLM D DSPLY^PSORENW3 G:PSORENW("DFLG") PROCESSX
  D RNPSOSD^PSOUTIL
  D CAN,DCORD^PSONEW2
  S BBRN="",BBRN1=$O(^PSRX("B",PSORENW("NRX #"),BBRN)) I $P($G(^PSRX(BBRN1,0)),"^",11)["W" S BINGCRT="Y",BINGRTE="W"
- ;PSO*237 add to Clozapine Override file
-ANQ I $G(ANQDATA)]"" D NOW^%DTC G:$D(^PS(52.52,"B",%)) ANQ D
- . K DD,DO S DIC="^PS(52.52,",DIC(0)="L",DLAYGO=52.52,X=%
- . D FILE^DICN K DIC,DLAYGO,DD,DO,DA,DR
- . N PS52 S (PS52,DA)=+Y,DIE="^PS(52.52,",DR="1////"_PSORENW("IRXN")
- . D ^DIE K DIE,DA,DR
- . S $P(^PS(52.52,PS52,0),"^",3,6)=ANQDATA
- . K ANQDATA,X,Y,%,ANQREM
- ;
-PROCESSX N PSORWRIT I PSORENW("DFLG")!$G(PSORX("DFLG")) S PSOBBCLK=1 W:'$G(POERR) !,$C(7),"RENEWED RX DELETED",! S PSOWRIT=1,PSORERR=1 D
- .D:$P($G(PSOLST(+$G(ORN))),"^",2) PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2)) S POERR("DFLG")=1 D CLEAN^PSOVER1 D
- ..W !! K DIR S DIR(0)="E",DIR("?")="Press Return to continue",DIR("A")="Press Return to Continue" D ^DIR K DIR,DTOUT,DUOUT
+PROCESSX I PSORENW("DFLG")!$G(PSRX("DFLG")) S PSOBBCLK=1 W:'$G(POERR) !,$C(7),"RENEWED RX DELETED",! D:$P($G(PSOLST(+$G(ORN))),"^",2) PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2)) S POERR("DFLG")=1 D CLEAN^PSOVER1
  D:$G(PSORENW("OLD FILL DATE"))]"" SUSDATEK^PSOUTIL(.PSORENW)
  K PRC,PHI,PSOQUIT,BBRN,BBRN1,PSORENW,PSODRUG,PSORX("PROVIDER NAME"),PSORX("CLINIC"),PSORX("FN")
  K PSOEDT,PSOLM S:$G(PSORENW("FROM"))="" (PSORENW("DFLG"),PSORENW("QFLG"))=0
  D CLEAN^PSOVER1
  Q
  ;
+ ; IHS/CIA/PLS - 01/06/04 - Write comments for cancelled scripts
+CANC ; EP
+ N PSOASUB
+ I '$D(IORVON) N IORVOFF,IORVON S X="IORVOFF;IORVON" D ENDR^%ZISS
+ S PSOASUB=$O(^PSRX(PSORENW("OIRXN"),"A","A"),-1) Q:PSOASUB=""  D
+ .I $P(^PSRX(PSORENW("OIRXN"),"A",PSOASUB,0),U,2)="C" D
+ .W IORVON,"This Prescription was cancelled with comments:  ",!,$P(^(0),U,5),IORVOFF D DIR
+ Q
 CHECK ;
  I '$D(PSORX("BAR CODE")),PSORENW("PSODFN")'=PSODFN D  G CHECKX
  .W !!,?5,$C(7),"Can't renew Rx # "_$P(PSORENW("RX0"),"^")_", it is not for this patient." S PSORENW("DFLG")=1
@@ -56,11 +58,11 @@ CHECK ;
  .S PSORENW("DFLG")=1
  .W !!,$C(7),"Cannot renew Rx # "_$P(PSORENW("RX0"),"^")_$S(PSOOLPF:", invalid dosage of "_$G(PSOOLPD),1:", Missing Sig")
  .S:$G(POERR) VALMSG="Cannot renew Rx # "_$P(PSORENW("RX0"),"^")_$S(PSOOLPF:", invalid Dosage of "_$G(PSOOLPD),1:", Missing Sig") S VALMBCK="R"
- .I '$G(PSORNSPD) W ! K DIR S DIR(0)="E",DIR("?")="Press Return to continue",DIR("A")="Press Return to Continue" D ^DIR K DIR
+ .I '$G(PSORNSPD) W ! K DIR S DIR(0)="E",DIR("A")="Press Return to Continue" D ^DIR K DIR
  .I $G(PSORNSPD) W !
  ;
  S (PSOS,PSOX,PSOY)="" K ACOM,DIR,DIRUT,DIRUT,DUOUT
- I $G(PSOSD) F  S PSOS=$O(PSOSD(PSOS)) Q:PSOS=""  F  S PSOX=$O(PSOSD(PSOS,PSOX)) Q:PSOX']""!(PSORENW("DFLG"))  I PSORENW("OIRXN")=+PSOSD(PSOS,PSOX) S PSOY=PSOSD(PSOS,PSOX) I $TR($P(PSOY,"^",3),"B")]"" D  K ACOM,DIR,DIRUT,DIRUT,DUOUT
+ I $G(PSOSD) F  S PSOS=$O(PSOSD(PSOS)) Q:PSOS=""  F  S PSOX=$O(PSOSD(PSOS,PSOX)) Q:PSOX']""!(PSORENW("DFLG"))  I PSORENW("OIRXN")=+PSOSD(PSOS,PSOX) S PSOY=PSOSD(PSOS,PSOX) I $P(PSOY,"^",3)]"" D  K ACOM,DIR,DIRUT,DIRUT,DUOUT
  . S PSORENW("DFLG")=1
  . W !,$C(7),"Cannot renew Rx # ",$P(PSORENW("RX0"),"^")
  . S PSOREA=$P(PSOY,"^",3),PSOSTAT=+PSORENW("STA")
@@ -105,8 +107,11 @@ DRUG ;
  .I $P($G(^PSRX(PSORENW("OIRXN"),"OR1")),"^") S PSODRUG("OI")=$P(^PSRX(PSORENW("OIRXN"),"OR1"),"^"),PSODRUG("OIN")=$P(^PS(50.7,+^("OR1"),0),"^") Q
  .W !!,"Cannot Renew!!  No Pharmacy Orderable Item!" S VALMSG="Cannot Renew!!  No Pharmacy Orderable Item!",PSORX("DFLG")=1
  D SET^PSODRG
- D POST^PSODRG D:$$DS^PSSDSAPI&('PSORX("DFLG")) DOSCK^PSODOSUT("R") S:$G(PSORX("DFLG")) PSORENW("DFLG")=1 ;remove order checks for v7. do allergy checks only
+ D POST^PSODRG S:PSORX("DFLG") PSORENW("DFLG")=1 ;remove order checks for v7. do allergy checks only
+ ;D ^PSODRDUP Q:$G(PSORX("DFLG"))  ; Set PSORX("DFLG")=1 if process to stop
  S PSONOOR=PSORENW("NOO")
+ ;I $G(PSODRUG("NDF")) S NDF=$P(PSODRUG("NDF"),"A"),VAP=$P(PSODRUG("NDF"),"A",2),PTR=NDF_"."_VAP D CHK^PSODGAL(PSODFN,"DR",PTR) K NDF,VAP,PTR
+ ;I '$G(PSODRUG("NDF")) D CHK1^PSODGAL(PSODFN)
  K PSORX("INTERVENE")
  S:$D(PSONEW("STATUS")) PSORENW("STATUS")=PSONEW("STATUS")
  K PSOY,PSONEW("STATUS")
@@ -122,7 +127,7 @@ RETRY I $O(^PSRX("B",PSORENW("NRX #"),0)) D  G:'$G(PSORENW("DFLG")) RETRY
  .I $A($E(PSORENW("NRX #"),$L(PSORENW("ORX #"))))=90 D
  ..W !,"Rx # "_PSORENW("NRX #")_" is already on file. Cannot renew Rx #"_PSORENW("ORX #")_".",!,"A new Rx must be entered.",!
  ..S:$G(PSOFDR) VALMSG="Rx # "_PSORENW("NRX #")_" is already on file. Cannot renew Rx #"_PSORENW("ORX #")_". A new Rx must be entered."
- ..K DIR S DIR(0)="E",DIR("?")="Press Return to continue",DIR("A")="Press Return to Continue" D ^DIR K DIR
+ ..K DIR S DIR(0)="E",DIR("A")="Press Return to Continue" D ^DIR K DIR
  ..S:$G(POERR)!($G(PSOFDR)) VALMSG="Cannot renew Rx # "_PSORENW("ORX #")_", Max number reached.",VALMBCK="R" S PSORENW("DFLG")=1
  .S PSOX=$E(PSORENW("NRX #"),$L(PSORENW("NRX #")))
  .S PSORENW("NRX #")=$S(PSOX?1N:PSORENW("NRX #")_"A",1:$E(PSORENW("NRX #"),1,$L(PSORENW("NRX #"))-1)_$C($A(PSOX)+1))
@@ -135,10 +140,16 @@ FILDATE ;
  I PSORENW("FILL DATE")<$P(PSORENW("RX3"),"^",2) D
  .D RENFDT^PSOUTIL(.PSORENW)
  .I PSORENW("FILL DATE")<DT,PSORENW("FILL DATE")<PSORNW("FILL DATE") S (Y,PSORENW("FILL DATE"))=DT X ^DD("DD") S PSORX("FILL DATE")=Y K Y
+ I $G(PSORENW("FILL DATE"))>DT D
+ .I '$$GET1^DIQ(59,PSOSITE_",",.091,"I") S PSORENW("FILL DATE")=DT  ; IHS/CIA/PLS - 04/20/04 - Force Fill Date to Today if Suspense Function not used
+ .E  I '$$GET1^DIQ(59,PSOSITE_",",.16,"I") S PSORENW("FILL DATE")=DT  ;IHS/MSC/PLS - 10/23/2009 - Force Fill Date to Today if Suspense Function YES and Auto Suspense NO
  K PSORENW("IRXN")
  Q
  ;
 EDIT ;
+ ; IHS/CIA/PLS - 04/05/04 - Warn future fill dates.
+ I $G(PSORENW("FILL DATE"))>DT D
+ .W !!,"WARNING: The prescription has a Fill Date in the future!",!
  K DIR,X,Y
  S DIR(0)="Y",DIR("B")=$S($G(DUZ("AG"))'="I":"Y",$G(PSEXDT):"Y",1:"N")
  S DIR("A")="Edit renewed Rx ",DIR("?")="Answer YES to edit the renewed Rx, NO not to."
@@ -178,9 +189,9 @@ NEWPT ;
  D PROFILE^PSOREF1
 NEWPTX Q
  ;
-EN(PSORENW)        ; Entry Point for Batch Barcode Option
+EN(PSORENW) ; Entry Point for Batch Barcode Option
  S PSORENRX=$G(PSOBBC("OIRXN"))
- I $G(PSORENRX) D PSOL^PSSLOCK(PSORENRX) I '$G(PSOMSG) D  K DIR,PSOMSG W ! S DIR("A")="Press Return to continue",DIR(0)="E",DIR("?")="Press Return to continue" D ^DIR K DIR W ! Q
+ I $G(PSORENRX) D PSOL^PSSLOCK(PSORENRX) I '$G(PSOMSG) D  K DIR,PSOMSG W ! S DIR("A")="Press Return to continue",DIR(0)="E" D ^DIR K DIR W ! Q
  .I $P($G(PSOMSG),"^",2)'="" W $C(7),!!,$P(PSOMSG,"^",2) Q
  .W $C(7),!!,"Another person is editing Rx "_$P($G(^PSRX(PSORENRX,0)),"^")
  K PSOMSG,PSOBBCLK S PSOBARCD=1 D PROCESS K PSOBARCD
@@ -188,7 +199,7 @@ EN(PSORENW)        ; Entry Point for Batch Barcode Option
  I $G(PSORENRX),$G(PSOBBCLK) D PSOUL^PSSLOCK(PSORENRX)
  K PSORENRX,PSOBBCLK
  Q
-CDOSE ;Validate Dosage field on Renewal, Copy, Edit
+CDOSE ;Validate Dosage field on Renewel, Copy, Edit
  ;PSOOCPRX must be set to internal Rx number
  Q:'$G(PSOOCPRX)
  N PSOOLP,PSOOKZ
@@ -199,4 +210,3 @@ CDOSE ;Validate Dosage field on Renewal, Copy, Edit
  I '$P($G(^PSRX(PSOOCPRX,"SIG")),"^",2),$P($G(^("SIG")),"^")'="" S PSOOKZ=1
  I 'PSOOKZ S PSONOSIG=1
  Q
- ;

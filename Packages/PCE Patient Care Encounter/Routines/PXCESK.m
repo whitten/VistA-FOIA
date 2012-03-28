@@ -1,5 +1,5 @@
-PXCESK ;ISL/dee - Used to edit and display V SKIN TEST ;3/11/04 1:49pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**27,124,162**;Aug 12, 1996
+PXCESK ;ISL/dee - Used to edit and display V SKIN TEST ;3/19/97
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**27**;Aug 12, 1996
  ;; ;
  Q
  ;
@@ -23,14 +23,6 @@ FORMAT ;;Skin Test~9000010.12~0,12,811,812~1~^AUPNVSK
  ;;0~6~.06~Reading Date and (optional) Time~Reading Date:  ~~E1201^PXCEPOV1(0,30,60)~~~D
  ;;12~4~1204~Reader:  ~Reader:  ~~EPROV12^PXCEPRV~~~D
  ;;811~1~81101~Comments:  ~Comments:  ~~~~~D
- ;;0~8~.08~Diagnosis:  ~Diagnosis:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~9~.09~Diagnosis 2:  ~Diagnosis 2:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~10~.1~Diagnosis 3:  ~Diagnosis 3:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~11~.11~Diagnosis 4:  ~Diagnosis 4:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~12~.12~Diagnosis 5:  ~Diagnosis 5:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~13~.13~Diagnosis 6:  ~Diagnosis 6:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~14~.14~Diagnosis 7:  ~Diagnosis 7:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
- ;;0~15~.15~Diagnosis 8:  ~Diagnosis 8:  ~$$DISPLY01^PXCEPOV~EPOV^PXCEVIMM~~~
  ;;
  ;
  ;The interface for AICS to get list on form for help.
@@ -72,6 +64,7 @@ ERESULTS ;
  I X="@" S Y="@"
  E  I $D(DTOUT)!$D(DUOUT) S PXCEEND=1 Q
  S $P(PXCEAFTR(0),"^",4)=$P(Y,"^")
+ I $P(PXCEAFTR(0),"^",5)]"",$P(PXCEAFTR(0),"^",5)>10,Y'="P" W !,$C(7)_"Readings of greater than 10 must be Positive",! D PAUSE^PXCEHELP S PXCELINE=PXCELINE-2
  Q
  ;
  ;********************************

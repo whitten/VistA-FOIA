@@ -1,5 +1,5 @@
 XDRDEFLG ;SF-IRMFO/TKW -  SILENT API TO UPDATE THE SUPPRESS NEW DUP EMAIL FLAG ;9/19/08  16:57
- ;;7.3;TOOLKIT;**113**;Apr 25, 1995;Build 5
+ ;;7.3;TOOLKIT;**113**;Apr 25, 1995;Build 9
  ;;Per VHA Directive 2004-038, this routine should not be modified
 EN(XDRSLT,XDRFL,XDRVAL) ; Update the SUPPRESS NEW DUP EMAIL field on record in file #15.1
  ; Called from REMOTE PROCEDURE - XDR UPD EMAIL FLAG

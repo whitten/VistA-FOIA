@@ -1,5 +1,5 @@
 XINDX9 ;SF/RWF - XINDEX SYNTAX CHECKER ;06/24/08  15:39
- ;;7.3;TOOLKIT;**20,27,48,61,66,68,110,121**;Apr 25, 1995;Build 7
+ ;;7.3;TOOLKIT;**20,27,48,61,66,68,110,121**;Apr 25, 1995;Build 10
  ; Per VHA Directive 2004-038, this routine should not be modified.
  N CH1,EC,OP
  D PARSE S LI=0,AC=255 F %=0:0 S %=$O(LV(%)) Q:%'>0  S LI(%)=0

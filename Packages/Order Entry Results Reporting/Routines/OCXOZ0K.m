@@ -1,5 +1,5 @@
-OCXOZ0K ;SLC/RJS,CLA - Order Check Scan ;MAR 8,2011 at 13:52
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**32,221,243**;Dec 17,1997;Build 242
+OCXOZ0K ;SLC/RJS,CLA - Order Check Scan ;JUN 15,2011 at 12:58
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**32**;Dec 17,1997
  ;;  ;;ORDER CHECK EXPERT version 1.01 released OCT 29,1998
  ;
  ; ***************************************************************
@@ -10,8 +10,21 @@ OCXOZ0K ;SLC/RJS,CLA - Order Check Scan ;MAR 8,2011 at 13:52
  ;
  Q
  ;
+R7R1A ; Verify all Event/Elements of  Rule #7 'PATIENT ADMISSION'  Relation #1 'ADMISSION'
+ ;  Called from EL21+5^OCXOZ0G.
+ ;
+ Q:$G(OCXOERR)
+ ;
+ ;      Local Extrinsic Functions
+ ; MCE21( ----------->  Verify Event/Element: 'PATIENT ADMISSION'
+ ;
+ Q:$G(^OCXS(860.2,7,"INACT"))
+ ;
+ I $$MCE21 D R7R1B
+ Q
+ ;
 R7R1B ; Send Order Check, Notication messages and/or Execute code for  Rule #7 'PATIENT ADMISSION'  Relation #1 'ADMISSION'
- ;  Called from R7R1A+10^OCXOZ0J.
+ ;  Called from R7R1A+10.
  ;
  Q:$G(OCXOERR)
  ;
@@ -44,7 +57,7 @@ R7R1B ; Send Order Check, Notication messages and/or Execute code for  Rule #7 '
  Q
  ;
 R11R1A ; Verify all Event/Elements of  Rule #11 'IMAGING REQUEST CANCELLED/HELD'  Relation #1 'CANCELLED AND CANCELED BY NON-ORIG ORDERER'
- ;  Called from EL31+5^OCXOZ0F, and EL100+5^OCXOZ0G.
+ ;  Called from EL31+5^OCXOZ0G, and EL100+5^OCXOZ0G.
  ;
  Q:$G(OCXOERR)
  ;
@@ -150,6 +163,15 @@ MCE100() ; Verify Event/Element: CANCELED BY NON-ORIG ORDERING PROVIDER
  Q:'(OCXDF(37)) 0 I $D(^TMP("OCXCHK",$J,OCXDF(37),100)) Q $G(^TMP("OCXCHK",$J,OCXDF(37),100))
  Q 0
  ;
+MCE21() ; Verify Event/Element: PATIENT ADMISSION
+ ;
+ ;  OCXDF(37) -> PATIENT IEN data field
+ ;
+ N OCXRES
+ S OCXDF(37)=$G(DFN) I $L(OCXDF(37)) S OCXRES(21,37)=OCXDF(37)
+ Q:'(OCXDF(37)) 0 I $D(^TMP("OCXCHK",$J,OCXDF(37),21)) Q $G(^TMP("OCXCHK",$J,OCXDF(37),21))
+ Q 0
+ ;
 MCE30() ; Verify Event/Element: RADIOLOGY ORDER PUT ON-HOLD
  ;
  ;
@@ -173,20 +195,17 @@ NEWRULE(OCXDFN,OCXORD,OCXRUL,OCXREL,OCXNOTF,OCXMESS) ; Has this rule already bee
  Q:'$G(OCXREL) 0  Q:'$G(OCXNOTF) 0  Q:'$L($G(OCXMESS)) 0
  S OCXORD=+$G(OCXORD),OCXDFN=+OCXDFN
  ;
- N OCXNDX,OCXDATA,OCXDFI,OCXELE,OCXGR,OCXTIME,OCXCKSUM,OCXTSP,OCXTSPL
+ N OCXNDX,OCXDATA,OCXDFI,OCXELE,OCXGR,OCXTIME,OCXCKSUM
  ;
  S OCXTIME=(+$H)
  S OCXCKSUM=$$CKSUM(OCXMESS)
  ;
- S OCXTSP=($H*86400)+$P($H,",",2)
- S OCXTSPL=($G(^OCXD(860.7,"AT",OCXTIME,OCXDFN,OCXRUL,+OCXORD,OCXCKSUM))+$G(OCXTSPI,300))
- ;
- Q:(OCXTSPL>OCXTSP) 0
+ Q:$D(^OCXD(860.7,"AT",OCXTIME,OCXDFN,OCXRUL,+OCXORD,OCXCKSUM)) 0
  ;
  K OCXDATA
  S OCXDATA(OCXDFN,0)=OCXDFN
  S OCXDATA("B",OCXDFN,OCXDFN)=""
- S OCXDATA("AT",OCXTIME,OCXDFN,OCXRUL,+OCXORD,OCXCKSUM)=OCXTSP
+ S OCXDATA("AT",OCXTIME,OCXDFN,OCXRUL,+OCXORD,OCXCKSUM)=""
  ;
  S OCXGR="^OCXD(860.7"
  D SETAP(OCXGR_")",0,.OCXDATA,OCXDFN)

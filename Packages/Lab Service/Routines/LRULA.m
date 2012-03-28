@@ -1,4 +1,6 @@
-LRULA ;AVAMC/REG - EDIT LOCATION ;3/9/94  13:28 ;
+LRULA ; IHS/DIR/FJE - EDIT LOCATION 3/9/94 13:28 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 A W ! S DIC=68,DIC(0)="AEQMZ" D ^DIC K DIC G:Y=-1 END S LRAA=+Y,LRAA(1)=$P(Y,U,2),T=$P(Y(0),U,3)
 D S %DT="AEQ",%DT("A")="Select Date: " D ^%DT G:Y=-1 A S LRAD=$S(T="D":Y,T="Y":$E(Y,1,3)_"0000",1:$E(Y,1,5)_"00") D D^LRU S LRD=Y I '$D(^LRO(68,LRAA,1,LRAD)) W $C(7),!,"No date for ",LRAA(1) G D

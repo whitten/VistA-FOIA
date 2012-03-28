@@ -1,5 +1,5 @@
-LROW3 ;DALOI/CJS - LIST THE TESTS ORDERED AND ALLOW EDITING ;Mar 23, 2004
- ;;5.2;LAB SERVICE;**33,121,286**;Sep 27, 1994
+LROW3 ;VA/DALOI/CJS - LIST THE TESTS ORDERED AND ALLOW EDITING ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**33,121,286,1027**;NOV 01, 1997
 L ;
  ; Only ask nature of order for CPRS - file #2 patients.
  I $G(LRDPF,2)=2 D  Q:'$D(LRNATURE)
@@ -22,7 +22,8 @@ L2 S LRSAMP=$S($D(^LAB(62,I,0)):$P(^(0),U),1:"")
  ;
 L3 ;
  K J S J=0,I=0
- W !!,"You have just selected the following tests for ",PNM,"  ",SSN
+ ; W !!,"You have just selected the following tests for ",PNM,"  ",SSN
+ W !!,"You have just selected the following tests for ",PNM,"  ",HRCN     ; IHS/ANMC/CLS 08/18/96
  I $G(LRLWC)="LC" W:$G(LRORDTIM) !," for Collection on: ",$$FMTE^XLFDT(LRODT_"."_LRORDTIM,"M")
  W !,?5,"entry no.",?15,"Test",?45,"Sample"
  S I=0 F  S I=$O(LRXST(I)) Q:I<1  D L2
@@ -61,7 +62,8 @@ LL2 ;
  ;
 LL3 ;
  K J
- S J=0 W !!,"You have just selected the following tests for ",PNM,"  ",SSN
+ ; S J=0 W !!,"You have just selected the following tests for ",PNM,"  ",SSN
+ S J=0 W !!,"You have just selected the following tests for ",PNM,"  ",HRCN    ; IHS/ANMC/CLS 08/18/96
  I LRORDR="LC" W !," for Collection on: ",$$FMTE^XLFDT(LRODT_"."_LRORDTIM,"M")
  W !,?5,"entry no.",?15,"Test",?45,"Sample"
  F I=-1:0 S I=$O(LROT(I)) Q:I=""  D

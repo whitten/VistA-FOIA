@@ -1,5 +1,5 @@
-XQ41 ;SEA/JLI - Diagram menus (continued) ;08/27/97  14:47
- ;;8.0;KERNEL;**46**;Jul 10, 1995
+XQ41 ;SEA/JLI - Diagram menus (continued) ;08/27/97  14:47 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
 L G LL:'$D(^TMP($J,"XQM",XQL,L)) K X1,X2,X3 S Y=1,XQV=^(L) S:$D(^(L,.1)) X1=^(.1) S:$D(^(.2)) X2=^(.2) S:$D(^(.3)) X3=^(.3) I $D(^(1)) S XQV(L)=^(1)
  E  S:$P(XQV,U,5)'="M" XQT=L
  S XQP=$P(XQV,U,1),XQP(L)=$E("-----",1,5-$L(XQP))_XQP_" ",X=$P(XQV,U,3)_" ["_$P(XQV,U,2)_"]" D T I $P(XQV,U,4)]"" S X="**UNAVAILABLE**" D T

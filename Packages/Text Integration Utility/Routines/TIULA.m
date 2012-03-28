@@ -1,90 +1,9 @@
-TIULA ; SLC/JER - Interactive Library functions ;04/23/10  09:00
- ;;1.0;TEXT INTEGRATION UTILITIES;**79,113,250**;Jun 20, 1997;Build 14
- ;
- ; ICR #10142    - EN^DDIOL Routine
- ;     #10006    - DIC Routine & DIC, X, & Y local vars
- ;     #10026    - DIR Routine & DIR, X, & Y local vars
- ;     #10112    - $$PRIM^VASITE, $$SITE^VASITE Routines
- ;     #664      - DIVISION^VAUTOMA Routine & VAUTD local var
- ;     #10140    - XQORM, EN^XQORM Routine & XQORM local var
- ;
+TIULA ; SLC/JER - Interactive Library functions ;04:32 PM  27 Oct 1999
+ ;;1.0;TEXT INTEGRATION UTILITIES;**79**;Jun 20, 1997
 PATIENT(TIUSSN) ; Select a patient
  N X,DIC,Y S:$G(TIUSSN)]"" X=TIUSSN
  S DIC=2,DIC(0)=$S($G(TIUSSN)']"":"AEMQ",1:"MX") D ^DIC
  Q Y
-SELDIV ; Get document division(s)
- ;
- ; Output - SELDIV  -1= user ^ at prompt if multidivisional
- ;                   0= institution file pointer missing for
- ;                      division entry
- ;                   1= successful division selection
- ;          BADDIV    = comma-delimited list of bad divisions (if any)
- ;          TIUDI(  undefined= user <cr> for all divisions or ^ at prompt
- ;                             if multidivisional
- ;                  defined= user selected one or more divisions if
- ;                           multidivisional, or pre-selection of
- ;                           division file entry if not multidivisional;
- ;                           i.e.: TIUDI(file #40.8 ien)= Institution
- ;                           file pointer for file #40.8 entry
- N TIUI,VAUTD,Y
- K SELDIV,TIUDI,BADDIV
- ; -- Determine if facility is multidivisional
- I $P($G(^DG(43,1,"GL")),U,2) D
- . D DIVISION^VAUTOMA
- . I Y<0 S SELDIV=-1 Q
- . I VAUTD=1 S SELDIV=1 Q
- . S TIUI=0 F  S TIUI=$O(VAUTD(TIUI)) Q:'TIUI  D ONE(TIUI,.VAUTD)
- E  D
- . S TIUI=$$PRIM^VASITE D ONE(TIUI,.VAUTD)
- Q
-ONE(TIUI,VAUTD) ; Input - TIUI  Medical Center Division file (#40.8) IEN
- N TIUIFP
- S TIUIFP=$P($$SITE^VASITE(,TIUI),U) I TIUIFP>0 D
- . S TIUDI(TIUI)=TIUIFP,SELDIV=1
- E  D
- . S SELDIV=0,BADDIV=$G(BADDIV)_$S($L($G(BADDIV)):", ",1:"")_$G(VAUTD(TIUI))
- Q
- ;
-SELSVC(TIUSVCS) ;Select Services
- ; Input  -- None
- ; Output -- 1=Successful and 0=Failure
- ;           TIUSVCS  Service Selection Array
- N TIUCNT,TIUSVCI,Y
- S TIUCNT=0
- F  Q:'$$ASKSVC(.TIUSVCS,TIUCNT,.TIUSVCI)  D
- . S TIUSVCS(+TIUSVCI)=""
- . S TIUCNT=TIUCNT+1
- . S TIUSVCI=""
- I $G(TIUSVCI)=-1 S Y=0 G SELSVCQ
- I $G(TIUSVCI)="ALL" S TIUSVCS="ALL"
- S Y=1
-SELSVCQ Q +$G(Y)
- ;
-ASKSVC(TIUSVCS,TIUCNT,TIUSVCI) ;Ask Service
- ; Input  -- TIUSVCS  Service Selection Array
- ;           TIUCNT   Number of Services Selected
- ; Output -- 1=Successful and 0=Failure
- ;           TIUSVCI  Service/Section file (#49) IEN
- N DIR,DTOUT,DUOUT,X,Y
- S DIR(0)="PAO^49:AEMQ^K:'$$CHKSVC^TIULA(.TIUSVCS,+Y) X"
- S DIR("PRE")="I X="""",'$G(TIUCNT),'$D(DTOUT) S TIUSVCI=""ALL"""
- S DIR("A")="Select "_$S($G(TIUCNT):"another ",1:"")_"service: "_$S('$G(TIUCNT):"ALL// ",1:"")
- I '$G(TIUCNT) S DIR("?")="   OR enter Return for ALL services." W !
- D ^DIR
- I Y>0 S TIUSVCI=+Y
- I $D(DTOUT)!($D(DUOUT)) S TIUSVCI=-1
- Q $S($G(TIUSVCI)>0:1,1:0)
- ;
-CHKSVC(TIUSVCS,TIUSVCI) ;Check Selected Service
- ; Input  -- TIUSVCS  Service Selection Array
- ;           TIUSVCI  Service file (#49) IEN
- ; Output -- 1=Successful and 0=Failure
- N Y
- S Y=1
- ;Check if Service has already been selected
- I $D(TIUSVCS(TIUSVCI)) D EN^DDIOL("This Service has already been selected.","","!?5") S Y=0
- Q +$G(Y)
- ;
 SELSTAT(Y,PARM,DEF) ; Select Signature status
  N I,XQORM,X,TIUY
  S XQORM=+$O(^ORD(101,"B","TIU STATUS MENU",0))_";ORD(101,"
@@ -96,7 +15,7 @@ SELSTAT(Y,PARM,DEF) ; Select Signature status
  I +$G(Y)=1,(+$G(Y(1))=7) S Y=2,Y(2)="8^4843^amended^8"
 STATX Q TIUY
 SELSCRN(DEF) ; Select Review Screen
- N DIC,XQORM,X,Y
+ N DIC,XQORM,X
  S DIC=101,DIC(0)="X",X="TIU REVIEW SCREEN MENU" D ^DIC
  I +Y>0 D
  . S XQORM=+Y_";ORD(101,",XQORM(0)="1A",XQORM("A")="Select Category: "
@@ -109,7 +28,7 @@ SELSCRN(DEF) ; Select Review Screen
  . . S:Y'="ALL" Y=Y_U_$$SELPAR(Y)
  . . S:Y="ALL" Y=Y_U_"ANY"
  Q Y
-SELPAR(DEF) ; Select an author or patient or...
+SELPAR(DEF) ; Select an author or patient or... 
  N DIC,X,Y
  I DEF="ASUB" S Y=$$ASKSUBJ^TIULA1 G SELPARX
  S DIC=$S(DEF="APT":2,DEF="ATS":45.7,DEF="ASVC":123.5,1:200)

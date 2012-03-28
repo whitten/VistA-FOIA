@@ -1,5 +1,5 @@
-DGMTSC31 ;ALB/RMO,ERC - Means Test Screen Deductible Expenses Cont. ; 13 MAR 92
- ;;5.3;Registration;**45,688**;Aug 13, 1993;Build 29
+DGMTSC31 ;ALB/RMO - Means Test Screen Deductible Expenses Cont. ; 13 MAR 92
+ ;;5.3;Registration;**45**;Aug 13, 1993
  ;
  ; Input  -- DFN      Patient IEN
  ;           DGMTDT   Date of Test
@@ -12,9 +12,7 @@ EN ;Entry point for dependent children
  I DGDEP W !?8,"1-",DGDEP," to edit information for the child listed after that number"
  R !,"Enter CHOICE: ",X:DTIME I '$T!(X["^") S DGFL=$S(X["^":-1,1:-2) G Q
  G:X']"" Q I X["?" G EN
- ;DG*5.3*688 - removing code to set X to $E(X), as we can
- ;have >9 dependent children now
- D UP^DGHELP
+ S X=$E(X) D UP^DGHELP
  I X="R" D DIS G EN:'DGFL,Q
  I 'X!'$D(DGDCS(X)) G EN ; not numeric or bad answer
  S DGINI=+$G(DGINC("C",DGDCS(X)))

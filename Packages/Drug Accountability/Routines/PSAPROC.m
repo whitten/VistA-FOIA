@@ -1,8 +1,8 @@
 PSAPROC ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data ;10/9/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,21,70**; 10/24/97;Build 12
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,21**; 10/24/97
  ;This routine assigns a pharmacy location or master vault to all invoices.
  ;
- N PSALCK S (PSALCK,PSAOUT)=1 D EXIT K PSAOUT,PSALCK ;Kill all option variables
+ S PSAOUT=1 D EXIT K PSAOUT ;Kill all option variables
  I '$D(^XUSEC("PSA ORDERS",DUZ)) W !,"You do not hold the key to enter the option." Q
 ESIG D SIG^XUSESIG I X1="" S PSAOUT=1 G EXIT
  S PSASLN="",$P(PSASLN,"-",80)="",PSADLN="",$P(PSADLN,"=",80)="",(PSACNT,PSACTRL,PSAOUT)=0
@@ -139,8 +139,7 @@ END ;Holds screen
  Q
  ;
 EXIT ;Kills processing variables
- I $G(PSAENTRY) D PRINT2^PSAUP
- D:($G(PSALCK)!($G(PSAOUT))) PSAUNLCK^PSAPROC8  ;; < PSA*3*70 RJS
+ D:$G(PSAENTRY) PRINT2^PSAUP
  ;
  ;DAVE B (PSA*3*12) replaced '$D with '$G on next line
  K DA,DIC,DIE,DIK,DIR,DIRUT,DR,DTOUT,DUOUT,PSA,PSABEFOR,PSACHG,PSACHO,PSACNT,PSACNT1,PSACNTER,PSACNTOK,PSACOMB,PSACONT,PSACS,PSACTRL,PSAREA,PSAFLD

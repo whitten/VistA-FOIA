@@ -1,4 +1,5 @@
-DIP4 ;SFISC/XAK-QUEUE & DEQUEUE ;12:34 PM  13 Apr 2000
+DIP4 ;SFISC/XAK-QUEUE & DEQUEUE ;12:34 PM  13 Apr 2000 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**34**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  S:('$D(DQTIME)#2)&($D(ZTQUEUED)) DQTIME="NOW"

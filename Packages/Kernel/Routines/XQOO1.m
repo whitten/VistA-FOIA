@@ -1,4 +1,5 @@
-XQOO1 ;SEA/Luke - Out-of-order set calls ;01/28/97  15:00
+XQOO1 ;SEA/Luke - Out-of-order set calls ;01/28/97  15:00 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**10,21,39,41,58**;Jul 10, 1995
  ;
 OFF(XQSET) ;Mark options and protocols Out Of Order

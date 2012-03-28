@@ -1,4 +1,4 @@
-XUMFH4 ;CIOFO-SF/RAM - FORUM IMF handler ;06/28/00
+XUMFH4 ;CIOFO-SF/RAM - FORUM IMF handler ;06/28/00 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**217,218**;Jul 10, 1995
  ;
  ; This routine handles Master File HL7 messages.

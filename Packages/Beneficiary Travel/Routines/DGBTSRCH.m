@@ -1,5 +1,5 @@
 DGBTSRCH ;ALB/SCK - SEARCH ROUTINE FOR INCOMPLETE DATA IN bt DISTANCE FILE;2/4/93  4/22/93
- ;;1.0;Beneficiary Travel;;September 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
  Q
 START ;
  K DIR D HOME^%ZIS W @IOF

@@ -1,5 +1,6 @@
-PXRMRPCB ; SLC/PJH - Functions returning REMINDER data ;01/03/2000
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
+PXRMRPCB ; SLC/PJH - Functions returning REMINDER data ;24-Mar-2006 13:15;MGH
+ ;;1.5;CLINICAL REMINDERS;**1004**;Jun 19, 2000
+ ;IHS/CIA/MGH - 8/11/05 Patch to use correct field number for education outcomes and standards
  Q
  ;
 EDL(ORY,OREM) ;return list of education topics for a reminder
@@ -26,14 +27,16 @@ EDTP(FIND) ;Get education topic name
  S DATA=$G(^AUTTEDT(EDIEN,0)) Q:DATA=""
  S EDPNAM=$P(DATA,U,4),EDNAME=$P(DATA,U)
  S OCNT=OCNT+1,ORY(OCNT)=EDIEN_U_EDNAME_U_EDPNAM
- Q 
+ Q
  ;
 EDU(ORY,OREDU) ;return education details in WP format
  ; display text only
  ;
  N DIC,DR,DA,DIQ
  K ^UTILITY("DIQ1",$J)
- S DR=".01;.04;11;12"
+ ;IHS/CIA/MGH Field numbers changed to reflect differences in patient education files
+ ;S DR=".01;.04;11;12"
+ S DR=".01;.04;1101;1102"
  S DIC=9999999.09
  S DA=OREDU
  S DIQ(0)="EN"

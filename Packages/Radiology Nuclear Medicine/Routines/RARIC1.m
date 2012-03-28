@@ -1,6 +1,5 @@
 RARIC1 ;HISC/GJC-Check to see if Imaging package exists ;3/4/96  15:43
- ;;5.0;Radiology/Nuclear Medicine;**23,93**;Mar 16, 1998;Build 3
- ; 07/15/2008 BAY/KAM rem call 249750 RA*5*93 Correct DIK Calls
+ ;;5.0;Radiology/Nuclear Medicine;**23**;Mar 16, 1998
  ;
  ; API's STUFPHY and DELIMGPT are supported by DBIA#3317
  ;
@@ -53,8 +52,7 @@ DELIMGPT(RAIE74,RAIE2005) ;delete imaging pointer
  S DA=$O(^RARPT(RAIE74,2005,"B",RAIE2005,0))
  Q:'DA
  ; delete this 2005 pointer record
- ;07/17/2008 modified setting DIK in next line
- S DA(1)=RAIE74,DIK="^RARPT("_DA(1)_",2005," D ^DIK
+ S DA(1)=RAIE74,DIK="^RARPT(DA(1),2005," D ^DIK
  Q
 EHVC ; Executable Help for File 72's VISTARAD CATEGORY field
  N RATXT,I

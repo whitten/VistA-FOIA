@@ -1,6 +1,7 @@
-LRBLPC ;AVAMC/REG - TRANSFUSIONS/HEM RESULTS ;2/18/93  09:42 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPC ; IHS/DIR/FJE - TRANSFUSIONS/HEM RESULTS 2/18/93 09:42 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!?14,"Print transfusions & hematology data for a patient" D V^LRU
  S LRS=$O(^LAB(61,"B","BLOOD",0)) I 'LRS S LRS=$O(^LAB(61,"B","PERIPHERAL BLOOD",0)) I 'LRS W $C(7),!,"BLOOD or PERIPHERAL BLOOD must be an entry in TOPOGRAPHY file (#61)",! G END
  S X="BLOOD BANK" D ^LRUTL G:Y=-1 END K LRDPAF S A=0 F B=0:1 S A=$O(^LRO(69.2,LRAA,61,LRS,2,A)) Q:'A  S Y=^(A,0),W=$P(Y,"^",2),Y=+Y D S
@@ -36,7 +37,8 @@ H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  S X(1)=0 F X=0:0 S X=$O(LRT(X)) Q:X=""  S X(1)=X(1)+1 S:$X>(IOM-8) X(1)=1 W:$X>(IOM-8) !?32 W ?32+(8*X(1)),$P(LRT(X),"^",7)
  W !,LR("%") Q
 G S:$D(DPF) LRDPF=DPF S LRPF="^"_$P(LRDPF,"^",2)
- S Y=@(LRPF_DFN_",0)"),Y(0)=$P(Y,"^")_U_$P(Y,"^",2)_U_$P(Y,"^",3)_U_$S($D(^(.1)):^(.1),1:"")_"^"_$S(LRPF="^DPT(":DFN,1:"")_"^^^^"_$P(Y,"^",9) Q
+ ;S Y=@(LRPF_DFN_",0)"),Y(0)=$P(Y,"^")_U_$P(Y,"^",2)_U_$P(Y,"^",3)_U_$S($D(^(.1)):^(.1),1:"")_"^"_$S(LRPF="^DPT(":DFN,1:"")_"^^^^"_$P(Y,"^",9) Q
+ S Y=@(LRPF_DFN_",0)"),Y(0)=$P(Y,"^")_U_$P(Y,"^",2)_U_$P(Y,"^",3)_U_$S($D(^(.1)):^(.1),1:"")_"^"_$S(LRPF="^DPT(":DFN,1:"")_"^^^^"_$S($P($G(^AUPNPAT(+$G(DFN),41,+$G(DUZ(2)),0)),U,2)'="":$P(^(0),U,2),1:"??") Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q
 OUT W $C(7),!!?10,"Cannot use this option until your last report is completed.",!,"If the report was queued and never printed it must be removed from the"

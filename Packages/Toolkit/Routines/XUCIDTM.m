@@ -1,4 +1,5 @@
-%XUCI ;SF/STAFF - SWAP UCIs DSM-11 ;2/3/93  16:37 ;
+%XUCI ;SF/STAFF - SWAP UCIs DSM-11 ;2/3/93  16:37 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ; *** For DataTree ***
 1 R !,"What Namespace: ",%UCI:$S($D(DTIME):DTIME,1:10),"  " Q:%UCI=""!(%UCI["^")  G 2

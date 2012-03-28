@@ -1,4 +1,6 @@
-LRAUL ;AVAMC/REG - PATHOLOGY LIST BY PATHOLOGIST/TECH ;2/18/93  10:54 ;
+LRAUL ; IHS/DIR/FJE - PATHOLOGY LIST BY PATHOLOGIST/TECH 2/18/93 10:54 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END
  S DIC=68,DIC(0)="AEQMZ",DIC("S")="I ""AUCYEMSP""[$P(^(0),U,2)",DIC("A")="Select ANATOMIC PATHOLOGY SECTION: " D ^DIC K DIC G:Y<1 END S LRAA=+Y,LRAA(1)=$P(Y,U,2),LRSS=$P(Y(0),U,2)
@@ -15,7 +17,9 @@ QUE U IO S LRO="A"_LRSS,LRE=0 S:LRSS="AU" LRS=$P(^DD(63,13.7,0),U,3) D L^LRU,S^L
  W:'LRE !,"No "_LRAA(1)_" reports found." D END,END^LRUTL Q
 W D:$Y>(IOSL-6) H I '$D(^LR(LRP,"AU")) K ^LR("AAU",LRC,LRP) Q
  Q:$P(^LR(LRP,"AU"),"^",LRA)'=LRB  S LRE=LRE+1,Z=^("AU")
-PRT W !,$J(LRE,3),")",?6,$J($P(Z,"^",6),4),?16 S Y=+Z D DT W Y,?31 S X=^LR(LRP,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),SSN=$P(V,"^",9) D SSN^LRU W $P(V,"^") W:LRSS="AU" ?62,SSN W:LRSS'="AU" "  ",SSN
+PRT ;W !,$J(LRE,3),")",?6,$J($P(Z,"^",6),4),?16 S Y=+Z D DT W Y,?31 S X=^LR(LRP,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),SSN=$P(V,"^",9) D SSN^LRU W $P(V,"^") W:LRSS="AU" ?62,SSN W:LRSS'="AU" "  ",SSN
+ W !,$J(LRE,3),")",?6,$J($P(Z,"^",6),4),?16 S Y=+Z D DT W Y,?31 S X=^LR(LRP,0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),SSN=$P(V,"^",9) D SSN^LRU W $P(V,"^") W:LRSS="AU" ?62,HRCN W:LRSS'="AU" "  ",HRCN
+ ;IHS/ANMC/CLS 11/1/95
  Q:LRSS'="AU"  S X=$P(Z,"^",11)_":" W ?66,$E($P($P(LRS,X,2),";"),1,12) Q:'LRV
  F T=0:0 S T=$O(^LR(LRP,"AY",T)) Q:'T  S B=+^(T,0),B=$S($D(^LAB(61,B,0)):$P(^(0),"^"),1:B) D:$Y>(IOSL-6) H1 W !?16,B D M
  Q
@@ -33,7 +37,8 @@ MR F M=0:0 S M=$O(^LR(LRP,LRSS,LRI,2,T,2,M)) Q:'M  S N=+^(M,0),N=$S($D(^LAB(61.1
  Q
  ;
 H S LRQ=LRQ+1,X="N",%DT="T" D ^%DT,D^LRU W @IOF,Y," ",LRQ(1),?(IOM-10),"Pg:",LRQ
- W !,LRB(1)," ",LRAA(1)," list from:",LRSTR," to:",LRLST,!,"Count",?6,"Case#",?16,"Case date",?31,"Patient" W:LRSS="AU" ?62,"Age",?66,"Autopsy type" W:LRSS'="AU" "/SSN" W !,LR("%") Q
+ ;W !,LRB(1)," ",LRAA(1)," list from:",LRSTR," to:",LRLST,!,"Count",?6,"Case#",?16,"Case date",?31,"Patient" W:LRSS="AU" ?62,"Age",?66,"Autopsy type" W:LRSS'="AU" "/SSN" W !,LR("%") Q
+ W !,LRB(1)," ",LRAA(1)," list from:",LRSTR," to:",LRLST,!,"Count",?6,"Case#",?16,"Case date",?31,"Patient" W:LRSS="AU" ?62,"Age",?66,"Autopsy type" W:LRSS'="AU" "/HRCN" W !,LR("%") Q  ;IHS/ANMC/CLS 11/1/95
 H1 D H W !,$J(LRE,3),?6,$J($P(Z,"^",6),4),?16 S Y=+Z D DT W Y,?31,$P(V,"^") Q
 H2 D H1 W !?16,B Q
  ;

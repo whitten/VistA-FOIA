@@ -1,5 +1,5 @@
 RAO7XX ;HISC/SS-Sending XX HL7 message to CPRS ;11/19/01  09:07
- ;;5.0;Radiology/Nuclear Medicine;**18,26,28,32,82**;Mar 16, 1998;Build 8
+ ;;5.0;Radiology/Nuclear Medicine;**18,26,28,32**;Mar 16, 1998
  ;Check if requested and registered procedures differ in:
  ;  proc, requesting physician, proc mod(s)
  ;if there are changes - send XX message and return 1, otherwise 0
@@ -107,15 +107,34 @@ MODIF70(RA18D1,RA18D2) ;P18 uses data of Modifiers from #70 for OBR(18)
  . S RA("OBR",18)=$P(RA("OBR",18),RAECH(2),1,$L(RA("OBR",18),RAECH(2))-1)
  . Q
  Q
+ ;----------------------------
+ ;called from 
+ ;-Case # edit  START1+16^RAEDCN
+ ;-Edit by patient
+ ;-Tracking
+ ;Saves proc ien before editing, locate the exam by patient, datetime and caseN 
 SVBEFOR(RAPATN,RAINVDT,RACIEN) ;P18;send radfn,radti,racni (instead of racn and new sequencing of params
- D SVBEFOR^RAO7UTL(RAPATN,RAINVDT,RACIEN) Q
+ ; RAPRIEN() holds "before" values
+ N RADATA,RAX,RA0,RA1,RA2,RA3
+ S RADATA=$G(^RADPT(RAPATN,"DT",RAINVDT,"P",RACIEN,0))
+ Q:RADATA=""  ;failure
+ ; don't check parent here, since still need compare Req Phys & Proc Mods
+ S RAPRIEN=$P(RADATA,"^",2) ; procedure ien
+ S RAPRIEN(1)=RAPATN ; dfn
+ S RAPRIEN(2)=RAINVDT ; inverse date exm
+ S RAPRIEN(3)=RACIEN ; case ien
+ S RAPRIEN(4)=$P(RADATA,"^",14) ; req phy
+ D STR70^RAUTL10(.RAX,RAPATN,RAINVDT,RACIEN)
+ S RAPRIEN(5)=RAX ; string of proc mods
+ ; send "XX" if diffcs in Req.Phy &/or Proc Mods
+ Q  ;OK
  ;Compare proc ien after editing
 CMPAFTR(SNDALERT) ;P18
  K RAREGMOD
  I $D(I) N I
  I $D(J) N J
  I $D(Y) N Y
- Q:'$D(RAPRIEN) 0 ;RAPRIEN must be defined by calling SVBEFOR
+ Q:'$D(RAPRIEN)  ;RAPRIEN must be defined by calling SVBEFOR
  N RADATA,RACHANGE,RAX,RA0,RA1,RA2,RA3,RASTRING,RAPRTYPE
  S RASTRING=""
  S RACHANGE=0 ;=1 if changed any of : proc, proc mod, req phys
@@ -143,16 +162,7 @@ B2P18 G:'$$PATCH^XPDUTL("OR*3.0*92") CMPEXIT
  ;if CPRS patch not installed-don't send any XX message.Checkpoint for all modes except registration,for registration mode see ISCHNGD.Alert has been sent above,because it should be sent anyway
  N RAREGMOD S RAREGMOD="E" ;edit mode
  I $$ORVR^RAORDU()'<3 D EN1^RAO7NEW($P(RADATA,"^",11))
-CMPEXIT ;
- ;Next lines are for RA*5*82
- G:$G(RACHANGE) QQQ ;If proc, proc mod, req phys changed quit 1
- S RAX=0 ;Quit 1 if CPT modifier changed or Tech comments changed
- F  S RAX=$O(^RADPT(RAPRIEN(1),"DT",RAPRIEN(2),"P",RAPRIEN(3),"CMOD",RAX)) Q:'RAX  I $G(RAPRIEN("CMOD",RAX))'=+$G(^(RAX,0)) S RACHANGE=1 Q
- G:$G(RACHANGE) QQQ ;
- S RAX=0
- F  S RAX=$O(^RADPT(RAPRIEN(1),"DT",RAPRIEN(2),"P",RAPRIEN(3),"L",RAX)) Q:'RAX  I $G(RAPRIEN("TCOM",RAX))'=$G(^(RAX,"TCOM")) S RACHANGE=1 Q
-QQQ K RAPRIEN Q RACHANGE
- ;End of RA*5*82 change
+CMPEXIT K RAPRIEN
  Q  ;OK
  ;In input templates the TECH COMMENT prompt should follow 
  ;TECHNOILOGIST prompt but on the other hand it must be saved 

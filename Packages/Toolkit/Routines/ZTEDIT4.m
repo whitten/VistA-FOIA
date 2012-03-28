@@ -1,4 +1,5 @@
-ZTEDIT4 ;SF/RWF - VA EDITOR ? help message ;7/9/90  07:47 ;
+ZTEDIT4 ;SF/RWF - VA EDITOR ? help message ;7/9/90  07:47 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;7.3;TOOLKIT;**16,120**;Apr 25, 1995
  K ^%Z("?") S %X=$T(QUES),^%Z("?")=$P(%X," ",2,99),%X=$T(QUESA),^%Z("?A")=$P(%X," ",2,99)
  F %I=1:1 S %X=$T(%+%I),%Y=$P(%X,";;",2,999) S:%X %Z=+%X,%1=1 Q:%X=""  S ^%Z("?",%Z,%1)=%Y,%1=%1+1

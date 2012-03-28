@@ -1,4 +1,5 @@
 LR7OF5 ;slc/dcm - Setup new order from OE/RR ;2/4/99  06:42
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**223,221,256**;Sep 27, 1994
  ;
  ;This routine invokes IA #2060, #2835, #2747

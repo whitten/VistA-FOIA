@@ -1,4 +1,5 @@
-LRRMM ;CIOFO-DALLAS/JMC/SED -Lab Reports via Network Mail
+LRRMM ; IHS/DIR/AAB - CIOFO-DALLAS/JMC/SED -Lab Reports via Network Mail ; [ 07/22/2002  1:38 PM ]
+ ;;5.2;LR;**1002,1013**;JUL 15, 2002
  ;;5.2;LAB SERVICE;**164**;Apr 09, 1993
 LAB ;Requires Lab 5.0 and Mailman 7.0 (Spooling to XMBS GlobaL)
  ;Enter with LRRLROC=Interim Report Location (File 44 Abbreviation)
@@ -85,7 +86,7 @@ LIST ;Select the message.
  F  S I=$O(^TMP($J,"B",I)) Q:'I  S LRRMZ=^TMP($J,"B",I) D  Q:LRROUT
  .I $Y>(IOSL-5) K DIR S DIR(0)="E" D ^DIR K DIR S LRROUT=Y-1 W @IOF Q:LRROUT
  .S LRRMR=$G(^XMB(3.9,LRRMZ,0)) Q:LRRMR=""  S LRRMSUB=$P(LRRMR,U,1)
- .I LRRMSUB["~U~" F  S LRRMSUB=$P(LRRMSUB,"~U~",1)_"^"_$P(LRRMSUB,"~U~",2,99) Q:LRRMSUB'["~U~" 
+ .I LRRMSUB["~U~" F  S LRRMSUB=$P(LRRMSUB,"~U~",1)_"^"_$P(LRRMSUB,"~U~",2,99) Q:LRRMSUB'["~U~"
  .W !,I," Subj: ",LRRMSUB,"  "
  .S Y=$P(LRRMR,U,3),X1=+$P($G(^XMB(3.9,LRRMZ,2,0)),"^",4)
  .I Y'?7N.E W Y

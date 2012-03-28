@@ -1,5 +1,5 @@
-XPDIA3 ;SFISC/RWF - Install Pre/Post Actions for Kernel files cont. ;6/22/06  09:13
- ;;8.0;KERNEL;**201,302,393,498**;Jul 10, 1995;Build 13
+XPDIA3 ;SFISC/RWF - Install Pre/Post Actions for Kernel files cont. ;6/22/06 09:13
+ ;;8.0;KERNEL;**201,302,393,498,1009,1013,1016**;Jul 10, 1995;Build 5
  ;Per VHA Directive 2004-038, this routine should not be modified.
  Q
  ;^XTMP("XPDI",,XPDA,"KRN",XPDFILE,OLDA) is the global root

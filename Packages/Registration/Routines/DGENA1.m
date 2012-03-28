@@ -1,5 +1,5 @@
-DGENA1 ;ALB/CJM,ISA/KWP - Enrollment API - File Data ;3/31/08 12:18pm
- ;;5.3;Registration;**121,147,232,671**;Aug 13,1993;Build 27
+DGENA1 ;ALB/CJM,ISA/KWP - Enrollment API - File Data; 05/05/99
+ ;;5.3;Registration;**121,147,232**;Aug 13,1993
  ;PHASE II moved CHECK and TESTVAL to DGENA3
 LOCK(DFN) ;
  ;Description: This lock is used to prevent another process from editing
@@ -35,11 +35,12 @@ STORE(DGENR,NOCHECK,ERRMSG) ;
  ;Output:
  ;  Function Value - returns the ien of the PATIENT ENROLLMENT record
  ;     created if successful , 0 otherwise
- N DIC,DA,DIE,Y,DR,DO,DD
+ N DIC,DA,DIE,Y,DR,DO,DLAYGO,DD
  ;check that enrollment is valid before storing
  I $G(NOCHECK)'=1 Q:'$$CHECK^DGENA3(.DGENR,,.ERRMSG) 0
  ;create a new record
- S DIC(0)="",X=DGENR("APP"),DIC="^DGEN(27.11,"
+ S DLAYGO=27.11
+ S DIC(0)="L",X=DGENR("APP"),DIC="^DGEN(27.11,"
  D FILE^DICN
  I Y=-1 S ERRMSG="FILEMAN UNABLE TO CREATE ENROLLMENT RECORD" Q 0
  S DA=+Y
@@ -79,9 +80,8 @@ STORECUR(DGENR,NOCHECK,ERRMSG) ;
  ..D:PRIOR SET^DGENA1A(27.11,DGENRIEN,.09,PRIOR)
  ..;now link the patient record to the new current enrollment
  ..D:PRIOR KILL^DGENA1A(2,DGENR("DFN"),27.01,PRIOR)
- ..N DGENFDA
- ..S DGENFDA(2,DGENR("DFN")_",",27.01)=DGENRIEN
- ..D UPDATE^DIE("","DGENFDA","","ERR")
+ ..S $P(^DPT(DGENR("DFN"),"ENR"),"^")=DGENRIEN
+ ..D SET^DGENA1A(2,DGENR("DFN"),27.01,DGENRIEN)
  D UNLOCK(DGENR("DFN"))
  Q $S(OK:DGENRIEN,1:0)
 EDITCUR(DGENR) ;

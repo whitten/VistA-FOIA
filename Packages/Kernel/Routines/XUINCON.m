@@ -1,4 +1,5 @@
-XUINCON ;SF/XAK - BUILDS ACCESSIBLE FILE MULTIPLE ;2/9/95  09:44
+XUINCON ;SF/XAK - BUILDS ACCESSIBLE FILE MULTIPLE ;2/9/95  09:44 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  G A:'$D(^VA(200,"AFOF")) W !,"You currently have the 'AFOF' X-ref that shows you are",!,"using the accessible file."
  W !,"If you need to re-run the conversion please kill the '^VA(200,""AFOF"")' X-ref first." Q

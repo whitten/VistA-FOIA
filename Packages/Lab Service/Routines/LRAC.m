@@ -1,4 +1,5 @@
-LRAC ;SLC/DCM/MILW/JMC - CUMULATIVE REPORTS DRIVER ;2/20/91  08:33 ;
+LRAC ;SLC/DCM/MILW/JMC - CUMULATIVE REPORTS DRIVER ;2/20/91  08:33 ;  [ 07/22/2002  12:26 PM ]
+ ;;5.2;LR;**1001*1013**;JUL 15, 2002
  ;;5.2;LAB SERVICE;**172**;Sep 27, 1994
  ;Routine has been change to handle separate file room scheduling.
  ;;Semi-automatic queuing of selected reports can occur by setting-up

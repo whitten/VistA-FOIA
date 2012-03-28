@@ -1,5 +1,6 @@
 LAMIVTLG ;SLC/CJS/DAL/DRH - LAB AUTOMATED DATA ;7/20/90  08:28 ;
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**12**;Sep 27, 1994
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**1030**;NOV 01, 1997
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**12**;Sep 27, 1994;Build 7
  ;Modified by Hoak for Vitek literal interface
  Q
 LOG S LINK="",LRDFN=0,DPF=2 I '$G(LOG) G LG2 ;Run by accession number.

@@ -1,4 +1,5 @@
-XGSA ;SFISC/VYD - screen attribute primitives ;03/15/95  13:50
+XGSA ;SFISC/VYD - screen attribute primitives ;03/15/95  13:50 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 SET(XGNEWATR) ;set screen attributes return only the ESC codes
  ;ABSOLUTE setting of screen attributes to new attributes regadless

@@ -1,4 +1,5 @@
-LREPIRP9 ;DALOI/CKA-EMERGING PATHOGENS VERIFICATION REPORT ;9/30/03
+LREPIRP9 ;VA/DALOI/CKA-EMERGING PATHOGENS VERIFICATION REPORT ;9/30/03
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**281**;Sep 27, 1994
  ; This routine contains documentation of the ^XTMP global created
  ;for the verification report.

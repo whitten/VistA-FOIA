@@ -1,4 +1,5 @@
 LRWU3 ;SLC/RWF - COLLECT STARTING AND ENDING DATES FOR REPORTS ; 7/23/87  14:17 ;
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**153**;Sep 27, 1994
  S U="^",LREND=0,LRSDT=0 S:'$D(DTIME) DTIME=999
 A1 W !,"Date to START with: TODAY//" R X:DTIME S:'$T LREND=1 I 'LREND,X["?" W !,"Enter the most recent date you want." S X="?",%DT="E" D ^%DT G A1

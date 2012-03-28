@@ -1,5 +1,6 @@
 LRAPPF1 ;AVAMC/REG/WTY - ANAT PATH FILE PRINT BY PT ;10/16/01
- ;;5.2;LAB SERVICE;**72,173,201,259,362,392**;Sep 27, 1994;Build 6
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**72,173,201,259**;Sep 27, 1994
  ;
  ;Reference to ^DIC supported by IA #916
  ;
@@ -21,8 +22,7 @@ NM S X=^LR(LRDFN,0),LRDPF=$P(X,U,2),N=$P(X,"^",3),N=@(F(2)_N_",0)")
  S LRI=0 F  S LRI=$O(^TMP($J,F,W,LRDFN,LRI)) Q:'LRI!(LR("Q"))  D
  .D @($S("CYEMSP"[LRSS:"EN",1:"AUT"))
  Q
-AUT S LRSF515=+$G(LRSF515)
- D:$Y>(IOSL-12) H1 Q:LR("Q")
+AUT D:$Y>(IOSL-12) H1 Q:LR("Q")
  S X=^LR(LRDFN,"AU"),N=$P(X,"^",6),Y=+X D D^LRU S LRH(3)=Y,DA=LRDFN
  D D^LRAUAW S Y=LR(63,12) D D^LRU S E=Y,H(2)=$E(H(1),1,3)
  W !,"AUTOPSY #: ",N," AUTOPSY DATE: ",LRH(3),?51,"DIED: ",E
@@ -39,7 +39,7 @@ AM S M=0 F  S M=$O(^LR(LRDFN,"AY",X,2,M)) Q:'M!(LR("Q"))  D
  ;
 EN ;from LRAPT1,LRAPQACN
  S LRSF515=+$G(LRSF515)  ;Indicates that this is generating an SF515
- S X=$G(^LR(LRDFN,S,LRI,0)) Q:X=""  S LR("PATH")=$P(X,U,2),N=$P(X,U,6)
+ S X=^LR(LRDFN,S,LRI,0),LR("PATH")=$P(X,U,2),N=$P(X,U,6)
  S N(11)=$P(X,U,11),X=$P(X,U,10),X=$P(X,"."),LRH(3)=$$Y2K^LRX(X)
  S H(2)=$E(X,1,3)
  I LR("PATH")]"" D

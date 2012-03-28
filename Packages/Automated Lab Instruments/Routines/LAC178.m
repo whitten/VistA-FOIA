@@ -1,4 +1,5 @@
-LAC178 ;SLC/RWF - CORNING 178 BLOOD GAS ;7/20/90  07:41 ;
+LAC178 ; IHS/DIR/FJE - CORNING 178 BLOOD GAS 7/20/90 07:41 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;Use in output only mode Brd #6 SW s1-1 closed
  ;Run in the SEQUENCE mode only Cross link by ID

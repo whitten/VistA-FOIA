@@ -1,8 +1,8 @@
 RAESR1 ;HISC/GJC-Exam Statistics Rpt ;1/20/95  09:36
- ;;5.0;Radiology/Nuclear Medicine;**48**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  S (RAPGE,RATOT,RAXIT)=0,RARUNDT=$$FMTE^XLFDT($$DT^XLFDT(),1)
  S $P(RALINE,"-",78)=""
- I '$D(^TMP($J,"RASTAT","RALOC")) D  G PURGE^RAESR2
+ I '$D(^TMP($J,"RASTAT")) D  G PURGE^RAESR2
  . W @IOF,!!?5,"No exams registered for time period "
  . W BEGDTX_" to "_ENDDTX_".",!
  . Q

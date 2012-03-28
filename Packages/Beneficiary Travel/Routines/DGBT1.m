@@ -1,5 +1,5 @@
-DGBT1 ;ALB/SCK - BENEFICIARY TRAVEL DISPLAY SCREEN 1; 12/15/92  1/8/93 4/1/93 ; 10/31/05 1:11pm
- ;;1.0;Beneficiary Travel;**11**;September 25, 2001
+DGBT1 ;ALB/SCK - BENEFICIARY TRAVEL DISPLAY SCREEN 1; 12/15/92  1/8/93 4/1/93
+ ;;5.3;Registration;**35,60,119**;Aug 13, 1993
  Q
 SCREEN ;  clear screen and write headers
  W @IOF
@@ -13,14 +13,7 @@ SETVAR  ;  if new claim, move in current info for elig, sc%
  W !!," Eligibility: ",$P(DGBTELG,"^",2) W:DGBTCSC ?45,"SC%: ",$P(DGBTCSC,"^",2)
  I $O(VAEL(1,0))'="" W !," Other Elig.: " F I=0:0 S I=$O(VAEL(1,I)) Q:'I  W ?14,$P(VAEL(1,I),"^",2),!
 SC ;  service connected status/information
- I DGBTCSC&($P(DGBTCSC,"^",2)'>29) W !!,"Disabilities:" S I3=""
- N DGQUIT
- F I=0:0 S I=$O(^DPT(DFN,.372,I)) Q:'I!($G(DGQUIT)=1)  D
- . S I1=^(I,0),I2=$S($D(^DIC(31,+I1,0)):$P(^(0),"^",1)_" ("_+$P(I1,"^",2)_"%-"_$S($P(I1,"^",3):"SC",1:"NSC")_")",1:""),I3=I1
- . I $Y>(IOSL-3) D PAUSE I DGQUIT=0 W @IOF
- . I $G(DGQUIT)=1 Q
- . W !?14 W I2
- ;
+ I DGBTCSC&($P(DGBTCSC,"^",2)'>29) W !!,"Disabilities:" S I3="" F I=0:0 S I=$O(^DPT(DFN,.372,I)) Q:'I  S I1=^(I,0),I2=$S($D(^DIC(31,+I1,0)):$P(^(0),"^",1)_" ("_+$P(I1,"^",2)_"%-"_$S($P(I1,"^",3):"SC",1:"NSC")_")",1:""),I3=I1 W ?14,I2,!
 INCOME ;  income and eligibility information
  N DGBTIFL S DGBTIFL=$P(DGBTINC,U,2)
  W !!?2,"Income: ",$P(DGBTINC,U),?40,"Source of Income:  ",$S(DGBTIFL="M":"MEANS TEST",DGBTIFL="C":"COPAY TEST",DGBTIFL="I":"INCOME SCREENING",DGBTIFL="V":"VA CHECK",1:"")
@@ -35,8 +28,4 @@ INCOME ;  income and eligibility information
  F I=$Y:1:20 W !
 QUIT ;
  K I1,I2,I3
- Q
- ;
-PAUSE   ;added with DGBT*1*11
- I $E(IOST,1,2)["C-" N DIR S DIR(0)="E" D ^DIR S DGQUIT='Y
  Q

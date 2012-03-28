@@ -1,5 +1,6 @@
-SCRPTM ;ALB/CMM - List of Team's Members Report ; 29 Jun 99  04:11PM
- ;;5.3;Scheduling;**41,48,52,181,177,520**;AUG 13, 1993;Build 26
+SCRPTM ;ALB/CMM - List of Team's Members Report ; 29 Jun 99  04:11PM [ 11/03/2000  6:40 AM ]
+ ;;5.3;Scheduling;**41,48,52,181,177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/03/2000 added call to list template
  ;
  ;List of Team's Members Report
  ;
@@ -59,6 +60,8 @@ RET S NUMBER=0
  Q NUMBER
  ;
 QENTRY ;
+ I $E(IOST,1,2)="C-" D ^BSDSCTM Q   ;IHS/ANMC/LJF 11/03/2000
+IHS ;EP; entry point for list template ;IHS/ANMC/LJF 11/03/2000
  ;driver entry point
  S TITL="Team Member Listing"
  S STORE="^TMP("_$J_",""SCRPTM"")"
@@ -153,14 +156,11 @@ PRINTIT(STORE,TITL) ;
  ;
 PRNTD(INST,TEM,PRACT,POS,TITL,PAGE,HEAD) ;
  ;
- N CNT,SCAC
+ N CNT
  S CNT=""
  I IOST'?1"C-".E,$Y>(IOSL-11) D NEWP^SCRPTM2(INST,TEM,TITL,.PAGE,.HEAD)
  I IOST?1"C-".E,$Y>(IOSL-11) D HOLD1^SCRPTM2(.PAGE,TITL,INST,TEM,.HEAD)
  I STOP Q
  F  S CNT=$O(@STORE@(INST,TEM,PRACT,POS,CNT)) Q:CNT=""!(STOP)  D
  .W !,$G(@STORE@(INST,TEM,PRACT,POS,CNT))
- .S SCAC="" I CNT=4  D
- ..F  S SCAC=$O(@STORE@(INST,TEM,PRACT,POS,4,SCAC)) Q:SCAC=""!(STOP)  D
- ...W !,$G(@STORE@(INST,TEM,PRACT,POS,4,SCAC))
  Q

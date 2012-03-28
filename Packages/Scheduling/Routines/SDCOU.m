@@ -1,5 +1,7 @@
 SDCOU ;ALB/RMO - Utilities - Check Out;28 DEC 1992 10:00 am
- ;;5.3;Scheduling;;Aug 13, 1993
+ ;;5.3;Scheduling;**1012**;Aug 13, 1993
+ ;
+ ;cmi/flag/maw - 06/02/2010 PATCH 1012 RQMT149 added check of list view
  ;
 CODT(DFN,SDT,SDCL) ; -- does appt have co date
  Q $P($G(^SC(SDCL,"S",SDT,1,+$$FIND^SDAM2(.DFN,.SDT,.SDCL),"C")),U,3)
@@ -10,6 +12,7 @@ CHK(SDSEL) ;Check if Appt can be Checked Out
  N SDAT,Y
  S SDAT=$G(^TMP("SDAMIDX",$J,SDSEL)) G CHKQ:SDAT']""
  S Y=1
+ I $P(SDAT,U,6)]"" W !!,*7,">>> This is not a valid appointment." D PAUSE^VALM1 S Y=0 G CHKQ  ;cmi/maw 6/2/2010 PATCH 1012 for list view
  I '$D(^SD(409.63,"ACO",1,$$STATUS(SDAT))) W !!,*7,">>> You can not check out this appointment." D PAUSE^VALM1 S Y=0 G CHKQ
  I $P(+$P(SDAT,"^",3),".")>DT W !!,*7,">>> It is too soon to check out this appointment." D PAUSE^VALM1 S Y=0 G CHKQ
 CHKQ Q +$G(Y)

@@ -1,5 +1,5 @@
-PXCEPAT ;ISL/dee,ISA/KWP - Creates the List Manager display of visit for a patient ; 6/3/03 10:47am  ; Compiled January 5, 2007 14:12:43
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,5,14,30,70,147,160,161,183,188**;Aug 12, 1996;Build 3
+PXCEPAT ;ISL/dee,ISA/KWP - Creates the List Manager display of visit for a patient ;04/30/99
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,5,14,30,70**;Aug 12, 1996
  Q
  ;
 NEWPAT2 ;Entry point of changing patient from Update Encounter
@@ -9,7 +9,7 @@ NEWPAT2 ;Entry point of changing patient from Update Encounter
  D PATKILL
  S PXCEPAT=+PXCENEWP
 NEWPAT1 ;Entry point for initial selection of patient
- D PATINFO(.PXCEPAT) Q:$D(DIRUT)
+ D PATINFO(.PXCEPAT)
  I $P(PXCEVIEW,"^",1)'="P" D
  . S $P(PXCEVIEW,"^",1)="P"
  . D SETDATES^PXCE
@@ -24,7 +24,7 @@ NEWPAT ; -- init variables and list array
  I PXCENEWP'>0 Q
  D PATKILL
  S PXCEPAT=+PXCENEWP
- D NEWPAT1 Q:$D(DIRUT)
+ D NEWPAT1
  D MAKELIST^PXCENEW
  Q
  ;
@@ -98,29 +98,17 @@ JUSTDFNK ;Kill DFN if it was set above
  Q
  ;
 PATIENT(PXCEDATA) ; Select a patient
- N X,Y,DIC,DA,DFN
+ N X,Y,DIC,DA
  D FULL^VALM1
- S DIC=2,DIC(0)="AEMQ" D ^DIC
+ S DIC=2,DIC(0)="AEMQ"
+ D ^DIC
  S PXCEDATA=+Y
-PAT1 S %=1 I Y>0 W !,"   ...OK" D YN^DICN I %=0 W "   Answer With 'Yes' or 'No'" G PAT1
- I %'=1!$D(DIRUT) S (Y,PXCEDATA)=-1
- I +Y'>0 D  Q
- . I $G(DFN)'>0 S VALMSG=$C(7)_"Patient has not been selected." W !!,$G(VALMSG) H 1
- I +Y>0 S DFN=+Y D 2^VADPT I +VADM(6) N DIR D  I $D(DIRUT) S PXCEDATA=-1
- . S DIR(0)="E",DIR("A")="Enter RETURN to continue or '^' to exit"
- . S DIR("A",1)="WARNING "_VADM(7) D ^DIR
  Q
  ;
 PATINFO(PXCEDATA) ;
- Q:$G(PXCEDATA)'>0
- S (DFN,SDFN,ORVP)=PXCEDATA
- D:$G(PXCECAT)="SIT"!($G(PXCECAT)="HIST")!($G(PXCECAT)="AEP")!$G(FSEL) DTHINFO
- I $D(DIRUT),$G(FSEL) D PATKILL Q
- ;D 2^VADPT I +VADM(6) D  K DIR I $D(DIRUT) D:$G(PXCECAT)'="SIT"&($G(PXCECAT)'="HIST")&($G(PXCECAT)'="AEP") PATKILL Q
- ;. S DIR(0)="E",DIR("A")="Enter RETURN to continue or '^' to Quit"
- ;. S DIR("A",2)="WARNING "_VADM(7),DIR("A",1)=" ",DIR("A",3)=" " D ^DIR
+ Q:PXCEDATA'>0
  N Y
- S Y=PXCEDATA
+ S (DFN,SDFN,ORVP,Y)=PXCEDATA
  ;Set IHS patient variables
  D START^AUPNPAT
  D PATNAME(.PXCEDATA)
@@ -132,11 +120,6 @@ PATINFO(PXCEDATA) ;
  F  S PXCEINDX=$O(PXCEVA(1,PXCEINDX)) Q:'PXCEINDX  S PXCEDATA("ELIG",PXCEINDX)=$P(PXCEVA(1,PXCEINDX),"^",1,99)
  Q
  ;
-DTHINFO ;DEATH WARNING
- D 2^VADPT N DIR I +VADM(6) D
- . S DIR(0)="E",DIR("A")="Enter RETURN to continue or '^' to Quit"
- . S DIR("A",2)="WARNING "_VADM(7),DIR("A",1)=" ",DIR("A",3)=" " D ^DIR
- Q
 PATNAME(PXCEDATA) ;
  S PXCEDATA("NAME")=$P($G(^DPT(+PXCEDATA,0)),"^",1)
  N VAPTYP,VA,VAERR,DFN
@@ -147,7 +130,7 @@ PATNAME(PXCEDATA) ;
  Q
  ;
 PATKILL ;
- K PXCEPAT,DFN,SDFN,ORVP,VADM,VAEL,VALMSG
+ K PXCEPAT,DFN,SDFN,ORVP
  ; Kill IHS patient variables
  D KILL^AUPNPAT
  Q

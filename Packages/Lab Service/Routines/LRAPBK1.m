@@ -1,4 +1,6 @@
-LRAPBK1 ;AVAMC/REG - AP LOG BOOK ;1/12/94  12:55
+LRAPBK1 ; IHS/DIR/FJE - AP LOG BOOK 12:55 ; [ 1/12/94 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  F Z=0:0 S Z=$O(^LR(LRDFN,LRSS,LRI,2,Z)) Q:'Z  S LRT=+^(Z,0) D:$Y>(IOSL-6) H1^LRAPBK Q:LR("Q")  S X=$S($D(^LAB(61,LRT,0)):^(0),1:"?") W !?14,"T-",$P(X,"^",2)," ",$P(X,"^") D M
  Q

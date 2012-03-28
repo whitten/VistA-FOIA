@@ -1,5 +1,5 @@
-PXBAPI22 ;ISL/DCM - API for Classification check out ; 16 Oct 2006  9:42 PM
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,26,184,168**;Aug 12, 1996;Build 14
+PXBAPI22 ;ISL/DCM - API for Classification check out ;8/30/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,26**;Aug 12, 1996
 ONE(TYPI,DATA,ENCOWNTR,SQUIT) ;Process One Classification
  ; Input  -- TYPI    Outpatient Classification Type IEN
  ;           DATA    Null or 409.42 IEN^Internal Value^1=n/a^1=unedt
@@ -17,22 +17,14 @@ ONE(TYPI,DATA,ENCOWNTR,SQUIT) ;Process One Classification
  D STORE(+DATA,SDVAL,TYPI)
  Q
 VAL(TYPI,SDCT0,DATA) ;Get Outpatient Classification
- N DIR,DA,Y,SDXS,SDEF
- I TYPI=1,$P($G(^DPT(DFN,.321)),"^",2)'="Y"!($P($G(^DPT(DFN,.321)),"^",13)'="V") G VALQ
+ N DIR,DA,Y
+ I TYPI=1,$P($G(^DPT(DFN,.321)),"^",2)'="Y" G VALQ
  I TYPI=2,$P($G(^DPT(DFN,.321)),"^",3)'="Y" G VALQ
  I TYPI=4,$P($G(^DPT(DFN,.322)),"^",13)'="Y",'$$EC^SDCO22(DFN,ENCOWNTR) G VALQ
  I TYPI=3,$P($G(^SCE(+$G(ENCOWNTR),0)),"^",10)=2 S Y=1 G VALQ ;Change SC to 'yes'
- ;Automation of the SC response
- I TYPI=3,(+$G(PXD)!(+$G(PXDX))) D  I Y'="",'$G(SDSCEDIT) G VALQ
- .S SDXS($S(+$G(PXD):+PXD,1:+$G(PXDX)))=""
- .S Y=$$SC^SDSCAPI(DFN,.SDXS,ENCOWNTR,$G(VISIT)) Q:Y=""
- .S Y=+Y,SDEF=$S(Y:"YES",1:"NO")
- .I '$G(SDSCEDIT) D
- ..W !,$S($P(SDCT0,"^",2)]"":$P(SDCT0,"^",2),1:$P(SDCT0,"^")),"? "
- ..W $S(Y:"YES",1:"NO")
 REASK S DIR("A")=$S($P(SDCT0,"^",2)]"":$P(SDCT0,"^",2),1:$P(SDCT0,"^"))
- I $P(DATA,"^",2)]""!($P(SDCT0,"^",4)]"") S DIR("B")=$S($D(SDEF):SDEF,$P(DATA,"^",2)]"":$$VAL^SDCODD(TYPI,$P(DATA,"^",2)),1:$P(SDCT0,"^",4))
- S DIR(0)=$P(SDCT0,"^",3)_"O" S:$D(SDEF) DIR("B")=SDEF
+ I $P(DATA,"^",2)]""!($P(SDCT0,"^",4)]"") S DIR("B")=$S($P(DATA,"^",2)]"":$$VAL^SDCODD(TYPI,$P(DATA,"^",2)),1:$P(SDCT0,"^",4))
+ S DIR(0)=$P(SDCT0,"^",3)_"O"
  I $D(^SD(409.41,TYPI,2)) S DIR(0)=DIR(0)_"^"_^(2)
  I TYPI=3 S DIR("?")="^D SC^SDCO23(DFN)"
  D ^DIR
@@ -49,7 +41,7 @@ STORE(SDCNI,SDCNV,TYPI) ;File Outpatient Classification
  ;           TYPI    Classification type 1 - Agent Orange
  ;                                        2 - Ionizing Radiation
  ;                                        3 - Service Connected
- ;                                        4 - SW Asia Conditions
+ ;                                        4 - Environmental Contaminants
  ; Output -- PXBDATA array
  ; Error codes -- PXBDATA("ERR",TYPI)=1 - Bad ptr to 409.41 in TYPI
  ;                                  2 - DATA entry not applicable

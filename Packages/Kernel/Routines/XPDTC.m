@@ -1,5 +1,5 @@
 XPDTC ;SFISC/RSD - Transport calls ;10/15/2008
- ;;8.0;KERNEL;**10,15,21,39,41,44,58,83,92,95,100,108,124,131,463,511,517**;Jul 10, 1995;Build 6
+ ;;8.0;KERNEL;**10,15,21,39,41,44,58,83,92,95,100,108,124,131,463,511,517**;Jul 10, 1995;Build 14
  ;Per VHA Directive 2004-038, this routine should not be modified.
  Q
  ;^XTMP("XPDT",XPDA,data type,file #,

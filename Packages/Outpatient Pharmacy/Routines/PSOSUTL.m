@@ -1,10 +1,11 @@
-PSOSUTL ;BIR/RTR - Suspense utility routine ;12/15/95
- ;;7.0;OUTPATIENT PHARMACY;**10,34,139,167,235**;DEC 1997
+PSOSUTL ;BIR/RTR - Suspense utility routine ;09-Feb-2009 16:29;SM
+ ;;7.0;OUTPATIENT PHARMACY;**10,34,139,167,1008**;DEC 1997
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External reference to ^PSNDF supported by DBIA 2195
+ ; Modified - IHS/MSC/PLS- 02/09/09 - Line AREC
 AREC1 ;
- S $P(^PSRX(RX,"STA"),"^")=0
- S SFN=$O(^PS(52.5,"B",RX,0)) I 'SFN D CPMS Q
+ S $P(^PSRX(RX,"STA"),"^")=0,PSOZZD="Label printed from suspense" D EN^PSOHLSN1(RX,"SC","ZU",PSOZZD) K PSOZZD
+ S SFN=$O(^PS(52.5,"B",RX,0)) I 'SFN Q
  D NOW^%DTC S DTTM=% S COM="Suspense "_$S($G(RXRP(RX)):"(Reprint) ",1:"")_"Label Pulled Early"_$S($G(RXP):" (Partial)",1:"") S CNT=0 F JJ=0:0 S JJ=$O(^PSRX(RX,"A",JJ)) Q:'JJ  S CNT=JJ
  D DEL S $P(^PSRX(RX,"STA"),"^")=0 K PSODEL S RFCNT=0 F RF=0:0 S RF=$O(^PSRX(RX,1,RF)) Q:'RF  S RFCNT=RF
  I 'RFCNT,'$G(RXP),'$D(RXRP(RX)) S (X,OLD)=$P(^PSRX(RX,2),"^",2) D  K DIE
@@ -13,30 +14,23 @@ AREC1 ;
  .K DIE S DA(1)=RX,DA=RFCNT,DIE="^PSRX("_DA(1)_",1,",DR=".01///"_DT_";10.1///"_DT D ^DIE
  S:'$D(PDUZ) PDUZ=DUZ S CNT=CNT+1,^PSRX(RX,"A",0)="^52.3DA^"_CNT_"^"_CNT
  S ^PSRX(RX,"A",CNT,0)=DTTM_"^S^"_PDUZ_"^"_$S($G(RXP):6,'RFCNT:RFCNT,RFCNT<6:RFCNT,1:(RFCNT+1))_"^"_COM
- D CPMS
  Q
-CPMS ;
- N PSOZZDD S PSOZZDD="Label printed from suspense" D EN^PSOHLSN1(RX,"SC","ZU",PSOZZDD) K PSOZZDD
- Q
- ;
 DEL S DA=SFN,DIK="^PS(52.5," D ^DIK K DIK Q
  ;I 'PSODELE S NODE=^PS(52.5,SFN,0) K ^PS(52.5,"C",$P(NODE,"^",2),SFN),^PS(52.5,"AC",$P(NODE,"^",3),$P(NODE,"^",2),SFN) S $P(^PS(52.5,SFN,0),"^",2)=DT,^PS(52.5,"C",DT,SFN)="",^PS(52.5,SFN,"P")=1 D  K NODE
  ;.S X1=DT,X2=+$P($G(^PS(59.7,1,40.1)),"^",5) D C^%DTC S ^PS(52.5,"ADL",X,SFN)="" K X
  ;I $P($G(^PS(52.5,SFN,0)),"^",7)'="" N DA,DR,DIE S DA=SFN,DIE="^PS(52.5,",DR="3////P" D ^DIE
  Q
-AREC N PSOZZDMS S PSOZZDMS=0 S:$P(^PSRX(RX,"STA"),"^")=5 PSOZZDMS=1
- S:$P(^PSRX(RX,"STA"),"^")=5 $P(^PSRX(RX,"STA"),"^")=0 S SFN=$O(^PS(52.5,"B",RX,0)) D:'SFN&(PSOZZDMS) CPMSG Q:'SFN  D NOW^%DTC S DTTM=% S COM="Suspense "_$S($G(RXRP(RX)):"(Reprint) ",1:"")_"Label Printed"_$S($G(RXP):" (Partial)",1:"")
- S $P(^PS(52.5,SFN,"P"),"^")=1 D  K ^PS(52.5,"AC",DFN,$P(^PS(52.5,SFN,0),"^",2),SFN) S CNT=0 F JJ=0:0 S JJ=$O(^PSRX(RX,"A",JJ)) Q:'JJ  S CNT=JJ
+AREC ;IHS/MSC/PLS - 02/09/09 - Moved logic that sets status
+ ;D:$P(^PSRX(RX,"STA"),"^")=5  S:$P(^PSRX(RX,"STA"),"^")=5 $P(^PSRX(RX,"STA"),"^")=0 S SFN=$O(^PS(52.5,"B",RX,0)) Q:'SFN  D NOW^%DTC S DTTM=% S COM="Suspense "_$S($G(RXRP(RX)):"(Reprint) ",1:"")_"Label Printed"_$S($G(RXP):" (Partial)",1:"")
+ D:$P(^PSRX(RX,"STA"),"^")=5  S SFN=$O(^PS(52.5,"B",RX,0)) Q:'SFN  D NOW^%DTC S DTTM=% S COM="Suspense "_$S($G(RXRP(RX)):"(Reprint) ",1:"")_"Label Printed"_$S($G(RXP):" (Partial)",1:"")
+ .S:$P(^PSRX(RX,"STA"),"^")=5 $P(^PSRX(RX,"STA"),"^")=0
+ .S PSOZZD="Label printed from suspense" D EN^PSOHLSN1(RX,"SC","ZU",PSOZZD) K PSOZZD
+ S ^PS(52.5,SFN,"P")=1 D  K ^PS(52.5,"AC",DFN,$P(^PS(52.5,SFN,0),"^",2),SFN) S CNT=0 F JJ=0:0 S JJ=$O(^PSRX(RX,"A",JJ)) Q:'JJ  S CNT=JJ
  .S ^PS(52.5,"ADL",$E(PSOTIME,1,7),SFN)=""
  S RFCNT=0 F RF=0:0 S RF=$O(^PSRX(RX,1,RF)) Q:'RF  S RFCNT=RF S:RF>5 RFCNT=RF+1
  S CNT=CNT+1,^PSRX(RX,"A",0)="^52.3DA^"_CNT_"^"_CNT S ^PSRX(RX,"A",CNT,0)=DTTM_"^S^"_DUZ_"^"_$S($G(RXP):6,1:RFCNT)_"^"_COM
  S $P(^PS(52.5,SFN,0),"^",8)=PSOTIME,$P(^PS(52.5,SFN,0),"^",9)=PDUZ S:'$P(^PS(52.5,SFN,0),"^",6) $P(^PS(52.5,SFN,0),"^",6)=PSOSITE
- I PSOZZDMS D CPMSG
  Q
-CPMSG ;
- N PSOZZDDD S PSOZZDDD="Label printed from suspense" D EN^PSOHLSN1(RX,"SC","ZU",PSOZZDDD) K PSOZZDDD
- Q
- ;
 ARECD D NOW^%DTC S CNT=0,DTTM=% F JJ=0:0 S JJ=$O(^PSRX(RX,"A",JJ)) Q:'JJ  S CNT=JJ
  S RFCNT=0 F RF=0:0 S RF=$O(^PSRX(RX,1,RF)) Q:'RF  S RFCNT=RF S:RF>5 RFCNT=RF+1
  S RXP=$P(^PS(52.5,SFN,0),"^",5)

@@ -9,6 +9,7 @@ RAORDC ;HISC/CAH,FPT,GJC,DAD AISC/RMO-Check Request Status against Exam Status ;
  ;updated successfully, and from RAUTL1 after exam status update.
  G Q:'$D(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0)) S RAEXM0=^(0),RAEXOR=$S($D(RADELFLG):0,$D(^RA(72,+$P(RAEXM0,"^",3),0)):$P(^(0),"^",3),1:""),RAOIFN=+$P(RAEXM0,"^",11) G Q:'$D(^RAO(75.1,RAOIFN,0)) S (RAORD0,RAORDB4)=^(0)
  S RAOSTS=$S(RAEXOR=0:0,RAEXOR>0&(RAEXOR<9):6,RAEXOR=9:2,1:"") D EXMCAN:RAOSTS=0,EXMCOM:RAOSTS=2,^RAORDU:RAOSTS=6&(RAOSTS'=$P(RAORD0,"^",5))
+ I $D(RASN),(RASN="EXAMINED") D ^RAORDU:RAOSTS=6  ;IHS/ITSC/CLS 12/31/2003 sends an HL7 message at examined
  I $P($G(RAORDB4),"^",5)=2,(RAOSTS'=2) D
  . ; Prior request status complete ($P(RAORDB4,"^",5)=2), new request
  . ; status (RAOSTS) not complete & OE/RR version not less than 3 issue

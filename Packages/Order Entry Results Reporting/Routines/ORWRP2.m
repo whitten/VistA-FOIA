@@ -1,17 +1,5 @@
-ORWRP2 ; dcm/slc - Health Summary adhoc RPC's
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,109,212,309**Dec 17, 1997;;Build 26
-BB ;Continuation of Blood Bank Report
- N DFN,ORY,ORSBHEAD,GCNT
- S DFN=ORDFN,GCNT=0
- K ^TMP("LRC",$J)
- S ROOT=$NA(^TMP("LRC",$J))
- D BLEG
- Q
-BLEG ;Legacy VISTA Blood Bank Report
- S ORSBHEAD("BLOOD BANK")=""
- D EN^LR7OSUM(.ORY,DFN,,,,,.ORSBHEAD)
- I '$O(^TMP("LRC",$J,0)) S GCNT=GCNT+1,^TMP("LRC",$J,GCNT,0)="",GCNT=GCNT+1,^TMP("LRC",$J,GCNT,0)="No Blood Bank report available..."
- Q
+ORWRP2       ; dcm/slc - Health Summary adhoc RPC's
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,109**;Dec 17, 1997
 COMP(ORY) ;Get ADHOC sub components (FILE 142.1)
  ;RPC => ORWRP2 HS COMPONENTS
  ;Y(i)=(1)I;IFN^(2)Component Name [Abb]^(3)Occ Limit^(4)Time Limit^(5)Header Name^
@@ -50,7 +38,7 @@ SAVLKUP(OK,VAL) ;save Adhoc lookup selection
 GETLKUP(ORY) ;Get Adhoc lookup selection
  S ORY=$$GET^XPAR("ALL","ORWRP ADHOC LOOKUP",1,"I")
  Q
-FILES(ORY,ORCOMP) ;Get Files to select from for a component
+FILES(ORY,ORCOMP)   ;Get Files to select from for a component
  ;RPC => ORWRP2 HS COMP FILES
  D FILES^GMTSADH5(.ORY,ORCOMP)
  Q

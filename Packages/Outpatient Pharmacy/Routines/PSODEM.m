@@ -1,14 +1,18 @@
-PSODEM ;BHAM ISC/SAB - PATIENT DEMOGRAPHICS ; 02/17/93 12:29
- ;;7.0;OUTPATIENT PHARMACY;**5,19,233,258,326**;DEC 1997;Build 11
-GET S DFN=DA D 6^VADPT,PID^VADPT U IO W @IOF,!,VADM(1)
- I +VAPA(9) W !?5,"(TEMP ADDRESS from "_$P(VAPA(9),"^",2)_" till "_$S($P(VAPA(10),"^",2)]"":$P(VAPA(10),"^",2),1:"(no end date)")_")"
+PSODEM ;BHAM ISC/SAB - PATIENT DEMOGRAPHICS ;23-Dec-2003 07:36;PLS
+ ;;7.0;OUTPATIENT PHARMACY;**5,19**;DEC 1997
+ ; Modified - IHS/CIA/PLS - 12/23/03 - Line RE
+GET S DFN=DA D 6^VADPT,PID^VADPT U IO W @IOF,!,VADM(1),?40,"ID#:   "_VA("PID")
+ I +VAPA(9),+VAPA(10) W !?5,"(TEMP ADDRESS from "_$P(VAPA(9),"^",2)_" till "_$P(VAPA(10),"^",2)_")"
  W !,VAPA(1),?40,"DOB:   ",$S(+VADM(3):$P(VADM(3),"^",2),1:"UNKNOWN") W:VAPA(2)]"" !,VAPA(2) W:VAPA(3)]"" !,VAPA(3)
  W !,VAPA(4),?40,"PHONE: "_VAPA(8),!,$P(VAPA(5),"^",2)_"  "_$S(VAPA(11)]"":$P(VAPA(11),"^",2),1:VAPA(6)),?40,"ELIG:  "_$P(VAEL(1),"^",2) W:+VAEL(3) !?40,"SC%:   "_$P(VAEL(3),"^",2)
  I $D(^PS(55,DFN,0)) W:$P(^(0),"^",2) !,"CANNOT USE SAFETY CAPS." I +$P(^(0),"^",4) W ?40,"DIALYSIS PATIENT."
  I $G(^PS(55,DFN,1))]"" S X=^(1) W !!?5,"Pharmacy Narrative: " F I=1:1 Q:$P(X," ",I,99)=""  W:$X+$L($P(X," ",I))+$L(" ")>IOM ! W $P(X," ",I)," "
-RE S (WT,HT)="",X="GMRVUTL" X ^%ZOSF("TEST") I $T D
- .F GMRVSTR="WT","HT" S VM=GMRVSTR D EN6^GMRVUTL S @VM=X,$P(@VM,"^")=$E($P(@VM,"^"),4,5)_"/"_$E($P(@VM,"^"),6,7)_"/"_($E($P(@VM,"^"),1,3)+1700)
- .S X=$P(WT,"^",8),Y=$J(X/2.2,0,2),$P(WT,"^",9)=Y,X=$P(HT,"^",8),Y=$J(2.54*X,0,2),$P(HT,"^",9)=Y
+RE ; IHS/CIA/PLS - 12/11/03 - Changed to call PCC Vitals
+ S (WT,HT)=""   ;,X="GMRVUTL" X ^%ZOSF("TEST") I $T D
+ ;.F GMRVSTR="WT","HT" S VM=GMRVSTR D EN6^GMRVUTL S @VM=X,$P(@VM,"^")=$E($P(@VM,"^"),4,5)_"/"_$E($P(@VM,"^"),6,7)_"/"_($E($P(@VM,"^"),1,3)+1700)
+ ;.S X=$P(WT,"^",8),Y=$J(X/2.2,0,2),$P(WT,"^",9)=Y,X=$P(HT,"^",8),Y=$J(2.54*X,0,2),$P(HT,"^",9)=Y
+ S WT=$$VITALF^APSPFUNC(DFN,"WT"),$P(WT,U,9)=$$VITCWT^APSPFUNC($P(WT,U,8))
+ S HT=$$VITALF^APSPFUNC(DFN,"HT"),$P(HT,U,9)=$$VITCHT^APSPFUNC($P(HT,U,8))
  Q:$G(POERR)
  W !!,"WEIGHT(Kg): " W:+$P(WT,"^",8) $P(WT,"^",9)_" ("_$P(WT,"^")_")" W ?41,"HEIGHT(cm): " W:$P(HT,"^",8) $P(HT,"^",9)_" ("_$P(HT,"^")_")" K VM,WT,HT
  S PSLC=0 G MA:$P($G(^DPT(DFN,.17)),"^",2)'="I"

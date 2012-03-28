@@ -1,5 +1,5 @@
-ORWPCE3 ; SLC/KCM/REV/JM - Get a PCE encounter for a TIU document;11/21/03 ;11/30/09  13:55
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,85,116,190,280**;Dec 17, 1997;Build 85
+ORWPCE3 ; SLC/KCM - Get a PCE encounter for a TIU document;11/21/03
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,85,116,190**;Dec 17, 1997
  Q
 PCE4NOTE(LST,IEN,DFN,VSITSTR) ; Return encounter for an associated note
  ; LST(1)=HDR^AllowEdit^CPTRequired^VStr^Author^hasCPT
@@ -73,8 +73,9 @@ PCE4NOTE(LST,IEN,DFN,VSITSTR) ; Return encounter for an associated note
  .. S LST(ILST)="COM"_U_ICOM_U_X811
  S ICPT=0 F  S ICPT=$O(^TMP("PXKENC",$J,VISIT,"CPT",ICPT)) Q:'ICPT  D
  . S X0=^TMP("PXKENC",$J,VISIT,"CPT",ICPT,0),X802=$G(^(802)),X12=$G(^(12)),X811=$G(^(811))
- . S CODE=$$CODEC^ICPTCOD($P(X0,U)) ;ICR #1995
- . S:CODE=-1 CODE=""
+ . ;S CODE=$P(X0,U)
+ . S CODE=$O(^ICPT("B",$P(X0,U),0))
+ . S:CODE CODE=$P(^ICPT(CODE,0),U)
  . S CAT=$P(X802,U)
  . S:CAT CAT=$P(^AUTNPOV(CAT,0),U)
  . S NARR=$P(X0,U,4)

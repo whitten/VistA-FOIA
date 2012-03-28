@@ -1,4 +1,6 @@
-LRUU ;AVAMC/REG - FIND FIELD FOR A SUBSCRIPT & PIECE ; 9/2/87  09:35 ;
+LRUU ; IHS/DIR/FJE - FIND FIELD FOR A SUBSCRIPT & PIECE 9/2/87 09:35 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  S:'$D(DTIME) DTIME=300
  W !!?20,"Enter file/subfile #, subscript and piece",!?30,"separated by commas: "

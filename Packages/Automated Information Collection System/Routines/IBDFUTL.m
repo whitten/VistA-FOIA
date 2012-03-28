@@ -1,5 +1,5 @@
 IBDFUTL ;ALB/MAF - Maintenance Utility Routine - APR 20 1995
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**9,32,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**9,32**;APR 24, 1997
  ;
  ;  -- Set up variables for display by clinic/form/group
 OUT S IBDFL=0  ;W !!,"Display output by: CLINICS// " D ZSET1 S X="" R X:DTIME G QUIT:X="^"!('$T) I X=""!("Cc"[X) S X="1"
@@ -37,16 +37,9 @@ OUT1 ;  -- Ask for what type of package interface
  I $D(IBDF1) D
  .K VAUTP F IBI=0:0 S IBI=$O(VAUTJ(IBI)) Q:IBI']""  S VAUTP(IBI)=$G(VAUTJ(IBI))
  I IBDFACT=1 D
- .;;I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="CPT" S DIC="^ICPT(",IBDFCODE="CPT "
- .;;I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="ICD" S DIC="^ICD9(",IBDFCODE="ICD-9 "
- .;;I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="VST" S DIC="^IBE(357.69,",IBDFCODE="Type of Visit "
- .;
- .I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="CPT" S DIC="^ICPT(",IBDFCODE="CPT ",DIC("S")="I $P($$CPT^ICPTCOD(Y),U,7)=1"
- .;
- .I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="ICD" S DIC="^ICD9(",IBDFCODE="ICD-9 ",DIC("S")="I $P($$ICDDX^ICDCODE(Y),U,10)=1"
- .;
- .I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="VST" S DIC="^IBE(357.69,",IBDFCODE="Type of Visit ",DIC("S")="I $P($$CPT^ICPTCOD(Y),U,7)=1"
- .;
+ .I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="CPT" S DIC="^ICPT(",IBDFCODE="CPT "
+ .I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="ICD" S DIC="^ICD9(",IBDFCODE="ICD-9 "
+ .I $E($G(^IBE(357.6,IBDFINT,11)),7,9)="VST" S DIC="^IBE(357.69,",IBDFCODE="Type of Visit "
  .I $G(DIC)]"" S VAUTVB="VAUTJ",VAUTNI=2,VAUTSTR=IBDFCODE_"code" S VAUTNALL=1 D FIRST^VAUTOMA
  ;
  I (Y<0)&$D(IBDF1) D  K VAUTP G QUIT

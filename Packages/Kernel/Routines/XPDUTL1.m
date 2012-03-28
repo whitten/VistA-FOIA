@@ -1,5 +1,5 @@
-XPDUTL1 ;SFISC/RWF - KIDS utilities (Delete pointers) ;10/28/2002  09:33
- ;;8.0;KERNEL;**229**;Jul 10,1995
+XPDUTL1 ;SFISC/RWF - KIDS utilities (Delete pointers) ;10/28/2002  09:33 [ 03/19/2004  12:04 PM ]
+ ;;8.0;KERNEL;**229,1009**;Jul 10,1995
  Q
  ;New with patch 229
  ;DELPTR will go thru all the files that point to a given file and

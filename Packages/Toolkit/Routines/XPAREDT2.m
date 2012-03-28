@@ -1,5 +1,5 @@
-XPAREDT2 ; SLC/KCM - Supporting Calls - Instances, Values ;04/08/2003  11:22
- ;;7.3;TOOLKIT;**26,35,52,74**;Apr 25, 1995
+XPAREDT2 ; SLC/KCM - Supporting Calls - Instances, Values ;04/08/2003  11:22 [ 12/18/2003  5:02 PM ]
+ ;;7.3;TOOLKIT;**26,35,52,74,1002**;Apr 25, 1995
  ;
 EDIT1 ; called only from EDIT, expects ENT,PAR,INST to be defined
  N VALTYPE,X S VALTYPE=$E($G(^XTV(8989.51,+PAR,1)))

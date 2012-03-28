@@ -1,5 +1,5 @@
 SDCO4 ;ALB/RMO - Diagnosis - Check Out;08 DEC 1992 4:05 pm
- ;;5.3;Scheduling;**32,27,44,67,77,85,132,466**;08/13/93;Build 2
+ ;;5.3;Scheduling;**32,27,44,67,77,85,132**;08/13/93
  ;
 EN ;Entry point for SDCO DIAGNOSIS protocol
  ; Input  -- SDOE
@@ -24,7 +24,7 @@ DXASK(SDOE) ;Ask Diagnosis on Check Out
  I $$REQ^SDM1A(+SDOE0)'="CO" G DXASKQ
  I $$OCASN(SDOE) G DXASKQ
  I SDORG=1,'$$CLINIC^SDAMU(SDCL) G DXASKQ
- ;I "^1^2^"[("^"_SDORG_"^"),$$INP^SDAM2(+$P(SDOE0,"^",2),+SDOE0)="I" G DXASKQ  ;SD*5.3*466 allow diagnosis check for inpatients
+ I "^1^2^"[("^"_SDORG_"^"),$$INP^SDAM2(+$P(SDOE0,"^",2),+SDOE0)="I" G DXASKQ
  I +SDOE0<2961001 S Y=2 G DXASKQ
  I SDCL S Y=1 G DXASKQ
  I SDORG=3 S Y=1

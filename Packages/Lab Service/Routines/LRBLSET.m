@@ -1,6 +1,7 @@
-LRBLSET ;AVAMC/REG - SET DD(65.091,.03 ;7/23/92  12:39
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLSET ; IHS/DIR/FJE - SET DD(65.091,.03 12:39 ; [ 7/23/92 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  ; If entries in MODIFIED/TO FROM FIELD then
  ; If disposition not modified or no disposition put a 1 in the
  ; ^DD(65.091,.03 field

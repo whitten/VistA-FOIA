@@ -1,4 +1,5 @@
-XLFMSMT2 ;SLC,SF/MH,RWF - functions for conversion in measurment ;12/12/94  12:18
+XLFMSMT2 ;SLC,SF/MH,RWF - functions for conversion in measurment ;12/12/94  12:18 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 WT I FROM=TO Q VAL_" "_TO
  ; common metric unit is kilograms KG

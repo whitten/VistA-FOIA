@@ -1,128 +1,74 @@
-KMPSLK ;OAK/KAK - Thru The Looking Glass ;5/1/07  10:29
- ;;2.0;SAGG;;Jul 02, 2007
+KMPSLK ;SF/KAK - Thru The Looking Glass ;27 AUG 97 2:07 pm
+ ;;1.8;SAGG PROJECT;**1**;May 14, 1999
  ;
-EN(SESSNUM,SITENUM) ;
- ;---------------------------------------------------------------------
- ; SESSNUM..  +$Horolog number of session
- ; SITENUM..  site number
- ;---------------------------------------------------------------------
+ZER ;  Collect zeroth node information
  ;
-ZER ;-- collect zeroth node information
+ S U="^",^XTMP("KMPS",KMPSSITE,NUM,"@ZER",0)=$P(^DIC(0),U)_U_$P(^DIC(0),U,4)_"^DIC(^",^XTMP("KMPS",KMPSSITE,NUM,"@ZER","TM")=$S($D(^%ZTSK(-1)):^(-1),1:^%ZTSK(0))
+ S KMPSN=0 F  S KMPSN=$O(^DIC(KMPSN)) Q:'+KMPSN  D
+ .Q:$G(^DIC(KMPSN,0))=""
+ .Q:'$D(^DIC(KMPSN,0,"GL"))  S KMPSNM=$G(^DIC(KMPSN,0,"GL")) Q:KMPSNM=""
+ .S ^XTMP("KMPS",KMPSSITE,NUM,"@ZER",KMPSN)=$P(^DIC(KMPSN,0),U)_U_$P($G(@(KMPSNM_"0)")),U,4)_KMPSNM_U_$G(^DD(+$P(^DIC(KMPSN,0),U,2),0,"VR"))_U_$P($G(@(KMPSNM_"0)")),U,3)
+ ; file# = file_name^# of entries^global_name^file_version^last id number
  ;
- N FNUM,GNAM
+PKG ;  Collect package file information
  ;
- S ^XTMP("KMPS",SITENUM,SESSNUM,"@ZER",0)=$P(^DIC(0),U)_U_$P(^DIC(0),U,4)_"^DIC(^"
- S ^XTMP("KMPS",SITENUM,SESSNUM,"@ZER","TM")=$S($D(^%ZTSK(-1)):^(-1),1:^%ZTSK(0))
- S FNUM=0 F  S FNUM=$O(^DIC(FNUM)) Q:'+FNUM  D
- .Q:$G(^DIC(FNUM,0))=""
- .Q:'$D(^DIC(FNUM,0,"GL"))
- .S GNAM=$G(^DIC(FNUM,0,"GL")) Q:GNAM=""
- .;
- .; file# = ^ piece 1: file_name
- .;                 2: # of entries
- .;                 3: global_name
- .;                 4: file_version
- .;                 5: last id number
- .;                 6: global_name (GNAM) has embedded '^' - no extra 'U' needed
- .S ^XTMP("KMPS",SITENUM,SESSNUM,"@ZER",FNUM)=$P(^DIC(FNUM,0),U)_U_$P($G(@(GNAM_"0)")),U,4)_GNAM_U_$G(^DD(+$P(^DIC(FNUM,0),U,2),0,"VR"))_U_$P($G(@(GNAM_"0)")),U,3)
- ;
-PKG ;-- collect package file information
- ;
- N PKNUM
- ;
- S PKNUM=0
- F  S PKNUM=$O(^DIC(9.4,PKNUM)) Q:'+PKNUM  I $D(^DIC(9.4,PKNUM,0)) S KMPSD=$P($G(^DIC(9.4,PKNUM,0)),U,2) D
+ S KMPSN=0 F  S KMPSN=$O(^DIC(9.4,KMPSN)) Q:'+KMPSN  I $D(^DIC(9.4,KMPSN,0)) S KMPSD=$P($G(^DIC(9.4,KMPSN,0)),U,2) D
  .I $E(KMPSD)="A" I ($A($E(KMPSD,2))>64)&($A($E(KMPSD,2))<88) I (($A($E(KMPSD,3))>64)&($A($E(KMPSD,3))<89)) Q
- .S KMPSV=0,(KMPSVL,KMPSD)=""
- .F  S KMPSV=$O(^DIC(9.4,PKNUM,22,KMPSV)) Q:'+KMPSV  S KMPSVL=KMPSV
- .I +KMPSVL S KMPSV=$G(^DIC(9.4,PKNUM,22,KMPSVL,0)),KMPSD=$P(KMPSV,U,3),KMPSV=$P(KMPSV,U)
- .;
- .; pkg_name = pkg_prefix^current version^last version^install date
- .S ^XTMP("KMPS",SITENUM,SESSNUM,"@PKG",$P(^DIC(9.4,PKNUM,0),U))=$P($G(^DIC(9.4,PKNUM,0)),U,2)_U_$G(^("VERSION"))_U_KMPSV_U_KMPSD
+ .S KMPSV=0,(KMPSVL,KMPSD)="" F  S KMPSV=$O(^DIC(9.4,KMPSN,22,KMPSV)) Q:'+KMPSV  S KMPSVL=KMPSV
+ .I +KMPSVL S KMPSV=$G(^DIC(9.4,KMPSN,22,KMPSVL,0)),KMPSD=$P(KMPSV,U,3),KMPSV=$P(KMPSV,U)
+ .S ^XTMP("KMPS",KMPSSITE,NUM,"@PKG",$P(^DIC(9.4,KMPSN,0),U))=$P($G(^DIC(9.4,KMPSN,0)),U,2)_U_$G(^("VERSION"))_U_KMPSV_U_KMPSD
+ ;  pkg_name = pkg_prefix^current version_last version_install date
  ;
 SYS ;  Collect volume set (@VOL) and system (@SYS) information
  ;
- D EN^%ZOSVKSD(SITENUM,SESSNUM,.KMPSVOLS,OS),@OS
+ D EN^%ZOSVKSD(KMPSSITE,NUM,.KMPSVOLS),@KMPSX1 G END
  ;
- K KMPSD,KMPSNM,KMPSV,KMPSVL
+VAX ; DSM
+ S ^XTMP("KMPS",KMPSSITE,NUM,"@SYS")=$&ZLIB.%VERSION("NAME")_U_$ZC(%GETSYI,"VERSION") Q:$ZV'[6.
+ S KMPSD=$ZC(%GETSYI,"CLUSTER_MEMBER")
+ I 'KMPSD S KMPSD=$ZC(%GETSYI,"NODENAME"),^XTMP("KMPS",KMPSSITE,NUM,"@SYS",KMPSD)=$ZC(%GETSYI,"HW_NAME") Q
+ D CLSTR D  S X="ERR1^KMPSGE",@^%ZOSF("TRAP") Q
+ .S KMPSD="" F  S KMPSD=$O(KMPSNM(KMPSD)) Q:KMPSD=""  S ^XTMP("KMPS",KMPSSITE,NUM,"@SYS",KMPSD)=$ZC(%GETSYI,"HW_NAME",KMPSNM(KMPSD))
+CLSTR ;  Call $GETSYI using wild card to get CSID and NODENAME for all nodes
+ S X="ERRCLU^KMPSLK",@^%ZOSF("TRAP"),$ZE="" K KMPSN,KMPSNM
+ S KMPSN($ZC(%GETSYI,"NODE_CSID",-1))=""
+ F  S KMPSN($ZC(%GETSYI,"NODE_CSID",""))=""
+ERRCLU I $ZE'["NOMORENODE" ZQ
+ S KMPSD="" F  S KMPSD=$O(KMPSN(KMPSD)) Q:KMPSD=""  S KMPSNM($ZC(%GETSYI,"NODENAME",KMPSD))=KMPSD
  Q
  ;
-CVMS ;-- for Cache for VMS platform
- S ^XTMP("KMPS",SITENUM,SESSNUM,"@SYS")=$ZV_U
+MSM ;
+MSMV4 ;
+ S ^XTMP("KMPS",KMPSSITE,NUM,"@SYS")=$ZV_U_$ZOS(4)
  Q
  ;
-CWINNT ;-- for Cache for NT platform
- S ^XTMP("KMPS",SITENUM,SESSNUM,"@SYS")=$ZV_U_$S($ZU(100)=0:"Windows NT",$ZU(100)=1:"Windows 95",1:$ZU(100))
+OMNT ; OpenM-NT
+ S ^XTMP("KMPS",KMPSSITE,NUM,"@SYS")=$ZV_U_$S($ZU(100)=0:"Windows NT",$ZU(100)=1:"Windows 95",1:$ZU(100))
  Q
  ;        
-OUT(NOWDT,OS,SESSNUM,SITENUM,XMZSENT,TEXT)     ;
- ;---------------------------------------------------------------------
- ;   Create 'successful' end-game message text
- ; NOWDT....   FM date and time that SAGG started
- ; OS.......   type of operating system
- ; SESSNUM..   +$Horolog number of session
- ; SITENUM..   site number
- ; XMZSENT..   mailman message number created by SAGG
- ;---------------------------------------------------------------------
- ;
- N DOW,GBL,I,J,JEND,UCIVOL,VOLS,X
- ;
- ; check to see if SAGG not started over weekend (Fri - Sun)
- S DOW=$$DOW^XLFDT(NOWDT,1)
- I (DOW>0)&(DOW<5) D
- .S TEXT(1)=" *** It is STRONGLY recommended that the 'SAGG Master Background Task' ***"
- .S TEXT(2)=" *** [KMPS SAGG REPORT] be rescheduled to run over the weekend hours.  ***"
- .S TEXT(3)=""
- ;
- S TEXT(4)=" The SAGG Project collection routines monitored the following:"
- S TEXT(5)=""
- K VOLS
- S GBL=""
- F  S GBL=$O(^XTMP("KMPS",SITENUM,SESSNUM,NOWDT,GBL)) Q:GBL=""  D
- .S UCIVOL=""
- .F  S UCIVOL=$O(^XTMP("KMPS",SITENUM,SESSNUM,NOWDT,GBL,UCIVOL)) Q:UCIVOL=""  S VOLS(UCIVOL)=""
- S X=0,UCIVOL="",JEND=$S(OS="CVMS":2,OS="CWINNT":4,1:5)
- F I=6:1 Q:X  D
- .S TEXT(I)="          "
- .F J=1:1:JEND S UCIVOL=$O(VOLS(UCIVOL)) S:UCIVOL="" X=1 Q:UCIVOL=""  S TEXT(I)=TEXT(I)_UCIVOL_"   "
- S TEXT(I)=""
- S TEXT(I+1)=" Please ensure that this list concurs with your present volume set"
- S TEXT(I+2)=" configuration.",TEXT(I+3)=""
- S TEXT(I+4)=" A local e-mail message #"_XMZSENT_" was created by the collection"
- S TEXT(I+5)=" routines.  Check the FO-ALBANY.MED.VA.GOV NetMail Queue to ensure"
- S TEXT(I+6)=" transmission delivery."
- ;
- Q ""
- ;
-MSG(STRTDT,SESSNUM,TEXT,COMPDT)       ;-- send e-mail message to local KMP-CAPMAN mailgroup
- ;---------------------------------------------------------------------
- ; Send e-mail message to local KMP-CAPMAN mailgroup
- ;
- ; STRTDT...  SAGG start date and time
- ; SESSNUM..  +$Horolog number of session
- ; TEXT.....  text of message
- ; COMPDT...  (optional) SAGG completion date and time
- ;---------------------------------------------------------------------
- N XMSUB,XMTEXT,XMY
- ;
- S COMPDT=+$G(COMPDT)
- ;
- S:'$D(XMDUZ) XMDUZ=.5
- S:'$D(DUZ) DUZ=.5 S U="^"
- ;
- S TEXT(.1)=" SAGG Session: "_SESSNUM
- S TEXT(.2)=" Started:      "_$$FMTE^XLFDT(STRTDT,"P")_" ("_$$DOW^XLFDT(STRTDT)_")"
- S:+COMPDT TEXT(.3)=" Completed:    "_$$FMTE^XLFDT(COMPDT,"P")_" ("_$$DOW^XLFDT(COMPDT)_")"
- S TEXT(.4)=""
- S XMSUB="SAGG Project Message (Session #"_SESSNUM_")",XMTEXT="TEXT("
- I $D(^XMB(3.8,"B","KMP-CAPMAN")) S XMY("G.KMP-CAPMAN")=""
- D:$D(XMY) ^XMD
- Q
- ;
 END ;
- K ^XTMP("KMPS",SITENUM),^XTMP("KMPS","ERROR")
- K ^XTMP("KMPS","START"),^XTMP("KMPS","STOP"),^XTMP("KMPS",0)
- K X,XMDUZ
- S ZTREQ="@"
- L -^XTMP("KMPS")
+ K KMPSD,KMPSN,KMPSNM,KMPSV,KMPSVL
  Q
+ ;
+OUT ;  Called from routine KMPSGE
+ ;  Create 'successful' end-game message text
+ ;
+ S KMPSTEXT(1)="   The SAGG Project collection routines monitored the following:",KMPSTEXT(2)="" D
+ .K KMPSX S KMPSX1="" F  S KMPSX1=$O(^XTMP("KMPS",KMPSSITE,NUM,KMPSDT,KMPSX1)) Q:KMPSX1=""  S KMPSX2="" F  S KMPSX2=$O(^XTMP("KMPS",KMPSSITE,NUM,KMPSDT,KMPSX1,KMPSX2)) Q:KMPSX2=""  S KMPSX(KMPSX2)=""
+ .S KMPSX=0,KMPSX1="" F KMPSI=3:1 Q:KMPSX  S KMPSTEXT(KMPSI)="          " F KMPSJ=1:1:5 S KMPSX1=$O(KMPSX(KMPSX1)) S:KMPSX1="" KMPSX=1 Q:KMPSX1=""  S KMPSTEXT(KMPSI)=KMPSTEXT(KMPSI)_KMPSX1_"   "
+ S KMPSTEXT(KMPSI)="",KMPSTEXT(KMPSI+1)="   Please ensure that this list concurs with your present volume set",KMPSTEXT(KMPSI+2)="   configuration.",KMPSTEXT(KMPSI+3)=""
+ S KMPSTEXT(KMPSI+4)="   A local e-mail message #"_KMPSXMZ_" was created by the collection",KMPSTEXT(KMPSI+5)="   routines.  Check the ISC-ALBANY.VA.GOV NetMail Queue to ensure",KMPSTEXT(KMPSI+6)="   transmission delivery."
+ ;
+MSG ;  Send e-mail message to local KMPS-SAGG mailgroup
+ ;
+ K XMY S:'$D(XMDUZ) XMDUZ=.5 S:'$D(DUZ) DUZ=.5 S U="^"
+ S XMSUB="SAGG Project Message (Session #"_NUM_")",XMTEXT="KMPSTEXT("
+ I $D(^XMB(3.8,"B","KMPS-SAGG")) S KMPSXM=$O(^XMB(3.8,"B","KMPS-SAGG",0)) S KMPSXMN=0 F  S KMPSXMN=$O(^XMB(3.8,KMPSXM,1,"B",KMPSXMN)) Q:KMPSXMN=""  S XMY(KMPSXMN)=""
+ D:$D(XMY) ^XMD
+END1 ;
+ K ^XTMP("KMPS",KMPSSITE),^XTMP("KMPS","ERROR"),^XTMP("KMPS","START"),^XTMP("KMPS","STOP"),^XTMP("KMPS",0)
+ K %,KMPSCUR,KMPSDT,KMPSFS,KMPSLOC,KMPSI,KMPSJ,KMPSJOB,KMPSMGR,KMPSPROD,KMPSRUN,KMPSSITE,KMPSSTRT
+ K KMPSTEMP,KMPSTEXT,KMPSUCI,KMPSUCIN,KMPSUTL,KMPSVA,KMPSVOL,KMPSX,KMPSX1,KMPSX2,KMPSXM,KMPSXMB,KMPSXMN,KMPSXMZ
+ K N,NM,X,XMDUZ,XMN,XMSUB,XMTEXT,XMY,XMZ
+ S ZTREQ="@"
+ L -^XTMP("KMPS") Q

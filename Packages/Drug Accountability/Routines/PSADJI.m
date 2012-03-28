@@ -1,5 +1,5 @@
 PSADJI ;BIR/LTL-Balance Initialization ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  ;This routine allows the user to enter a beginning balance on hand for
  ;a drug in a pharmacy location.
  ;
@@ -16,7 +16,7 @@ CHKD I '$O(^PSD(58.8,PSALOC,1,0)) W !!,"There are no drugs in ",$G(PSALOCN) G QU
  ..S DIR(0)="E" D ^DIR K DIR K:Y Y W @IOF
  .W !!,PSADRUGN,!!,"Dispensing Unit: "
  .W $P($G(^PSDRUG(+PSADRUG,660)),U,8),!
- .F  L +^PSD(58.8,+PSALOC,1,+PSADRUG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ .F  L +^PSD(58.8,+PSALOC,1,+PSADRUG,0):0 I  Q
  .S DIR(0)="N^0:999999:2",DIR("A")="Initial Balance" D ^DIR K DIR
  .I $D(DIRUT) L -^PSD(58.8,+PSALOC,1,+PSADRUG,0) S Y=1 Q
  .S PSAREC=Y D NOW^%DTC S PSADT=+$E(%,1,12),DIE="^PSD(58.8,+PSALOC,1,"
@@ -27,7 +27,7 @@ MON .S:'$D(^PSD(58.8,+PSALOC,1,+PSADRUG,5,0)) ^(0)="^58.801A^^"
  .I '$D(^PSD(58.8,+PSALOC,1,+PSADRUG,5,$E(DT,1,5)*100,0)) S DIC="^PSD(58.8,+PSALOC,1,+PSADRUG,5,",DIC(0)="L",(X,DINUM)=$E(DT,1,5)*100,DA(2)=PSALOC,DA(1)=PSADRUG,DLAYGO=58.8 D ^DIC K DIC,DLAYGO
  .S DIE="^PSD(58.8,+PSALOC,1,+PSADRUG,5,",DA(2)=PSALOC,DA(1)=PSADRUG,DA=$E(DT,1,5)*100,DR="1////0;7////^S X=PSAREC" D ^DIE
  .W !!,"Updating beginning balance and transaction history.",!
-TR .F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+TR .F  L +^PSD(58.81,0):0 I  Q
 FIND .S PSAT=$P(^PSD(58.81,0),U,3)+1 I $D(^PSD(58.81,PSAT)) S $P(^PSD(58.81,0),U,3)=$P(^PSD(58.81,0),U,3)+1 G FIND
  .S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSAT D ^DIC K DIC,DLAYGO L -^PSD(58.81,0)
  .S DIE="^PSD(58.81,",DA=PSAT,DR="1////11;2////^S X=PSALOC;3////^S X=PSADT;4////^S X=PSADRUG;5////^S X=PSAREC;6////^S X=DUZ;9////0" D ^DIE K DIE

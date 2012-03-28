@@ -1,5 +1,5 @@
 IBDFDE2 ;ALB/AAS - AICS Data Entry, process selection lists ; 24-FEB-96
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**4**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 % G ^IBDFDE
  ;
@@ -63,10 +63,10 @@ OVER ; -- ask or re-ask for selection(s) from list
  S DIR("??")="^D LST^IBDFDE21"
  ;
  ; -- default provider is 1st provider
- I +$G(IBDF("PROVIDER PI"))=IBDF("PI") D  I $G(SELECT) D SEL^IBDFDE21(SELECT),CHK^IBDFDE22 K IBNAQLFR G VSTOVER
+ I +$G(IBDF("PROVIDER PI"))=IBDF("PI") D  I $G(SELECT) D SEL^IBDFDE21(SELECT),CHK^IBDFDE22 G VSTOVER
  .S SELECT=0
  .I $G(IBDF("PROVIDER")) Q
- .I '$G(IBDREDIT),'$D(IBDPI(IBDF("PI"))),+$$CHOICE(0)=1,+$$PRDEF^IBDFRPC3(IBDF("CLINIC")) S ANS=" ",SELECT=1 W !!,IOINHI,"Using Default Provider : "_IBDPTPRI,IOINORM S IBNAQLFR=1 Q
+ .I '$G(IBDREDIT),'$D(IBDPI(IBDF("PI"))),+$$CHOICE(0)=1,+$$PRDEF^IBDFRPC3(IBDF("CLINIC")) S ANS=" ",SELECT=1 W !!,IOINHI,"Using Default Provider: ",IOINORM Q
  .Q:$P(IBDF("PROVIDER PI"),"^",2)  ;not on form don't ask if not default
  .Q:$D(IBDPI(IBDF("PI")))  ;one already select
  .I $$PRDEF^IBDFRPC3(IBDF("CLINIC")) S DIR("B")=$P($$CHOICE(1),"^")

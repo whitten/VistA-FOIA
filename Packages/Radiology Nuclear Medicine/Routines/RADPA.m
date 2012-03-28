@@ -1,11 +1,18 @@
 RADPA ;HISC/GJC AISC/MJK,RMO-Look-up Rad/Nuc Med Patients ;4/17/96  11:41
  ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
+ ;IHS/ANMC/LJF 12/11/98 - removed call where user cannot use chart #
+ ;         call used last patient user looked up via FM as reason
+ ;         to force entering name instead of chart # - poor logic
+ ;IHS/ANMC/LJF  3/29/2002 - added kill of DIERR to prevent HRCN from
+ ;               being processed as a DFN
+ ;
 PAT S Y=-1 Q:'$D(DIC(0))
  N RAFLG,RAY S RAFLG=+$G(^DISV(DUZ,"^DPT(")),RAY=0
  S:RAFLG>0 ^DISV(DUZ,"^RADPT(")=RAFLG
  ; If RAOPT("REG") exists, allow addition of new patient to file 70.
  ; RAOPT("REG") set in entry action of RA REG
- I RAFLG,($D(RAOPT("REG"))),('$D(^RADPT("B",RAFLG))) D  Q:RAY=-1
+ ;I RAFLG,($D(RAOPT("REG"))),('$D(^RADPT("B",RAFLG))) D  Q:RAY=-1
+ I 0,RAFLG,($D(RA("RA REG"))),('$D(^RADPT("B",RAFLG))) D  Q:RAY=-1  ;IHS/ANMC/LJF 12/11/98
  . F  D  Q:RAY=-1!($D(X))
  .. R !,"Select Patient: ",X:DTIME
  .. S:'$T!(X["^")!(X']"") RAY=-1 Q:RAY=-1
@@ -24,6 +31,7 @@ PAT S Y=-1 Q:'$D(DIC(0))
  . Q
  S RAIC(0)=DIC(0),DLAYGO=70,DIC="^RADPT(",DIC("DR")=".06////"_DUZ
  S:'$D(DIC("A"))&(DIC(0)["A") DIC("A")="Select Patient: "
+ K DIERR    ;IHS/ANMC/LJF 3/29/2002
  W ! D ^DIC K DLAYGO I Y>0 S:RAIC(0)["L" RAPTFL=""
  I Y=-1,(X["?"),('$D(^RADPT("B",RAFLG))),($D(RAOPT("REG"))) G PAT
  ;

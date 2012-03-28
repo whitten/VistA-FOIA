@@ -1,4 +1,4 @@
-APSPT16 ; GENERATED FROM 'PSO INTERVENTIONS' PRINT TEMPLATE (#468) ; 04/16/99 ; (FILE 9009032.4, MARGIN=80)
+APSPT16 ; GENERATED FROM 'PSO INTERVENTIONS' PRINT TEMPLATE (#1645) ; 11/29/04 ; (FILE 9009032.4, MARGIN=80)
  G BEGIN
 CP G CP^DIO2
 C S DQ(C)=Y
@@ -20,17 +20,18 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(468,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(1645,"DXS")
+ S I(0)="^APSPQA(32.4,",J(0)=9009032.4
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 W "INTERVENTION DATE: "
  S X=$G(^APSPQA(32.4,D0,0)) D N:$X>19 Q:'DN  W ?19 S Y=$P(X,U,1) D DT
  D N:$X>39 Q:'DN  W ?39 W "PATIENT: "
- D N:$X>49 Q:'DN  W ?49 S Y=$P(X,U,2) S:Y]"" N(1)=N(1)+1 S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,25)
+ D N:$X>49 Q:'DN  W ?49 S Y=$P(X,U,2) S:Y]"" N(1)=N(1)+1 S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,25)
  D N:$X>0 Q:'DN  W ?0 W "PROVIDER: "
- D N:$X>10 Q:'DN  W ?10 S Y=$P(X,U,3) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,28)
+ D N:$X>10 Q:'DN  W ?10 S Y=$P(X,U,3) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,28)
  D N:$X>39 Q:'DN  W ?39 W "PHARMACIST: "
- D N:$X>52 Q:'DN  W ?52 S Y=$P(X,U,4) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,20)
+ D N:$X>52 Q:'DN  W ?52 S Y=$P(X,U,4) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,20)
  D N:$X>0 Q:'DN  W ?0 W "DRUG: "
- D N:$X>6 Q:'DN  W ?6 S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ D N:$X>6 Q:'DN  W ?6 S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  D N:$X>39 Q:'DN  W ?39 W "INSTITUTED BY: "
  D N:$X>55 Q:'DN  W ?55 S Y=$P(X,U,6) W:Y]"" $S($D(DXS(1,Y)):DXS(1,Y),1:Y)
  S:'$D(DIWF) DIWF="" S:DIWF'["N" DIWF=DIWF_"N" S X="" S I(1)=11,J(1)=9009032.411 F D1=0:0 Q:$O(^APSPQA(32.4,D0,11,D1))'>0  S D1=$O(^(D1)) D:$X>74 T Q:'DN  D A1
@@ -39,22 +40,24 @@ A1 ;
  S X=$G(^APSPQA(32.4,D0,11,D1,0)) S DIWL=1,DIWR=78 D ^DIWP
  Q
 A1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D N:$X>0 Q:'DN  W ?0 W "RECOMMENDATION: "
- S X=$G(^APSPQA(32.4,D0,0)) D N:$X>16 Q:'DN  W ?16 S Y=$P(X,U,8) S Y=$S(Y="":Y,$D(^APSPQA(32.5,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,50)
+ S X=$G(^APSPQA(32.4,D0,0)) D N:$X>16 Q:'DN  W ?16 S Y=$P(X,U,8) S Y=$S(Y="":Y,$D(^APSPQA(32.5,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,50)
  S:'$D(DIWF) DIWF="" S:DIWF'["N" DIWF=DIWF_"N" S X="" S I(1)=12,J(1)=9009032.412 F D1=0:0 Q:$O(^APSPQA(32.4,D0,12,D1))'>0  S D1=$O(^(D1)) D:$X>68 T Q:'DN  D B1
  G B1R
 B1 ;
  S X=$G(^APSPQA(32.4,D0,12,D1,0)) S DIWL=1,DIWR=78 D ^DIWP
  Q
 B1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D N:$X>0 Q:'DN  W ?0 W "WAS PROVIDER CONTACTED: "
  S X=$G(^APSPQA(32.4,D0,0)) D N:$X>24 Q:'DN  W ?24 S Y=$P(X,U,9) W:Y]"" $S($D(DXS(2,Y)):DXS(2,Y),1:Y)
  D N:$X>39 Q:'DN  W ?39 W "RECOMMENDATION ACCEPTED: "
  D N:$X>66 Q:'DN  W ?66 S Y=$P(X,U,12),C=2 D A:Y]"" W:Y]"" $S($D(DXS(3,Y)):DXS(3,Y),1:Y)
  D N:$X>0 Q:'DN  W ?0 W "PROVIDER CONTACTED: "
- D N:$X>20 Q:'DN  W ?20 S Y=$P(X,U,11) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ D N:$X>20 Q:'DN  W ?20 S Y=$P(X,U,11) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>0 Q:'DN  W ?0 W:$D(^APSPQA(32.4,D0,13)) "REASON FOR" K DIP K:DN Y
  S:'$D(DIWF) DIWF="" S:DIWF'["N" DIWF=DIWF_"N" S X="" S I(1)=13,J(1)=9009032.413 F D1=0:0 Q:$O(^APSPQA(32.4,D0,13,D1))'>0  S D1=$O(^(D1)) D:$X>11 T Q:'DN  D C1
  G C1R
@@ -62,7 +65,8 @@ C1 ;
  S X=$G(^APSPQA(32.4,D0,13,D1,0)) S DIWL=1,DIWR=78 D ^DIWP
  Q
 C1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D N:$X>0 Q:'DN  W ?0 W:$D(^APSPQA(32.4,D0,14)) "ACTION TAKEN: " K DIP K:DN Y
  S:'$D(DIWF) DIWF="" S:DIWF'["N" DIWF=DIWF_"N" S X="" S I(1)=14,J(1)=9009032.414 F D1=0:0 Q:$O(^APSPQA(32.4,D0,14,D1))'>0  S D1=$O(^(D1)) D:$X>11 T Q:'DN  D D1
  G D1R
@@ -70,7 +74,8 @@ D1 ;
  S X=$G(^APSPQA(32.4,D0,14,D1,0)) S DIWL=1,DIWR=78 D ^DIWP
  Q
 D1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D N:$X>0 Q:'DN  W ?0 W:$D(^APSPQA(32.4,D0,15)) "CLINICAL IMPACT:" K DIP K:DN Y
  S:'$D(DIWF) DIWF="" S:DIWF'["N" DIWF=DIWF_"N" S X="" S I(1)=15,J(1)=9009032.415 F D1=0:0 Q:$O(^APSPQA(32.4,D0,15,D1))'>0  S D1=$O(^(D1)) D:$X>11 T Q:'DN  D E1
  G E1R
@@ -78,7 +83,8 @@ E1 ;
  S X=$G(^APSPQA(32.4,D0,15,D1,0)) S DIWL=1,DIWR=78 D ^DIWP
  Q
 E1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D N:$X>0 Q:'DN  W ?0 W:$D(^APSPQA(32.4,D0,16)) "FINANCIAL IMPACT:" K DIP K:DN Y
  S:'$D(DIWF) DIWF="" S:DIWF'["N" DIWF=DIWF_"N" S X="" S I(1)=16,J(1)=9009032.416 F D1=0:0 Q:$O(^APSPQA(32.4,D0,16,D1))'>0  S D1=$O(^(D1)) D:$X>11 T Q:'DN  D F1
  G F1R
@@ -86,7 +92,7 @@ F1 ;
  S X=$G(^APSPQA(32.4,D0,16,D1,0)) S DIWL=1,DIWR=78 D ^DIWP
  Q
 F1R ;
- D 0^DIWW K DIP K:DN Y
+ D 0^DIWW
  D ^DIWW K Y K DIWF
  Q
 HEAD ;

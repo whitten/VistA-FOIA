@@ -1,11 +1,5 @@
 RAO7RON ;HISC/GJC- Request message from OE/RR. (frontdoor) ;2/2/98  12:34
- ;;5.0;Radiology/Nuclear Medicine;**41,75,86**;Mar 16, 1998;Build 7
- ;
- ;Supported IA #10040 reference to ^SC
- ;Supported IA #2187 reference to EN^ORERR
- ;Supported IA #10103 reference to ^XLFDT
- ;Supported IA #10141 reference to ^XPDUTL
- ;Supported IA #10106 reference to $$FMDATE^HLFNC
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
  ;------------------------- Variable List -------------------------------
  ; RADATA=HL7 data minus seg. hdr    RAHDR=Segment header
@@ -26,12 +20,13 @@ RAO7RON ;HISC/GJC- Request message from OE/RR. (frontdoor) ;2/2/98  12:34
 EN1(RAMSG) ; Pass in the message from RAO7RO.  Decipher information.
  D BRKOUT^RAO7UTL1
  ; defines RAORC2, RAORC3, RAPID3, RAPID5, RAMSH3 & RADIV(.119)
- S (RAERR,RAWP,RALINEX)=0,RACLIN="^" K ^TMP("RAWP",$J)
+ S (RAERR,RAWP,RALINEX)=0,RACLIN=1 K ^TMP("RAWP",$J)
  F  S RALINEX=$O(RAMSG(RALINEX)) Q:RALINEX'>0  D  Q:RAERR
  . S RASEG=$G(RAMSG(RALINEX)) Q:$P(RASEG,RAHLFS)="MSH"  ; quit if MSH segment
  . S RAHDR=$P(RASEG,RAHLFS),RADATA=$P(RASEG,RAHLFS,2,999)
- . D @$S(RAHDR="PID":"PID",RAHDR="PV1":"PV1",RAHDR="ORC":"ORC",RAHDR="OBR":"OBR^RAO7RON1",RAHDR="OBX":"OBX^RAO7RON1",RAHDR="DG1":"GETCPRS^RABWORD1",RAHDR="ZCL":"GETCPRS^RABWORD1",1:"ERR")
+ . D @$S(RAHDR="PID":"PID",RAHDR="PV1":"PV1",RAHDR="ORC":"ORC",RAHDR="OBR":"OBR^RAO7RON1",RAHDR="OBX":"OBX^RAO7RON1",1:"ERR")
  . Q
+ ; if RACLIN=1 clin hist. text did not pass send REJECT mssg in RAO7RO!
  S RANEW(75.1,"+1,",18)=RALDT
  Q
 PID ; breakdown the 'PID' segment
@@ -45,12 +40,8 @@ PV1 ; breakdown the 'PV1' segment
  S RAPV13=$P(RADATA,RAHLFS,3)
  S RAERR=$$EN3^RAO7VLD(44,+RAPV13) S:RAERR RAERR=3 Q:RAERR
  S RANEW(75.1,"+1,",22)=+RAPV13
- ;check the GUI version of CPRS at this facility:
- ;$$PATCH^XPDUTL("OR*3.0*243")=1 CPRS V27, else CPRS V26.
- I '$$PATCH^XPDUTL("OR*3.0*243") D  Q:RAERR  ;P86
- .I RAPV12="I",$P(^SC($P(RAPV13,U,1),0),U,3)'="W" S RAERR=9 Q
- .I RAPV12="O",$P(^SC($P(RAPV13,U,1),0),U,3)="W" S RAERR=9
- .Q
+ I RAPV12="I",$P(^SC($P(RAPV13,U,1),0),U,3)'="W" S RAERR=9 Q:RAERR
+ I RAPV12="O",$P(^SC($P(RAPV13,U,1),0),U,3)="W" S RAERR=9 Q:RAERR
  S RAPV119=$P(RADATA,RAHLFS,19)
  Q
 ORC ; breakdown the 'ORC' segment

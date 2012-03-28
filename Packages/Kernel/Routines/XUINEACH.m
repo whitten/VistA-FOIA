@@ -1,4 +1,5 @@
-XUINEACH ;SF/RWF - Code that needs to be run on each cpu. ;8/1/94  14:01 ;
+XUINEACH ;SF/RWF - Code that needs to be run on each cpu. ;8/1/94  14:01 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  I $D(DUZ)_$D(DUZ(0))_$D(U)[0 D DT^DICRW
 A2 W !!,"Recompile Template routines."

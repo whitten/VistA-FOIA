@@ -1,4 +1,5 @@
-XQSRV4 ;SEA/MJM - Server utilities;;2/6/92  2:13 PM ;3/10/92  07:55;11/9/93  2:58 PM
+XQSRV4 ;SEA/MJM - Server utilities;;2/6/92  2:13 PM ;3/10/92  07:55;11/9/93  2:58 PM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
  ;This routine takes a pointer to a bulletin in X and looks to

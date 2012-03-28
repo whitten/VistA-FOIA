@@ -1,5 +1,5 @@
 DGMTDD2 ;ALB/RMO,LBD - Income Relation file (#408.22) Data Dictionary Calls ;13 MAR 1992 3:00 pm
- ;;5.3;Registration;**33,45,518,688**;Aug 13, 1993;Build 29
+ ;;5.3;Registration;**33,45,518**;Aug 13, 1993
  ;
 ID ;Identifier for Income Relation file
  N DGIN0,DGPRI,Y
@@ -13,13 +13,10 @@ FUN ;"Trigger" Cross-reference on the Married field (#.05) and
  ;expenses
  ;  If the test is a LTC Copay test do not delete the funeral and
  ;  burial expenses.  Added for LTC Phase III (DG*5.3*518)
- N DGFLD,DGIN0,DGINI,DGVAL,DGMT,DGMTIR ;DG5.3*688 added DGMTIR
+ N DGFLD,DGIN0,DGINI,DGVAL,DGMT
  S DGINI=+$P($G(^DGMT(408.22,DA,0)),U,2),DGIN1=$G(^DGMT(408.21,DGINI,1))
- S DGMTIR=$P($G(^DGMT(408.22,DA,"MT")),U) ;DG5.3*688 defines DGMTIR
  S DGMT=+$G(^DGMT(408.21,DGINI,"MT"))
  I DGMT,$P($G(^DGMT(408.31,DGMT,0)),U,19)=3 Q
- I DGMT,$P($G(^DGMT(408.31,DGMT,2)),U,11)=1 Q  ;* GTS DG*688 - MT V1 does not require Spouse or Children for F&B
- I DGMTIR,$P($G(^DGMT(408.31,DGMTIR,2)),U,11)=1 Q  ;* DG*688 - Check for Version 1 using 408.22 MT Ptr
  S DGFLD=1.02,DGVAL=$P(DGIN1,U,2)
  I DGVAL]"" D KILL S $P(^DGMT(408.21,DGINI,1),U,2)=""
  Q

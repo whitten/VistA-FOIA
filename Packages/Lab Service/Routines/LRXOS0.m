@@ -1,4 +1,6 @@
-LRXOS0 ;SLC/DCM - Order timing utility ;1/29/91  14:44
+LRXOS0 ; IHS/DIR/FJE - Order timing utility 14:44 ; [ 1/29/91 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  ;;V~5.02~;LAB;;04/11/91 11:06
 CHK I $S($D(^PS(59.7,1,20)):$S(+^(20)<2.8:1,1:0),1:1) W !,"Unable to continue.",!,"This option requires version 2.8 or greater of Inpatient Medications package." S LREND=1

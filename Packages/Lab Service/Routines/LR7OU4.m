@@ -1,4 +1,5 @@
 LR7OU4 ;DALOI/DCM/FHS/RLM-NLT LINKING UTILITY AUTO ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**127,163,272**;Sep 27, 1994
  ; Reference to ^DIC supported by IA #10007
  ; Reference to YN^DICN supported by IA #10009

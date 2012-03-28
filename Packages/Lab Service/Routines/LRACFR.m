@@ -1,4 +1,6 @@
-LRACFR ;MILW/JMC- Lab cumulative print fileroom patients ;2/20/91  08:33 ;
+LRACFR ; IHS/DIR/FJE - Lab cumulative print fileroom patients 2/20/91 08:33 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 EN ; Entry point from menu option to manually task file room cumulative.
  W @IOF,"Checking File #64.5, LAB REPORTS FILE"

@@ -1,4 +1,6 @@
-LA7UTIL ;DALISC/JRR - Utilities for Messenger
+LA7UTIL ; IHS/DIR/AAB - Utilities for Messenger ;
+ ;;5.2;LA;**1003**;SEP 01, 1998
+ ;
  ;;5.2;AUTOMATED LAB INSTRUMENTS;**17,42**;Sep 27, 1994
 CPT(X) N LA7,LA7CNT,Y
  K ^TMP("LA",$J) S LA7CNT=0

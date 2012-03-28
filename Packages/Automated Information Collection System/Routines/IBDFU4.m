@@ -1,5 +1,5 @@
 IBDFU4 ;ALB/CJM - ENCOUNTER FORM - BUILD FORM(write single form block to array for display,position & size copied block) ; 08-JAN-1993
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**10**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 IDXBLOCK ; create list containing block rows for list processor
  ;
@@ -84,11 +84,11 @@ CLINICS(FORM,ARY) ;finds the list of clinics using FORM
  Q
 LIST(ARY,SCRNSIZE) ;
  ;ARY is the same as in CLINICS
- N CLINIC,COUNT,DIR,DTOUT,DUOUT,DIRUT,DIROUT
+ N CLINIC,COUNT,DIR
  S DIR(0)="YO",DIR("B")="Y",DIR("A")="List the clinics using the form"
  D ^DIR K DIR I '$D(DIRUT),Y D
  .S (COUNT,CLINIC)=0
  .S DIR(0)="E"
  .F  S CLINIC=$O(@ARY@(CLINIC)) Q:CLINIC=""  W !,CLINIC S COUNT=COUNT+1 I COUNT=SCRNSIZE D ^DIR Q:'Y  S COUNT=0
- .I '$D(DUOUT) D:COUNT>0 ^DIR
+ .D:COUNT>0 ^DIR
  Q

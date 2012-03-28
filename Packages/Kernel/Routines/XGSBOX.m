@@ -1,4 +1,5 @@
-XGSBOX ;SFISC/VYD - screen rectengular region primitives ;10/31/94  15:38
+XGSBOX ;SFISC/VYD - screen rectengular region primitives ;10/31/94  15:38 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 FRAME(T,L,B,R,A,C) ;draw a border
  ;TOP,LEFT,BOTTOM,RIGHT,ATTRIBUTE,frame character

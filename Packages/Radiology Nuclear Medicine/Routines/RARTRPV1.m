@@ -1,5 +1,5 @@
-RARTRPV1 ;HISC/FPT - Resident Pre-Verify Report ;11/16/98  15:02
- ;;5.0;Radiology/Nuclear Medicine;**5,41**;Mar 16, 1998
+RARTRPV1 ;HISC/FPT-Resident Pre-Verify Report ;11/16/98  15:02
+ ;;5.0;Radiology/Nuclear Medicine;**5**;Mar 16, 1998
 EDTRPT ; edit report text and pre-verify
  S RACT=$S('$D(^RARPT(RARPT,"L",0)):"I",1:"E")
  S:'$D(^RARPT(RARPT,"T")) ^("T")=""
@@ -18,10 +18,9 @@ NOEDIT ; pre-verify a report only, no report text edit
  I RAXIT!($D(DTOUT))!($D(DUOUT)) G NEXT
  D PSTAFF I RAXIT!($D(DTOUT))!($D(DUOUT)) G NEXT
  I ($P(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0),U,15)]"") D SSTAFF
- D ELOC^RABWRTE ; Billing Aware -- ask Inter. Img Loc
 NEXT ; copy dx & phys, then return to RARTRPV and get next report
- ; rpt exists & locked, thus no need to lock at "DT" level because users
- ; can only use 'report entry/edit' option to enter dx's for printsets
+        ; rpt exists & locked, thus no need to lock at "DT" level because users
+        ; can only use 'report entry/edit' option to enter dx's for printsets
  N:'$D(RAPRTSET) RAPRTSET N:'$D(RAMEMARR) RAMEMARR
  D EN2^RAUTL20(.RAMEMARR)
  I RAPRTSET S RAXIT=0 D

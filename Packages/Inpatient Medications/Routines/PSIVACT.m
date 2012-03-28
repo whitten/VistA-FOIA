@@ -1,5 +1,5 @@
 PSIVACT ;BIR/PR,MLM-UPDATE ORDER STATUS AFTER PATIENT SELECTION ;16 Jul 98 / 12:51 PM
- ;;5.0; INPATIENT MEDICATIONS ;**15,38,58,110,181**;16 DEC 97;Build 190
+ ;;5.0; INPATIENT MEDICATIONS ;**15,38,58**;16 DEC 97
  ;
  ; Reference to ^PS(55 is supported by DBIA 2191
  ;
@@ -23,9 +23,7 @@ L ; Long profile
  Q
  ;
 S ; Short profile.
- S PSJDCEXP=$$RECDCEXP^PSJP()
- I '+$P(PSJDCEXP,U,2) S $P(PSJDCEXP,U,2)=PSFDT
- F PSIVDT=$P($G(PSJDCEXP),U,2):0 S PSIVDT=$O(^PS(55,DFN,"IV","AIS",PSIVDT)) Q:'PSIVDT  F ON=0:0 S ON=$O(^PS(55,DFN,"IV","AIS",PSIVDT,+ON)) Q:'ON  S ON=ON_"V",P(17)=$P($G(^PS(55,DFN,"IV",+ON,0)),U,17) D ACTO
+ F PSIVDT=PSFDT:0 S PSIVDT=$O(^PS(55,DFN,"IV","AIS",PSIVDT)) Q:'PSIVDT  F ON=0:0 S ON=$O(^PS(55,DFN,"IV","AIS",PSIVDT,+ON)) Q:'ON  S ON=ON_"V",P(17)=$P($G(^PS(55,DFN,"IV",+ON,0)),U,17) D ACTO
  I +PSJSYSU=3 S PSIVNV="APIV" D NVACT K PSIVNV
  Q
  ;
@@ -36,15 +34,12 @@ NVACT ; Non-verified but have active status
  Q
  ;
 PEND ; Get pending and non-verified orders from 53.1
- N PSJCOM,PSJCOM1 S (PSJCOM,PSJCOM1)=0
- F ON=0:0 S ON=$O(^PS(53.1,"AS","P",DFN,ON)) Q:'ON  D  S PSJCOM1=PSJCOM
+ F ON=0:0 S ON=$O(^PS(53.1,"AS","P",DFN,ON)) Q:'ON  D
  . NEW X S X=$P($G(^PS(53.1,ON,.2)),U,4),X=$S(X="S":1,X="A":2,X="R":3,X="P":4,1:5)
- . S PSJCOM=$P($G(^PS(53.1,ON,.2)),U,8) I PSJCOM Q:'$$COMCHK^PSJO1(PSJCOM,2)  Q:PSJCOM=PSJCOM1
- . I $G(^PS(53.1,ON,0)),$P(^PS(53.1,ON,0),U,4)'="U" S ^TMP("PSIV",$J,$S('PSJCOM:"P",1:"PD"),X_9999999999-ON)=""
- F ON=0:0 S ON=$O(^PS(53.1,"AS","N",DFN,ON)) Q:'ON  D  S PSJCOM1=PSJCOM
+ . I $G(^PS(53.1,ON,0)),$P(^PS(53.1,ON,0),U,4)'="U" S ^TMP("PSIV",$J,"P",X_9999999999-ON)=""
+ F ON=0:0 S ON=$O(^PS(53.1,"AS","N",DFN,ON)) Q:'ON  D
  . NEW X S X=$P($G(^PS(53.1,ON,.2)),U,4),X=$S(X="S":1,X="A":2,X="R":3,X="P":4,1:5)
- . S PSJCOM=$P($G(^PS(53.1,ON,.2)),U,8) I PSJCOM Q:'$$COMCHK^PSJO1(PSJCOM,2)  Q:PSJCOM=PSJCOM1
- . I $G(^PS(53.1,ON,0)),$P(^PS(53.1,ON,0),U,4)'="U" S ^TMP("PSIV",$J,$S('PSJCOM:"N",1:"ND"),X_9999999999-ON)=""
+ . I $G(^PS(53.1,ON,0)),$P(^PS(53.1,ON,0),U,4)'="U" S ^TMP("PSIV",$J,"N",X_9999999999-ON)=""
  .; S:$P(^PS(53.1,ON,0),U,4)'="U" ^TMP("PSIV",$J,"P",X_9999999999-ON)=""
  ;
 QUIT ; Kill and exit.
@@ -65,10 +60,9 @@ CHK ; Check if order is active or expired and save accordingly.
  Q
  ;
 ACTO ; Active orders
- ;I "AE"[P(17) S ^TMP("PSIV",$J,"A",9999999999-ON)="" S:P(17)="E" $P(^PS(55,DFN,"IV",+ON,0),U,17)="A" Q ;;mv-not sure why setting status back to "A"???
- I "A"[P(17) S ^TMP("PSIV",$J,"A",9999999999-ON)="" Q
+ I "AE"[P(17) S ^TMP("PSIV",$J,"A",9999999999-ON)="" S:P(17)="E" $P(^PS(55,DFN,"IV",+ON,0),U,17)="A" Q
  I "HOR"[P(17) S ^TMP("PSIV",$J,"A",9999999999-ON)="" Q
- I "DE"[P(17) S ^TMP("PSIV",$J,"RD",9999999999-ON)=""
+ I "D"[P(17) S ^TMP("PSIV",$J,"X",9999999999-ON)=""
  Q
  ;
 NACTO ; Inactive orders

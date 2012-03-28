@@ -1,5 +1,16 @@
-TIUSRVP1 ; SLC/JER - More API's in support of PUT ;8/14/07
- ;;1.0;TEXT INTEGRATION UTILITIES;**19,59,89,100,109,167,113,112,219**;Jun 20, 1997;Build 11
+TIUSRVP1 ; SLC/JER - More API's in support of PUT ;17-OCT-2001 12:00:00
+ ;;1.0;TEXT INTEGRATION UTILITIES;**19,59,89,100,109,167**;Jun 20, 1997
+ ; SUCCESS = (by ref) SUCCESS Returns TIU DOCUMENT # (PTR to 8925)
+ ;         = 0^Explanatory message if no SUCCESS
+ ; DFN     = Patient (#2)
+ ; TITLE   = Pointer to TIU Document Definition (#8925.1)
+ ; [VDT]   = Date(/Time) of Visit
+ ; [VLOC]  = Visit Location (pointer to HOSPITAL LOCATION
+ ; [VSIT]  = Pointer to visit file (#9000010)
+ ; [VSTR]  = Visit string (i.e., VLOC;VDT;VTYPE)
+ ; [NOASF] = Flag if set to 1=Do Not Set ASAVE cross-reference
+ ; TIUX    = (by ref) array containing identifying fields, as
+ ;           well as the body of the document
 SITEPARM(TIUY) ; Get site parameters for GUI
  N TIUPRM0,TIUPRM1
  D SETPARM^TIULE
@@ -22,19 +33,9 @@ CURDOC(USER,TIUDT) ; Is the current user a known Provider?
  I +TIUPROV S TIUY=USER_U_$$PERSNAME^TIULC1(USER)
  Q TIUY
 ISAPROV(TIUY,USER,DATE) ; Is user a provider?
- ; Checks USR CLASS PROVIDER AND 200 Person Class
- ; DATE must not include time (for ISA^USRLM)
  S USER=$G(USER,DUZ)
  S DATE=$G(DATE,DT)
  S TIUY=$$PROVIDER^TIUPXAP1(USER,DATE)
- Q
-USRPROV(TIUY,USER,DATE) ; Is USER a USR CLASS provider?
- ; Checks USR CLASS PROVIDER only
- ; DATE must not include time
- N TIUERR
- S USER=$G(USER,DUZ)
- S DATE=$G(DATE,DT),TIUY=0
- I +$$ISA^USRLM(USER,"PROVIDER",.TIUERR,DATE) S TIUY=1 ;  DBIA/ICR 2324
  Q
 DOCPARM(TIUY,TIUDA,TIUTYP) ; Get document parameters for GUI
  I '+$G(TIUTYP),+$G(TIUDA) S TIUTYP=+$G(^TIU(8925,+TIUDA,0))
@@ -63,7 +64,7 @@ STUB(TIUDA,TIUTITL,DFN) ; Create a stub
  Q
 EVENT(TIUY,DFN) ; Create an Event-type Visit Entry
  N VDT,VSTR,DGPM
- S DGPM=$G(^DPT(DFN,.105)) ;DBIA/ICR 10035
+ S DGPM=$G(^DPT(DFN,.105))
  I +DGPM'>0 D
  . S VDT=$$NOW^XLFDT
  . S VSTR=";"_VDT_";"_"E"
@@ -72,9 +73,9 @@ EVENT(TIUY,DFN) ; Create an Event-type Visit Entry
  .N TIUPREF,IDX
  .S TIUPREF=$$PERSPRF^TIULE(DUZ)
  .S IDX=+$P(TIUPREF,U,2)
- .I IDX S TIUY("LOC")=IDX_U_$P($G(^SC(IDX,0)),U,1) ; DBIA/ICR 10040
+ .I IDX S TIUY("LOC")=IDX_U_$P($G(^SC(IDX,0)),U,1)
  Q
-GETPNAME(TIUY,TIUTYPE)  ; Get Print Name of a Document
+GETPNAME(TIUY,TIUTYPE) ; Get Print Name of a Document
  S TIUY=$$PNAME^TIULC1(TIUTYPE)
  Q
 SAVED(TIUY,TIUDA) ; Was the document committed to the database?
@@ -113,14 +114,12 @@ STUFREC(TIUDA,TIUREC,DFN,PARENT,TITLE,TIU) ; load TIUREC for create
  . S TIUREC(1401)=$P($G(^TIU(8925,+PARENT,14)),U)
  . S TIUREC(1402)=$P($G(^TIU(8925,+PARENT,14)),U,2)
  . S TIUREC(1404)=$P($G(^TIU(8925,+PARENT,14)),U,4)
- . S TIUREC(1405)=$P($G(^TIU(8925,+PARENT,14)),U,5)
  S TIUREC(.04)=$$DOCCLASS^TIULC1(TITLE)
  S TIUSCAT=$S(+$L($P($G(TIU("CAT")),U)):$P($G(TIU("CAT")),U),+$L($P($G(TIU("VSTR")),";",3)):$P($G(TIU("VSTR")),";",3),1:"")
  S TIUREC(.13)=TIUSCAT
  ;If the document is a member of the Clinical Procedures Class, set the
  ;Author/Dictator and the Expected Signer fields to Null
  S (TIUREC(1202),TIUREC(1204))=$S(+$G(TIUREC(1202)):+$G(TIUREC(1202)),TIUCPF:"",1:+$G(DUZ))
- S TIUREC(1212)=$P($G(TIU("INST")),U)
  S TIUREC(1205)=$P($G(TIU("LOC")),U)
  S TIUREC(1211)=$P($G(TIU("VLOC")),U)
  S TIUREC(1201)=$$NOW^XLFDT
@@ -132,12 +131,12 @@ STUFREC(TIUDA,TIUREC,DFN,PARENT,TITLE,TIU) ; load TIUREC for create
  ;If the document is a member of the Clinical Procedures Class, set the
  ;Entered By field to Null
  S TIUREC(1303)="R",TIUREC(1302)=$S(TIUCPF:"",1:$G(DUZ))
- I $S(+$G(TIUREC(1208))&(+$G(TIUREC(1204))'=+$G(TIUREC(1208))):1,+$G(TIUREQCS):1,1:0) S TIUREC(1506)=1
+ I $S(+$G(TIUREC(1208)):1,+$G(TIUREQCS):1,1:0) S TIUREC(1506)=1
  Q
 REFDT(TIUX) ; Hack Ref Date/time for DS's
  S TIUX(1301)=$S(+$G(TIU("LDT")):+$G(TIU("LDT")),1:$G(TIUX(1301)))
  Q
-STATUS(TIUDA,SUPPRESS,TITLE)  ; Compute the status of the current record
+STATUS(TIUDA,SUPPRESS,TITLE) ; Compute the status of the current record
  N TIUDPRM,TIUY
  ; If the document is an addendum, compute status based on processing
  ; requirements of the Parent document or its ancestors
@@ -165,5 +164,3 @@ IDDTCH(TIUY,TIUDA) ; Detach TIUDA from its ID Parent
  D AUDLINK^TIUGR1(TIUDA,"d",IDDAD)
  D IDDEL^TIUALRT1(TIUDA)
  Q
-CANDEL(TIUDA) ; Boolean function to evaluate delete request
- Q $S($P(^TIU(8925,TIUDA,0),U,5)>3:0,'+$$EMPTYDOC^TIULF(TIUDA):0,1:1)

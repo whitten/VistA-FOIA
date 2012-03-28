@@ -1,5 +1,5 @@
 PSJLMUT1 ;BIR/MLM-DRUG NAME DISPLAY ;05 Feb 98 / 1:39 PM
- ;;5.0; INPATIENT MEDICATIONS ;**4,27,29,49,58,107,110,146,175,201,181**;16 DEC 97;Build 190
+ ;;5.0; INPATIENT MEDICATIONS ;**4,27,29,49,58,107**;16 DEC 97
  ;
  ; Reference to ^PS(55 is supported by DBIA# 2191.
  ; Reference to ^PS(50.7 is supported by DBIA# 2180.
@@ -77,7 +77,7 @@ DSPLORDV(DFN,ON)   ; Display IV order for order check as in the Inpat Profile.
  Q
 SOL ;
  S PSJL=$S($G(PSJIVFLG):PSJL,1:"")_"        in"
- S DRG=0 F  S DRG=+$O(DRG("SOL",DRG)) Q:'DRG  D NAME^PSIVUTL(DRG("SOL",DRG),37,.NAME,0) S DRGX=0 F  S DRGX=$O(NAME(DRGX)) Q:'DRGX  S PSJL=$$SETSTR^VALM1(NAME(DRGX),PSJL,12,60) D:$G(PSJIVFLG) PIV1 D SETTMP S PSJL="      "
+ S DRG=0 F  S DRG=+$O(DRG("SOL",DRG)) Q:'DRG  D NAME^PSIVUTL(DRG("SOL",DRG),39,.NAME,0) S DRGX=0 F  S DRGX=$O(NAME(DRGX)) Q:'DRGX  S PSJL=$$SETSTR^VALM1(NAME(DRGX),PSJL,12,60) D:$G(PSJIVFLG) PIV1 D SETTMP S PSJL="      "
  Q
 PIVAD ; Print IV Additives.
  F DRG=0:0 S DRG=$O(DRG("AD",DRG)) Q:'DRG  D NAME^PSIVUTL(DRG("AD",DRG),39,.NAME,1) F DRGX=0:0 S DRGX=$O(NAME(DRGX)) Q:'DRGX  S PSJL=$$SETSTR^VALM1(NAME(DRGX),PSJL,9,60) D:$G(PSJIVFLG) PIV1 D SETTMP
@@ -105,20 +105,19 @@ ORDCHK(DFN,TYPE,PIECE)   ;
  . S PSJPACK=$P(^TMP($J,TYPE,PSIVX,0),U,PIECE)
  . I $G(PSGORD) S PSJORD=PSGORD ; Set PSJORD if PSGORD exists and is not Null
  . I $G(PSJORD)]"" I $S($D(PSJORD):$G(PSJORD),1:$G(PSGORD))'["V",$P(PSJPACK,";")=$S($D(PSJORD):$G(PSJORD),1:$G(PSGORD)) Q  ; don't flag order that is being renewed as duplicate, only checks Unit Dose orders
- . I $G(PSJCOM),($G(PSJORD)["P") Q:$D(^PS(53.1,"ACX",PSJCOM,+PSJPACK))
  . ; Don't flag if pending renewal from CPRS
  . I $G(PSJORD)]"",(PSJORD["P"),($P($G(^PS(53.1,+PSJORD,0)),"^",24)="R"),($P(PSJPACK,";")["U"),($P($G(^PS(55,DFN,5,+$P(PSJPACK,";"),0)),"^",27)="R"),($P($G(^PS(55,DFN,5,+$P(PSJPACK,";"),0)),"^",26)=PSJORD) Q
  . I $G(PSIVRNFG),$G(ON55)["V",$P(PSJPACK,";")=$G(ON55) Q  ;PSIVRNFG set and kill in R+2^PSIVOPT2. Needed to do dupl. check on new order but not renew.
  . S PSJORIEN=$P(^TMP($J,TYPE,PSIVX,0),U,PIECE-1)
  . I TYPE="DI",($P(^TMP($J,TYPE,PSIVX,0),U,4)="CRITICAL") S PSJIREQ=1
  . ; Adding Drug Interactions check for use in Intervention defaults in PSJRXI.
- . I TYPE="DI" S PSJRXREQ=$S($P(^TMP($J,TYPE,PSIVX,0),U,4)="CRITICAL":"CRITICAL DRUG INTERACTION",1:"SIGNIFICANT DRUG INTERACTION")
+ . I TYPE="DI" S PSJRXREQ=$S($P(^TMP($J,TYPE,PSIVX,0),U,4)="CRITICAL":1,1:2)
  . ;I $P(PSJPACK,";",2)["O" D  Q
  . N X S X=$P(PSJPACK,";",2) I X["O" D  Q
  ..  D:PSJFST=1 PAUSE
+ ..  ;W !!,"The patient has this outpatient order:",!
  ..  W !!,"The patient has this "_$S($P(PSJPACK,";")["N":"Non-VA Meds",$P(PSJPACK,";",2)["O":"Outpatient",1:"")_" order:",!
- ..  I $D(^TMP($J,TYPE,PSIVX,1)) D SHOR^PSJLMUT2(TYPE,PSIVX),PAUSE S PSJFST=$S(PSJFST=0:PSJFST+2,1:PSJFST+1) Q
- ..  D EN^PSODRDU2(DFN,PSJPACK,"PSJPRE"),PAUSE S PSJPDRG=1,PSJFST=$S(PSJFST=0:PSJFST+2,1:PSJFST+1)
+ ..  D EN^PSODRDU2(DFN,PSJPACK),PAUSE S PSJPDRG=1,PSJFST=$S(PSJFST=0:PSJFST+2,1:PSJFST+1)
  . S ON=$P(PSJPACK,";") Q:$D(PSJOC(ON))
  . I ON=$G(PSIVOCON),+PSJORIEN Q
  . I ON=$G(PSIVOCON),'+PSJORIEN D SETPSJOC Q
@@ -146,5 +145,5 @@ WRITE(TYPE)        ;Display order check description
  I TYPE="DI" W !!,"This patient is receiving the following medication",$S(PSJOC>1:"s",1:"")," that ha",$S(PSJOC>1:"ve",1:"s")," an interaction",!,"with ",$P($G(^PSDRUG(PSJDD,0)),U),":",!
  Q
 PAUSE ;
- K DIR W ! S DIR(0)="EA",DIR("A")="Press Return to continue...",DIR("?")="Press Return to continue..." D ^DIR W !
+ K DIR W ! S DIR(0)="EA",DIR("A")="Press Return to continue..." D ^DIR W !
  Q

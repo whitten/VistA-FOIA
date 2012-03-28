@@ -1,6 +1,6 @@
-LRBLA ;AVAMC/REG/CYM - BB ADM DATA ;6/21/96  07:34
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLA ; IHS/DIR/AAB - BB ADM DATA 07:34 ; [ 6/21/96 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  ;
  S LRC=0,%=0 I $P($G(^LAB(69.9,1,8.1,DUZ(2),0)),U,6) W !,"Print inventory data for only one division",!,"(Donor data will be included for all divisions) " S %=2 D YN^LRU G:%<1 END
  I %=1 S LRC=1,DIC=4,DIC("A")="Select DIVISION: ",DIC(0)="AEQM",DIC("S")="I +$G(^DIC(4,+Y,99))=+$$SITE^VASITE" D ^DIC K DIC S LRC(1)=+Y,LRC(2)=$P(Y,U,2)

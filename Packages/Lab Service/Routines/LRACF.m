@@ -1,4 +1,6 @@
-LRACF ;SLC/RWA - FORCE PAGES TO FULL ;2/19/91  10:10
+LRACF ; IHS/DIR/FJE - FORCE PAGES TO FULL 10:10 ; 
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 QUEUE S U="^"
 WARN W !,"This option will identify patients who have been inactive for the specified",!,"period of time defined in the GRACE PERIOD FOR INACTIVITY field of the"

@@ -1,5 +1,5 @@
-XPDT ;SFISC/RSD - Transport a package ;02/12/2009
- ;;8.0;KERNEL;**2,10,28,41,44,51,58,66,68,85,100,108,393,511,539**;Jul 10, 1995;Build 11
+XPDT ;SFISC/RSD - Transport a package ;10/15/2008
+ ;;8.0;KERNEL;**2,10,28,41,44,51,58,66,68,85,100,108,393,511,1017**;Jul 10, 1995;Build 3
  ;Per VHA Directive 2004-038, this routine should not be modified.
 EN ;build XTMP("XPDT",ien, XPDA=ien,XPDNM=name
  ;XPDT(seq #)=ien^name^1=use current transport global on system
@@ -7,7 +7,7 @@ EN ;build XTMP("XPDT",ien, XPDA=ien,XPDNM=name
  ;XPDVER=version number^package name
  ;XPDGP=flag;global^flag;global^...  flag=1 replace global at site
  N DIR,DIRUT,I,POP,XPD,XPDA,XPDERR,XPDGP,XPDGREF,XPDH,XPDH1,XPDHD,XPDI,XPDNM,XPDSEQ,XPDSIZ,XPDSIZA,XPDT,XPDTP,XPDVER
- N DUOUT,DTOUT,XPDFMSG,X,Y,Z,Z1
+ N XPDFMSG,X,Y,Z
  K ^TMP($J,"XPD")
  S XPD="First Package Name: ",DIR(0)="Y",DIR("A")="   Use this Transport Global",DIR("?")="Yes, will use the current Transport Global on your system. No, will create a new one.",XPDT=0
  W !!,"Enter the Package Names to be transported. The order in which",!,"they are entered will be the order in which they are installed.",!!
@@ -33,6 +33,7 @@ EN ;build XTMP("XPDT",ien, XPDA=ien,XPDNM=name
  .I XPDT>1 S DIRUT=1 W !,"A Master Build must be the first/only package in a transport" Q
  .F  S X=$O(^XPD(9.6,XPDA,10,X)) Q:'X  S Z=$P($G(^(X,0)),U),Z1=$P($G(^(0)),U,2) D:Z]""
  ..N XPDA,X
+ ..S Z=$P(^XPD(9.6,Z,0),U,1)  ;XU*8.0*1017 - IHS/OIT/FBD - 5/16/2011 - ADDED LINE TO CORRECT MULTIPACKAGE MALFUNCTIONS
  ..W !?3,Z S XPDA=$O(^XPD(9.6,"B",Z,0))
  ..I 'XPDA W "  **Can't find definition in Build file**" Q
  ..I $D(XPDT("DA",XPDA)) W "  already listed" Q
@@ -93,7 +94,7 @@ DEV N FIL,DIR,IOP,X,Y,%ZIS W !
  D ^DIR I $D(DTOUT)!$D(DUOUT) S POP=1 Q
  ;if no file, then quit
  Q:Y=""  S FIL=Y
- S DIR(0)="F^3:80",DIR("A")="Header Comment",DIR("?")="Enter a comment between 3 and 80 characters."
+ S DIR(0)="F^3:80",DIR("A")="Header Comment",DIR("?")="Enter a comment between 3 and 80 charaters."
  D ^DIR I $D(DIRUT) S POP=1 Q
  S XPDH=Y,%ZIS="",%ZIS("HFSNAME")=FIL,%ZIS("HFSMODE")="W",IOP="HFS",(XPDSIZ,XPDSIZA)=0,XPDSEQ=1
  D ^%ZIS I POP W !!,"**Incorrect Host File name**",!,$C(7) Q
@@ -125,7 +126,7 @@ GO1 W ! S XPDSIZA=XPDSIZA+2
 GW ;global write
  N GR,GCK,GL
  S GCK="^XTMP(""XPDT"","_XPDA,GR=GCK_")",GCK=GCK_",",GL=$L(GCK)
- ;INSTALL NAME line will mark the beginning of global for all lines until
+ ;INSTALL NAME line will mark the begining of global for all lines until
  ;the next INSTALL NAME
  W $$SUM("**INSTALL NAME**",1),!,$$SUM(XPDNM),!
  F  Q:$D(DIRUT)  S GR=$Q(@GR) Q:GR=""!($E(GR,1,GL)'=GCK)  W $$SUM($P(GR,GCK,2),1),!,$$SUM(@GR),!
@@ -153,7 +154,7 @@ GPW ;global package write
  W !
  F I=1:1 S G=$P(XPDGP,U,I) Q:G=""  D
  .S GR="^"_$P(G,";",2),GCK=$S(GR[")":$E(GR,1,$L(GR)-1)_",",1:GR_"("),GL=$L(GCK)
- .;GLOBAL line will mark the beginning of global for all lines until
+ .;GLOBAL line will mark the begining of global for all lines until
  .;the next GLOBAL
  .W $$SUM("**GLOBAL**",1),!,$$SUM(GR),!
  .F  Q:$D(DIRUT)  S GR=$Q(@GR) Q:GR=""!($E(GR,1,GL)'=GCK)  W $$SUM($P(GR,GCK,2),1),!,$$SUM(@GR),!
@@ -163,11 +164,7 @@ QUIT F XPDT=1:1:XPDT L -^XPD(9.6,+XPDT(XPDT))
 ABORT W !!,"**TRANSPORT ABORTED**",*7
  D QUIT
  F XPDT=1:1:XPDT K ^XTMP("XPDT",+XPDT(XPDT))
- ;if HF, save file name IO into XPDH
- S:$L(XPDH) XPDH=IO
  D ^%ZISC
- ;if HF, then delete file
- I $L(XPDH),$$DEL1^%ZISH(XPDH) W !,"File:  ",XPDH,"  (Deleted)"
  Q
  ;
 PCK(XPDA,XPDNM,XPDREQ) ;XPDA=Build ien, XPDNM=Build name, XPDREQ=Required
@@ -177,7 +174,7 @@ PCK(XPDA,XPDNM,XPDREQ) ;XPDA=Build ien, XPDNM=Build name, XPDREQ=Required
  S $P(XPDT(XPDT),U,4)=XPDREQ
  Q:'$D(^XTMP("XPDT",XPDA))  S Y=$G(^(XPDA))
  W "     **Transport Global exists**"
- ;Y=1 if TG is permanent
+ ;Y=1 if TG is permanet
  I Y S $P(XPDT(XPDT),U,3)=1 Q
  ;ask if they want to use TG
  D ^DIR S $P(XPDT(XPDT),U,3)=Y

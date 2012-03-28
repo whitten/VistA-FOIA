@@ -1,5 +1,6 @@
-LA7ADL ;DALOI/JMC - Automatic Download of Test Orders;May 30, 2008
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**17,25,23,57,66**;Sep 27, 1994;Build 30
+LA7ADL ;VA/DALOI/JMC - Automatic Download of Test Orders; 1/30/95 09:00
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**1001,1030**;NOV 01, 1997
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**17,25,23,57**;Sep 27, 1994
  ;
  ; This routine will monitor the ^LA("ADL") node to check for accessions which are to have test orders automatically
  ; downloaded to another computer system. All entries in the auto instrument file which are flagged for automatic downloading
@@ -31,8 +32,15 @@ EN(LA7UID) ; Set flag to check accession for downloading, start background job i
  ; Quit if "Don't Start" flag set.
  I +$G(^LA("ADL","STOP"),0)=2 Q
  ;
+ ; Lock zeroth node.
+ ; Quit if another process has lock
+ ; - either another job setting node or the background job.
+ L +^LA("ADL",0):1
+ I '$T Q
+ ;
  ; Task background job to run.
- D CHKTSK
+ N ZTSK
+ D ZTSK
  ;
  ; Unlock node.
  L -^LA("ADL",0)
@@ -42,10 +50,13 @@ EN(LA7UID) ; Set flag to check accession for downloading, start background job i
  ;
 DQ ; Entry point from Taskman.
  ;
+ ; Set flag for taskman to cleanup task.
+ I $D(ZTQUEUED) S ZTREQ="@"
+ ;
  ; Wait for a little while in case another job checking for background job has lock.
  L +^LA("ADL",0):10
  ; Another process has lock, only want one at a time.
- I '$T S:$D(ZTQUEUED) ZTREQ="@" Q
+ I '$T Q
  ;
  ; No instrument flagged for auto downloading.
  I '$D(^LAB(62.4,"AE")) D EXIT Q
@@ -53,9 +64,7 @@ DQ ; Entry point from Taskman.
  ; Quit if "Don't Start/Collect" flags set.
  I +$G(^LA("ADL","STOP"),0)>1 Q
  ;
- ; Update XTMP entry to let auto download know we're running for this process
- ;  and build table of tests to check for downloading}
- D XTMP,BUILD
+ D BUILD
  ;
  F  D UID Q:TOUT>60
  D EXIT
@@ -71,9 +80,9 @@ UID ; Start loop to monitor for accessions to download.
  ;
  F  S LA7UID=$O(^LA("ADL","Q",LA7UID)) Q:LA7UID=""!(ZTSTOP)!(TOUT)  D
  . I +$G(^LA("ADL","STOP"))>0 S TOUT=61 Q
- . I $$S^%ZTLOAD("Processing Lab UID "_LA7UID) S ZTSTOP=1,TOUT=61 Q
+ . I $$S^%ZTLOAD S ZTSTOP=1,TOUT=61 Q
  . ; Lock this UID, synch setting/deleting when another job is attempting to set node.
- . D LOCK^DILF("^LA(""ADL"",""Q"",LA7UID)")
+ . L +^LA("ADL","Q",LA7UID):1
  . ; Unable to get lock, go on to next UID, check again on next go around.
  . I '$T Q
  . ; Get accession info from ^LRO(68,"C").
@@ -82,6 +91,9 @@ UID ; Start loop to monitor for accessions to download.
  . I $QS(X,3)'=LA7UID D CLEANUP Q
  . ; Setup accession variables for auto downloading.
  . S LRAA=+$QS(X,4),LRAD=+$QS(X,5),LRAN=+$QS(X,6)
+ . ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ . I +$O(^LRO(68,LRAA,1,LRAD,1,LRAN,5,0))<1  D MAILALRT  D CLEANUP  Q
+ . ; ----- END IHS/OIT/MKK - LR*5.2*1030
  . D BLDTST
  . S LA7INST=0
  . F  S LA7INST=$O(LA7AUTO(LA7INST)) Q:'LA7INST  D
@@ -92,13 +104,13 @@ UID ; Start loop to monitor for accessions to download.
  . . N LA7UID
  . . ; File build (entry^routine) from fields #93 and #94 in file #62.4.
  . . D @$P(LA7AUTO(LA7INST,9),"^",3,4)
- . D CLEANUP,XTMP
+ . D CLEANUP
  ;
- F  D  Q:$O(^LA("ADL","Q",""))'=""  Q:TOUT>60 
+ F  D  Q:$O(^LA("ADL","Q",""))'=""  Q:TOUT>60
  . I $G(^LA("ADL","STOP"))>1 S TOUT=61 Q
  . ; Task has been requested to stop.
- . I $$S^%ZTLOAD("Idle - waiting for new accessions to process") S TOUT=61,ZTSTOP=1 Q
- . S TOUT=TOUT+1 H 5 D XTMP
+ . I $$S^%ZTLOAD S TOUT=61,ZTSTOP=1 Q
+ . S TOUT=TOUT+1 H 5
  ;
  Q
  ;
@@ -135,6 +147,9 @@ CHKTEST ; Check tests to determine if they should build in message.
  I LRDPF'=62.3,'$P(X,"^",3),'$P(^TMP("LA7-INST",$J,LA7INST),"^") Q
  ;
  S X=$O(^LRO(68,LRAA,1,LRAD,1,LRAN,5,0))
+ ;
+ Q:+$G(X)<1        ; If no SITE/SPECIMEN, Quit -- IHS/OIT/MKK - LR*5.2*1030
+ ;
  S LA761=$P(^LRO(68,LRAA,1,LRAD,1,LRAN,5,X,0),"^")
  S LA760=0
  F  S LA760=$O(LA7TREE(LA760)) Q:'LA760  D
@@ -188,27 +203,11 @@ CLEANUP ; Delete flag after accession has been checked.
  Q
  ;
  ;
-CHKTSK ; Check if we shoud task the auto download processing routine.
- ; Check if we recently tasked the processing routine for this process by compaing values in the XTMP global.
- ; Done to avoid repetitive locking attempts on each new accessione since the FileMan locking API uses a site-defined timeout which is usually 3 seconds
- ; but can be more. Slows down the interface if on each accession we are waiting 3 or more seconds for the lock to find out if the processing routine
- ; is already running.
- ;
- N LA7X,LA7Y
- S LA7X=$H,LA7Y=$G(^XTMP("LA7ADL",1))
- I $P(LA7X,",")=$P(LA7Y,","),($P(LA7X,",",2)-$P(LA7Y,",",2))<240 Q
- ;
- ; Lock zeroth node.
- ; Quit if another process has lock - either another job setting node or the background job.
- D LOCK^DILF("^LA(""ADL"",0)")
- I '$T Q
- ;
 ZTSK ; Task background job to run.
  ;
- ; Call here to queue this processing routine to run in the background.
+ N ZTDESC,ZTSAVE,ZTDTH,ZTIO,ZTRTN
  ;
  ; Task background job if not running.
- N ZTDESC,ZTSAVE,ZTDTH,ZTIO,ZTRTN
  S ZTRTN="DQ^LA7ADL",ZTDESC="Lab Auto Download",ZTIO="",ZTDTH=$H
  D ^%ZTLOAD
  ;
@@ -216,7 +215,6 @@ ZTSK ; Task background job to run.
  ;
  ;
 BUILD ; Build TMP global with list of tests for instruments flagged for auto download.
- ;
  D BUILD^LA7ADL1
  ;
  ; Set flag to "Running".
@@ -225,25 +223,48 @@ BUILD ; Build TMP global with list of tests for instruments flagged for auto dow
  Q
  ;
  ;
-XTMP ; Set/update XTMP with current run time of this processing routine
- ;
- S DT=$$DT^XLFDT
- S ^XTMP("LA7ADL",0)=DT_"^"_DT_"^LAB AUTO DOWNLOAD PROCESS TASKING"
- S ^XTMP("LA7ADL",1)=$H
- Q
- ;
- ;
 EXIT ; Exit and cleanup.
  ;
  ; Release lock on LA("ADL") global.
  L -^LA("ADL",0)
  ;
- K ^TMP("LA7",$J),^TMP($J),^XTMP("LA7ADL",1)
- K LA7ADL,LA7AUTO,LA7NVAF,LRAA,LRAD,LRAN,TOUT
+ K ^TMP("LA7",$J),^TMP($J)
+ K LA7ADL
+ K LRAA,LRAD,LRAN
+ K TOUT
  ;
  ; Clear flag if normal shutdown, no new accessions.
  I +$G(^LA("ADL","STOP"))<2 K ^LA("ADL","STOP")
  ;
- ; Set flag for taskman to cleanup task.
- I $D(ZTQUEUED) S ZTREQ="@"
  Q
+ ;
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ; Only sent if the ACCESSION has no SPECIMEN node.
+ ; Issue first surfaced at Chinle post Patch 1027 Install.
+MAILALRT ; Send mail message alert
+ N J,LRCNT,LRMTXT,X,XMINSTR,XMSUB,XMTO
+ ;
+ S LRMTXT(1)="     This is from routine LA7ADL."
+ S LRMTXT(2)=" "
+ S LRMTXT(3)="     This message was generated during the donwloading of"
+ S LRMTXT(4)="     information. The SPECIMEN node of this Accessions is"
+ S LRMTXT(5)="     NULL. This is an error."
+ S LRMTXT(6)=" "
+ S LRMTXT(7)="     The following *debugging* information is provided to"
+ S LRMTXT(8)="     assist support staff in resolving this error."
+ S LRMTXT(9)=" "
+ S LRCNT=9
+ ;
+ F J="LA7UID","LRAA","LRAD","LRAN","LRDFN" D
+ . S X=$G(@J)
+ . I $L(X) S LRCNT=LRCNT+1,LRMTXT(LRCNT)=J_"="_X
+ . F  S J=$Q(@J) Q:J=""  S LRCNT=LRCNT+1,LRMTXT(LRCNT)=J_"="_@J
+ ;
+ S XMSUB="ACCESSION has no SPECIMEN node."
+ S XMTO("G.LMI")=""
+ S XMINSTR("FROM")="Lab Routine LA7ADL"
+ S XMINSTR("ADDR FLAGS")="R"
+ D SENDMSG^XMXAPI(DUZ,XMSUB,"LRMTXT",.XMTO,.XMINSTR)
+ Q
+ ;
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030

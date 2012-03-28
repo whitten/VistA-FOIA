@@ -1,5 +1,5 @@
 PXRRPECS ;ISL/PKR - Build a list of Person Class entries. ;12/11/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**12,147**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**12**;Aug 12, 1996
  ;
  ;=======================================================================
 PCLASS ;Build a list of person classes.
@@ -53,7 +53,7 @@ NOCC S DIR(0)="FAOU^1:60"
  K OCCIEN
  K SPEC
  I ('SOCCW) D
- . S TEMP=$E($P(SOCC,U,2),1,62)
+ . S TEMP=$E($P(SOCC,U,2),1,30)
  . S IC=0
  . F  S IC=$O(^USC(8932.1,"B",TEMP,IC)) Q:+IC=0  D
  .. S OCCIEN(IC)=""

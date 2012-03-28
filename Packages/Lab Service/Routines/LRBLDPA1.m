@@ -1,6 +1,7 @@
-LRBLDPA1 ;AVAMC/REG/CYM - BLOOD DONOR PRINT  ;7/5/96  20:57 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDPA1 ; IHS/DIR/AAB - BLOOD DONOR PRINT 7/5/96 20:57 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
+ ;IHS/ANMC/CLS 11/1/95 blood donor file
  N LRDOB,NAME S (X,LRX)=^LRE(LR,0),PNM=$P(X,U),SEX=$P(X,U,2),LRABO=$P(X,U,5),LRRH=$P(X,U,6),SSN=$P(X,U,13),Y=$P(X,U,3) D D^LRU S LRDOB=Y,LRF=65.5,Z=.02,X=SEX D S S SEX=Y
  D H S LR("F")=1 S X=$P(LRX,U,13) W:X]"" !,"SSN: ",X S X=$P(X,U,14) W:X]"" !,"MILITARY RANK: ",X
  K ^TMP($J) S LRE=0 F LRJ=0:1 S LRE=$O(^LRE(LR,9,LRE)) Q:'LRE!(LR("Q"))  S LRA=^(LRE,0) D:$Y>(IOSL-6) H Q:LR("Q")  S X=LRA D ^DIWP

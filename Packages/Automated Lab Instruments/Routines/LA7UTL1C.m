@@ -1,5 +1,5 @@
-LA7UTL1C ;HOIFO/BH - Microbiology Query Utility ; 3/11/03 10:45am
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**69**;Sep 27, 1994
+LA7UTL1C ;VA/HOIFO/BH - Microbiology Query Utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**69,1027**;NOV 01, 1997
  ;
  ;
 MI(LRDFN,LRIDT,LAARRAY) ; Get Microbiology data

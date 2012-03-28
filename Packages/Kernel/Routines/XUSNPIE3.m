@@ -1,5 +1,5 @@
 XUSNPIE3 ;FO-OAKLAND/JLI - NATIONAL PROVIDER IDENTIFIER DATA CAPTURE ;4/8/08  18:18
- ;;8.0;KERNEL;**480**; July 10, 1995;Build 38
+ ;;8.0;KERNEL;**480**;July 10, 1995;Build 38
  ;;Per VHA Directive 2004-038, this routine should not be modified
  ;
  Q
@@ -67,7 +67,7 @@ EDITNPI(IEN) ; main entry of NPI value
  ; If user is not a provider, and has no NPI, let them know.
  I $$CHEKNPI^XUSNPIED(IEN)=0,OLDNPI=0 W !,"Need for an NPI value isn't indicated - but you can enter an NPI",$C(7)
  I IEN'=DUZ D
- . W !,"Provider: ",PROVNAME,"   ","XXX-XX-"_$E($$GET1^DIQ(200,IEN_",",9),6,9),"   DOB: "
+ . W !,"Provider: ",PROVNAME," ","XXX-XX-"_$E($$GET1^DIQ(200,IEN_",",9),6,9),"   DOB: "
  . S XX=$P($G(^VA(200,IEN,1)),U,3) S:XX'="" XX=$$DATE10^XUSNPIED(XX) W XX Q
  ; Initialize DONE to 0. It will be set to 1 if a new NPI is entered.
  S DONE=0
@@ -86,7 +86,7 @@ EDITNPI(IEN) ; main entry of NPI value
  . I NPIUSED=2 D  Q:Y'="Y"
  . . K DIR,Y,X
  . . S DIR(0)="SA^Y:yes;N:no",DIR("B")="N"
- . . S DIR("A")="Do you still want to add this NPI to Provider "_PROVNAME_"? "
+ . . S DIR("A")="Do you still want to add this NPI to Provider "_PROVNAME_"?"
  . . S DIR("?")="If you answer YES, make sure both the non-VA and VA Provider are the same person."
  . . S DIR("?",1)="A provider can serve as both a VA and a non-VA provider."
  . . S DIR("?",2)="That is the only case where the same NPI can be assigned to a person"
@@ -116,10 +116,10 @@ EDITNPI(IEN) ; main entry of NPI value
  ; mark previous NPI value as inactive
  I OLDNPI=ADDNPI S DONE=$$ADDNPI^XUSNPI("Individual_ID",IEN,CURRNPI,DATEVAL,0) ; set status to INACTIVE
  S DONE=$$ADDNPI^XUSNPI("Individual_ID",IEN,NPIVAL1,DATEVAL)
- I +DONE=-1 D  Q 
+ I +DONE=-1 D  Q
  . W !,"Problem writing that value into the database! --  It was **NOT** recorded."
  . W !,$P(DONE,U,2) Q
- W !!,"For provider ",PROVNAME," "_$S('$D(XUSNONED):"(who requires an NPI), ",1:"")_"the NPI ",NPIVAL1,!,"was saved to VistA successfully."
+ W !!,"For provider ",PROVNAME," "_$S('$D(XUSNONED):"(who requires an NPI),",1:"")_"the NPI ",NPIVAL1,!,"was saved to VistA successfully."
  ; If old NPI was in use by a non-VA provider, issue additional warning.
  I NPIUSEDX D WARNING("C",PROVNAME,.XUSRSLT,NPIVAL1)
  D EDRLNPI^XUSNPIED(IEN)

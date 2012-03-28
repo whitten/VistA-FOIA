@@ -1,4 +1,5 @@
 LR7OSBB1 ;slc/dcm - BB PT INFO for OE/RR pt lists ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,230**;Sep 27, 1994
  ;Formerly known as LRBLPD1 which came from LRBLPD
 OERR ;

@@ -1,8 +1,5 @@
 RANMUTL1 ;HISC/SWM-Nuclear Medicine utilites ;8/6/97  08:48
- ;;5.0;Radiology/Nuclear Medicine;**65**;Mar 16, 1998;Build 8
- ;
- ;Supported IA #10103 reference to FMTE^XLFDT
- ;
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 SELIMG ; Select Imaging Type, if exists; code is from RAUTL7
  ; Prompts user to select Imaging Type(s).
  ; Creates ^TMP($J,"RA I-TYPE",Imaging Type name,Imaging Type IEN)=""
@@ -40,9 +37,10 @@ SELRADIO ; Setup ^TMP($J,"RA EITHER",ien file 50)
  W ! D ^DIR K DIR Q:$D(DIRUT)
  S RAINPUT=+Y K DIROUT,DIRUT,DTOUT,DUOUT,X,Y
  Q:RAINPUT
- S RADIC="^PSDRUG(",RADIC(0)="QEAMZ"
+ S RADIC="^PSDRUG(",RADIC(0)="QEAMZ",RAUTIL="RA EITHER"
  S RADIC("A")="Select Radiopharm: "
- W !! D EN2^RAPSAPI(.RADIC,"RA EITHER") K %W,%Y1,DIC,RADIC,RAUTIL,X,Y
+ S RADIC("S")="I $$DCHK^RADD1(""R"",0,+Y)" ; dt=0, only radiopharms
+ W !! D EN1^RASELCT(.RADIC,RAUTIL) K %W,%Y1,DIC,RADIC,RAUTIL,X,Y
  Q
 SELADMIN ; Setup ^TMP($J,"RA EITHER",ien file 50)
  S RAINPUT=""

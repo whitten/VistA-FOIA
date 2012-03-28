@@ -1,6 +1,6 @@
-LRBLDAA ;AVAMC/REG/CYM - DONOR/DEFERRAL LETTERS ;6/28/96  19:11 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDAA ; IHS/DIR/AAB - DONOR/DEFERRAL LETTERS 6/28/96 19:11 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D EN1^LRBLY S X=$P(^LRO(69.2,LRAA,8,65.9,1,0),"^",4)
  W !!?29,"Post-visit letter list",! I X>0 W ?25,"There ",$S(X>1:"are ",1:"is "),X," donor",$S(X>1:"s",1:"")," on the list",!
 ASK W !?25,"1. Add    a donor to   the list",!?25,"2. Remove a donor from the list",!?25,"3. Show the donors in  the list",!?25,"4. Delete the donor letter list",!?25,"5. Print  the donor letters"

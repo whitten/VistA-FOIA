@@ -1,4 +1,5 @@
-XQORDD1 ; slc/dcm - Calls from OE/RR DD ;9/24/98  16:41
+XQORDD1 ; slc/dcm - Calls from OE/RR DD ;9/24/98  16:41 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**98**;Sept 24, 1998
 K11 ;;Set logic from field 1 file 101
  S I=0,ORKX=X D UP F J=0:0 S I=$O(^ORD(101,DA,3,I)) Q:I<1  S ORKEY=$S($D(^DIC(19.1,+^(I,0),0)):$P(^(0),"^"),1:"") I $L(ORKEY),ORKEY="ORWARD" S ^ORD(101,"K."_ORKEY,X,DA)=""

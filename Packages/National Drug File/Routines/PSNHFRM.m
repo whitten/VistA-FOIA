@@ -1,4 +1,4 @@
-PSNHFRM ;BIR/WRT-Report of Hospital Formulary drugs from DRUG file ; 8/28/07 12:07pm
+PSNHFRM ;BIR/WRT-Report of Hospital Formulary drugs from DRUG file ;8/28/07 12:07pm
  ;;4.0; NATIONAL DRUG FILE;**152,160**;30 Oct 98;Build 3
 DVC K IO("Q"),%ZIS,POP,IOP S %ZIS="QM",%ZIS("B")="",%ZIS("A")="DEVICE: " D ^%ZIS G:POP DONE W:$E(IOST)'="P" !!,"This report must be run on a printer.",!! G:$E(IOST)'="P" DVC I POP K IOP,POP,IO("Q") Q
 QUEUE I $D(IO("Q")) K IO("Q") S ZTRTN="ENQ^PSNHFRM" K ZTSAVE,ZTDTH,ZTSK S PSNDEV=ION_";"_IOST_";"_$S($D(IO("DOC")):IO("DOC"),1:IOM)_";"_IOSL,ZTSAVE("SF")="",ZTSAVE("PSNDEV")="",ZTSAVE("PSNANS")="",ZTDESC="Hospital Formulary Report",ZTIO=""

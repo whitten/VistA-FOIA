@@ -1,5 +1,6 @@
 LRAPMRL1 ;DALOI/WTY/KLL- AP MODIFY RELEASED REPORT CONT'D;12/04/01
- ;;5.2;LAB SERVICE;**259,317,397**;Sep 27, 1994;Build 1
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**259,317**;Sep 27, 1994
  ;
  Q
 RELCHK ;Perform series of checks
@@ -25,7 +26,7 @@ RELCHK ;Perform series of checks
  ;  allow modifications until supplemental rept. is released.
  N LRSR,LRSR1,LRSR2
  S LRSR=0,LRSR1=1
- I LRREL(1),'LRAU D 
+ I LRREL(1),'LRAU D
  .Q:'+$P($G(^LR(LRDFN,LRSS,LRI,1.2,0)),U,4)
  .F  S LRSR=$O(^LR(LRDFN,LRSS,LRI,1.2,LRSR)) Q:LRSR'>0!('LRSR1)  D
  ..S LRSR1=+$P(^LR(LRDFN,LRSS,LRI,1.2,LRSR,0),U,2)
@@ -80,7 +81,7 @@ QUEUPD ;Update the final report print queue
  .S LRFDA(69.23,LRIENS,1)=LRI
  .S LRFDA(69.23,LRIENS,2)=LRH(0)
  .S LRORIEN(1)=LRAN
- .D UPDATE^DIE("","LRFDA","LRORIEN") K LRORIEN
+ .D UPDATE^DIE("","LRFDA","LRORIEN")
  .L -^LRO(69.2,LRAA,2)
  Q
 EDIT ;

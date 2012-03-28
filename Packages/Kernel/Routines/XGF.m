@@ -1,4 +1,4 @@
-XGF ;SFISC/VYD - Graphics Functions ;11/06/2002  11:10
+XGF ;SFISC/VYD - Graphics Functions ;11/06/2002  11:10 [ 07/29/2004  9:00 AM ]
  ;;8.0;KERNEL;**269**;Jul 10, 1995
 PREP ;prepair graphics environment
  D PREP^XGSETUP Q

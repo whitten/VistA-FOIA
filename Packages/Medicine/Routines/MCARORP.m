@@ -1,4 +1,4 @@
-MCARORP ; GENERATED FROM 'MCRHPHYS1' PRINT TEMPLATE (#1008) ; 10/04/96 ; (FILE 701, MARGIN=80)
+MCARORP ; GENERATED FROM 'MCRHPHYS1' PRINT TEMPLATE (#3732) ; 11/29/04 ; (FILE 701, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(1008,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3732,"DXS")
+ S I(0)="^MCAR(701,",J(0)=701
  D T Q:'DN  D N D N D N:$X>0 Q:'DN  W ?0 W "Physical Examination"
  D T Q:'DN  D N D N D N:$X>0 Q:'DN  W ?0 W "General:"
  D N:$X>39 Q:'DN  W ?39 W "LYMPH NODE ENLARGEMENT:"
@@ -69,4 +70,36 @@ BEGIN ;
  D N:$X>39 Q:'DN  W ?39 W "PERIUNGAL ERYTHEMA:"
  S X=$G(^MCAR(701,D0,2)) D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,39) W:Y]"" $S($D(DXS(26,Y)):DXS(26,Y),1:Y)
  D N:$X>0 Q:'DN  W ?0 W "RASH-OTHER:"
- G ^MCARORP1
+ S X=$G(^MCAR(701,D0,1)) D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,8) W:Y]"" $S($D(DXS(27,Y)):DXS(27,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "HELIOTROPE EYELIDS:"
+ S X=$G(^MCAR(701,D0,2)) D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,27) W:Y]"" $S($D(DXS(28,Y)):DXS(28,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "KNUCKLE ERYTHEMA:"
+ D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,41) W:Y]"" $S($D(DXS(29,Y)):DXS(29,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "TELANGIECTASIS:"
+ D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,37) W:Y]"" $S($D(DXS(30,Y)):DXS(30,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "SUBCUTANEOUS CALCIFICATIONS:"
+ S X=$G(^MCAR(701,D0,1)) D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,9) W:Y]"" $S($D(DXS(31,Y)):DXS(31,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "SCLERODACTYLY:"
+ S X=$G(^MCAR(701,D0,2)) D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,33) W:Y]"" $S($D(DXS(32,Y)):DXS(32,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "KERATODERMIA BLENNORRHAGICA:"
+ D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,40) W:Y]"" $S($D(DXS(33,Y)):DXS(33,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "SCLERODERMA-EXTREMITY:"
+ D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,34) W:Y]"" $S($D(DXS(34,Y)):DXS(34,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "DACTYLITIS:"
+ S X=$G(^MCAR(701,D0,5)) D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,2) W:Y]"" $S($D(DXS(35,Y)):DXS(35,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "SCLERODERMA-GENERALIZED:"
+ S X=$G(^MCAR(701,D0,2)) D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,35) W:Y]"" $S($D(DXS(36,Y)):DXS(36,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "NAIL PITTING:"
+ D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,43) W:Y]"" $S($D(DXS(37,Y)):DXS(37,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "MORPHEA:"
+ D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,36) W:Y]"" $S($D(DXS(38,Y)):DXS(38,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "PSORIASIS:"
+ D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,29) W:Y]"" $S($D(DXS(39,Y)):DXS(39,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "DIGITAL ULCERS:"
+ D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,42) W:Y]"" $S($D(DXS(40,Y)):DXS(40,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "HEEL PAIN:"
+ S X=$G(^MCAR(701,D0,5)) D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,6) W:Y]"" $S($D(DXS(41,Y)):DXS(41,Y),1:Y)
+ K Y
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

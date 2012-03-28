@@ -1,4 +1,5 @@
-XUTMUSE2 ;SEA/RDS - TaskMan: Option, XUTMUSER, Part 3 (Edit) ;05/26/98  16:46
+XUTMUSE2 ;SEA/RDS - TaskMan: Option, XUTMUSER, Part 3 (Edit) ;05/26/98  16:46 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**36,86**;Jul 10, 1995
  ;
 TASK ;Handle Unusual Tasks

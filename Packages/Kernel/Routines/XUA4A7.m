@@ -1,5 +1,5 @@
 XUA4A7 ;ISCSF/RWF - K7, Give entrys into F6 a Provider key ;03/24/10  07:58
- ;;8.0;KERNEL;**49,542**;Jul 10, 1995;Build 5
+ ;;8.0;KERNEL;**49,542**;Jul 10, 1995;Build 6
  Q  ;don't enter from top.
 F6S ;Give provider the key.
  N %,X1,X2 S %=$G(^DIC(6,DA,"I")) I %,%<DT Q  ;see if inactive

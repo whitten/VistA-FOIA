@@ -1,4 +1,5 @@
-XQOO2 ;LUKE/SEATTLE - Out Of Order Manager Utilities ;06/16/95  14:40
+XQOO2 ;LUKE/SEATTLE - Out Of Order Manager Utilities ;06/16/95  14:40 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 SETS(XQI) ;Show the sets of options in ^XTMP return # in XQI

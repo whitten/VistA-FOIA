@@ -1,5 +1,5 @@
 DGBTE ;ALB/SCK-BENEFICIARY TRAVEL SETUP/MAIN ENTRY CALL UP; 11/20/92@1000; 11/25/92
- ;;1.0;Beneficiary Travel;**2**;September 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
 START ;
  D QUIT^DGBTEND ; kill all variables
  S PRCABN=1,IOP="HOME" D ^%ZIS K IOP
@@ -30,9 +30,6 @@ OLDCLAIM ;  find any past claims through DGBTE1 call
  I '$D(^DG(43,1,"BT"))!('$D(^DG(43.1,$O(^DG(43.1,(9999999.9999999-DGBTDT))),"BT"))) D  G EXIT2
  . ;  check for certifying official and that current (or past) FY deductable is set up 
  . W !!,"***WARNING...BENE TRAVEL PARAMETERS HAVE NOT BEEN SET UP",!,"USE THE BENEFICIARY TRAVEL PARAMETER RATES ENTER/EDIT OPTION TO PROPERLY INITIALIZE"
- ;
-COREFLS ;  coreFLS vendor interface active/inactive
- S DGBTCORE=$P($G(^DG(43,1,"BT")),U,4)
  ;
 SCREEN ;  display B/T claim information through screen1
  D SCREEN^DGBT1

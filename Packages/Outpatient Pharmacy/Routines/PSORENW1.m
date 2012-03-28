@@ -1,13 +1,14 @@
-PSORENW1 ;BIR/DSD - Renew Main Driver Continuation ;03/29/93
- ;;7.0;OUTPATIENT PHARMACY;**20,37,51,46,71,117,157,143,219,239,225**;DEC 1997;Build 29
+PSORENW1 ;IHS/DSD/JCM - RENEW MAIN DRIVER CONTINUATION ;29-Mar-2006 08:11;A,A
+ ;;7.0;OUTPATIENT PHARMACY;**20,37,51,46,71,117,157,1003,1005**;DEC 1997
  ;External reference ^VA(200 supported by DBIA 10060
- ;
+ ; Modified - IHS/CIA/PLS - 01/06/04 - Line START+5, OERR+6 and a new EP IHS
+ ;                          03/30/05 - Line IHS+4
 START ;
  S PSORENW("RX0")=^PSRX(PSORENW("OIRXN"),0),PSORENW("RX2")=^(2),PSORENW("RX3")=^(3),PSORENW("STA")=^("STA"),PSORENW("TN")=$G(^("TN")),SIGOK=+$P($G(^("SIG")),"^",2)
- S PSOIBOLD=$G(PSORENW("OIRXN"))
- D SETIB
+ S PSOIBOLD=$G(PSORENW("OIRXN")) D SETIB
  S PSORENW("PROVIDER")=$P(PSORENW("RX0"),"^",4)
  S PSORX("PROVIDER NAME")=$P($G(^VA(200,PSORENW("PROVIDER"),0)),"^")
+ D IHS   ; Call to setup IHS nodes
  S PSORENW("CLINIC")=$P(PSORENW("RX0"),"^",5),PSORENW("COPIES")=$P(PSORENW("RX0"),"^",18)
  I $G(PSOFDR),$P($G(OR0),"^",13) S PSORENW("CLINIC")=$P($G(OR0),"^",13)
  S PSORENW("REMARKS")="RENEWED FROM RX # "_$P(PSORENW("RX0"),"^")
@@ -56,6 +57,7 @@ OERR ;renewal finish from oe/rr
  S PSORENW("PROVIDER")=$P(OR0,"^",5)
  S PSORX("PROVIDER NAME")=$P($G(^VA(200,PSORENW("PROVIDER"),0)),"^")
  S $P(PSORENW("RX0"),"^",5)=$P(OR0,"^",13)
+ D IHS   ; IHS/CIA/PLS - 01/06/04 - Call to setup IHS nodes
  S PSORENW("CLINIC")=$P(OR0,"^",13)
  S PSORENW("REMARKS")="RENEWED FROM RX # "_$P(PSORENW("RX0"),"^")_"."_$S($P(OR0,"^",17)="C":" Administered in Clinic.",1:"")
  S PSORENW("SIG")=$P($G(^PSRX(PSORENW("OIRXN"),"SIG")),"^"),SIGOK=$P(^("SIG"),"^",2) I SIGOK D
@@ -74,13 +76,10 @@ OERR ;renewal finish from oe/rr
  .I $G(^PSRX(PSORENW("OIRXN"),6,I,1))]"" S PSORENW("ODOSE",PSORENW("ENT"))=^PSRX(PSORENW("OIRXN"),6,I,1)
  .K DOSE
  Q
- ;
 SETIB ;Set defaults on Renewals with Copay information
  ;If answer is in Pending File, use that, else look in Prescription file
- N PSOOICD,JJJ
- K PSOSCP,PSOANSQ("SC>50") D SCP^PSORN52D S PSOANSQ("SC>50")="" K PSOSCA
  I '$G(PSOIBOLD) Q
- I $G(PSOFDR),$G(ORD) D SETIBP Q
+ I $G(PSOFDR),$G(ORD) D SETIBP
  ;I '$$DT^PSOMLLDT Q
  I $G(PSORX(PSOIBOLD,"SC"))'=0,$G(PSORX(PSOIBOLD,"SC"))'=1 S PSORX(PSOIBOLD,"SC")=$S($P($G(^PSRX(PSOIBOLD,"IBQ")),"^")'="":$P($G(^("IBQ")),"^"),$P($G(^PSRX(PSOIBOLD,"IB")),"^"):0,1:"")
  I $G(PSORX(PSOIBOLD,"SC"))="" K PSORX(PSOIBOLD,"SC")
@@ -91,23 +90,9 @@ SETIB ;Set defaults on Renewals with Copay information
  I $G(PSORX(PSOIBOLD,"PGW"))'=0,$G(PSORX(PSOIBOLD,"PGW"))'=1,$P($G(^PSRX(PSOIBOLD,"IBQ")),"^",5)'="" S PSORX(PSOIBOLD,"PGW")=$P($G(^("IBQ")),"^",5)
  I $G(PSORX(PSOIBOLD,"HNC"))'=0,$G(PSORX(PSOIBOLD,"HNC"))'=1,$P($G(^PSRX(PSOIBOLD,"IBQ")),"^",6)'="" S PSORX(PSOIBOLD,"HNC")=$P($G(^("IBQ")),"^",6)
  I $G(PSORX(PSOIBOLD,"CV"))'=0,$G(PSORX(PSOIBOLD,"CV"))'=1,$P($G(^PSRX(PSOIBOLD,"IBQ")),"^",7)'="" S PSORX(PSOIBOLD,"CV")=$P($G(^("IBQ")),"^",7)
- I $G(PSORX(PSOIBOLD,"SHAD"))'=0,$G(PSORX(PSOIBOLD,"SHAD"))'=1,$P($G(^PSRX(PSOIBOLD,"IBQ")),"^",8)'="" S PSORX(PSOIBOLD,"SHAD")=$P($G(^("IBQ")),"^",8)
- ;
-SET2 ;for when patient status is exempt or SC>50
- I $TR($G(^PSRX(PSOIBOLD,"IBQ")),"^")="" S PSOOICD=$G(^PSRX(PSOIBOLD,"ICD",1,0)) D SET3:PSOOICD'=""
- ;
-ICD I $D(^PSRX(PSORENW("OIRXN"),"ICD",0)) D
- . N JJ,ICD,II,FLD,RXN S RXN=PSOIBOLD
- . S II=0 F  S II=$O(^PSRX(PSORENW("OIRXN"),"ICD",II)) Q:II=""!(II'?1N.N)  D
- .. S ICD=^PSRX(PSORENW("OIRXN"),"ICD",II,0),FLD=$P(ICD,U) D ICD^PSONEWF
  Q
-SET3 ;for when patient status is exempt or SC>50
- D SET3^PSORN52D
- Q
- ;
 SETIBP ;
  I $P($G(^PS(52.41,ORD,0)),"^",16)="SC"!($P($G(^(0)),"^",16)="NSC") S PSORX(PSOIBOLD,"SC")=$S($P($G(^(0)),"^",16)="SC":1,1:0)
- I $G(PSORX(PSOIBOLD,"SC"))="" K PSORX(PSOIBOLD,"SC")
  I '$$DT^PSOMLLDT Q
  N PSOIBQFN S PSOIBQFN=$G(^PS(52.41,ORD,"IBQ"))
  I $P(PSOIBQFN,"^",1)=0!($P(PSOIBQFN,"^",1)=1) S PSORX(PSOIBOLD,"MST")=$P(PSOIBQFN,"^")
@@ -116,21 +101,19 @@ SETIBP ;
  I $P(PSOIBQFN,"^",4)=0!($P(PSOIBQFN,"^",4)=1) S PSORX(PSOIBOLD,"PGW")=$P(PSOIBQFN,"^",4)
  I $P(PSOIBQFN,"^",5)=0!($P(PSOIBQFN,"^",5)=1) S PSORX(PSOIBOLD,"HNC")=$P(PSOIBQFN,"^",5)
  I $P(PSOIBQFN,"^",6)=0!($P(PSOIBQFN,"^",6)=1) S PSORX(PSOIBOLD,"CV")=$P(PSOIBQFN,"^",6)
- I $P(PSOIBQFN,"^",7)=0!($P(PSOIBQFN,"^",7)=1) S PSORX(PSOIBOLD,"SHAD")=$P(PSOIBQFN,"^",7)
- ;for when patient status is exempt, null IBQ node was set for exempts or SC>50 - data is in ICD node
- I $TR($G(^PS(52.41,ORD,"IBQ")),"^")="" S PSOOICD=$G(^PS(52.41,ORD,"ICD",1,0)) D SET3:PSOOICD'=""
- ;
-ICD2 ;
- I $D(^PS(52.41,ORD,"ICD",0)) D
- . N JJ,ICD,II,FLD,RXN S RXN=ORD
- . S II=0 F  S II=$O(^PS(52.41,ORD,"ICD",II)) Q:II=""!(II'?1N.N)  D
- .. S ICD="",ICD=^PS(52.41,ORD,"ICD",II,0)
- .. I $G(PSOSCP)>49&(II=1) S PSORX(PSOIBOLD,"SC>50")=$P(ICD,"^",4)
- .. S JJ="" F JJ=1:1:9 S FLD=$P(ICD,U,JJ) D ICD^PSONEWF
  K PSOIBQFN
  Q
 KLIB ;Kill renewal IB array
  I '$G(PSOIBOLD) Q
- K PSORX(PSOIBOLD,"SC"),PSORX(PSOIBOLD,"MST"),PSORX(PSOIBOLD,"VEH"),PSORX(PSOIBOLD,"RAD"),PSORX(PSOIBOLD,"PGW"),PSORX(PSOIBOLD,"HNC"),PSORX(PSOIBOLD,"CV"),PSORX(PSOIBOLD,"SHAD")
+ K PSORX(PSOIBOLD,"SC"),PSORX(PSOIBOLD,"MST"),PSORX(PSOIBOLD,"VEH"),PSORX(PSOIBOLD,"RAD"),PSORX(PSOIBOLD,"PGW"),PSORX(PSOIBOLD,"HNC"),PSORX(PSOIBOLD,"CV")
  K PSOIBOLD
+ Q
+ ; IHS/CIA/PLS - 01/06/04
+ ; API to set "PATIENT STATUS","QTY" and "ZCM" nodes
+IHS ; EP
+ S PSORENW("QTY")=$P(PSORENW("RX0"),"^",7)
+ ; IHS/CIA/PLS - 03/30/05 - Changed array name
+ ;S PSORENW("ZCM")=$P($G(^PSRX(PSORENW("OIRXN"),9999999)),"^",2)  ; Check Chronic Med in old script
+ S PSORENW("CM")=$P($G(^PSRX(PSORENW("OIRXN"),9999999)),"^",2)  ; Check Chronic Med in old script
+ S:'$L($G(PSORENW("PATIENT STATUS"))) PSORENW("PATIENT STATUS")=$P(PSORENW("RX0"),"^",3)
  Q

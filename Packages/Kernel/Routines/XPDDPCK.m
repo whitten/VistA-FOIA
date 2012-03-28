@@ -1,4 +1,5 @@
-XPDDPCK ;SFISC/RSD - Display a Package file information ;10/03/96  10:15
+XPDDPCK ;SFISC/RSD - Display a Package file information ;10/03/96  10:15 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**44**;Jul 05, 1995
 EN1 ;print all Patches for Package version
  N DIC,DIR,DIRUT,XPD,XPD0,XPDFL,XPDNM,XPDV,Y,Z

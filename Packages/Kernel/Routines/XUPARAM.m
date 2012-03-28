@@ -1,4 +1,4 @@
-XUPARAM ;SF/RWF - Lookup parameter substitute, KSP values ;03/26/2003  11:56
+XUPARAM ;SF/RWF - Lookup parameter substitute, KSP values ;03/26/2003  11:56 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**65,115,224**;Jul 10, 1995
  Q
 GET(%X,STYLE) ;Get substitute value

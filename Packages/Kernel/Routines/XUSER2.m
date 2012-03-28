@@ -1,13 +1,12 @@
-XUSER2 ;ISF/RWF - New Person File Utilities ;11/04/09  14:28
- ;;8.0;KERNEL;**267,251,344,534**;Jul 10, 1995;Build 6
- ;Per VHA Directive 2004-038, this routine should not be modified.
+XUSER2 ;ISF/RWF - New Person File Utilities ;9:17 AM  9 Mar 2005
+ ;;8.0;KERNEL;**267,251,344**;Jul 10, 1995
  Q
 VALDEA(X,F) ;Check for a valid DEA#
  ;Returns 0 for NOT Valid, 1 for Valid
  ;F = 1 for Facility DEA check.
  I $D(X) K:$L(X)>9!($L(X)<9)!'(X?2U7N) X
  S F=$G(F)
- I $D(X),'F,$D(DA),$D(^VA(200,"PS1",X)),$O(^(X,0))'=DA D EN^DDIOL($C(7)_"CAN'T FILE: DUPLICATE DEA NUMBER") K X
+ I $D(X),'F,$D(^VA(200,"PS1",X)),$O(^(X,0))'=DA D EN^DDIOL($C(7)_"CAN'T FILE: DUPLICATE DEA NUMBER") K X
  I $D(X),'F,$D(DA),$E(X,2)'=$E($P(^VA(200,DA,0),"^")) D EN^DDIOL($C(7)_"WARNING: DEA# FORMAT MISMATCH -- CHECK SECOND LETTER")
  I $D(X),'$$DEANUM(X) D EN^DDIOL($C(7)_"CAN'T FILE: DEA# FORMAT MISMATCH -- NUMERIC ALGORITHM FAILED") K X
  Q $D(X)
@@ -17,17 +16,6 @@ DEANUM(X) ;Check DEA # part
  S VA1=$E(X,3)+$E(X,5)+$E(X,7)+(2*($E(X,4)+$E(X,6)+$E(X,8)))
  S VA1=VA1#10,VA2=$E(X,9)
  Q VA1=VA2
- ;
-VANUM ;Check that the VA# is not Active for anybody else. Called from ^DD(200,53.3,0)
- ;Needs DA, DT and X
- Q:'$D(X)!'$D(DA)
- N %
- I $D(^VA(200,"PS2",X)) D
- . S %=0
- . F  S %=$O(^VA(200,"PS2",X,%)) Q:'%  I %'=DA,$S('$P($G(^VA(200,%,"PS")),"^",4):1,1:$P(^("PS"),"^",4)'<DT) K X Q
- . Q
- I '$D(X) D EN^DDIOL($C(7)_"That VA# is in active use.  ","","!,?5")
- Q
  ;
 REQ(XUV,XUFLAG) ;Called from forms:
  ; XUEXISTING USER, XUNEW USER, XUREACT USER, XU-CLINICAL TRAINEE

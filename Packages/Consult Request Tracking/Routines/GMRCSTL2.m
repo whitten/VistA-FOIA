@@ -1,5 +1,5 @@
 GMRCSTL2 ;SLC/DCM,dee;MA - List Manager Format Routine - Get Active Consults by service - pending,active,scheduled,incomplete,etc. ;4/18/01  10:31
- ;;3.0;CONSULT/REQUEST TRACKING;**7,21,22,63**;DEC 27, 1997;Build 10
+ ;;3.0;CONSULT/REQUEST TRACKING;**7,21,22**;DEC 27, 1997
  ; Patch #21 changed array GMRCTOT to ^TMP("GMRCTOT",$J)
  ; Patch #21 also added a plus sign to the $P when setting
  ; GMRCDLA to check for a NULL value.
@@ -98,7 +98,7 @@ CTRL ..I GMRCCTRL#100\10 D
  ..; IF Consults
  ..I GMRCARRN="IFC" D
  ...S ^TMP("GMRCR",$J,GMRCARRN,GMRCCT,0)=^TMP("GMRCR",$J,GMRCARRN,GMRCCT,0)_$J("",25-$L(GMRCLOC))_GMRCIRFN_$J("",17-$L(GMRCIRFN))_" "_GMRCIDD_$J("",9-$L(GMRCIDD))_"  "_GMRCRDT
- ...I '$D(GMRCCNSLT(GMRCPT)) S ^TMP("GMRCTOT",$J,1,GMRCSVC,"F",GMRCIRFN)=^TMP("GMRCTOT",$J,1,GMRCSVC,"F",GMRCIRFN)+1,GMRCCNSLT(GMRCPT)=""
+ ...S ^TMP("GMRCTOT",$J,1,GMRCSVC,"F",GMRCIRFN)=^TMP("GMRCTOT",$J,1,GMRCSVC,"F",GMRCIRFN)+1
  ...I GMRCIDD'="N/A" D
  ....S $P(GMRCST(1,GMRCSVC,GMRCIRFN),"^")=$P(GMRCST(1,GMRCSVC,GMRCIRFN),"^")+GMRCIDD
  ....S $P(GMRCST(1,GMRCSVC,GMRCIRFN),"^",2)=$P(GMRCST(1,GMRCSVC,GMRCIRFN),"^",2)+1
@@ -112,10 +112,8 @@ ADDTOT ..;Add to totals
  ..S:",3,4,5,6,8,9,11,99,"[(","_STATUS_",") ^TMP("GMRCTOT",$J,1,GMRCSVC,"P")=^TMP("GMRCTOT",$J,1,GMRCSVC,"P")+1
  ..;  this status (STATUS) for this service
  ..S ^TMP("GMRCTOT",$J,1,GMRCSVC,STATUS)=^TMP("GMRCTOT",$J,1,GMRCSVC,STATUS)+1
- ..;  this status (STATUS) for services to all of its groupers
- F GRP=GROUPER:-1:1  D
- . I $D(^TMP("GMRCTOTX",$J,GROUPER(GRP),GMRCSVC,STATUS)) Q
- . S ^TMP("GMRCTOT",$J,2,GROUPER(GRP),STATUS)=$G(^TMP("GMRCTOT",$J,2,GROUPER(GRP),STATUS))+^TMP("GMRCTOT",$J,1,GMRCSVC,STATUS),^TMP("GMRCTOTX",$J,GROUPER(GRP),GMRCSVC,STATUS)=""
+ ;  this status (STATUS) for services to all of its groupers
+ F GRP=GROUPER:-1:1 S ^TMP("GMRCTOT",$J,2,GROUPER(GRP),STATUS)=$G(^TMP("GMRCTOT",$J,2,GROUPER(GRP),STATUS))+^TMP("GMRCTOT",$J,1,GMRCSVC,STATUS)
  Q
  ;
 GETRDT(GMRCPT) ;get the received date

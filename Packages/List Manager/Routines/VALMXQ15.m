@@ -1,5 +1,5 @@
 VALMXQ15 ; alb/mjk - XQORO for export with LM v1 ; 3/30/93
- ;;1;List Manager;**2**;Aug 13, 1993
+ ;;1;List Manager;;Aug 13, 1993
  ;
  ;
 XQORO ; SLC/KCM - Order Entry Calls ;12/14/92  09:46
@@ -9,6 +9,7 @@ ENTRY ;Setup initial 'add orders' context
  I $S($D(^DD(100,0,"VR")):^("VR")<1.89,1:1) D WARN Q
  I $D(^ORD(100.99,1,0)),$P(^(0),"^",16) S DIROUT="^^" W !!,*7,"OE/RR Software is currently being updated. Access temporarily denied.",! Q
  I $D(XRTL) D T0^%ZOSV ; Start RT Log
+ I $L($T(LOGRSRC^%ZOSV)),XQORNOD["ORD(101,",$P(^ORD(101,+XQORNOD,0),"^",4)'="M",$P(^(0),"^",4)'="Q" D:'$D(XQXFLG) ABT^XQ12 I $P(XQXFLG,"^",2)=1 S ORPRFRM="*"_$P(^ORD(101,+XQORNOD,0),"^") D LOGRSRC^%ZOSV("*"_ORPRFRM)
  S XQORQUIT=1 Q:'$D(ORACTION)  Q:ORACTION  S (ORGY,ORACTION,OREND)=0
  D ADD^OR1 I OREND!$D(ORPTLK) S OREND=0 Q
  S ^TMP("XQORS",$J,0,"CTXT","ADD")=XQORS,^TMP("XQORS",$J,XQORS,"CTX","AD")=""
@@ -32,6 +33,7 @@ EXIT ;When done adding, accept orders and transact them
  D RSTR,AFT^OR1,RSTR K ^TMP("XQORS",$J,0,"CTXT","ADD"),^TMP("XQORS",$J,XQORS,"CTX","AD") S (ORGY,ORACTION)=""
  D PT1^ORX2
  I $D(XRT0) S XRTN="ADD ORDERS" D T1^%ZOSV ; Stop RT Log
+ I $D(ORPRFRM),$L($T(LOGRSRC^%ZOSV)) D:'$D(XQXFLG) ABT^XQ12 D:$P(XQXFLG,"^",2)=1 LOGRSRC^%ZOSV("*"_ORPRFRM) K ORPRFRM
  Q
 RSTR S ORVP=$P(OROLD,"^"),ORPV=$P(OROLD,"^",2),ORL=$P(OROLD,"^",3),ORTS=$P(OROLD,"^",4),ORL(0)=$P(OROLD,"^",5),ORL(1)=$P(OROLD,"^",6),ORDUZ=$P(OROLD,"^",7),ORNP=$P(OROLD,"^",8),ORL(2)=$P(OROLD,"^",9),OROLOC=$P(OROLD,"^",10)
  S OROLOC=$S($L($P(OROLD,"^",10)):$P(OROLD,"^",10),1:ORL),DFN=$P(OROLD,"^",11) S:$D(^TMP("XQORS",$J,0,"CTXT","ADD")) (ORGY,ORACTION)=0

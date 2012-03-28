@@ -1,4 +1,5 @@
-HLCSORAT ;ALB/MFK/jc - HEALTH LEVEL SEVEN ;07/13/99  15:20
+HLCSORAT ;ALB/MFK/jc - HEALTH LEVEL SEVEN ;07/13/99  15:20 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**57**;Oct 13, 1995
  ;Report low level communications errors for serial links (HLLP,
  ;X3.28) in file 870. 

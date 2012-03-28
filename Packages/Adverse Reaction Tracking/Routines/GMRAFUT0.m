@@ -1,5 +1,6 @@
-GMRAFUT0 ;HIRMFO/YMP,RFM,WAA-ALLERGY/ADVERSE REACTION FILE UTILITIES ;3/14/05  12:21
- ;;4.0;Adverse Reaction Tracking;**23**;Mar 29, 1996
+GMRAFUT0 ;HIRMFO/YMP,RFM,WAA-ALLERGY/ADVERSE REACTION FILE UTILITIES ;29-Apr-2011 14:29;DU
+ ;;4.0;Adverse Reaction Tracking;**23,1002**;Mar 29, 1996;Build 32
+ ;IHS/MSC/MGH Modififed warning for IHS sites
 EN1 ; Entry for GMRA LOCAL ALLERGIES EDIT option
  D PROCESS Q  ;23
  K DR,DIC,DLAYGO,X,Y,DA,GMRAIEN
@@ -70,8 +71,13 @@ Q4 K %DT,GMRA
  Q
  ;PROCESS section added with patch 23
 PROCESS ;Additions to 120.82 and 120.83 are no longer allowed
- I $L($T(NTRTMSG^HDISVAP)) D NTRTMSG^HDISVAP() Q
- W !!,"The addition of local reactants and sign/symptoms are no longer"
- W !,"allowed.  Requests for new terms/concepts should be made through"
- W !,"the New Term Rapid Turn-around (NTRT) process.",!
+ ;I $L($T(NTRTMSG^HDISVAP)) D NTRTMSG^HDISVAP() Q
+ W !!!!,"In support of national standardization of the contents of this file,"
+ W !,"local site addition and modification functions are no longer available."
+ W !,"If you wish to request a new term or modify an existing term, please request"
+ W !,"through the IHS RPMS Feedback web site located at http://www.ihs.gov/RPMS."
+ W !,"Once at the IHS RPMS Feedback page, select the RPMS Application 'Pharmacy-"
+ W !,"new Reactant/Symptom Request(PRSR)' to ensure these are reviewed in a timely"
+ W !,"manner. If you have any questions regarding this new term request process,"
+ W !,"please contact your local Adverse Reaction Tracking package coordinator.",!
  Q

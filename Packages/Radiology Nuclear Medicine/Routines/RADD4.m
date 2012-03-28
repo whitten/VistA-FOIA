@@ -1,7 +1,34 @@
 RADD4 ;HISC/GJC-Radiology Utility Routine ;11/25/97  12:40
- ;;5.0;Radiology/Nuclear Medicine;**65**;Mar 16, 1998;Build 8
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
- ;supported IA #10104 reference to STRIP^XLFSTR and LOW^XLFSTR
+DCHK() ; Check if drug if DRUG is active AND a Radiopharmaceutical.
+ ; 'RASTAT=1' if active AND RADG condition met
+ ; 'RASTAT=0' if inactive OR RADG condition not met
+ ; VERSION 5.0 called from ^DD(70.21,.01,12.1) & DCHK^RADD1
+ ; 'Y'    is the IEN for the Drug file
+ ; 'RADT' is the cutoff date for drugs in the drug file
+ ; 'RADG':$S(RADG="R":Radiopharm,"P":non-Radioharm,1:non-Radiopharm)
+ N RACLASS,RADRUG,RASTAT S:RADG']"" RADG="P"
+ S RADRUG(2)=$P($G(^PSDRUG(Y,0)),"^",2)
+ S RACLASS="^DX200^DX201^DX202^"
+ S RASTAT=$$DCHK1()  ; is it active '1' yes, '0' no.
+ I RASTAT D  ; is active check class
+ . S:RADG="R"&(RACLASS'[("^"_RADRUG(2)_"^")) RASTAT=0
+ . S:RADG="P"&(RACLASS[("^"_RADRUG(2)_"^")) RASTAT=0
+ . Q
+ Q RASTAT
+ ;
+DCHK1() ; Check if drug if DRUG is an active pharmaceutical
+ ; '1' if active AND Pharm, '0' if inactive
+ ; VERSION 5.0 called from DCHK above
+ ; 'Y'    is the IEN for the Drug file
+ ; 'RADT'  is the cutoff date for drugs in the drug file
+ ; VERSION 5.0
+ N RAINACT
+ S RAINACT=+$G(^PSDRUG(Y,"I"))
+ Q:'RAINACT 1 ; not inactive
+ I RAINACT,(RAINACT'>RADT) Q 0 ; not active
+ Q 1 ; active
  ;
 VALADM() ;edit validation
  ;Used to validate/screen radiopharm dosage administrator,

@@ -1,6 +1,6 @@
-IBDFU1 ;ALB/CJM - AICS get list descriptions ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**15**;APR 24, 1997
- ;
+IBDFU1 ;ALB/CJM - ENCOUNTER FORM ;NOV 16,1992
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
+ ;utilities
 LSTDESCR(IBLIST) ;parses the IBLIST record pointed to by IBBLK and puts the
  ;descripition in IBLIST - should be called by reference
  ;returns 1 if list description not found
@@ -28,8 +28,6 @@ LSTDESCR(IBLIST) ;parses the IBLIST record pointed to by IBBLK and puts the
  S IBLIST("DYNAMIC")=+$P(NODE,"^",14)
  S IBLIST("OVERFLOW")=+$P(NODE,"^",15)
  S IBLIST("OTHER")=$P(NODE,"^",16)
- S IBLIST("CLRMLIST")=$P(NODE,"^",19)
- S IBLIST("CLRM")=+$P($G(^IBE(357.6,+$P(NODE,"^",11),0)),"^",20)
  S (IBLIST("NAR_READ"),IBLIST("NAR_PRINT"),IBLIST("CODE_READ"),IBLIST("CODE_PRINT"))=0
  I $P(NODE,"^",17)=1 S IBLIST("NAR_PRINT")=1,IBLIST("CODE_PRINT")=0
  I $P(NODE,"^",17)=2 S IBLIST("NAR_PRINT")=0,IBLIST("CODE_PRINT")=1
@@ -76,8 +74,6 @@ LSTDSCR2(IBLIST) ;parses the IBLIST record pointed to by IBBLK and puts the
  S IBLIST("RTN")=$P(NODE,"^",11)
  S IBLIST("DYNAMIC")=+$P(NODE,"^",14)
  S IBLIST("BTWN")=$P(NODE,"^",8)
- S IBLIST("CLRMLIST")=$P(NODE,"^",19)
- S IBLIST("CLRM")=+$P($G(^IBE(357.6,+$P(NODE,"^",11),0)),"^",20)
  ;get subcolumn information
  F J=1:1:8 S C=$O(^IBE(357.2,IBLIST,2,"B",J,"")) S NODE=$S('C:"",1:$G(^IBE(357.2,IBLIST,2,C,0))) D
  .Q:NODE=""  S IBLIST("SCTYPE",J)=$P(NODE,"^",4) Q:'IBLIST("SCTYPE",J)

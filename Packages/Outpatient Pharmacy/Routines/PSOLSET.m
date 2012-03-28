@@ -1,8 +1,11 @@
-PSOLSET ;BHAM ISC/SAB - site parameter set up ;12/03/92
-VERS ;;7.0;OUTPATIENT PHARMACY;**10,22,32,40,120,247,359**;DEC 1997;Build 27
+PSOLSET ;BHAM ISC/SAB - site parameter set up ;07-Jul-2010 14:21;SM
+VERS ;;7.0;OUTPATIENT PHARMACY;**10,22,32,40,120,1009**;DEC 1997
+ ;
  ;Reference to ^PS(59.7 supported by DBIA 694
  ;Reference to ^PSX(550 supported by DBIA 2230
- ;Reference to ^%ZIS(2 supported by DBIA 3435
+ ;Reference to ^%ZIS supported by DBIA 3435
+ ; Modified IHS/CIA/PLS - 12/30/03 - Line DIV3+11
+ ;          IHS/MSC/PLS - 06/29/10 - Line LBL - Added check for APSPLAP
  ;
  I '$D(DUZ) W !,$C(7),"DUZ Number must be defined !!",! G LEAVE
  W !,"Outpatient Pharmacy software - Version "_$P($T(VERS),";",3)
@@ -29,20 +32,23 @@ DIV3 K DIR S PSOSITE=+Y W:PSOCNT>1 !!?10,"You are logged on under the ",$P(^PS(5
  E  K PSXSYS
  S PSODIV=$S(($P(PSOSYS,"^",2))&('$P(PSOSYS,"^",3)):0,1:1)
  I $D(DUZ),$D(^VA(200,+DUZ,0)) S PSOCLC=DUZ
+ ; IHS/CIA/PLS - 12/30/03 - Call to setup IHS variables
+ S X="APSPSITE" X ^%ZOSF("TEST") I $T D EP^APSPSITE
 PLBL I $P(PSOPAR,"^",8) D
  .S %ZIS="MNQ",%ZIS("A")="Select PROFILE PRINTER: " S:$G(PSOCLBL)&($D(PSOPROP)) %ZIS("B")=PSOPROP
  .D ^%ZIS K %ZIS,IO("Q"),IOP Q:POP  S PSOPROP=ION D ^%ZISC
-LBL S %ZIS="MNQ",%ZIS("A")="Select LABEL PRINTER: " S:$G(PSOCLBL)&($D(PSOLAP))!($G(SUSPT)) %ZIS("B")=$S($G(SUSPT):PSLION,1:PSOLAP)
- D ^%ZIS K %ZIS,IO("Q"),IOP S:POP PSOQUIT=1 G:POP EXIT S @$S($G(SUSPT):"PSLION",1:"PSOLAP")=ION,PSOPIOST=$G(IOST(0))
+LBL S %ZIS="MNQ",%ZIS("A")="Select LABEL PRINTER: " S:$G(PSOCLBL)&($D(PSOLAP))!($G(SUSPT))!($D(APSPLAP)) %ZIS("B")=$S($G(SUSPT):PSLION,$L($G(APSPLAP)):APSPLAP,1:$S($G(PSOLAP):PSOLAP,1:"HOME"))
+ D ^%ZIS K %ZIS,IO("Q"),IOP G:POP EXIT S @$S($G(SUSPT):"PSLION",1:"PSOLAP")=ION,PSOPIOST=$G(IOST(0))
  N PSOIOS S PSOIOS=IOS D DEVBAR^PSOBMST
  S PSOBARS=PSOBAR1]""&(PSOBAR0]"")&$P(PSOPAR,"^",19),PSOIOS=IOS D ^%ZISC
 LASK I $G(PSOPIOST),$D(^%ZIS(2,PSOPIOST,55,"B","LL")) G EXIT
- K DIR S DIR("A")="OK to assume label alignment is correct",DIR("B")="YES",DIR(0)="Y",DIR("?")="Enter Y if labels are aligned, N if they need to be aligned." D ^DIR S:$D(DIRUT) PSOQUIT=1 G:Y!($D(DIRUT)) EXIT
+ K DIR S DIR("A")="OK to assume label alignment is correct",DIR("B")="YES",DIR(0)="Y",DIR("?")="Enter Y if labels are aligned, N if they need to be aligned." D ^DIR G:Y!($D(DIRUT)) EXIT
 P2 S IOP=$G(PSOLAP) D ^%ZIS K IOP I POP W $C(7),!?5,"Printer is busy.",! G LASK
  U IO(0) W !,"Align labels so that a perforation is at the top of the",!,"print head and the left side is at column zero."
- W ! K DIR,DIRUT,DUOUT,DTOUT S DIR(0)="E" D ^DIR K DIR,DTOUT,DUOUT I $D(DIRUT) D ^%ZISC G EXIT
- D ^PSOLBLT D ^%ZISC
- K DIRUT,DIR S DIR("A")="Is this correct",DIR("B")="YES",DIR(0)="Y",DIR("?")="Enter Y if labels are aligned correctly, N if they need to be aligned." D ^DIR S:$D(DIRUT) PSOQUIT=1 G:Y!($D(DIRUT)) EXIT
+ ; IHS/CIA/PLS - 12/30/03 - Call IHS test label routine
+ ;W ! K DIR,DIRUT,DUOUT,DTOUT S DIR(0)="E" D ^DIR K DIR,DTOUT,DUOUT Q:$D(DIRUT)  D ^PSOLBLT D ^%ZISC
+ W ! K DIR,DIRUT,DUOUT,DTOUT S DIR(0)="E" D ^DIR K DIR,DTOUT,DUOUT Q:$D(DIRUT)  D ^APSPLBLT D ^%ZISC
+ K DIRUT,DIR S DIR("A")="Is this correct",DIR("B")="YES",DIR(0)="Y",DIR("?")="Enter Y if labels are aligned correctly, N if they need to be aligned." D ^DIR G:Y!($D(DIRUT)) EXIT
  G P2
 LEAVE S XQUIT="" G FINAL
 Q W !?10,$C(7),"Default printer for labels must be entered." G LBL
@@ -54,6 +60,7 @@ FINAL ;exit action from main menu - kill and quit
  K SITE,PSOCP,PSNP,PSL,PRCA,PSLION,PSOPINST
  K GROUPCNT,DISGROUP,PSOCAP,PSOINST,PSOION,PSONULBL,PSOSITE7,PFIO,PSOIOS,X,Y,PSOSYS,PSODIV,PSOPAR,PSOPAR7,PSOLAP,PSOPROP,PSOCLC,PSOCNT
  K PSODTCUT,PSOSITE,PSOPRPAS,PSOBAR1,PSOBAR0,PSOBARS,SIG,DIR,DIRUT,DTOUT,DIROUT,DUOUT,I,%ZIS,DIC,J,PSOREL
+ S X="APSPXUT" X ^%ZOSF("TEST") I $T D ^APSPXUT   ; IHS/CIA/PLS - Clean up variables
  Q
 GROUP ;display group
  S GROUPCNT=0,AGROUP="" I $D(^PS(59.3,0)) F  S AGROUP=$O(^PS(59.3,"B",AGROUP)) Q:AGROUP=""  D

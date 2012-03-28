@@ -1,5 +1,5 @@
-LR7OSUM1 ;DALOI/dcm - Silent Patient cum cont. ; Mar 11, 2003
- ;;5.2;LAB SERVICE;**121,187,256,286,384**;Sep 27, 1994;Build 2
+LR7OSUM1 ;VA/DALOI/dcm - Silent Patient cum cont. ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**121,187,256,286,1027**;NOV 01, 1997
  ;
 LRIDT ; from LR7OSUM
  F  S LRIDT=$O(^LR(LRDFN,"CH",LRIDT)) Q:LRIDT<1!(LRIDT>LROUT)!(CT1>COUNT)  I $D(^(LRIDT,0)) S X=^(0),CT1=CT1+1 D LRIIDT
@@ -87,14 +87,43 @@ MISC ;
  ;
  S:'$D(^TMP($J,LRDFN,"MISC",LRIDT,0)) ^(0)=LRIDT_U_LRVIDT_U_LRVDT_U_LRAN_U_LRSPM
  ;S ^TMP($J,LRDFN,"MISC",LRIDT,LRTNN)=LRTSTVAL_U_LRSPM_U_LRTST_U_X1_U_LRSUB
- S ^TMP($J,LRDFN,"MISC",LRIDT,LRTNN)=$P(LRTRES,"^")_U_LRSPM_U_LRTST_U_$P(LRTRES,"^",2)_U_LRSUB_U_$P(LRTRES,"^",3,6)
+ ; S ^TMP($J,LRDFN,"MISC",LRIDT,LRTNN)=$P(LRTRES,"^")_U_LRSPM_U_LRTST_U_$P(LRTRES,"^",2)_U_LRSUB_U_$P(LRTRES,"^",3,6)
+ ;
+ ; ----- BEGIN IHS/OIT/MKK -- LR*5.2*1027
+ ;       If the result of the test is free text, it's possible that the
+ ;       the $L(LRTRES)>30, which is too wide for 80-char screen AND the
+ ;       text of the result needs to be wrapped.
+ S:$L($P(LRTRES,"^"))<31 ^TMP($J,LRDFN,"MISC",LRIDT,LRTNN)=$P(LRTRES,"^")_U_LRSPM_U_LRTST_U_$P(LRTRES,"^",2)_U_LRSUB_U_$P(LRTRES,"^",3,6)
+ I $L($P(LRTRES,"^"))>30 D
+ . NEW CRLF,LINE,RESULT,WRAPPED
+ . S RESULT(1)=$P(LRTRES,"^")
+ . D WRAP^BLRUTIL3("RESULT",29)
+ . S LINE=1
+ . S CRLF=$C(13)_$C(10)
+ . S WRAPPED=$G(^TMP("BLRUTIL3",$J,LINE,0))
+ . F  S LINE=$O(^TMP("BLRUTIL3",$J,LINE))  Q:LINE<1  D
+ .. S WRAPPED=WRAPPED_CRLF_$J("",49)_$G(^TMP("BLRUTIL3",$J,LINE,0))
+ . S ^TMP($J,LRDFN,"MISC",LRIDT,LRTNN)=WRAPPED_U_LRSPM_U_LRTST_U_$P(LRTRES,"^",2)_U_LRSUB_U_$P(LRTRES,"^",3,6)
+ . K ^TMP("BLRUTIL3",$J)
+ ; ----- END IHS/OIT/MKK -- LR*5.2*1027
  ;
  S X=$S($D(^LAB(60,LRTST,.1)):$P(^(.1),"^"),1:$P(^LAB(60,LRTST,0),"^")),^TMP("LRT",$J,X)="MISCELLANEOUS TESTS"
  ;
  ; Grab specimen comments
  I $D(^LR(LRDFN,"CH",LRIDT,1,0)),'$D(^TMP($J,LRDFN,"MISC",LRIDT,"TX",0)) D
  . S ^TMP($J,LRDFN,"MISC",LRIDT,"TX",0)="",L=0
- . F  S L=$O(^LR(LRDFN,"CH",LRIDT,1,L)) Q:L<1  S ^TMP($J,LRDFN,"MISC",LRIDT,"TX",L,0)=^LR(LRDFN,"CH",LRIDT,1,L,0)
+ . ; F  S L=$O(^LR(LRDFN,"CH",LRIDT,1,L)) Q:L<1  S ^TMP($J,LRDFN,"MISC",LRIDT,"TX",L,0)=^LR(LRDFN,"CH",LRIDT,1,L,0)  I $G(^LR(LRDFN,"CH",LRIDT,1,L,0))["Test Performed at" S ADDRFLAG="YES"
+ . ; BEGIN -- IHS/OIT/MKK - LR*5.2*1027
+ . NEW ADDRFLAG
+ . S ADDRFLAG="NO"
+ . F  S L=$O(^LR(LRDFN,"CH",LRIDT,1,L)) Q:L<1  D
+ .. S ^TMP($J,LRDFN,"MISC",LRIDT,"TX",L,0)=^LR(LRDFN,"CH",LRIDT,1,L,0)
+ .. I $G(^LR(LRDFN,"CH",LRIDT,1,L,0))["Test Performed at" S ADDRFLAG="YES"
+ . ;
+ . I ADDRFLAG="YES" D
+ .. S L=1+$O(^LR(LRDFN,"CH",LRIDT,1,L),-1)
+ .. S ^TMP($J,LRDFN,"MISC",LRIDT,"TX",L,0)=" "   ; Put in extra "space" -- better readibility
+ . ; END -- IHS/OIT/MKK - LR*5.2*1027
  ;
  ; Grab test interpretation
  I $O(^LAB(60,LRTST,1,LRSPM,1,0)) D
@@ -147,8 +176,6 @@ CHKUN ; Check units and normals with cumulative report values
  ;
  S @("LRHI="_$S($P(LRX,"^",3)'="":$P(LRX,"^",3),$P(LRX,"^",12)'="":$P(LRX,"^",12),1:""""""))
  I LRLO'=$P(LRTRES,"^",3)!(LRHI'=$P(LRTRES,"^",4)) D
- . ; check to see if these values are numeric and are different because of leading or trailing zeroes
- . I '$$REALDIFF Q
  . I LRFLAG S LRY=LRY_" and"
  . S LRY=LRY_" Normals: "_$P(LRTRES,"^",3)_"-"_$P(LRTRES,"^",4),LRFLAG=1
  ;
@@ -157,24 +184,3 @@ CHKUN ; Check units and normals with cumulative report values
  S L=+$O(^TMP($J,LRDFN,LRMH,LRSH,LRIDT,"TX",9999999),-1),L=L+1
  S LRY=LRY_" ***",^TMP($J,LRDFN,LRMH,LRSH,LRIDT,"TX",L,0)=LRY
  Q
- ;
- ;
-REALDIFF() ;
- ; function to determine if values are numeric and are different
- ; solely because of leading or trailing zeroes
- ;     returns 0 if difference is because of leading/trailing zeroes
- ;     returns 1 if differences are meaningful
- N LRTRESLO,LRTRESHI,DIFF
- S LRTRESLO=$P(LRTRES,"^",3),LRTRESHI=$P(LRTRES,"^",4)
- S DIFF=0
- I LRLO'=LRTRESLO S DIFF=1 D
- . I LRLO?.N!(LRLO?.N1".".N) D
- . . I LRTRESLO?.N!(LRTRESLO?.N1".".N) D
- . . . I +LRLO=+LRTRESLO S DIFF=0
- I DIFF Q 1
- I LRHI'=LRTRESHI S DIFF=1 D
- . I LRHI?.N!(LRHI?.N1".".N) D
- . . I LRTRESHI?.N!(LRTRESHI?.N1".".N) D
- . . . I +LRHI=+LRTRESHI S DIFF=0
- I DIFF Q 1
- Q 0

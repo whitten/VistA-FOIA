@@ -1,4 +1,6 @@
-LRUTA ;AVAMC/REG - DISPLAY LAB TEST INFO FOR LAB ; 2/14/89  17:18 ;
+LRUTA ; IHS/DIR/FJE - DISPLAY LAB TEST INFO FOR LAB 2/14/89 17:18 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  N N,LRCSREC
  S IOP="HOME" D ^%ZIS W @IOF
@@ -11,7 +13,8 @@ HDR W @IOF,"Lab test",?32,"Stat ok ?",?44,"Cost",?58,"Lab Test Synonym",!
  W !! G ASK
 LIST S N=0
  F A=1:1 S N=$O(^LAB(60,LRIFN,3,N)) Q:'N  D
- . W:A=1 !!,"Collection Sample",?21,"VA Lab Slip",?37,"Container"
+ . ;W:A=1 !!,"Collection Sample",?21,"VA Lab Slip",?37,"Container"
+ . W:A=1 !!,"Collection Sample",?21,"Lab Slip",?37,"Container"  ;IHS/ANMC/CLS 08/18/96
  . W ?68,"Vol Req(ml)"
  . S LRND=^LAB(60,LRIFN,3,N,0)
  . D SHOW

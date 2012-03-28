@@ -1,5 +1,6 @@
-LAMIVTL6 ;DAL/HOAK Vitek setup 031896
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**12**;Sep 27,1994
+LAMIVTL6 ;VA/DAL/HOAK - Vitek setup 031896 ;1/22/96  08:30 ;
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**1030**;NOV 01, 1997
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**12**;Sep 27,1994;Build 7
 INIT ;
  ; This process works with LAB(61.38, in setting up the vitek
  ; literal interface

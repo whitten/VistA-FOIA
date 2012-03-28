@@ -45,4 +45,3 @@ EXIT Q
 SETUP ;_._._.TMP Array_._._.
  F I="UN","CA","NS","NEW","ESTABLISHED","CONSULT","OTHER","OTHER CPT","ENT","NVCPT","TOT" S ^TMP($J,PXRRCL,I)=0
  Q
-   

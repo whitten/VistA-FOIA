@@ -1,4 +1,4 @@
-SDAMXLD ; GENERATED FROM 'SDAMVLD' PRINT TEMPLATE (#232) ; 07/25/98 ; (FILE 409.65, MARGIN=80)
+SDAMXLD ; GENERATED FROM 'SDAMVLD' PRINT TEMPLATE (#3569) ; 10/29/04 ; (FILE 409.65, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(232,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3569,"DXS")
+ S I(0)="^SDD(409.65,",J(0)=409.65
  D N:$X>3 Q:'DN  W ?3 W "Appointment Date: "
  S X=$G(^SDD(409.65,D0,0)) S Y=$P(X,U,1) D DT
  D N:$X>0 Q:'DN  W ?0 W "Date Update Started: "

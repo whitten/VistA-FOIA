@@ -1,10 +1,5 @@
-RASTREQ ;HISC/CAH,GJC AISC/MJK-Status Requirements Check Routine ;06/05/09  10:08
- ;;5.0;Radiology/Nuclear Medicine;**1,10,23,40,56,99,90**;Mar 16, 1998;Build 20
- ;Supported IA #10104 UP^XLFSTR
- ;Supported IA #1367 LKUP^XPDKEY
- ;Supported IA #10060 ^VA(200
- ;Supported IA #10076 ^XUSEC(
- ;Supported IA #2056 GET1^DIQ and GETS^DIQ
+RASTREQ ;HISC/CAH,GJC AISC/MJK-Status Requirements Check Routine ;6/3/98  09:56
+ ;;5.0;Radiology/Nuclear Medicine;**1,10,23,40**;Mar 16, 1998
  ; Called by 
  ; (1) Stat Track's [RA STATUS CHANGE]'s fld EXAM STATUS' input transform
  ; (2) ASK+22^RASTED, if user "^" out of stat trk editing
@@ -24,7 +19,6 @@ RASTREQ ;HISC/CAH,GJC AISC/MJK-Status Requirements Check Routine ;06/05/09  10:0
  ; If tracking ^-out, this rtn would be called outside of edt tmpl,
  ; and thus the DA vars would not be defined, so we need to set them here
  ;
- N RASAVY M RASAVY=Y  ;save the value of Y, patch #90
  S:'$D(DA)#2 DA=RACNI S:'$D(DA(1))#2 DA(1)=RADTI S:'$D(DA(2))#2 DA(2)=RADFN
  ; If Fileman enter/edit, we need to define RADFN, RADTI, RACNI so the
  ; nuc med checks won't bomb
@@ -33,14 +27,14 @@ RASTREQ ;HISC/CAH,GJC AISC/MJK-Status Requirements Check Routine ;06/05/09  10:0
  S RAIMGTYI=+$P($G(^RADPT(DA(2),"DT",DA(1),0)),U,2),RAIMGTYJ=$P($G(^RA(79.2,+RAIMGTYI,0)),U,1),RASAVTYJ=RAIMGTYJ
  S RAMES1="W:$G(K)=$P($G(^RA(72,+$G(RANXT72),0)),U,3)&('$D(ZTQUEUED)#2) !?3,""No '"",RAZ,""'"",?35,"" entered for this exam.""" ; display if at the ranext exm stat level
  S RAXX=+$G(X)
- I '$D(^RA(72,RAXX,0))!(RAIMGTYJ']"") D  M Y=RASAVY Q
+ I '$D(^RA(72,RAXX,0))!(RAIMGTYJ']"") D  Q
  . K X W:'$D(ZTQUEUED)#2 !?3,"Error: cannot determine Imaging Type of exam.  Contact IRM."
  . K RAMES1,RAXX
  . Q
  N RA,RASN,RASTI,RADES,RAOKAY,RA3
  ; RADES = order seq. desired, RAOKAY= actual order seq. okay'd
  S X1=$G(^RA(72,RAXX,0)),RADES=$P(X1,U,3)
- I $$LKUP^XPDKEY(+$P(X1,"^",4))]"",'$D(^XUSEC($$LKUP^XPDKEY(+$P(X1,"^",4)),DUZ)) K X W:'$D(ZTQUEUED)#2 !?3,"You do not have the proper access privileges to ",!?3,"change this exam to this status" M Y=RASAVY Q
+ I $$LKUP^XPDKEY(+$P(X1,"^",4))]"",'$D(^XUSEC($$LKUP^XPDKEY(+$P(X1,"^",4)),DUZ)) K X W:'$D(ZTQUEUED)#2 !?3,"You do not have the proper access privileges to ",!?3,"change this exam to this status" Q
  S RAJ=^RADPT(DA(2),"DT",DA(1),"P",DA,0),RAOR=-1
  S RABEFORE=$P($G(^RA(72,+$P(RAJ,U,3),0)),U,3) ; current order seq
  ; Don't need to set RAORDIFN,RACS,RAPRIT,RAF5
@@ -76,18 +70,15 @@ KOUT1 ; check for higher qualifying status(es)
  W:'$D(ZTQUEUED)#2 !!,"Since Status Tracking can only upgrade one status at a time,",!,"please edit this exam again.",!
 KOUT2 S RAAFTER=RAOKAY ;return as actual seq order used, not nec. highest
  K RAIMGTYI,RAIMGTYJ,RAMES1,RAZ,RAXX,RAJ,RAS,RAK,RAE,X1,RASAVTYJ
- M Y=RASAVY
  Q
  ;
 1 ;Technologist Check
- N DIERR
- S RA("TECH")="" I $O(^RADPT(DA(2),"DT",DA(1),"P",DA,"TC",0))>0 S RA("TECH")=+^($O(^(0)),0) S RA("TECH")=$$GET1^DIQ(200,RA("TECH")_",",.01)
+ S RA("TECH")="" I $O(^RADPT(DA(2),"DT",DA(1),"P",DA,"TC",0))>0,$D(^VA(200,+^($O(^(0)),0),0)) S RA("TECH")=$P(^(0),"^")
  I RA("TECH")']"" K X S RAZ="technologist" X:$D(RAMES1) RAMES1
  K RA("TECH") Q
  ;
 2 ;Interpreting Physician Check
- N DIERR
- I $$GET1^DIQ(200,$P(RAJ,"^",12)_",",.01)="",$$GET1^DIQ(200,$P(RAJ,"^",15)_",",.01)="" K X S RAZ="interpreting staff or resident" X:$D(RAMES1) RAMES1
+ I '$D(^VA(200,+$P(RAJ,"^",12),0)),'$D(^VA(200,+$P(RAJ,"^",15),0)) K X S RAZ="interpreting staff or resident" X:$D(RAMES1) RAMES1
  Q
  ;
 3 ;Detailed Procedure Check
@@ -124,12 +115,10 @@ NORPT ; either no report yet, or report is stub
  Q
  ;
 16 ;Impression Entry Check
- ; In Phase 1, for Elec. filed rpts, skip this even if div. param requires it
- I $D(^RARPT(+$P(RAJ,"^",17),0)),$P(^(0),"^",5)="EF" Q
  I $O(^RARPT(+$P(RAJ,"^",17),"I",0))'>0 K X S RAZ="impression" X:$D(RAMES1) RAMES1
  Q
 13 ;Procedure Modifers Check
- I '$O(^RADPT(DA(2),"DT",DA(1),"P",DA,"M",0)) K X S RAZ="procedure modifier" X:$D(RAMES1) RAMES1
+ I '$O(^RADPT(DA(2),"DT",DA(1),"P",DA,"M",0)) K X S RAX="procedure modifier" X:$D(RAMES1) RAMES1
  Q
 14 ;CPT Modifiers Check
  I '$O(^RADPT(DA(2),"DT",DA(1),"P",DA,"CMOD",0)) K X S RAZ="CPT modifiers" X:$D(RAMES1) RAMES1
@@ -145,7 +134,7 @@ HELP ; Called from 'Help Text' node in DD(70.03,3,4).
  . S X="",E=+$O(^RA(72,"AA",RAIMGTYJ,K,0)) Q:E'>0
  . I $D(^RA(72,E,0)) D
  .. S RA(0)=$G(^RA(72,E,0)),N=$P(RA(0),U),RAS=$G(^RA(72,E,.1))
- .. I $L(RAS) D HELP1 I $D(X) W !?10,N S FL="" ;removed D 3, done inside HELP1
+ .. I $L(RAS) D HELP1 D:$D(X)&($P(RAS,"^",3)'="Y")&($D(^RA(72,"AA",RAIMGTYJ,9,E))) 3 I $D(X) W !?10,N S FL=""
  .. Q
  . Q
  W:'$D(FL) !?10,"Does not meet the requirements of any status."
@@ -155,24 +144,12 @@ HELP1 ; Called from 'HELP' above and 'STUFF^RASTREQ1'
  ; 'RAJ' -> 0 node of the examination
  ; 'E'   -> ien of the examination status
  ; Both 'RAJ' & 'E' set in 'HELP' & 'STUFF^RASTREQ1'
- ;
- ;start of p99, exam status UNCHANGED if pregnancy screen is not answered for female pt bet ages 12-55
- N RAPTAGE,RASAVE
- S RASAVE=X ;save the value of X, since it's being replaced in DIQ call.
- S RAPTAGE=$$PTAGE^RAUTL8(DA(2),"")
- I $$PTSEX^RAUTL8(DA(2))="F",((RAPTAGE>11)&(RAPTAGE<56)),$$GET1^DIQ(70.03,DA_","_DA(1)_","_DA(2),32)="" S E=$P(RAJ,U,3),(N,X)="" S:$G(E) (N,X)=$P($G(^RA(72,E,0)),U) Q
- S X=RASAVE
- ;end p99
- N RADIO,RADIOUZD,RAS5 S RADIO=$S($G(^RA(72,E,.5))]"":$G(^(.5)),1:"N")
+ N RADIO,RADIOUZD S RADIO=$S($G(^RA(72,E,.5))]"":$G(^(.5)),1:"N")
  S:$P($G(^RA(79.2,+RAIMGTYI,0)),"^",5)="Y" RADIOUZD=""
- ;
- ; Phase 1 Outside Reporting 100% outside work, skip all except Diag. Code
- I $D(^RARPT(+$P(RAJ,"^",17),0)),$P(^(0),"^",5)="EF" S RAS5=$P(RAS,U,5),RAS="",$P(RAS,U,5)=RAS5 K RADIOUZD
- ;
  F RAK=1:1 Q:$P(RAS,"^",RAK,99)']""  D:$P(RAS,"^",RAK)="Y" @RAK
  I $D(X),$P(RAS,"^",3)'="Y",$D(^RA(72,"AA",RAIMGTYJ,9,E)) D 3
  I $D(X),$P(RAS,"^",16)'="Y",$D(^RA(72,"AA",RAIMGTYJ,9,E)),$D(^RA(79,+$P(^RADPT(DA(2),"DT",DA(1),0),"^",3),.1)),$P(^(.1),"^",16)="Y" D 16
- I $D(RADIOUZD) D  ;if Radiopharm Used, then check req'd NucMed flds
+ I $D(RADIOUZD),($D(X)) D
  . D EN1^RASTREQN(RADIO,RAJ)
  . I $D(X),($$UP^XLFSTR($P($G(^RA(72,E,.6)),"^",11)="Y")) D EN1^RADOSTIK(RADFN,RADTI,RACNI)
  . Q

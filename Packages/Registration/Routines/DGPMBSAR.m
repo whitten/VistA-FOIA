@@ -1,5 +1,7 @@
-DGPMBSAR ;ALB/LM/MJK - RECALC ENTRY POINTS; 16 JAN 91
+DGPMBSAR ;ALB/LM/MJK - RECALC ENTRY POINTS; [ 09/13/2001  3:55 PM ]
  ;;5.3;Registration;**85**;Aug 13, 1993
+ ;IHS/ANMC/LJF  4/18/2001 removed check for VA only parameters
+ ;                        bypassed auto queuing of recalc
  ;
 A D PCHK^DGPMGL I E G ERR^DGPMGL ;  Parameter check
  D RCCK G:'$D(RCCK) Q ;  Check for ReCalc already running
@@ -20,8 +22,12 @@ PR ;W !,"DO YOU WANT TO RECALCULATE PATIENT DAYS" S %=2 D YN^DICN
  ;G PR
  ;
 QUE ;  Recalculation Queue
- S ZTRTN="GO1^DGPMBSAR",ZTIO="",ZTDESC="BSR RECALCULATION" F I="DGPM(""G"")","RC","RD","PD","REM","GL","BS","TSR","TSRI","DIV","MT","TS","CP","RM","OS","VN","SF","TSD","SNM","RCCK","GLS" S ZTSAVE(I)=""
- K ZTSK D ^%ZTLOAD I $D(ZTSK) D UP43^DGPMBSR W !!,"Request Queued!"
+ ;
+ ;IHS/ANMC/LJF 4/18/2001 bypass auto-queue; run in foreground
+ ;S ZTRTN="GO1^DGPMBSAR",ZTIO="",ZTDESC="BSR RECALCULATION" F I="DGPM(""G"")","RC","RD","PD","REM","GL","BS","TSR","TSRI","DIV","MT","TS","CP","RM","OS","VN","SF","TSD","SNM","RCCK","GLS" S ZTSAVE(I)=""
+ ;K ZTSK D ^%ZTLOAD I $D(ZTSK) D UP43^DGPMBSR W !!,"Request Queued!"
+ D UP43^DGPMBSR G GO    ;new IHS line
+ ;IHS/ANMC/LJF 4/18/2001 end of new code
  G Q
  ;
 GO1 S DIE="^DG(43,",DA=1,DR="54////@;55////@;56////@" D ^DIE K DIE,DR,DA
@@ -32,7 +38,8 @@ Q K RCCK G DONE^DGPMGLG
 DAT ; -- get params and chk data
  D DAT^DGPMGL,DEFS S E=0
  I DGPM(0)="" S E=1 G DATQ
- F I=2,3,4,6:1:9 S C=I*.01 I $P(DGPM("G"),U,I)="" S E=1 ; modified re FORUM [#16205729]
+ ;F I=2,3,4,6:1:9 S C=I*.01 I $P(DGPM("G"),U,I)="" S E=1 ; modified re FORUM [#16205729];IHS/ANMC/LJF 4/18/2001
+ F I=7 S C=I*.01 I $P(DGPM("G"),U,I)="" S E=1 ;IHS/ANMC/LJF 4/18/2001 IHS only uses "recalc from" field"
 DATQ Q
  ;
 CLEAN ; -- clean up corrections file

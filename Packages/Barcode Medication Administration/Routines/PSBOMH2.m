@@ -1,6 +1,7 @@
-PSBOMH2 ;BIRMINGHAM/EFC-MAH ;Mar 2004
- ;;3.0;BAR CODE MED ADMIN;**6,20,27,26**;Mar 2004
+PSBOMH2 ;BIRMINGHAM/EFC-MAH ;29-Mar-2006 11:25;A,A
+ ;;3.0;BAR CODE MED ADMIN;**6,20,1005**;Mar 2004
  ;
+ ; Modified - IHS/CIA/PLS - 06/21/04 - Line CONT+1
  ; Reference/IA
  ; EN^PSJBCMA/2828
  ;
@@ -20,7 +21,9 @@ EN ;
  D LEGEND
  Q
 CONT ;
- S PSBHDR(1)="Continuing/PRN/Stat/One Time Medication/Treatment Record (VAF 10-2970 B, C, D)"
+ ; IHS/CIA/PLS - 06/21/04 - Removed reference to VA Form
+ ;S PSBHDR(1)="Continuing/PRN/Stat/One Time Medication/Treatment Record (VAF 10-2970 B, C, D)"
+ S PSBHDR(1)="Continuing/PRN/Stat/One Time Medication/Treatment Record"
  W $$HDR()
  S PSBDRUG=""
  F  S PSBDRUG=$O(^TMP("PSB",$J,PSBWEEK,"SORT","C",PSBDRUG)) Q:PSBDRUG=""  D
@@ -35,12 +38,14 @@ CONT ;
  ..S PSBCNT=8
  ..S:$O(^TMP("PSB",$J,"ORDERS",PSBORD,"INST",""),-1)>PSBCNT PSBCNT=$O(^(""),-1)
  ..S:$O(^TMP("PSB",$J,"ORDERS",PSBORD,"AT",""),-1)>PSBCNT PSBCNT=$O(^(""),-1)
- ..W:$Y>(IOSL-PSBCNT-4) $$HDR()
+ ..;W:$Y>(IOSL-PSBCNT-4) $$HDR()
+ ..;W:$Y>(IOSL-8) $$HDR()
  ..F PSBLINE=1:1:PSBCNT D
- ...I IOSL>24,$Y>$S(PSBCNT<13:(IOSL-PSBCNT-4),(PSBCNT-PSBLINE=12):(IOSL-12),1:(IOSL-12)) D
+ ...I $Y>(IOSL-10) N I D
  ....W !?(IOM-35\2),"*** CONTINUED ON NEXT PAGE ***"
  ....W $$HDR()
  ....W !?(IOM-35\2),"*** CONTINUED FROM PREVIOUS PAGE ***"
+ ....F I=1:1:6 W !,$G(^TMP("PSB",$J,"ORDERS",PSBORD,"INST",I))
  ...W !,$G(^TMP("PSB",$J,"ORDERS",PSBORD,"INST",PSBLINE))
  ...W ?32,"| ",$G(^TMP("PSB",$J,"ORDERS",PSBORD,"AT",PSBLINE))
  ...S PSBDAY=0,PSBCOL=0
@@ -71,16 +76,12 @@ PRN ;
  ..S:PSBCNT<8 PSBCNT=8  ; Minimum space for order
  ..W:$Y>(IOSL-PSBCNT-4) $$HDR(1)
  ..F PSBLINE=1:1:PSBCNT D
- ...I IOSL>24,$Y>$S(PSBCNT<13:(IOSL-PSBCNT-4),(PSBCNT-PSBLINE=12):(IOSL-12),1:(IOSL-12)) D
- ....W !?(IOM-35\2),"*** CONTINUED ON NEXT PAGE ***"
- ....W $$HDR(1)
- ....W !?(IOM-35\2),"*** CONTINUED FROM PREVIOUS PAGE ***"
  ...W !,$G(^TMP("PSB",$J,"ORDERS",PSBORD,"INST",PSBLINE))
  ...W ?32,"| ",$G(^TMP("PSB",$J,PSBWEEK,PSBORD,"AT",PSBLINE))
  ..W !,$TR($J("",IOM)," ","-")
  Q
  ;
-LEGEND  ;
+LEGEND ;
  ;print the initials - name legend as an extra page  ;
  ;I '$D(^TMP("PSB",$J,"LEGEND")) K ^TMP("PSJ",$J),^TMP("PSB",$J) Q  ;
  D PT^PSBOHDR(DFN,.PSBHDR)  ;
@@ -92,7 +93,7 @@ LEGEND  ;
  K ^TMP("PSJ",$J),^TMP("PSB",$J)
  Q
  ;
-HDR(PRN)   ;
+HDR(PRN) ;
  ; PRN = TRUE IF DISPLAYING PRN MED (OPTIONAL)
  D PT^PSBOHDR(DFN,.PSBHDR)
  W !,"Start Date",?20,"Stop Date",?32,"| ",$S('$G(PRN):"Admin",1:"Action Status")
@@ -107,7 +108,7 @@ HDR(PRN)   ;
  W !,$TR($J("",IOM)," ","-")
  Q ""
  ;
-PSBCK1(PSBCHK) ;                   
+PSBCK1(PSBCHK) ;
  I PSBCHK="A" D
  .S TEST=$P(^PSB(53.79,PSBIEN,0),U,6)
  .D PSBOUT^PSBOMH1(TEST,PSBINIT)
@@ -121,24 +122,6 @@ PSBCK1(PSBCHK) ;
  ;
 PSBENT(PSBTIS) ;
  S PSBNAME="",PSBNAME=$$GET1^DIQ(53.79,PSBIEN_",","ACTION BY:NAME")
- S ^TMP("PSB",$J,"LEGEND",$S($G(PSBTIS)="":99,1:PSBTIS),PSBNAME)=""
- Q
- ;
-PSBSTIV ;
- S YB="" F  S YB=$O(PSBAUD(YB)) Q:YB=""  D
- .S Z="" F  S Z=$O(^PSB(53.79,PSBIEN,.9,Z)) Q:Z=""  I Z'=0  D
- ..I $P(PSBAUD(YB),U,1)=$P(^PSB(53.79,PSBIEN,.9,Z,0),"^",1)  D
- ...I $P(^PSB(53.79,PSBIEN,.9,Z,0),"^",3)["Instruct"  D
- ....I $P(PSBAUD(YB),U,2)'["*"  S $P(PSBAUD(YB),U,2)=$P(PSBAUD(YB),U,2)_"*"
- ....D PSBOUT^PSBOMH1($P(PSBAUD(YB),U,1),$P(PSBAUD(YB),U,2))
- Q
- ;
-PSBCTAR   ;
- S YC="" F  S YC=$O(PSBTAR(YC)) Q:YC=""  D
- .S Z="" F  S Z=$O(^PSB(53.79,PSBIEN,.9,Z)) Q:Z=""  I Z'=0  D
- ..I $P(PSBTAR(YC),U,1)=$P(^PSB(53.79,PSBIEN,.9,Z,0),"^",1)  D
- ...I $P(^PSB(53.79,PSBIEN,.9,Z,0),"^",3)["Instruct"  D
- ....S $P(PSBTAR(YC),U,2)=$P(PSBTAR(YC),U,2)_"*"
- ....D PSBOUT^PSBOMH1($P(^PSB(53.79,PSBIEN,.9,Z,0),"^",1),$P(PSBTAR(YC),U,2))
+ S ^TMP("PSB",$J,"LEGEND",PSBTIS,PSBNAME)=""
  Q
  ;

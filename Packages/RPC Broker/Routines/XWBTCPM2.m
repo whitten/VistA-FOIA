@@ -1,5 +1,5 @@
 XWBTCPM2 ;ISF/RWF - BROKER Other Service ;12/16/09  07:58
- ;;1.1;RPC BROKER;**43,45,53**;Mar 28, 1997;Build 4
+ ;;1.1;RPC BROKER;**43,45,53**;Mar 28, 1997;Build 5
  Q
 OTH ;Check if some other special service.
  ; ZEXCEPT: XWB - set prior to call from CONNTYPE^XWBTCPM

@@ -1,4 +1,5 @@
-XPAR3 ;ISF/RWF - Remove all parameters for a user ;4/1/02  08:42
+XPAR3 ;ISF/RWF - Remove all parameters for a user ;4/1/02  08:42 [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**1001**;APR 1, 2003
  ;;7.3;TOOLKIT;**60**;Apr 25, 1995
  ;
 DELUSR(ENT) ;Delete all instances of all parameters for a user (entity).

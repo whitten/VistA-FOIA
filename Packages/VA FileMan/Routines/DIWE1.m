@@ -52,7 +52,7 @@ TAB I X[$C(9) S X=$P(X,$C(9),1)_$C(124)_"TAB"_$C(124)_$P(X,$C(9),2,999) G TAB
  I $L(X)>DWLW D
  . N I,J,DIC1
  . K ^UTILITY($J,"W") S DIC1=DIC,DIC="^UTILITY($J,""W"",",@(DIC_"0)")=""
- . F DWI=1:1 Q:$L(X)'>DWLW  S J=$F(X," ",DWLW-7),J=$S(J<1!(J>DWLW):DWLW,1:J),@(DIC_"DWI,0)")=$E(X,1,J-1),X=$E(X,J,256)
+ . F DWI=1:1 Q:$L(X)'>DWLW  S J=$F(X,"",DWLW-7),J=$S(J<1!(J>DWLW):DWLW,1:J),@(DIC_"DWI,0)")=$E(X,1,J-1),X=$E(X,J,256)
  . S @(DIC_"DWI,0)")=X
  . W !,(DWI-1)_" line"_$E("s",DWI>2)_" inserted.."
  . X "F J=DWL+1:1:DWLC S DWI=DWI+1,"_DIC_"DWI,0)="_DIC1_"J,0) W ""."""

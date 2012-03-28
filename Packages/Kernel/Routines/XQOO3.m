@@ -1,4 +1,5 @@
-XQOO3 ;Luke/Sea - Out-Of-Order Utilities ;01/14/97  13:57
+XQOO3 ;Luke/Sea - Out-Of-Order Utilities ;01/14/97  13:57 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**57**;Jul 10, 1995
  ;
 LALL ;List all options and protocols that are Out Of Order

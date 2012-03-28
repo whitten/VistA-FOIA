@@ -1,5 +1,7 @@
-DGPMEVT ;ALB/RMO - MAS MOVEMENT EVENT DRIVER; 26 DEC 89 ; 2/2/04 3:18pm
- ;;5.3;Registration;**61,574**;Aug 13, 1993
+DGPMEVT ;ALB/RMO - MAS MOVEMENT EVENT DRIVER; [ 12/02/2001  7:11 PM ]
+ ;;5.3;Registration;**61**;Aug 13, 1993
+ ;IHS/ANMC/LJF  3/08/2001 using IHS protocol menu for event driver
+ ;              5/02/2001 added setting of IHS variables
  ;
  ;Required Variables:
  ;         DFN      = Patient's IFN
@@ -14,15 +16,16 @@ DGPMEVT ;ALB/RMO - MAS MOVEMENT EVENT DRIVER; 26 DEC 89 ; 2/2/04 3:18pm
  ;-- establish visit & set pt movement ptr
  I $P($G(^DIC(150.9,1,0)),U,2)["1" D VISIT
  ; **************************************************************
- N OROLD D INP^VADPT S X=$O(^ORD(101,"B","DGPM MOVEMENT EVENTS",0))_";ORD(101,"
- I $P(X,";",1)="" D ERR K VAIN Q
- D EN1^XQOR K VAIN,X
- Q
  ;
-ERR ;
- W !,"Serious error ! DGPM MOVEMENT EVENTS protocol not found"
- W !,"in Protocol file #101.  No events fired !"
- W !
+ ;IHS/ANMC/LJF 5/2/01 set up IHS variables if not already sent
+ I $G(DGPMP)="",$G(DGPMA)="" Q                ;nothing added
+ S DGPMCA=$$GET1^DIQ(405,DGPMDA,.14,"I")      ;admission ien
+ I DGPMCA="" S DGPMCA=$P(DGPMP,U,14)          ;in case movement deleted
+ ;IHS/ANMC/LJF 5/2/01 end of new code
+ ;
+ ;
+ ;N OROLD D INP^VADPT S X=$O(^ORD(101,"B","DGPM MOVEMENT EVENTS",0))_";ORD(101," D EN1^XQOR:X K VAIN,X  ;IHS/ANMC/LJF 3/08/2001
+ N OROLD D INP^VADPT S X=$O(^ORD(101,"B","BDGPM MOVEMENT EVENTS",0))_";ORD(101," D EN1^XQOR:X K VAIN,X  ;IHS/ANMC/LJF 3/08/2001
  Q
  ;
 VISIT ;-- create visit file entry for new admissions

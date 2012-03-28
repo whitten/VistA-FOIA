@@ -1,5 +1,5 @@
 XQ1 ; SEA/MJM - DRIVER FOR MENUMAN (PART 2) ;08/28/08  13:20
- ;;8.0;KERNEL;**1,15,59,67,46,151,170,242,446**;Jul 10, 1995;Build 35
+ ;;8.0;KERNEL;**1,15,59,67,46,151,170,242,446**;Jul 10, 1995;Build 3
  ;Per VHA Directive 2004-038, this routine should not be modified.
  S DIC=19,DIC(0)="AEQM" D ^DIC Q:Y<0  S (XQDIC,XQY)=+Y K DIC,XQUR,Y,^VA(200,DUZ,202.1)
  D INIT^XQ12
@@ -29,7 +29,11 @@ OUT ;Exit point for all option types
  I $D(^XUTL("XQ",$J,"T")) S XQTT=$S($D(XQUIT):^XUTL("XQ",$J,"T"),1:^XUTL("XQ",$J,"T")-1) K XQUIT
  I XQTT'<1 S ^XUTL("XQ",$J,"T")=XQTT,XQY=^(XQTT),XQY0=$P(XQY,U,2,999),XQPSM=$P(XQY,U,1),XQY=+XQPSM,XQPSM=$P(XQPSM,XQY,2,99),XQABOLD=1
  I XQTT=0 S XQY=-1
- I $P(XQY0,U,4)="M" S XQAA=$P(XQY0,U,2) I $P(XQY0,U,17),$D(^DIC(19,+XQY,26)),$L(^(26)) X ^(26) ;W "  ==> OUT^XQ1"
+  ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;This line is commented out to prevent IHS menu headers from printing
+ ;when exiting a menu. Original modification by IHS/ADC/GTH 12/29/97
+ ;I $P(XQY0,U,4)="M" S XQAA=$P(XQY0,U,2) I $P(XQY0,U,17),$D(^DIC(19,+XQY,26)),$L(^(26)) X ^(26) ;W "  ==> OUT^XQ1"
+ ;----- END IHS MODIFICATION
  K %,X,XQDICNEW,XQF,XQCO,XQEA,XQFLG,XQI,XQJ,XQJS,XQK,XQLOK,XQNOPE,XQOK,XQTT,XQX,XQZ,Y,Z
  G M1^XQ
  ;

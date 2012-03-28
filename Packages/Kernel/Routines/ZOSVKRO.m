@@ -1,180 +1,126 @@
-%ZOSVKR ;SF/KAK/RAK - Collect RUM Statistics for OpenM/Cache;8/20/99  08:43  ;3/27/00  11:24
- ;;8.0;KERNEL;**90,94,107,122,143,186**;May 1, 2003 11:49 am
+%ZOSVKR ;SF/KAK - Collect RUM Statistics for OpenM/Cache;8/20/99  08:43  ;3/27/00  11:24 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1005,1007**;APR 1, 2003 
+ ;;8.0;KERNEL;**90,94,107,122,143**;Jul 21, 1998
  ;
-RO(OPT) ; Record option resource usage in ^KMPTMP("KMPR"
+RO(OPT) ; Record option resource usage in ^XTMP("KMPR","JOB"
  ;
  N KMPRTYP S KMPRTYP=0  ; option
  G EN
  ;
-RP(PRTCL) ; Record protocol resource usage in ^KMPTMP("KMPR"
+RP(PRTCL)       ; Record protocol resource usage in ^XTMP("KMPR","JOB"
+ ;
  ; Variable PRTCL = option_name^protocol_name
- ;
- ; quit if rum is turned off
- Q:'$G(^%ZTSCH("LOGRSRC"))
- ;
- N OPT
- S OPT=$P(PRTCL,"^"),PRTCL=$P(PRTCL,"^",2)
- Q:PRTCL=""
- ;
- N KMPRTYP S KMPRTYP=1  ; protocol
+ N OPT,KMPRTYP
+ S OPT=$P(PRTCL,"^"),PRTCL=$P(PRTCL,"^",2) Q:PRTCL=""
+ ; protocol
+ S KMPRTYP=1
  G EN
  ;
-RU(KMPROPT,KMPRTYP,KMPRSTAT) ;-- set resource usage into ^KMPTMP("KMPR"
- ;----------------------------------------------------------------------
- ; KMPROPT... Option name (may be option, protocol, rpc, etc.)
- ; KMPRTYP...
- ;    Type of option:
- ;                   0 - Option
- ;                   1 - Protocol
- ;                   2 - RPC (Remote Procedure Call)
- ;                   3 - HL7
- ; KMPRSTAT..
- ;    Status (for future use):
- ;                   1 - start
- ;                   2 - stop
- ;----------------------------------------------------------------------
+RU(KMPROPT,KMPRTYP,KMPRSTAT)    ;-- record resource usage in ^XTMP("KMPR","JOB"
+ ;---------------------------------------------------------------------
+ ; KMPROPT... Option name (may be option, protocol, rpc, etc.).
+ ; KMPRTYP... Type of option:
+ ;              0 - Option.
+ ;              1 - Protocol.
+ ;              2 - RPC (Remote Procedure Call).
+ ;              3 - HL7.
+ ; KMPRSTAT.. Status (for future use). 1 - start
+ ;                                     2 - stop
+ ;---------------------------------------------------------------------
  ;
  Q:$G(KMPROPT)=""
- ;
  S KMPRTYP=+$G(KMPRTYP)
  S KMPRSTAT=$G(KMPRSTAT)
  ;
  N OPT,PRTCL
- ; 
- ; OPT   = option name
- ; PRTCL = protocol name (optional)
+ ;
+ ; OPT = option name.
+ ; PRTCL = protocol name (optional).
  S OPT=$P(KMPROPT,"^"),PRTCL=$P(KMPROPT,"^",2)
  ;
 EN ;
- ; CURHDAY... current $H day
- ; CURHSEC... current $H seconds
- ; CURSTAT... current stats
- ; DIFF...... difference (CURSTAT minus PREVSTAT)
- ; NODE...... current node
- ; PREVHDAY.. previous $H day
- ; PREVHSEC.. previous $H seconds
- ; PREVSTAT.. previous stats
- ; PRIMETM... prime time (1) or non-prime time (0)
+ ; C........ comma (,)
+ ; CURRENT.. current stats
+ ; DATE..... date in fileman format
+ ; DIFF..... difference (CURRENT minus PREV)
+ ; DOW...... day of week
+ ; HDATE.... date/time in $h format
+ ; NODE..... current node
+ ; PRIMETM.. prime time or non-prime time
+ ; PREV..... previous stats
  ;
- N ACTV,ARRAY,CURHDAY,CURHSEC,CURSTAT,CURRHR,DIFF
- N I,NODE,PREVHDAY,PREVHSEC,PREVSTAT,PRIMETM,Y
- ;
- ; quit if not in "PROD" uci
+ N C,CURRENT,CURRHR,DATE,DIFF,DOW,HDATE,I,NODE,PREV,PREVHR
+ N PRIMETM,TIME,Y
+ ; quit if not in "PROD" uci.
  S Y="" X $G(^%ZOSF("UCI")) Q:Y'[$G(^%ZOSF("PROD"))
+ D GETENV^%ZOSV S NODE=$P(Y,"^",3)
+ S C=",",U="^"
+ I KMPRTYP I OPT="" S:$P($G(^XTMP("KMPR","JOB",NODE,$J)),U,10)["$LOGIN$" OPT="$LOGIN$"
+ I OPT="" Q:'+$G(^XUTL("XQ",$J,"T"))  S OPT=$P($G(^XUTL("XQ",$J,^XUTL("XQ",$J,"T"))),U,2) Q:OPT=""
  ;
- D GETENV^%ZOSV S NODE=$P(Y,"^",3),U="^"
- I KMPRTYP I OPT="" S:$P($G(KMPR("JOB",NODE,$J)),"^",10)["$LOGIN$" OPT="$LOGIN$"
- I OPT="" Q:'+$G(^XUTL("XQ",$J,"T"))  S OPT=$P($G(^XUTL("XQ",$J,^XUTL("XQ",$J,"T"))),"^",2) Q:OPT=""
- ;
- ; CURSTAT = current stats for this $job
- ;         = cpu^dio^bio^pg_fault^cmd^glo^$H_day^$H_sec^ascii_time
- S CURSTAT=$P($$STATS,"^",1,9)
- Q:CURSTAT=""
- ;
- S CURHDAY=$P(CURSTAT,"^",7),CURHSEC=$P(CURSTAT,"^",8)
- ;
- ; PREVSTAT = previous stats for this $job
- S PREVSTAT=$G(KMPR("JOB",NODE,$J))
- ;
- ; if previous option was tagged as being run from taskman(!)
- ; then mark current OPTion as running from taskman(!)
- I $P($P(PREVSTAT,"^",10),"***")=("!"_OPT) S OPT="!"_OPT
- ;
- ; concatenate to CURSTAT: ...^OPTion^option_type
- S CURSTAT=CURSTAT_"^"_$S(KMPRTYP=2:"`"_OPT,KMPRTYP=3:"&"_OPT,1:OPT)_"***"_$G(PRTCL)_"^"_$G(XQT)
- S KMPR("JOB",NODE,$J)=CURSTAT
- ;
+ ; CURRENT = current stats for this $job.
+ ; cpu^dio^bio^pg_fault^cmd^glo^$H_date^$H_sec^ascii_time
+ S CURRENT=$$STATS Q:CURRENT=""
+ ; concatenate ^OPTion^option_type
+ S CURRENT=CURRENT_U_$S(KMPRTYP=2:"`"_OPT,KMPRTYP=3:"&"_OPT,1:OPT)_"***"_$G(PRTCL)_U_$G(XQT)
  ; if option and login or taskman
- I 'KMPRTYP I OPT="$LOGIN$"!(OPT="$STRT ZTMS$") Q
+ I 'KMPRTYP I OPT="$LOGIN$"!(OPT="$STRT ZTMS$") S ^XTMP("KMPR","JOB",NODE,$J)=CURRENT Q
+ ; if logout or stopping task or programmer mode
+ I OPT="$LOGOUT$"!(OPT="$STOP ZTMS$")!(OPT="XUPROGMODE") K ^XTMP("KMPR","JOB",NODE,$J)
  ;
- I OPT="$LOGOUT$"!(OPT="$STOP ZTMS$")!(OPT="XUPROGMODE") K KMPR("JOB",NODE,$J)
- ;
- Q:PREVSTAT=""
+ ; PREV = previous stats for this $job.
+ S PREV=$G(^XTMP("KMPR","JOB",NODE,$J)) S ^($J)=CURRENT
+ Q:PREV=""
  ;
  ; check for negative numbers for m commands and glo references
- F I=5,6 I $P(CURSTAT,"^",I)<0 D 
- .S $P(CURSTAT,"^",I)=$P(CURSTAT,"^",I)+(2**31)+(2**31)
- .I $P(PREVSTAT,"^",I)<0 S $P(PREVSTAT,"^",I)=$P(PREVSTAT,"^",I)+(2**31)+(2**31)
+ F I=5,6 D 
+ .S:$P(CURRENT,U,I)<0 $P(CURRENT,U,I)=$P(CURRENT,U,I)+(2**32)
+ .S:$P(PREV,U,I)<0 $P(PREV,U,I)=$P(PREV,U,I)+(2**32)
  ;
- S PREVHDAY=$P(PREVSTAT,"^",7),$P(PREVSTAT,"^",7)=$P(PREVSTAT,"^",8)
- ;
+ S $P(CURRENT,U,7)=$P(CURRENT,U,7)-$P(PREV,U,7)*86400+$P(CURRENT,U,8)
+ S HDATE=$P(PREV,U,7),$P(PREV,U,7)=$P(PREV,U,8)
  ; quit if not $h
- Q:'PREVHDAY
+ Q:'HDATE
  ;
- ; if option has been running more than one day
- ; add the number of seconds in each day to the current $H seconds
- S $P(CURSTAT,"^",7)=(CURHDAY-PREVHDAY)*86400+CURHSEC
- ;
- ; difference = current stats minus previous stats
- ; DIFF       = CURSTAT - PREVSTAT
- ;            = cpu^dio^bio^pg_fault^cmd^glo^elapsed_sec
- F I=1:1:7 S $P(DIFF,"^",I)=$P(CURSTAT,"^",I)-$P(PREVSTAT,"^",I)
- ;
- ; quit if negative m commands or global references
- Q:$P(DIFF,"^",5)<0
- Q:$P(DIFF,"^",6)<0
- ;
- ; option name
- S OPT=$P(PREVSTAT,"^",10)
- ;
- ; PRIMETM = 0: non-prime time
- ;           1: prime time
+ ; DIFF = CURRENT - PREV (current stats minus previous stats)
+ ; cpu^dio^bio^pg_fault^cmd^glo^elapsed_sec^option_type
+ F I=1:1:7 S $P(DIFF,U,I)=$P(CURRENT,U,I)-$P(PREV,U,I)
+ ; option name        time
+ S OPT=$P(PREV,U,10),TIME=$P($P(PREV,U,8),".")
+ ; date in fm format.
+ S DATE=$$HTFM^XLFDT(HDATE),DATE=$P(DATE,".")
+ ; day of week.
+ S DOW=$$DOW^XLFDT(DATE,1)
+ ; PRIMETM =  0: non-prime time
+ ;            1: prime time
  S PRIMETM=0
+ ; prime time if not saturday or sunday or holiday
+ ;            if after 8am and before 5pm.
+ I DOW>0&(DOW<6)&('$G(^HOLIDAY(DATE,0))) I TIME>28799&(TIME<61201) S PRIMETM=1
+ ; daily stats by $j.
+ F I=1:1:7 S $P(^XTMP("KMPR","DLY",NODE,HDATE,OPT,$J,PRIMETM),U,I)=$P($G(^XTMP("KMPR","DLY",NODE,HDATE,OPT,$J,PRIMETM)),U,I)+$P(DIFF,U,I)
+ ; 8th piece is count.
+ S $P(^XTMP("KMPR","DLY",NODE,HDATE,OPT,$J,PRIMETM),U,8)=$P(^XTMP("KMPR","DLY",NODE,HDATE,OPT,$J,PRIMETM),U,8)+1
  ;
- ; set prime time = 1 if after 8am and before 5pm
- ; non-workday prime time and non-prime time will be converted
- ; into non-workday time in nightly background job (KMPRBD02)
- I CURHSEC>28799&(CURHSEC<61201) S PRIMETM=1
- ;
- ; global location for data storage
- S ARRAY=$G(^KMPTMP("KMPR","DLY",NODE,CURHDAY,OPT,$J,PRIMETM))
- ;
- ; seven elements for this option
- F I=1:1:7 S $P(ARRAY,"^",I)=$P($G(ARRAY),"^",I)+$P(DIFF,"^",I)
- ; 8th piece is occurrence counter for this option
- S $P(ARRAY,"^",8)=$P(ARRAY,"^",8)+1
- ;
- ; current hour => 0 - 23
- S CURRHR=CURHSEC\3600
- ;
- ; time starts at zero hour - shift everything by 10 so zero hour
- ; begins at 10th piece, hour 1 is 11th, ... and hour 23 is 33rd piece
- ;
- ; record last hour this option ran - this will be moved to file 8971.1
- ; hourly stats are only attributed to the current hour
- ;
- ; add ~1 if this job runs from top of hour to 60 seconds
- ; this will give active number of jobs per hour
- S ACTV=$P(ARRAY,"^",(CURRHR+10)),$P(ACTV,"~")=$P(ACTV,"~")+1
- I (($P(CURSTAT,"^",8)#3600)-$P(DIFF,"^",7))<60 S $P(ACTV,"~",2)=1
- S $P(ARRAY,"^",(CURRHR+10))=ACTV
- ;
- ; 9th piece: current $h seconds ~ elapsed seconds ~ difference
- S $P(ARRAY,"^",9)=($P(CURSTAT,"^",8))_"~"_($P(DIFF,"^",7))_"~"_(($P(CURSTAT,"^",8)#3600)-$P(DIFF,"^",7))
- ;
- ; set into global
- S ^KMPTMP("KMPR","DLY",NODE,CURHDAY,OPT,$J,PRIMETM)=ARRAY
+ ; keep track of hours with activity - this will be used to determine
+ ; actual hours of activity when moving data to file 8971.1
+ S DATE=$$HTFM^XLFDT(HDATE_","_TIME)
+ ;S TIME=+$E($P(DATE,".",2),1,2),DATE=$P(DATE,".")
+ ; hour for 'previous' dat.
+ S PREVHR=+$E($P(DATE,".",2),1,2),DATE=$P(DATE,".")
+ ; current hour.
+ S CURRHR=+$E($P($$HTFM^XLFDT($H),".",2),1,2)
+ ; record all hours this option ran.
+ F TIME=PREVHR:1:CURRHR D 
+ .; because of zero hour add 1 to time - will offset each hour by 1
+ .S:DATE $P(^XTMP("KMPR","HOURS",DATE,NODE),U,(TIME+1))=1
  ;
  Q
  ;
 STATS() ;-- extrinsic - return current stats for this $job
  ;
- N H,RETURN,V,VER,ZH,ZT
- ;
- S RETURN="",ZT=$P($ZTIMESTAMP,".",2),V=$V(-1,$J),VER=$P($P($P($ZV,") ",2)," "),".",1,2)
- ;
- ; if version is less than 4
- I (+VER)<4 D
- .; cpu^dio^bio^pg_fault^cmd^glo^$H_date^$H_sec^time in thousands
- .; -> no cpu^dio^bio^pg_fault information is returned
- .S RETURN="^^^^"_$P($P(V,"^",7),",")_"^"_$P($P(V,"^",7),",",2)_"^"_+$H_"^"_$P($H,",",2)_"."_ZT_"^"_ZT
- ;
- ; if version is 4 or greater
- E  D
- .S ZH=$ZU(171),ZT=$P($ZTIMESTAMP,".",2)
- .S H=$P(ZH,",",3),H=$E(H,13,23),H=+$H_","_($P(H,":")*3600+($P(H,":",2)*60))_"."_ZT
- .; cpu^dio^bio^pg_fault^cmd^glo^$H_date^$H_sec^ascii_time^$s
- .S RETURN=$P(ZH,",")_"^"_$P(ZH,",",7)_"^"_$P(ZH,",",8)_"^"_$P(ZH,",",4)_"^"_$P($P(V,"^",7),",")_"^"_$P($P(V,"^",7),",",2)_"^"_$P(H,",")_"^"_$P(H,",",2)_"^"_$P(ZH,",",3)_"^"_$S
- ;
- Q RETURN
- 
+ N V
+ S V=$V(-1,$J)
+ ; current stats for this $job.
+ ; cpu^dio^bio^pg_fault^cmd^glo^$H_date^$H_sec^time in thousands
+ Q "^^^^"_$P($P(V,"^",7),",")_"^"_$P($P(V,"^",7),",",2)_"^"_+$H_"^"_$P($H,",",2)_"^"_$ZTIMESTAMP

@@ -1,5 +1,5 @@
-MXMLUTL ;mjk/alb - MXML Build Utilities ;12/11/2002  15:30
- ;;7.3;TOOLKIT;**67**;Apr 25, 1995
+MXMLUTL ;mjk/alb - MXML Build Utilities ;12/11/2002  15:30 [ 12/18/2003  4:54 PM ]
+ ;;7.3;TOOLKIT;**67,1002**;Apr 25, 1995
  QUIT
  ;
 XMLHDR() ; -- provides current XML standard header 

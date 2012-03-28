@@ -1,27 +1,20 @@
-RAORD3 ;HISC/CAH - AISC/RMO-Detailed Request Display Cont. ;05/05/09  10:31
- ;;5.0;Radiology/Nuclear Medicine;**5,15,21,27,45,41,75,99**;Mar 16, 1998;Build 5
- ;Supported IA #2056 reference to ^DIQ
- ;Supported IA #10103 reference to ^XLFDT
- I $$PTSEX^RAUTL8(RADFN)="F" D  ;display pregnancy status for females ptch 45, P#99 changed Pregnancy title.'Pregnancy Screen:' field. This field shall be a display-only field
- .W !,"Pregnant at time of order entry: ",?22,$S($P(RAORD0,"^",13)="y":"YES",$P(RAORD0,"^",13)="n":"NO",1:"UNKNOWN")
- .N RA700332,RA700380
- .S RA700332=$$GET1^DIQ(70.03,$G(RACNI)_","_$G(RADTI)_","_$G(RADFN),32)
- .S RA700380=$$GET1^DIQ(70.03,$G(RACNI)_","_$G(RADTI)_","_$G(RADFN),80)
- .I RA700332'="" W !,"Pregnancy Screen: ",RA700332
- .I RA700380'="" W !,"Pregnancy Screen Comment: ",RA700380
- W:$P(RAORD0,"^",24)="y" !?12,"*** Universal Isolation Precautions ***" W:$D(RA("VDT")) !?8,$C(7),"** Note:  Request Associated with Visit on ",RA("VDT")," **"
+RAORD3 ;HISC/CAH,FPT,GJC AISC/RMO-Detailed Request Display Cont. ;11/27/98  16:00
+ ;;5.0;Radiology/Nuclear Medicine;**5,15,21,27**;Mar 16, 1998
+ N RAPRGST W ! S RAPRGST=$P(RAORD0,"^",13)
+ I RAPRGST]"",(RAPRGST'="n") D
+ . W !?18,$C(7),$S(RAPRGST="y":"**** Patient is Pregnant ****",1:"**** Pregnancy Status is Unknown ****")
+ . Q
+ W:$P(RAORD0,"^",24)="y" !?12,"*** Universal Isolation Precautions ***" W:$D(RA("VDT")) !?8,*7,"** Note:  Request Associated with Visit on ",RA("VDT")," **"
  W:$D(RA("RDT"))&($D(RAPKG)) !,"Desired Date:",?22,RA("RDT") W:$D(RA("PDT")) !,"Pre-op Scheduled:",?22,RA("PDT") S RAOSTS=$P(RAORD0,"^",5) I RAOSTS=8,$D(RA("SDT")) W !,"Exam Scheduled:",?22,RA("SDT")
  I RAOSTS=1 D USERCAN
  W !,"Transport:",?22,RA("TRAN")
- I $L(RA("STY_REA")) D DIWP^RAUTL5(1,68,"Reason for Study: "_RA("STY_REA")) ;P75
- D ODX^RABWUTL(RAOIFN) ;display Ordering DX and Clin Inds, Billing Aware
  I $O(^RAO(75.1,RAOIFN,"H",0)) D  Q:$G(OREND)=1!($G(RAX)="^")
  . D CHIST(RAOIFN)
  . Q
  I RAOSTS=1!(RAOSTS=3) W !,"Reason ",$S(RAOSTS=1:"Cancelled",1:"Held"),":",?22,$S($D(^RA(75.2,+$P(RAORD0,"^",10),0)):$E($P(^(0),"^"),1,50),$P(RAORD0,"^",27)]"":$E($P(RAORD0,"^",27),1,50),1:"UNKNOWN") D TEXT:RAOSTS=3
  W:$D(RA("ST")) !,"Exam Status:",?22,RA("ST") W:$D(RA("ILC")) !,"Request Submitted to: ",RA("ILC")
  G A:$P(RAORD0,"^",11)'="y",A:'$D(RADTI)!('$D(RACNI))
- W !!?7,$C(7),"** Note:  Request has been changed by the Imaging Service **"
+ W !!?7,*7,"** Note:  Request has been changed by the Imaging Service **"
 A I $D(^RAO(75.1,RAOIFN,"T")) D ASK:$E(IOST,1,2)="C-" I $D(DIRUT) S RAX="^" K DIRUT
  Q:Y'=1  I $D(RAPKG),RAX'="^" R !!,"Press return to continue or ""^"" to escape ",X:DTIME S RAX=$E(X)
  Q

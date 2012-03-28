@@ -1,4 +1,5 @@
-LRAPBK ;AVAMC/REG/CYM - AP LOG BOOK ;2/9/98  15:36 ;
+LRAPBK ;AVAMC/REG/CYM - AP LOG BOOK ;2/9/98  15:36 ; [ 04/11/2003  9:58 AM ]
+ ;;5.2T9;LR;**1002,1006,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**51,72,201,274**;Sep 27, 1994
  ; The code for functionality of LR*5.2*51 has changed with patch 72.
  ; The functionality that came with LR*5.2*51 remains the same.
@@ -23,7 +24,10 @@ SH S P(13)="",LRDFN=$O(^LR(LRXREF,LRH(2),LRABV,LRAN,0)) Q:'LRDFN!(LR("Q"))  I "S
  I "SPCYEM"[LRSS Q:'$D(^LR(LRDFN,LRSS,LRI,0))  S X=^(0),LRLLOC=$P(X,U,8),Y=$P(X,U,7) D S S P(2)=Y,Y=$P(X,U,2) D S S P(1)=$E(Y,1,12),Y=$P(X,U,13) D S S P(13)=Y,LRSPDT=$$Y2K^LRX(+X),X=$P(X,U,10)
  E  Q:'$D(^LR(LRDFN,"AU"))  S X=^("AU"),LRLLOC=$P(X,U,5),Y=$P(X,U,12) D S S P(2)=Y,Y=$P(X,U,7) D S S P(9)=$E(Y,1,15),Y=$P(X,U,2) D S S LR("ASST")=Y,Y=$P(X,U,10) D S S P(1)=$E(Y,1,12),X=+X
  S T=+$E(X,4,5)_"/"_$E(X,6,7)
- W !,$J(T,5),?7,$J(LRAN,5),?14 W:P(0)'="PATIENT" "#" W $E(LRP,1,18),?34,SSN(1),?40,$E(LRLLOC,1,8),?49,$E(P(2),1,16),?67,P(1),!?10,"SSN: ",SSN
+ ;W !,$J(T,5),?7,$J(LRAN,5),?14 W:P(0)'="PATIENT" "#" W $E(LRP,1,18),?34,SSN(1),?40,$E(LRLLOC,1,8),?49,$E(P(2),1,16),?67,P(1),!?10,"SSN: ",SSN
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ W !,$J(T,5),?7,$J(LRAN,5),?14 W:P(0)'="VA PATIENT" "#" W $E(LRP,1,18),?34,HRCN,?40,$E(LRLLOC,1,8),?49,$E(P(2),1,16),?67,P(1)  ;IHS/ANMC/CLS 11/1/95
+ ;----- END IHS MODIFICATIONS
  S LRLLOC("TY")=$P($G(^LRO(68,LRAA,1,LRH(2)_"0000",1,LRAN,0)),U,11)
  S LRLLOC("TY")=$S('$L(LRLLOC("TY")):"InPatient","WI"[LRLLOC("TY"):"InPatient",1:"OutPatient")
  W !?5,LRLLOC("TY")
@@ -48,7 +52,10 @@ H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,LRO(68)," (",LRABV,") LOG BOOK for ",LRH(0),!
  W "# =Demographic data in file other than PATIENT file"
  W !,"Date",?8,"Num",?14,"Patient",?35,"ID",?40,"LOC",?49,"PHYSICIAN",?67,"PATHOLOGIST",!,LR("%") Q
-H1 D H Q:LR("Q")  W !,$J(T,5),?7,$J(LRAN,5),?14 W:P(0)'="PATIENT" "#" W $E(LRP,1,18),?34,SSN(1),?40,$E(LRLLOC,1,8),?49,$E(P(2),1,16),?67,P(1) Q
+H1 ;D H Q:LR("Q")  W !,$J(T,5),?7,$J(LRAN,5),?14 W:P(0)'="PATIENT" "#" W $E(LRP,1,18),?34,SSN(1),?40,$E(LRLLOC,1,8),?49,$E(P(2),1,16),?67,P(1) Q
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ D H Q:LR("Q")  W !,$J(T,5),?7,$J(LRAN,5),?14 W:P(0)'="VA PATIENT" "#" W $E(LRP,1,18),?34,HRCN,?40,$E(LRLLOC,1,8),?49,$E(P(2),1,16),?67,P(1) Q  ;IHS/ANMC/CLS 11/1/95
+ ;----- END IHS MODIFICATIONS
  ;
 S S Y=$P($G(^VA(200,+Y,0)),U) Q
 AS I $D(^LRO(68,LRAA,1,LRW,1,LRAN,0)) S Y=$P(^(0),"^",10) D S W ! W:Y]"" ?14,"Entered by: ",Y W:LR("ASST")]"" ?49,"Autopsy Asst: ",LR("ASST")

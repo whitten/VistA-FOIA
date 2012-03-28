@@ -1,4 +1,4 @@
-GMPLMGR1 ; SLC/MKB -- Problem List VALM Utilities cont ;5/10/94  16:42
+GMPLMGR1 ; SLC/MKB -- Problem List VALM Utilities cont ;12-Jul-2001 12:06;TMD
  ;;2.0;Problem List;**10**;Aug 25, 1994
 NEWPAT ; select new patient
  N NEWPT S VALMBCK="R"
@@ -103,7 +103,7 @@ GETPLIST(PLIST,TOTAL,VIEW) ; Build PLIST(#)=IFN for view
  S STBEG=$S(VIEW("ACT")="I":"A",1:""),STEND=$S(VIEW("ACT")="A":"I",1:""),ST=STBEG,TOTAL=0
  F  S ST=$O(^AUPNPROB("ACTIVE",+GMPDFN,ST)) Q:(ST="")!(ST=STEND)  D
  . F IFN=0:0 S IFN=$O(^AUPNPROB("ACTIVE",+GMPDFN,ST,IFN)) Q:IFN'>0  D
- . . S RECORD=$G(^AUPNPROB(IFN,1)) Q:'$L(RECORD)
+ . . S RECORD=$G(^AUPNPROB(IFN,1)) ;IHS/DKM Q:'$L(RECORD)
  . . Q:$P(RECORD,U,2)="H"  S TOTAL=TOTAL+1
  . . I $L(VIEW("VIEW"))>2,VIEW("VIEW")'[("/"_$P(RECORD,U,$S($E(VIEW("VIEW"))="S":6,1:8))_"/") Q
  . . I VIEW("PROV"),$P(RECORD,U,5)'=+VIEW("PROV") Q

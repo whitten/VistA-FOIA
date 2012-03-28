@@ -1,5 +1,5 @@
 IBDFN2 ;ALB/CJM - ENCOUNTER FORM - INTERFACE ROUTINES ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**29,31,36,43**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**29,31,36**;APR 24, 1997
 APPT ;returns appt date@time^date^time
  N Y
  S Y="" I IBAPPT S Y=IBAPPT K %DT D DD^%DT
@@ -52,17 +52,6 @@ MT ;returns means test data
  S Y=$P(GET,"^",2) D DD^%DT
  S RET=RET_Y_"^"_$P(GET,"^",4)
  S @IBARY=RET
- Q
-ENROLL ;returns enrollment priority code and copay information
- ;
- N IBEP,IBEP1
- ; --get enrollment priority code
- S IBEP=$$PRIORITY^DGENA(DFN)
- ;
- ; --get copay information  (yes or not)
- S IBEP1=$$BIL^DGMTUB(DFN,DT)
- S $P(IBEP,"^",2)=$S(IBEP1=1:"Y",1:"N")
- S @IBARY=IBEP
  Q
 ALLERGY ;outputs a list of the patient's allergies
  ;piece #1=allergy name,#2=type of allergy(FOOD/DRUG/OTHER),#3=type of allergy(F/D/O),#4=VERFIED?(YES/NO),#5=TRUE ALLERGEN(YES/NO)

@@ -1,5 +1,6 @@
-XPDCPU ;SFISC/RWF,RSD - Code that update each cpu ;09/09/96  08:01
- ;;8.0;KERNEL;**41,44**;Jul 03, 1995
+XPDCPU ;SFISC/RWF,RSD - Code that update each cpu ;09/09/96  08:01 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
+ ;;8.0;KERNEL;**41,44**;JUL 03, 1995
  N DIC,X,XPDA
  S DIC("S")="I $P(^(0),U,9)=2,$D(^XPD(9.7,""ASP"",Y,1,Y)),$D(^XTMP(""XPDI"",Y))"
  D EN1 Q:'XPDA

@@ -1,6 +1,7 @@
-LRBLJTS ;AVAMC/REG - TRANSFUSION STATISTICS ;4/12/93  15:19 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJTS ; IHS/DIR/FJE - TRANSFUSION STATISTICS 4/12/93 15:19 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END
  W !!?10,"Transfusion by treating specialty/physician",!
 A R !!,"Start with TREATING SPECIALTY: FIRST// ",X:DTIME G:'$T!(X[U) END I X="" S LRA="/" G B

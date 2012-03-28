@@ -3,7 +3,7 @@ XTINOK ;SFISC/RWF - CHECK TO SEE IF OK TO LOAD ;02/13/95  16:16
 A I $S($D(DUZ)[0:1,$D(DUZ(0))[0:1,'DUZ:1,1:0) W !!,*7,">> DUZ and DUZ(0) must be defined as an active user to initialize." G BAD
  I DUZ(0)'="@" W *7,!!,">> You must have programmer access (DUZ(0)=@) to run this init." G BAD
  W !,"I'm checking to see if it is OK to install Toolkit v",$P($T(+2),";",3),!," in this account.",!
- S %=$$VERSION^XPDUTL("XU") G:%&(%<7.1) OLD
+ S %=$$VERSION^XPDUTL("XU") G:%<7.1 OLD
 OK ;
  W !!,"Everything looks OK, Lets continue.",!
  X "S DTIME=84000" K XUINTIME S XUINTIME(1)=$H

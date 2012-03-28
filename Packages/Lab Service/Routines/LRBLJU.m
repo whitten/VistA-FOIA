@@ -1,6 +1,6 @@
-LRBLJU ;AVAMC/REG - FIND UNITS NO DISPOSITION ;10/6/95  10:10 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJU ; IHS/DIR/AAB - FIND UNITS NO DISPOSITION 10/6/95 10:10 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  S %DT="T",X="N" D ^%DT S N=Y,E(1)=$S($D(E(1)):E(1),1:DT-.0001) S:'$D(LROPT) LROPT=""
  S IOP="HOME" D ^%ZIS W !!?20,$S($D(A)#2:A,1:""),!!
 ASK R !,"Select: (A)ll blood components or (S)pecific component: ",S:DTIME G:S=""!(S[U) END G:S?1"A".E T I S'?1"S" W !!,"Enter A to list all components or S for a specific component",! G ASK

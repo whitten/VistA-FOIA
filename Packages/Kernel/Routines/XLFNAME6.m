@@ -1,4 +1,5 @@
-XLFNAME6 ;CIOFO-SF/TKW,MKO-Utilities for person name fields ;11:41 AM  14 Mar 2000
+XLFNAME6 ;CIOFO-SF/TKW,MKO-Utilities for person name fields ;11:41 AM  14 Mar 2000 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**134**;Jul 10, 1995
  ;
 FMNAME(XUNAME,XUFLAG,XUDLM) ; Convert HL7 format name to regular name

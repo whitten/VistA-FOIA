@@ -1,4 +1,5 @@
 LRXREF ;SLC/RWA/DALOI/FHS - BUILD CROSS-REFERENCES FOR RE-INDEX ;7/9/92  01:26
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**70,153,263**;Sep 27, 1994
 AVS1 ;Rebuild "AVS" cross-reference in file 68 for Re-index utility
  I $D(DIU(0)),'$L($P(^LRO(68,DA(2),1,DA(1),1,DA,3),U,4)) S ^LRO(68,"AVS",DA(2),DA(1),DA)=$P(^LRO(68,DA(2),1,DA(1),1,DA,0),U)_"^"_$P(^(3),U,5)

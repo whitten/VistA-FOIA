@@ -1,4 +1,5 @@
-XQSMD ; SEA/MJM - Secure MenuMan Delegation ;7/3/91  08:39 ;6/4/92  12:53 PM
+XQSMD ; SEA/MJM - Secure MenuMan Delegation ;7/3/91  08:39 ;6/4/92  12:53 PM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 EN1 S XQDOP=0 G INIT ;Entry point for adding options
 EN2 S XQDOP=1 ;Entry point for removing options from users

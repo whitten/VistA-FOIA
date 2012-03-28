@@ -1,5 +1,5 @@
-DGMTSCR ;ALB/RMO/CAW - Means Test Screen Read Processor ; 8/1/08 1:21pm
- ;;5.3;Registration;**45,688**;Aug 13, 1993;Build 29
+DGMTSCR ;ALB/RMO/CAW - Means Test Screen Read Processor;30 JAN 1992 2:00 pm [ 10/02/92  9:47 AM ]
+ ;;5.3;Registration;**45**;Aug 13, 1993
  ;
  ; Input  -- DGRNG    Range of selectable items
  ;           DGMTACT  Means Test Action
@@ -37,7 +37,7 @@ FEED ;Line feed to the bottom of the screen
 SEL ;Check available column selections for Veteran, Spouse or Children
  N DGDC,DGNC,DGND,DGSP,DGVIR0,DGX
  D DEP^DGMTSCU2
- S DGSEL="V"_$S(DGSP:"S",1:"")_$S(DGDC:"C",1:"")
+ S DGSEL="V"_$S(DGSP:"S",1:"")_$S(DGDC&(DGMTSCI'=4):"C",1:"")
 SELQ Q
  ;
 HLP ;Help display

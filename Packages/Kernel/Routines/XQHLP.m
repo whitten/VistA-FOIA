@@ -1,5 +1,5 @@
 XQHLP ;SEA/MJM - Menu Helper  ;07/21/09  11:37
- ;;8.0;KERNEL;**46,514**;Jul 10, 1995;Build 8
+ ;;8.0;KERNEL;**46,514**;Jul 10, 1995;Build 14
  ;
 PAUSE R !!,"  **> Press 'RETURN' to continue, '^' to stop, or '?[option text]' for more",!?25,"help: ",XQL:DTIME D:XQL?1"?"1AN.ANP HELP S XQL=$S(XQL[U:-1,1:XQLN) W @IOF Q
  ;

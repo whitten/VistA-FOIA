@@ -1,14 +1,25 @@
-PXRMEXLM ; SLC/PKR/PJH - Clinical Reminder Exchange List Manager routines. ;12/02/2009
- ;;2.0;CLINICAL REMINDERS;**6,12,17**;Feb 04, 2005;Build 102
+PXRMEXLM ; SLC/PKR/PJH - Clinical Reminder Exchange List Manager routines. ;06/15/2001
+ ;;1.5;CLINICAL REMINDERS;**5**;Jun 19, 2000
  ;
- ;=====================================================
+ ;======================================================================
 CRE ;Create a packed reminder and store it in the repository.
- D FULL^VALM1
- D CRE^PXRMEXPD
+ N RTP,SUCCESS,TMPIND
+ S RTP=$$GETREM^PXRMEXPU("pack")
+ S TMPIND="PXRMEXPR"
+ D PACK^PXRMEXPR(RTP,TMPIND)
+ D STOREPR^PXRMEXU2(.SUCCESS,RTP,TMPIND)
+ I SUCCESS D
+ . S VALMHDR(1)="Packed reminder for "_$P(RTP,U,2)
+ . S VALMHDR(2)="was saved in Exchange File."
+ . D BLDLIST^PXRMEXLC(1)
+ E  D
+ . S VALMHDR(1)="Creation of packed reminder for "_$P(RTP,U,2)
+ . S VALMHDR(2)="failed; it was not saved!"
+ ;
  S VALMBCK="R"
  Q
  ;
- ;=====================================================
+ ;======================================================================
 DEFINQ ;Reminder definition inquiry.
  N GBL,IEN,PXRMROOT,VALMCNT
  S GBL="^TMP(""PXRMRINQ"",$J)"
@@ -25,49 +36,35 @@ DEFINQ ;Reminder definition inquiry.
  S VALMBCK="R"
  Q
  ;
- ;=====================================================
-ENTRY ;Entry code
- D INITMPG^PXRMEXLM
+ ;======================================================================
+EN ;Main entry point for PXRM EXCHANGE
+ N PXRMDONE,PXRMNMCH
+ ;PXRMDONE is set to true if the user enters an action of Quit.
+ S PXRMDONE=0
+ ;PXRMNMCH is used to store name change information. If a finding
+ ;is copied to a new name or is replaced by another finding the
+ ;information is stored here. It is used when installing definitions
+ ;or dialogs so they use the new or replaced finding.
+ N VALMBCK,VALMSG,X,XMZ
+ S X="IORESET"
+ D ENDR^%ZISS
  D BLDLIST^PXRMEXLC(0)
+ D EN^VALM("PXRM EX REMINDER EXCHANGE")
+ W IORESET
+ D KILL^%ZISS
+ Q
+ ;
+ ;======================================================================
+ENTRY ;Entry code
  D XQORM
  Q
  ;
- ;=====================================================
+ ;======================================================================
 EXIT ;Exit code
- D INITMPG^PXRMEXLM
- D CLEAN^VALM10
- D FULL^VALM1
- S VALMBCK="Q"
- K PXRMIGDS,PXRMINST
- Q
- ;
- ;=====================================================
-HDR ; Header code
- S VALMHDR(1)="Exchange File Entries."
- S VALMSG="+ Next Screen   - Prev Screen   ?? More Actions"
- Q
- ;
- ;=====================================================
-HELP ;Help code
- ;The following variables have to be newed so that when we return
- ;from the help display they will be defined.
- N ORU,ORUPRMT,XQORM
- D EN^VALM("PXRM EX MAIN HELP")
- Q
- ;
- ;=====================================================
-INIT ;Init
- S VALMCNT=0
- Q
- ;
- ;=====================================================
-INITMPG ;Initialized all the ^TMP globals.
  K ^TMP("PXRMEXDH",$J)
- K ^TMP("PXRMEXDGH",$J)
  K ^TMP("PXRMEXHF",$J)
  K ^TMP("PXRMEXFND",$J)
  K ^TMP("PXRMEXIA",$J)
- K ^TMP("PXRMEXIAD",$J)
  K ^TMP("PXRMEXID",$J)
  K ^TMP("PXRMEXIH",$J)
  K ^TMP("PXRMEXLC",$J)
@@ -80,18 +77,36 @@ INITMPG ;Initialized all the ^TMP globals.
  K ^TMP("PXRMEXRI",$J)
  K ^TMP("PXRMEXTMP",$J)
  K ^TMP("PXRMEXTXT",$J)
- K ^TMP($J,"HS TYPE")
- K ^TMP($J,"HS OBJECT")
- K ^TMP($J,"TIU OBJECT")
- K ^TMP($J,"ORDER DIALOG")
+ D CLEAN^VALM10
+ D FULL^VALM1
+ S VALMBCK="Q"
  Q
  ;
- ;=====================================================
-LDHF ;Load a host file into the repository.
+ ;======================================================================
+HDR ; Header code
+ S VALMHDR(1)="Exchange File Entries."
+ S VALMSG="+ Next Screen   - Prev Screen   ?? More Actions"
+ Q
+ ;
+ ;======================================================================
+HELP ;Help code
+ ;The following variables have to be newed so that when we return
+ ;from the help display they will be defined.
+ N ORU,ORUPRMT,XQORM
+ D EN^VALM("PXRM EX MAIN HELP")
+ Q
+ ;
+ ;======================================================================
+INIT ;Init
+ S VALMCNT=0
+ Q
+ ;
+ ;======================================================================
+LDHF ;Load host file into repository.
  N IND,FILE,PATH,RBL,SUCCESS,TEMP
  ;Select the host file to load.
  D CLEAR^VALM1
- S TEMP=$$GETEHF^PXRMEXHF("PRD")
+ S TEMP=$$GETEHF^PXRMEXHF
  I TEMP="" S VALMBCK="R" Q
  S PATH=$P(TEMP,U,1)
  S FILE=$P(TEMP,U,2)
@@ -113,8 +128,8 @@ LDHF ;Load a host file into the repository.
  S VALMBCK="R"
  Q
  ;
- ;=====================================================
-LDMM ;Load a MailMan message into the repository.
+ ;======================================================================
+LDMM ;Load MailMan message into repository.
  N IND,RBL,TEMP,XMZ
  ;Select the MailMan message to load.
  D CLEAR^VALM1
@@ -141,7 +156,7 @@ LDMM ;Load a MailMan message into the repository.
  S VALMBCK="R"
  Q
  ;
- ;=====================================================
+ ;======================================================================
 LRDEF ;List the name and print name of all reminder definitions.
  N VALMCNT
  I $D(^TMP("PXRMEXLD",$J,"VALMCNT")) S VALMCNT=^TMP("PXRMEXLD",$J,"VALMCNT")
@@ -156,36 +171,17 @@ LRDEF ;List the name and print name of all reminder definitions.
  D EN^VALM("PXRM EX REMINDER LIST")
  Q
  ;
- ;=====================================================
+ ;======================================================================
 PEXIT ;PXRM EXCH MENU protocol exit code
  S VALMSG="+ Next Screen   - Prev Screen   ?? More Actions"
  ;Reset after page up/down etc
  D XQORM
  Q
  ;
- ;=====================================================
-START ;Main entry point for PXRM EXCHANGE
- N PXRMDONE,PXRMNMCH
- ;PXRMDONE is set to true if the user enters an action of Quit.
- S PXRMDONE=0
- ;PXRMNMCH is used to store name change information. If a finding
- ;is copied to a new name or is replaced by another finding the
- ;information is stored here. It is used when installing definitions
- ;or dialogs so they use the new or replaced finding.
- N VALMBCK,VALMSG,X,XMZ
- S X="IORESET"
- D ENDR^%ZISS
- D EN^VALM("PXRM EX REMINDER EXCHANGE")
- W IORESET
- D KILL^%ZISS
- Q
- ;
- ;=====================================================
 XQORM S XQORM("#")=$O(^ORD(101,"B","PXRM EXCH SELECT ENTRY",0))_U_"1:"_VALMCNT
  S XQORM("A")="Select Action: "
  Q
  ;
- ;=====================================================
 XSEL ;PXRM EXCH SELECT COMPONENT validation
  N SEL,PXRMRIEN
  S SEL=$P(XQORNOD(0),"=",2)
@@ -195,18 +191,18 @@ XSEL ;PXRM EXCH SELECT COMPONENT validation
  I SEL["," D  Q
  .W $C(7),!,"Only one item number allowed." H 2
  .S VALMBCK="R"
- I ('SEL)!(SEL>VALMCNT)!('$D(@VALMAR@("SEL",SEL))) D  Q
+ I ('SEL)!(SEL>VALMCNT)!('$D(@VALMAR@("IDX",SEL))) D  Q
  .W $C(7),!,SEL_" is not a valid item number." H 2
  .S VALMBCK="R"
  ;
  ;Get the repository ien.
- S PXRMRIEN=^TMP("PXRMEXLR",$J,"SEL",SEL)
+ S PXRMRIEN=^TMP("PXRMEXLR",$J,"IDX",SEL,SEL)
  ;
  ;Full screen mode
  D FULL^VALM1
  ;
  ;Option to Install, Delete or Install History
- N DIR,DIROUT,DIRUT,DTOUT,DUOUT,OPTION,X,Y
+ N X,Y,DIR,OPTION K DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="SBM"_U_"IFE:Install Exchange File Entry;"
  S DIR(0)=DIR(0)_"DFE:Delete Exchange File Entry;"
  S DIR(0)=DIR(0)_"IH:Installation History;"
@@ -214,9 +210,9 @@ XSEL ;PXRM EXCH SELECT COMPONENT validation
  S DIR("B")="IFE"
  S DIR("?")="Select from the codes displayed. For detailed help type ??"
  S DIR("??")=U_"D HLP^PXRMEXIX(3)"
- D ^DIR
- I $D(DIROUT)!$D(DIRUT) S VALMBCK="R" Q
- I $D(DTOUT)!$D(DUOUT) S VALMBCK="R" Q
+ D ^DIR K DIR
+ I $D(DIROUT) S DTOUT=1
+ I $D(DTOUT)!($D(DUOUT)) S VALMBCK="R" Q
  S OPTION=Y
  ;
  ;Install
@@ -230,12 +226,20 @@ XSEL ;PXRM EXCH SELECT COMPONENT validation
  .D DELETE^PXRMEXU1(.DELLIST)
  .;Rebuild the list for List Manager to display.
  .K ^TMP("PXRMEXLR",$J)
- .D REXL^PXRMLIST("PXRMEXLR")
- .S VALMCNT=^TMP("PXRMEXLR",$J,"VALMCNT")
+ .D RE^PXRMLIST(.RELIST,.IEN)
+ .M ^TMP("PXRMEXLR",$J)=RELIST
+ .S VALMCNT=RELIST("VALMCNT")
+ .F IND=1:1:VALMCNT D
+ ..S ^TMP("PXRMEXLR",$J,"IDX",IND,IND)=IEN(IND)
+ .;
  .S VALMHDR(1)="Deleted 1 exchange file entry",VALMHDR(2)=" ",VALMBCK="R"
  ;
- I OPTION="IH" D START^PXRMEXIH
+ I OPTION="IH" D
+ .N HISLIST,VALMCNT
+ .S HISLIST(SEL)=""
+ .D HISTLIST^PXRMEXLC(.HISLIST,.VALMCNT)
+ .D EN^VALM("PXRM EX INSTALLATION HISTORY")
+ .K ^TMP("PXRMEXIH",$J)
  ;
  S VALMBCK="R"
  Q
- ;

@@ -1,8 +1,5 @@
-GMRCEDT3 ;SLC/DCM,JFR - file edit/resubmit ;04/23/09  12:19
- ;;3.0;CONSULT/REQUEST TRACKING;**1,5,15,22,66**;DEC 27, 1997;Build 30
- ;
- ;IRCS in use: #2053 (DIE), #2056 (GET1^DIQ), #10103 (XLFDT), #10104 (XLFSTR)
- ;
+GMRCEDT3 ;SLC/DCM,JFR - file edit/resubmit ;1/16/02 19:28
+ ;;3.0;CONSULT/REQUEST TRACKING;**1,5,15,22**;DEC 27, 1997
 EN(GMRCDA) ;File tracking Data from array
  W:'$D(GMRCGUIF) !,"Filing Tracking Data..."
  N GMRCOUNT,GMRC40DA
@@ -27,12 +24,11 @@ EN(GMRCDA) ;File tracking Data from array
  ....N CAPTION S CAPTION=$S(GMRCND=5:"Urgency: ",GMRCND=6:"Place of Consultation: ",1:"Type of Request: ")
  ....S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)=CAPTION_$S($L($P(GMRCFLD(GMRCND),U)):$P(GMRCFLD(GMRCND),U),1:"No Previous Value")
  ...I GMRCND=7 S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)="Attention: "_$S($L($P(GMRCFLD(GMRCND),U)):$P(GMRCFLD(GMRCND),U),1:"No Previous Value") Q
- ...I GMRCND=17 S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)="Earliest Appropriate Date: "_$S($L($P(GMRCFLD(GMRCND),U)):$P(GMRCFLD(GMRCND),U),1:"No Previous Value") ;wat/66
  ...I GMRCND=20 N GMRCND1 S GMRCND1=0,GMRCOUNT=GMRCOUNT+1 D  Q
  ....S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)="Reason for Request: "
  ....S GMRCOUNT=GMRCOUNT+1
  ....F  S GMRCND1=$O(@GMRCFLD(20)@(GMRCND1)) Q:GMRCND1=""  S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)=@GMRCFLD(20)@(GMRCND1,0),GMRCOUNT=GMRCOUNT+1
- ...I GMRCND=30 S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)="Provisional Diagnosis: "_$S($L($P(GMRCFLD(GMRCND),U)):$P(GMRCFLD(GMRCND),U),1:"No Previous Value") Q
+ ...I GMRCND=30 S ^GMR(123,GMRCDA,40,DA,1,GMRCOUNT,0)="Provisional Diagnosis: "_$S($L($P(GMRCFLD(GMRCND),U)):$P(GMRCFLD(GMRCND),U),1:"No Previous Value") Q 
  ...I GMRCND=40 S ^GMR(123,+GMRCDA,40,DA,1,GMRCOUNT,0)=$P(GMRCFLD(GMRCND),"^",1) Q
  ...Q
  ..Q

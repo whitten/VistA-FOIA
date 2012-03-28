@@ -1,12 +1,11 @@
 IBDFN4 ;ALB/CJM - ENCOUNTER FORM - (entry points for selection routines);5/21/93
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**38,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**38**;APR 24, 1997
  ;
 CPT ;select ambulatory procedures
  N NAME,CODE,SCREEN,IBDESCR,IBDESCLG,QUIT
  S QUIT=0
- ;;I '$D(@IBARY@("SCREEN")) D CPTSCRN Q:QUIT
- ;;E  S SCREEN=$G(@IBARY@("SCREEN"))
- S SCREEN="I $P($$CPT^ICPTCOD(Y),U,7)=1" ;List only active codes
+ I '$D(@IBARY@("SCREEN")) D CPTSCRN Q:QUIT
+ E  S SCREEN=$G(@IBARY@("SCREEN"))
  K DIC S DIC=81,DIC(0)="AEMQZ",DIC("S")=SCREEN
  I $D(^ICPT) D ^DIC K DIC I +Y>0 D
  .;;change to api cpt;dhh
@@ -19,9 +18,8 @@ CPT ;select ambulatory procedures
  .S @IBARY=$P(CODE,"^",2)_"^"_NAME_"^"_IBDESCR
  E  K @IBARY ;kill either if file doesn't exist or nothing chosen
  Q
-CPTSCRN ;This code is probably not called, but will modify to be safe.
- ;;S SCREEN="I '$P(^(0),U,4)"
- S SCREEN="I $P($$CPT^ICPTCOD(Y),U,7)=1"
+CPTSCRN ;
+ S SCREEN="I '$P(^(0),U,4)"
  ;
  ;don't ask the user about categories - it doesn't work well 
  ;K DIR S DIR(0)="YA",DIR("A")="Do you want to select a CPT from a particular CPT category? ",DIR("?")="Answer YES if you want to screen out all CPT codes that do not belong to a particular category",DIR("B")="NO"
@@ -34,18 +32,16 @@ CPTSCRN ;This code is probably not called, but will modify to be safe.
 ICD9 ;select ICD-9 codes
  N IBDX,CODE,SCREEN,IBDESCR,QUIT
  S QUIT=0
- ;;I $D(@IBARY@("SCREEN")) S SCREEN=$G(@IBARY@("SCREEN"))
- ;;E  D ICD9SCRN Q:QUIT
- S SCREEN="I $P($$ICDDX^ICDCODE(Y),U,10)=1" ;List only active codes
+ I $D(@IBARY@("SCREEN")) S SCREEN=$G(@IBARY@("SCREEN"))
+ E  D ICD9SCRN Q:QUIT
  S DIC=80,DIC(0)="AEMQZI",DIC("S")=SCREEN
  I $D(^ICD9) D ^DIC K DIC I +Y>0 D
  .S CODE=$P(Y(0),U),IBDX=$P(Y(0),U,3),IBDESCR=$P($G(^ICD9(+Y,1)),"^")
  .S @IBARY=CODE_"^"_IBDX_"^"_IBDESCR
  E  K @IBARY ;kill if either file doesn't exist or nothing chosen - this is how to let the encounter form utilities know nothing was selected
  Q
-ICD9SCRN ;This code is probably not called, but will modify to be safe.
- ;;S SCREEN="I '$P(^(0),U,9)"
- S SCREEN="I $P($$ICDDX^ICDCODE(Y),U,10)=1"
+ICD9SCRN ;
+ S SCREEN="I '$P(^(0),U,9)"
  ;
  ;don't ask the user about categories - it doesn't work well 
  ;K DIR S DIR(0)="YA",DIR("A")="Do you want to select an ICD diagnosis from a particular diagnostic category? ",DIR("B")="NO"
@@ -63,9 +59,7 @@ VSIT ; -- Select only visit cpt codes
  N NAME,CODE,IBDESCR,QUIT,DIC,X,Y,IBHDR,IBTXT
  S QUIT=0
  ;
- ;;S DIC="^IBE(357.69,",DIC(0)="AEMQZ",DIC("S")="I '$P(^(0),U,4)"
- S DIC="^IBE(357.69,",DIC(0)="AEMQZ"
- S DIC("S")="I $P($$CPT^ICPTCOD(Y),U,7)=1" ;List only active codes
+ S DIC="^IBE(357.69,",DIC(0)="AEMQZ",DIC("S")="I '$P(^(0),U,4)"
  D ^DIC K DIC I +Y>0 D
  .;;----change to api cpt;dhh
  .S CODE=$P(Y(0),U),IBHDR=$P(Y(0),U,2),IBTXT=$P(Y(0),U,3)
@@ -107,11 +101,8 @@ CPTMOD ;- Select active CPT Modifiers
  Q:$G(IBARY)=""
  ;
  ;- Screen out inactive CPT modifiers
- ;;S SCREEN="I '$P(^(0),U,5)"
- ;;I '$D(@IBARY@("SCREEN")) S @IBARY@("SCREEN")=SCREEN
- ;
- ;List only active modifiers
- S SCREEN="I $P($$MOD^ICPTMOD(Y,""I""),U,7)=1"
+ S SCREEN="I '$P(^(0),U,5)"
+ I '$D(@IBARY@("SCREEN")) S @IBARY@("SCREEN")=SCREEN
  S DIC=81.3
  S DIC(0)="AEMQZ"
  S DIC("S")=SCREEN

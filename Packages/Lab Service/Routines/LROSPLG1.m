@@ -1,4 +1,6 @@
-LROSPLG1 ;B'HAM ISC/ADM - STATUS OF SURGICAL CASE ;4/12/94  08:55
+SROSPLG1 ; IHS/DIR/FJE - B'HAM ISC/ADM - STATUS OF SURGICAL CASE 08:55 ; [ 4/12/94 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;3.0; Surgery ;**28**;24 Jun 93
 STATUS ; print case status
  I $P($G(^SRF(SROP,"NON")),"^")="Y" S SROPER=SROPER_$S($P($G(^(30)),"^"):" (ABORTED)",$P($G(^("NON")),"^",5):" (COMPLETED)",1:" (NOT COMPLETE)") Q

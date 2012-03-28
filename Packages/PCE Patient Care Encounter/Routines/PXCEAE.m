@@ -1,5 +1,5 @@
 PXCEAE ;ISL/dee,ISA/KWP - Main routine for the List Manager display of a visit and related v-files ;04/26/99
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**37,67,99,147,156,172,195**;Aug 12, 1996;Build 1
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**37,67,99**;Aug 12, 1996
  ;; ;
  Q
 EN ;+ -- main entry point for PXCE DISPLAY VISIT
@@ -12,15 +12,9 @@ EN ;+ -- main entry point for PXCE DISPLAY VISIT
  ;
  I '$D(PXCEPAT) N PXCEPAT D
  . S PXCEPAT=$P($G(^AUPNVSIT(PXCEVIEN,0)),"^",5)
- ; next 3 lines PX*1.0*172
- N PXREC,PXPTSSN,PXDUZ S PXDUZ=DUZ,PXPTSSN=$P($G(^DPT(PXCEPAT,0)),U,9)
- D SEC^PXCEEXP(.PXREC,PXDUZ,PXPTSSN)
- I PXREC W !!,"Security regulations prohibit computer access to your own medical record." H 3 Q
- S PXCECAT="AEP" D PATINFO^PXCEPAT(.PXCEPAT) K PXCECAT
+ . D PATINFO^PXCEPAT(.PXCEPAT)
  ;
  I '$D(PXCEHLOC) N PXCEHLOC S PXCEHLOC=$P($G(^AUPNVSIT(PXCEVIEN,0)),"^",22)
- ;Get Visit date/time if exists - PX*195
- I '$D(PXCEAPDT) N PXCEAPDT S PXCEAPDT=$P($G(^AUPNVSIT(PXCEVIEN,0)),"^")
  ;+If not called from encounter viewer lock ^PXLCKUSR
  ;+and create ^XTMP("PXLCKUSR",VISIEN)=DUZ
  I PXCEKEYS'["V" D
@@ -133,7 +127,7 @@ DOMANY(PXCEFIDX,WHATDO,WHATTODO) ;Process one or more V-File entries
  I WHATDO="E" D
  . S:PXCEFIDX'>0 PXCEFIDX=$$SEL^PXCEAE2("Edit",1)
  E  I WHATDO="D" D
- . S:PXCEFIDX'>0 PXCEFIDX=$$SEL^PXCEAE2("Delete",2)
+ . S:PXCEFIDX'>0 PXCEFIDX=$$SEL^PXCEAE2("Delete",1)
  E  W "??",$C(7) Q
  Q:+PXCEFIDX'>0
  N PXCEINDX,PXCEFIX1,PXCEFIX2

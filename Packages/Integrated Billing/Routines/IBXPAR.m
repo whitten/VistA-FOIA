@@ -1,11 +1,11 @@
-IBXPAR ; GENERATED FROM 'IB EDIT MCCR PARM' INPUT TEMPLATE(#505), FILE 350.9;09/24/03
+IBXPAR ; GENERATED FROM 'IB EDIT MCCR PARM' INPUT TEMPLATE(#2561), FILE 350.9;11/29/04
  D DE G BEGIN
 DE S DIE="^IBE(350.9,",DIC=DIE,DP=350.9,DL=1,DIEL=0,DU="" K DG,DE,DB Q:$O(^IBE(350.9,DA,""))=""
  I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,12) S:%]"" DE(22)=% S %=$P(%Z,U,15) S:%]"" DE(24)=%
- I $D(^(1)) S %Z=^(1) S %=$P(%Z,U,1) S:%]"" DE(10)=% S %=$P(%Z,U,2) S:%]"" DE(11)=% S %=$P(%Z,U,4) S:%]"" DE(31)=% S %=$P(%Z,U,5) S:%]"" DE(3)=% S %=$P(%Z,U,6) S:%]"" DE(4)=% S %=$P(%Z,U,8) S:%]"" DE(12)=% S %=$P(%Z,U,10) S:%]"" DE(29)=%
- I  S %=$P(%Z,U,14) S:%]"" DE(6)=% S %=$P(%Z,U,15) S:%]"" DE(17)=% S %=$P(%Z,U,16) S:%]"" DE(18)=% S %=$P(%Z,U,17) S:%]"" DE(19)=% S %=$P(%Z,U,18) S:%]"" DE(20)=% S %=$P(%Z,U,19) S:%]"" DE(21)=% S %=$P(%Z,U,20) S:%]"" DE(30)=%
- I  S %=$P(%Z,U,21) S:%]"" DE(5)=% S %=$P(%Z,U,22) S:%]"" DE(15)=% S %=$P(%Z,U,23) S:%]"" DE(16)=% S %=$P(%Z,U,25) S:%]"" DE(7)=% S %=$P(%Z,U,27) S:%]"" DE(34)=% S %=$P(%Z,U,28) S:%]"" DE(23)=% S %=$P(%Z,U,29) S:%]"" DE(25)=%
- I  S %=$P(%Z,U,30) S:%]"" DE(26)=% S %=$P(%Z,U,31) S:%]"" DE(32)=%
+ I $D(^(1)) S %Z=^(1) S %=$P(%Z,U,1) S:%]"" DE(10)=% S %=$P(%Z,U,2) S:%]"" DE(11)=% S %=$P(%Z,U,4) S:%]"" DE(31)=% S %=$P(%Z,U,5) S:%]"" DE(3)=% S %=$P(%Z,U,6) S:%]"" DE(4)=% S %=$P(%Z,U,7) S:%]"" DE(35)=% S %=$P(%Z,U,8) S:%]"" DE(12)=%
+ I  S %=$P(%Z,U,10) S:%]"" DE(29)=% S %=$P(%Z,U,14) S:%]"" DE(6)=% S %=$P(%Z,U,15) S:%]"" DE(17)=% S %=$P(%Z,U,16) S:%]"" DE(18)=% S %=$P(%Z,U,17) S:%]"" DE(19)=% S %=$P(%Z,U,18) S:%]"" DE(20)=% S %=$P(%Z,U,19) S:%]"" DE(21)=%
+ I  S %=$P(%Z,U,20) S:%]"" DE(30)=% S %=$P(%Z,U,21) S:%]"" DE(5)=% S %=$P(%Z,U,22) S:%]"" DE(15)=% S %=$P(%Z,U,23) S:%]"" DE(16)=% S %=$P(%Z,U,25) S:%]"" DE(7)=% S %=$P(%Z,U,27) S:%]"" DE(34)=% S %=$P(%Z,U,28) S:%]"" DE(23)=%
+ I  S %=$P(%Z,U,29) S:%]"" DE(25)=% S %=$P(%Z,U,30) S:%]"" DE(26)=% S %=$P(%Z,U,31) S:%]"" DE(32)=%
  I $D(^(2)) S %Z=^(2) S %=$P(%Z,U,7) S:%]"" DE(33)=%
  K %Z Q
  ;
@@ -55,8 +55,8 @@ NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
 KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="IBXPAR",DQ=1
  N DIEZTMP,DIEZAR,DIEZRXR,DIIENS,DIXR K DIEFIRE,DIEBADK S DIEZTMP=$$GETTMP^DIKC1("DIEZ")
- M DIEZAR=^DIE(505,"AR") S DICRREC="TRIG^DIE17"
- S:$D(DTIME)[0 DTIME=300 S D0=DA,DIIENS=DA_",",DIEZ=505,U="^"
+ M DIEZAR=^DIE(2561,"AR") S DICRREC="TRIG^DIE17"
+ S:$D(DTIME)[0 DTIME=300 S D0=DA,DIIENS=DA_",",DIEZ=2561,U="^"
 1 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=1 D X1 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
 X1 I '$D(IBDR) S IBDR="1,2,3,4,5"
  Q
@@ -85,7 +85,7 @@ X5 K:$L(X)>8!($L(X)<1) X
  S DU="DIC(49,"
  G RE
 X6 Q
-7 S DW="1;25",DV="P40.8'",DU="",DLB="DEFAULT DIVISION",DIFLD=1.25
+7 S DW="1;25",DV="P40.8",DU="",DLB="DEFAULT DIVISION",DIFLD=1.25
  S DU="DG(40.8,"
  G RE
 X7 Q
@@ -133,7 +133,7 @@ X18 Q
  S DU="1:YES;0:NO;"
  G RE
 X19 Q
-20 S DW="1;18",DV="*P399.2'",DU="",DLB="*DEFAULT AMB SURG REV CODE",DIFLD=1.18
+20 S DW="1;18",DV="*P399.2'",DU="",DLB="DEFAULT AMB SURG REV CODE",DIFLD=1.18
  S DU="DGCR(399.2,"
  G RE
 X20 S DIC("S")="I $P(^(0),U,3)" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
@@ -148,7 +148,7 @@ X21 Q
 X22 S %DT="EX" D ^%DT S X=Y K:3991231<X!(2901105>X) X
  Q
  ;
-23 S DW="1;28",DV="*P399.2'",DU="",DLB="*DEFAULT RX REFILL REV CODE",DIFLD=1.28
+23 S DW="1;28",DV="*P399.2'",DU="",DLB="DEFAULT RX REFILL REV CODE",DIFLD=1.28
  S DU="DGCR(399.2,"
  G RE
 X23 S DIC("S")="I $P(^(0),U,3)" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
@@ -158,18 +158,14 @@ X23 S DIC("S")="I $P(^(0),U,3)" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
  S DU="1:YES;0:NO;"
  G RE
 X24 Q
-25 S DW="1;29",DV="*P80'",DU="",DLB="DEFAULT RX REFILL DX",DIFLD=1.29
+25 S DW="1;29",DV="P80'",DU="",DLB="DEFAULT RX REFILL DX",DIFLD=1.29
  S DU="ICD9("
  G RE
-X25 S DIC("S")="I $$ICD9ACT^IBACSV(+Y)" D ^DIC K DIC S DIC=$G(DIE),X=+Y K:Y<0 X
- Q
- ;
-26 S DW="1;30",DV="*P81'",DU="",DLB="DEFAULT RX REFILL CPT",DIFLD=1.3
+X25 Q
+26 S DW="1;30",DV="P81'",DU="",DLB="DEFAULT RX REFILL CPT",DIFLD=1.3
  S DU="ICPT("
  G RE
-X26 S DIC("S")="I $$CPTACT^IBACSV(+Y)" D ^DIC K DIC S DIC=$G(DIE),X=+Y K:Y<0 X
- Q
- ;
+X26 Q
 27 S DQ=28 ;@4
 28 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=28 D X28 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
 X28 S:IBDR'["4" Y="@5"
@@ -204,4 +200,8 @@ X33 K:$L(X)>75!($L(X)<3)!'(X?1A.E) X
 X34 K:+X'=X!(X>80)!(X<1)!(X?.E1"."1N.N) X
  Q
  ;
-35 D:$D(DG)>9 F^DIE17 G ^IBXPAR1
+35 S DW="1;7",DV="P3.8'",DU="",DLB="BILL CANCELLATION MAILGROUP",DIFLD=1.07
+ S DU="XMB(3.8,"
+ G RE
+X35 Q
+36 D:$D(DG)>9 F^DIE17 G ^IBXPAR1

@@ -1,8 +1,10 @@
 VADPT3 ;ALB/MRL - PATIENT VARIABLES [IN5]; 12 DEC 1988 ; 7/22/03 5:00pm
- ;;5.3;Registration;**532,749**;Aug 13, 1993;Build 10
+ ;;5.3;Registration;**532,1004**;Aug 13, 1993
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
+ ;
  ;Inpatient variables [Version 5.0 and above]
 6 ;
- S (NOW,VAX("DAT"))=$$NOW^XLFDT,NOWI=9999999.999999-NOW
+ D NOW^%DTC S (NOW,VAX("DAT"))=%,NOWI=9999999.999999-%
  ;
  I $D(VAIP("E")),$D(^DGPM(+VAIP("E"),0)) S VAX("DT")=+^(0),E=+VAIP("E") G GO ;Specific Entry
  ;

@@ -1,6 +1,5 @@
 PSBVAR ;BIRMINGHAM/EFC-BCMA VARIANCE LOG FUNCTIONS ;Mar 2004
- ;;3.0;BAR CODE MED ADMIN;*31*;Mar 2004;Build 1
- ;Per VHA Directive 2004-038, this routine should not be modified.
+ ;;3.0;BAR CODE MED ADMIN;;Mar 2004
  ;
  ; Reference/IA
  ; ^DPT/10035
@@ -51,10 +50,9 @@ WARD ;Extract the ward and room/bed information.
  S PSBRB=$S(PSBRB'="":PSBRB,1:"***")
  S PSBWRD=$P($G(^DPT(DFN,.1)),U)
  ;Convert Ward Name to Ward IEN
- I PSBWRD'="" D
- . S PSBDT=%
- . S PSBWRD=$$FIND1^DIC(42,"","X",PSBWRD,"","","ERR")
- . S %=PSBDT ;reset after $$FIND1^DIC fileman call
+ S PSBDT=%
+ S PSBWRD=$$FIND1^DIC(42,"","X",PSBWRD,"","","ERR")
+ S %=PSBDT ;reset after $$FIND1^DIC fileman call
  S PSBWRD=$S($G(PSBWRD):PSBWRD,1:"***")
  ;
  ; Set Variance Entry

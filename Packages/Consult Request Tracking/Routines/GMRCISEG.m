@@ -1,13 +1,10 @@
-GMRCISEG ;SLC/JFR - CREATE IFC HL7 SEGMENTS ;08/16/10  08:30
- ;;3.0;CONSULT/REQUEST TRACKING;**22,66**;DEC 27, 1997;Build 30
- ;   $$GET1^DIQ          ORC+28,ORC+29,OBXTZ+11
- ;#2171 XUAF4, #10103 XLFDT, #10106 HLFNC, #3042 MCAPI, #10112 VASITE, #2541 $$KSP^XUPARAM
- ;
+GMRCISEG ;SLC/JFR - CREATE IFC HL7 SEGMENTS ; 7/26/01 22:15
+ ;;3.0;CONSULT/REQUEST TRACKING;**22**;DEC 27, 1997
  Q  ;don't enter at top
 BUILD(SEG,PCS) ;create any segment from array in PCS using |^&/~
  ; SEG = ORC,OBR,etc.
  ; PCS = array of data elements to be combined into the segement
- ;       array is numbered by the "|" piece
+ ;       array is numbered by the "|" piece 
  N ARR,SEGMNT
  S ARR=0,SEGMNT=""
  F  S ARR=$O(PCS(ARR)) Q:'ARR  D
@@ -21,7 +18,7 @@ ORC(GMRCO,GMRCOC,GMRCOS,GMRCACT)    ;build ORC for all but new orders
  ; GMRCOS = order status
  ; GMRCACT = ien in 40 multiple of particular action
  ;
- ;Output:
+ ;Output: 
  ; ORC segment
  ;
  I '$D(GMRCO)!('$D(GMRCOC))!('$D(GMRCACT)) Q "ERROR"
@@ -36,9 +33,7 @@ ORC(GMRCO,GMRCOC,GMRCOS,GMRCACT)    ;build ORC for all but new orders
  . S GMRCPCS(2)=GMRCPCS(2)_"^GMRCIFR"
  . S GMRCPCS(3)=GMRCO_U_$$STA^XUAF4($$KSP^XUPARAM("INST"))_"^GMRCIFC"
  S GMRCPCS(5)=$S($D(GMRCOS):GMRCOS,1:"")
- I GMRCOC["X" D
- .S $P(GMRCPCS(7),U,4)=$$FMTHL7^XLFDT($P(^GMR(123,GMRCO,0),U,24)) ;wat/66
- .S $P(GMRCPCS(7),U,6)=$$URG^GMRCIUTL(GMRCO)
+ I GMRCOC["X" S $P(GMRCPCS(7),U,6)=$$URG^GMRCIUTL(GMRCO)
  S GMRCPCS(9)=$$FMTHL7^XLFDT($P(^GMR(123,GMRCO,40,GMRCACT,0),U,1))
  S GMRCPCS(10)=$$HLNAME^GMRCIUTL($P(^GMR(123,GMRCO,40,GMRCACT,0),U,5))
  S GMRCRP=$P(^GMR(123,GMRCO,40,GMRCACT,0),U,4) I +GMRCRP D
@@ -48,7 +43,7 @@ ORC(GMRCO,GMRCOC,GMRCOS,GMRCACT)    ;build ORC for all but new orders
  . S GMRCPAG=$$GET1^DIQ(200,GMRCRP,.138)
  . S GMRCPCS(14)=$$HLPHONE^HLFNC(GMRCPHN,GMRCPAG)
  S GMRCPCS(15)=$$FMTHL7^XLFDT($P(^GMR(123,GMRCO,40,GMRCACT,0),U,3))
- I GMRCOC["X"!(GMRCOC="SC")!(GMRCOC="RE") D
+ I GMRCOC["X"!(GMRCOC="SC")!(GMRCOC="RE") D 
  . I GMRCOC="XX" D  Q
  .. I $P(^GMR(123,GMRCO,40,GMRCACT,0),U,2)=25 D  Q
  ... S GMRCPCS(16)="FI^FORWARD TO IFC^99GMRC"
@@ -69,7 +64,7 @@ ORC(GMRCO,GMRCOC,GMRCOS,GMRCACT)    ;build ORC for all but new orders
  ;
 OBXWP(GMRCO,GMRCOC,GMRCACT,GMRCSEG) ; return a WP field in OBX segs
  ; Input:
- ;  GMRCO   =
+ ;  GMRCO   = 
  ;  GMRCOC  =
  ;  GMRCACT = activity in 40 mult triggering msg
  ;  GMRCSEG = GLOBAL array to return results in
@@ -109,7 +104,7 @@ OBXRSLT(GMRCO,GMRCACT) ; build an OBX segment to send a TIU doc reference
  ;  GMRCACT = activity entry in 40 multiple
  ;
  ; Output:
- ;  OBX segment
+ ;  OBX segment 
  ;    e.g. OBX|4|RP|^TIU DOC^VA8925||41320^TIU^660||||||||F
  ;
  Q:'$D(^GMR(123,GMRCO,40,GMRCACT)) ""
@@ -132,7 +127,7 @@ NTE(GMRCO,GMRCACT,GMRCAR) ;format an NTE seg with DC comment
  ; Input:
  ;  GMRCO   = ien from file 123
  ;  GMRCACT = activity entry in 40 multiple
- ;  GMRCAR  = array in which to pass back NTE segs
+ ;  GMRCAR  = array in which to pass back NTE segs 
  ;
  ; Output:
  ;  array of NTE segments containing the comment
@@ -167,9 +162,10 @@ OBXTZ() ;build and return an OBX with the current TIME ZONE encoded
  ;
  ;Output:
  ;  OBX segment in the format:
- ;    OBX|5|CE|^TIME ZONE^VA4.4|1|MST||||||0
+ ;    OBX|5|CE|^TIME ZONE^VA4.4|1|MST||||||O
+ ;
  N GMRCPCS
- S GMRCPCS(1)=5,GMRCPCS(2)="CE" ;WAT/66
+ S GMRCPCS(1)=5,GMRCPCS(2)="CE"
  S GMRCPCS(3)="^TIME ZONE^VA4.4",GMRCPCS(4)=1
  S GMRCPCS(5)=$$GET1^DIQ(4.3,1,1)
  Q $$BUILD^GMRCISEG("OBX",.GMRCPCS)

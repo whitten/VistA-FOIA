@@ -1,4 +1,6 @@
-LRCAPU ;DALISC/J0 - LAB CAP UTILITIES ;3/17/93
+LRCAPU ; IHS/DIR/FJE - LAB CAP UTILITIES ; [ 3/17/93 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;**101,105**;Sep 27, 1994
 WKLDNAME(LRCC) ;Call with CAP code or IFN, returns WKLD proc name.
  ;Sets these vars:

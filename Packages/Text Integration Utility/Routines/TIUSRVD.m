@@ -1,5 +1,7 @@
-TIUSRVD ; SLC/JER - RPC's for document definition ; 09/12/2003 [6/8/05 8:07am]
- ;;1.0;TEXT INTEGRATION UTILITIES;**1,7,22,47,103,100,115,164,112,186,201**;Jun 20, 1997
+TIUSRVD ; SLC/JER - RPC's for document definition ; 04/23/2003
+ ;;1.0;TEXT INTEGRATION UTILITIES;**1,7,22,47,103,100,115,164**;Jun 20, 1997
+ ;IHS/ITSC/LJF 12/16/2003 CIA/DKM - TIU ignores alternate setting of TIUY
+ ;
 NOTES(TIUY) ; Get list of PN Titles
  D LIST(.TIUY,3)
  Q
@@ -32,7 +34,7 @@ TRAVERSE(TIUY,CLASS,TYPE,TIUK) ; Get all selectable titles for the CLASS
  . D TRAVERSE(.TIUY,+J,TYPE,.TIUK)
  Q
 PERSLIST(TIUY,DUZ,CLASS,TIUC,TIUFLG) ; Get personal list for a user
- N TIUI,TIUDA,TIUDFLT,INLST
+ N TIUI,TIUDA,TIUDFLT,NOTINLST S NOTINLST=0
  S TIUDA=+$O(^TIU(8925.98,"AC",DUZ,CLASS,0))
  Q:+TIUDA'>0
  I +$G(TIUFLG) S TIUC=1,TIUY(TIUC)="~SHORT LIST"
@@ -51,10 +53,11 @@ PERSLIST(TIUY,DUZ,CLASS,TIUC,TIUFLG) ; Get personal list for a user
  S (TIUI,TIUC)=0
  F  S TIUI=$O(TIUY(TIUI)) Q:+TIUI'>0  D
  . S TIUC=TIUI
- . I +TIUDFLT,($P($G(TIUY(TIUI)),U)=("i"_+TIUDFLT)) S $P(TIUDFLT,U,2)=$P(TIUY(TIUI),U,2),INLST=TIUI
+ . I +TIUDFLT,($P($G(TIUY(TIUI)),U)=("i"_+TIUDFLT)) S $P(TIUDFLT,U,2)=$P(TIUY(TIUI),U,2),NOTINLST=0
+ . E  S NOTINLST=1
  I +TIUDFLT D
  . ;if default isn't in list, append it as an item
- . I '$G(INLST) S TIUC=+$G(TIUC)+1,TIUY(TIUC)="i"_TIUDFLT
+ . I NOTINLST S TIUC=+$G(TIUC)+1,TIUY(TIUC)="i"_TIUDFLT
  . ;otherwise, just append as default
  . S TIUC=+$G(TIUC)+1,TIUY(TIUC)="d"_TIUDFLT
  Q
@@ -66,7 +69,11 @@ BLRSHELL(TIUY,TITLE,DFN,VSTR) ; Shell for boilerplate RPC
 BLRPLT(TIUY,TITLE,DFN,VSTR,ROOT) ; Load/Execute the Boilerplate for TITLE
  ;                                 or ROOT
  N TIU,TIUI,TIUJ,TIUK,TIUL,VADM,VAIN,VA,VAERR S TIUI=0
- S:'$D(TIUY) TIUY=$NA(^TMP("TIUBOIL",$J))
+ ;
+ ;IHS/ITSC/LJF 12/16/2003 per CIA
+ ;S:'$D(TIUY) TIUY=$NA(^TMP("TIUBOIL",$J))
+ S TIUY=$NA(^TMP("TIUBOIL",$J))
+ ;
  S:'$D(ROOT) ROOT=$NA(^TIU(8925.1,+TITLE,"DFLT")) ; **47**
  I $L($G(VSTR)) D PATVADPT^TIULV(.TIU,DFN,"",$G(VSTR)) ; **47**
  S TIUJ=+$P($G(^TMP("TIUBOIL",$J,0)),U,3)+1
@@ -88,7 +95,6 @@ BLRPLT(TIUY,TITLE,DFN,VSTR,ROOT) ; Load/Execute the Boilerplate for TITLE
  . . S TIUL=+$G(TIUFITEM(+TIUI)) D BLRPLT(.TIUY,TIUL,DFN,$G(VSTR))
  Q
 BOIL(LINE,COUNT) ; Execute Boilerplates
- N TIUNEWG,TIUNEWR,TIUOLDG,TIUOLDR
  N TIUI,DIC,X,Y,TIUFPRIV S TIUFPRIV=1
  S DIC=8925.1,DIC(0)="FMXZ"
  S DIC("S")="I $P($G(^TIU(8925.1,+Y,0)),U,4)=""O"""
@@ -96,27 +102,14 @@ BOIL(LINE,COUNT) ; Execute Boilerplates
  . D ^DIC
  . I +Y'>0 S X="The OBJECT "_X_" was NOT found...Contact IRM."
  . I +Y>0 D
- . . I $D(^TIU(8925.1,+Y,9)),+$$CANXEC(+Y) X ^(9) S:X["~@" X=$$APPEND(X) I 1
+ . . I $D(^TIU(8925.1,+Y,9)),+$$CANXEC(+Y) X ^(9) S:$E(X,1,2)="~@" X=X_"~@" I 1
  . . E  S X="The OBJECT "_X_" is INACTIVE...Contact IRM."
- . . I X["~@" D
- . . . I X'["^" D
- . . . . S TIUOLDR=$P(X,"~@",2),TIUNEWR=TIUOLDR_TIUI
- . . . . M @TIUNEWR=@TIUOLDR K @TIUOLDR
- . . . . S $P(X,"~@",2)=TIUNEWR
- . . . I X["^" D
- . . . . S TIUOLDG=$P(X,"~@",2),TIUNEWG="^TMP("_"""TIU201"""_","_$J_","_TIUI_")"
- . . . . M @TIUNEWG=@TIUOLDG K @TIUOLDG
- . . . . S $P(X,"~@",2)=TIUNEWG
  . S LINE=$$REPLACE(LINE,X,TIUI)
  Q $TR(LINE,"|","")
 CANXEC(TIUODA) ; Evaluate Object Status
  N TIUOST,TIUY S TIUOST=+$P($G(^TIU(8925.1,+TIUODA,0)),U,7)
  S TIUY=$S(TIUOST=11:1,+$G(NOSAVE):1,1:0)
  Q +$G(TIUY)
-APPEND(X) ;
- N TIUXL S TIUXL=$L(X)
- I $E(X,TIUXL-1,TIUXL)'="~@" S X=X_"~@"
- Q X
 REPLACE(LINE,X,TIUI) ; Replace the TIUIth object in LINE w/X
  S $P(LINE,"|",TIUI)=X
  Q LINE
@@ -152,13 +145,6 @@ LNGCNSLT(Y,FROM,DIR) ; Handle long list of titles for CONSULTS
  N CLASS S CLASS=+$$CLASS^TIUCNSLT Q:+CLASS'>0
  D LONGLIST(.Y,CLASS,$G(FROM),$G(DIR,1))
  Q
-LNGSURG(Y,FROM,DIR,CLNAME)      ; long list SURGICAL REPORT titles
- ; CLNAME = "SURGICAL REPORTS" or "PROCEDURE REPORTS (NON-O.R.)"
- ;           depending on context
- N CLASS S CLNAME=$S($G(CLNAME)]"":CLNAME,1:"OPERATION REPORTS")
- S CLASS=$$CLASS^TIUSROI(CLNAME) Q:+CLASS'>0
- D LONGLIST(.Y,CLASS,$G(FROM),$G(DIR,1))
- Q
 LONGLIST(Y,CLASS,FROM,DIR,IDNOTE) ; long list of titles for a class
  ; .Y=returned list, CLASS=ptr to class in 8925.1, FROM=text to $O from,
  ; DIR=$O direction, IDNOTE=flag to indicate selection for ID Entry
@@ -172,12 +158,4 @@ LONGLIST(Y,CLASS,FROM,DIR,IDNOTE) ; long list of titles for a class
  Q
 CNSLCLAS(Y) ; RPC to identify class CONSULTS
  S Y=$$CLASS^TIUCNSLT
- Q
-SURGCLAS(Y,CLNAME) ; RPC to identify class 
- ; CLNAME = "SURGICAL REPORTS" or "PROCEDURE REPORTS (NON-O.R.)"
- S CLNAME=$G(CLNAME,"SURGICAL REPORTS")
- S Y=$$CLASS^TIUSROI(CLNAME)
- Q
-CANLINK(Y,TIUTTL)       ; Wrap call to $$CANLINK^TIULP
- S Y=$$CANLINK^TIULP(TIUTTL)
  Q

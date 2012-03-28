@@ -1,11 +1,14 @@
-LRUMD1 ;AVAMC/REG - MD SELECTED TESTS/PATIENTS ;6/16/93  13:24 ;
+LRUMD1 ; IHS/DIR/FJE - MD SELECTED TESTS/PATIENTS 6/16/93 13:24 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W @IOF S A(1)=21,LRJ="" D L I $D(L)'=11 W !,"You have no patient list.  To enter patients answer the following prompt:" G A
 ASK W !!,"(R)emove a patient",?19,"(A)dd/edit patients",?45,"(T)ransfer list to  another user",!,"(D)elete list",?19,"(P)atient group deletion",?45,"(M)erge   list with another user",!,"(S)end list to printer",!
  R "Enter R, A, T, D, P, M, S or <CR> to accept list: ",X:DTIME I X=""!(X[U) S:X[U LRV=1 Q
  S X=$A(X) S:X>84 X=X-32 I X=83 S LRV=2 Q
  G A:X=65,K:X=68,R:X=82,T:X=84,C:X=80,M:X=77 Q:X=76  W $C(7) G LRUMD1
-A S LRA="" F LR=0:0 D ^LRDPA Q:LRDFN<1  S X=^LRO(69.2,LRAA,7,DUZ,1,0),^(0)=$P(X,U,1,2)_U_LRDFN_U_($P(X,U,4)+1),^(LRDFN,0)=LRDFN_U_$P(Y(0),U,1,3)_"^^^^^^"_$P(Y(0),U,9),^LRO(69.2,LRAA,7,DUZ,1,"C",$P(Y(0),U,1),LRDFN)="" D G
+A ;S LRA="" F LR=0:0 D ^LRDPA Q:LRDFN<1  S X=^LRO(69.2,LRAA,7,DUZ,1,0),^(0)=$P(X,U,1,2)_U_LRDFN_U_($P(X,U,4)+1),^(LRDFN,0)=LRDFN_U_$P(Y(0),U,1,3)_"^^^^^^"_$P(Y(0),U,9),^LRO(69.2,LRAA,7,DUZ,1,"C",$P(Y(0),U,1),LRDFN)="" D G
+ S LRA="" F LR=0:0 D ^LRDPA Q:LRDFN<1  S X=^LRO(69.2,LRAA,7,DUZ,1,0),^(0)=$P(X,U,1,2)_U_LRDFN_U_($P(X,U,4)+1),^(LRDFN,0)=LRDFN_U_$P(Y(0),U,1,3)_"^^^^^^"_HRCN,^LRO(69.2,LRAA,7,DUZ,1,"C",$P(Y(0),U,1),LRDFN)="" D G  ;IHS/ANMC/CLS 08/18/96
 B Q:'$O(^LRO(69.2,LRAA,7,DUZ,1,0))  G LRUMD1
 K W !,"Are you sure you want to delete the entire list " S %=2 D YN^LRU G:%'=1 B
  K ^LRO(69.2,LRAA,7,DUZ,1) S ^LRO(69.2,LRAA,7,DUZ,1,0)="^69.3PA^0^0" W !,"Your patient list has been deleted" Q

@@ -1,8 +1,25 @@
-%ZISH ;IHS/PR,SFISC/AC - HOST COMMANDS - MSM UNIX ;10/15/96  11:11
+%ZISH ;IHS/PR,SFISC/AC ; HOST COMMANDS - UNIX (MSU); [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;JUL 10, 1995
+ ;THIS ROUTINE CONTAINS IHS MODIFICATIONS BY IHS/ADC/GTH 11/25/96; IHS/ANMC/LJF 12/11/96; TASSC/DFM; IHS/OIRM/DSD/AEF/12/19/02 ;IHS/OIRM/DSD/AEF/1/21/03
+ ;THIS IS ROUTINE ZISHMSU
+ ;
+ ;  For unix operating systems.
+ ;
+ ;  Save in MGR uci as %ZISH.
+ ;
+ ; IHS/ADC/GTH 11-25/96 - Intercepts added for IHS calls that are
+ ; not compatible with VA calls.  See $$IHS^ZISHMSMU if any options
+ ; need to be added for your site.
+ ;
+ ;IHS/ANMC/LJF 12/11/96
+ ; -- checked for passing of 4th parameter, if not sent use IHS code
+ ; -- redirected PWD call to IHS code
  ;
  ;
-OPEN(X1,X2,X3,X4)    ;
+OPEN(X1,X2,X3,X4) ;
+ I '$D(X4) Q $$OPEN^ZISHMSMU(X1,X2,X3)  ;IHS/ANMC/LJF 12/11/96
+ ;I $$IHS^ZISHMSMU Q $$OPEN^ZISHMSMU(X1,X2,X3)  ; IHS/ADC/GTH 10-28-96
  ;X1=handle name
  ;X2=directory name /dir/
  ;X3=file name
@@ -11,7 +28,8 @@ OPEN(X1,X2,X3,X4)    ;
  S %I=$I
  F %=51:1:54 O %::0 S %T=$T Q:%T
  I %T S IO=%,IO(1,IO)="",POP=0
- E  U:$D(IO(1,%I) %I S POP=1 Q
+ ; E  U:$D(IO(1,%I) %I S POP=1 Q  ; IHS/ADC/GTH 11-25-96
+ E  U:$D(IO(1,%I)) %I S POP=1 Q  ; IHS/ADC/GTH 11-25-96
  S %1=$$MODE^%ZISF(X2_X3,X4)
  S %=%_":"_%1
  U @% S %ZA=$ZA
@@ -31,6 +49,7 @@ OPENERR ;
  Q 0
  ;
 DEL(%ZISHX1,%ZISHX2) ;Del fl(s)
+ I $$IHS^ZISHMSMU Q $$DEL^ZISHMSMU(%ZISHX1,%ZISHX2)  ; IHS/ADC/GTH - 10-28-96
  ;S Y=$$DEL^ZOSHMSM("/dir/","fl")
  ;                         ,.array)
  ;Changed param 2 to a $NAME string.
@@ -55,6 +74,7 @@ DEL(%ZISHX1,%ZISHX2) ;Del fl(s)
  ;
  ;
 LIST(%ZISHX1,%ZISHX2,%ZISHX3) ;Create a local array holding fl names
+ I $$IHS^ZISHMSMU Q $$LIST^ZISHMSMU(%ZISHX1,%ZISHX2,.%ZISHX3)  ; IHS/ADC/GTH - 10-28-96
  ;S Y=$$LIST^ZOSHDOS("\dir\","fl",".return array")
  ;                           "fl*",
  ;                           .array,
@@ -84,6 +104,7 @@ LIST(%ZISHX1,%ZISHX2,%ZISHX3) ;Create a local array holding fl names
  Q $O(@%ZISHX3@(""))]""
  ;
 MV(X1,X2,X3,X4) ;Rename a fl
+ I $$IHS^ZISHMSMU Q $$MV^ZISHMSMU(X1,X2,X3,X4)  ; IHS/ADC/GTH - 10-28-96
  ;S Y=$$MV^ZOSHMSM("/dir/","fl","/dir/","fl")
  ;
  N %,%1
@@ -104,7 +125,9 @@ MV(X1,X2,X3,X4) ;Rename a fl
  I $G(%ZISHLGR)]"",$D(@%ZISHLGR)
  Q 1 ;ZOSHX
  ;
-PWD() ;Print working directory
+PWD(X) ;Print working directory
+ Q $$PWD^ZISHMSMU(.X)   ;IHS/ANMC/LJF 12/11/96
+ I $$IHS^ZISHMSMU Q $$PWD^ZISHMSMU(.X)  ; IHS/ADC/GTH - 10-28-96
  ;
  N %,%IS,POP,X,Y,ZOSHC,ZOSHDA,ZOSHDF,ZOSHF,ZOSHIOP,ZOSHLN,ZOSHQ,ZOSHX,ZOSHSYFI,ZOSHIOP1
  ;
@@ -136,6 +159,16 @@ DF(X) ;Dir frmt
  S X=$TR(X,"\","/")
  I $E(X,$L(X))'="/" S X=X_"/"
  Q
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;ORIGINAL MODIFICATION BY IHS/OIRM/DSD/AEF 12/19/02
+ ;ADDED SUBROUTINE DEFDIR TO PREVENT <LINER>CHKNM+3^%ZISF ERROR
+ ;AT THE 'Enter a Host File:' PROMPT WHEN A PATH IS NOT SPECIFIED
+DEFDIR(DF)         ;ef. Default Dir and frmt
+ Q:DF="." ""  ;Special way to get current dir.
+ S:DF="" DF=$G(^XTV(8989.3,1,"DEV"))
+ I $E(DF,$L(DF))'="/" S DF=DF_"/"
+ Q DF
+ ;----- END IHS MODIFICATION
 STATUS() ;Eof flag
  Q $ZC
 QL(X) ;Qlfrs
@@ -145,8 +178,12 @@ QL(X) ;Qlfrs
 FL(X) ;Fl len
  N ZOSHP1,ZOSHP2
  S ZOSHP1=$P(X,"."),ZOSHP2=$P(X,".",2)
- I $L(ZOSHP1)>14 S X=4 Q
- I $L(ZOSHP2)>8 S X=4 Q
+ ;----- BEGIN IHS MODIFICATION - XU*8*1007
+ ;THESE TWO LINES ARE COMMENTED OUT, FILE LENGTH IS NO LONGER AN ISSUE.
+ ;ORIGINAL MODIFICATION BY TASSC/MFD
+ ;I $L(ZOSHP1)>14 S X=4 Q
+ ;I $L(ZOSHP2)>8 S X=4 Q
+ ;----- END IHS MODIFICATION
  Q
  ;
 FTG(%ZISHX1,%ZISHX2,%ZISHX3,%ZISHX4,%ZISHX5) ;Unload contents of host file into global
@@ -167,7 +204,7 @@ FTG(%ZISHX1,%ZISHX2,%ZISHX3,%ZISHX4,%ZISHX5) ;Unload contents of host file into 
  S %ZISHX="",%ZPZB="",%ZPL="",%OVLCNT=0,%CONT=0,%ZISHNREC=1
  U IO F  D READNXT(.%XX) Q:$$STATUS&'$L(%XX)  D  ;U 0 W !,"%ZB="_%ZB,!,"%ZPZB+%ZL="_(%ZPZB+%ZL),!,"%ZPZB="_%ZPZB_" %ZL="_%ZL U IO S %ZISHNREC=$S(%ZB'=(%ZPZB+%ZL):1,1:0) S:%ZISHNREC %ZISHI=%ZISHI+1 S %ZPZB=$ZB,%ZPL=%ZL
  .I %ZISHNREC D
- ..U 0 W !,"NEWRECORD" U IO
+ ..;U 0 W !,"NEWRECORD" U IO  ;XU*8.0*1007;IHS/OIRM/DSD/AEF - 1/21/03 COMMENTED OUT TO PREVENT <NOPEN> ERROR IN RPC BROKER
  ..S %ZISHX=%XX
  ..S %ZISH2=$NA(@%ZISH1@(%ZISHI))
  ..S %ZISH=%ZISH+1
@@ -177,14 +214,14 @@ FTG(%ZISHX1,%ZISHX2,%ZISHX3,%ZISHX4,%ZISHX5) ;Unload contents of host file into 
  ..Q:%ZL'>255
  ..D LOOP
  .E  D
- ..U 0 W !,"CONTINUATION RECORD" U IO
+ ..;U 0 W !,"CONTINUATION RECORD" U IO ;XU*8.0*1007;IHS/OIRM/DSD/AEF - 1/21/03 COMMENTED OUT TO PREVENT <NOPEN> ERROR IN RPC BROKER
  ..S %ZL2=$L(%ZISHX),%ZISHX=%ZISHX_$E(%XX,1,255-%ZL2)
  ..D SETOVL
  ..S %XX=$E(%XX,256-%ZL2,$L(%XX))
  ..S %ZISHX=%XX
  ..D:%ZISHX]"" SETOVL
  ..I $L(%ZISHX)>255 D LOOP
- .U 0 W !,"%ZB="_%ZB,!,"%ZPZB+%ZL="_(%ZPZB+%ZL),!,"%ZPZB="_%ZPZB_" %ZL="_%ZL U IO
+ .;U 0 W !,"%ZB="_%ZB,!,"%ZPZB+%ZL="_(%ZPZB+%ZL),!,"%ZPZB="_%ZPZB_" %ZL="_%ZL U IO ;XU*8.0*1007;IHS/OIRM/DSD/AEF - 1/21/03 COMMENTED OUT TO PREVENT <NOPEN> ERROR IN RPC BROKER
  .S %ZISHNREC=$S(%ZB'=(%ZPZB+%ZL):1,1:0)
  .I %ZISHNREC D
  ..S %ZISHI=%ZISHI+1 ;B:%ZISHI=2
@@ -254,3 +291,18 @@ MGTF(%ZISHX1,%ZISHX2,%ZISHX3,%ZISHX4,%ZISHX5) ;Load contents of global to host f
  D CLOSE^%ZISH("")
  Q 1
  Q
+ ;
+FROM(ZISH1,ZISH2,ZISH3,ZISH4,ZISH5) ; -----  Get unix file(s) from.
+ ;
+ Q $$FROM^ZISHMSMU(ZISH1,ZISH2,ZISH3,ZISH4,ZISH5)
+ ;
+ ;
+SEND(ZISH1,ZISH2,ZISH3)      ;Send unix fl
+ ;
+ Q $$SEND^ZISHMSMU(ZISH1,ZISH2)
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Subroutine SENDTO1 is added to use sendto1 script to send file
+SENDTO1(ZISH1,ZISH2)         ;Use sendto1 script to send unix file
+ ;
+ Q $$SENDTO1^ZISHMSMU(ZISH1,ZISH2)
+ ;----- END IHS MODIFICATION

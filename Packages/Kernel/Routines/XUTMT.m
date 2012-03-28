@@ -1,4 +1,5 @@
-XUTMT ;SEA/RDS - TaskMan: ToolKit, Entry ;9/14/94  10:09
+XUTMT ;SEA/RDS - TaskMan: ToolKit, Entry ;9/14/94  10:09 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 BRANCH ;
  ;Select Module Based On XUTMT(0)

@@ -1,6 +1,7 @@
-LRUT ;AVAMC/REG - TIME DIFFERENCES ; 8/22/88  21:0 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRUT ; IHS/DIR/FJE - TIME DIFFERENCES 8/22/88 21:0 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  S Z=+^LRE(DA(2),5,DA(1),66,DA,0),Z(0)=$P(^LAB(66,Z,0),"^",13) Q:'Z(0)
  S Z=$P(^LRE(DA(2),5,DA(1),2),"^",3) D H S W(1)=Z(3)+Z(0) D C S C=W
  S Z=X D H S W(1)=Z(3) D C D:W>C E K W,Z,C Q

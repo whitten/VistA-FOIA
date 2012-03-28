@@ -1,6 +1,6 @@
-LRBLAA ;AVAMC/REG - XM:TX BY TREATING SPECIALTY REPORT ;9/11/95  14:02 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLAA ; IHS/DIR/AAB - XM:TX BY TREATING SPECIALTY REPORT 9/11/95 14:02 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END,CK^LRBLPUS G:Y=-1 END
  W !!?5,"Crossmatch:Transfusion Report by Treating Specialty and Physician",!
  D B^LRU G:Y<0 END S LRLDT=LRLDT+.99,LRSDT=LRSDT-.0001
@@ -19,7 +19,8 @@ M S B=0 F B(1)=0:0 S B=$O(^TMP($J,A,B)) Q:B=""!(LR("Q"))  D:$Y>(IOSL-6)&(LRF) H1
 P F LRDFN=0:0 S LRDFN=$O(^TMP($J,A,B,LRDFN)) Q:'LRDFN!(LR("Q"))  D:$Y>(IOSL-6)&(LRF) H2 Q:LR("Q")  D W
  Q:LR("Q")  S ^TMP($J,A,B)=LRK_"^"_LRD I LRF W !!,B,?32,"Units Xm'd:",?43,$J(LRK,4),?52,"Tx'd:",?55,$J(LRD,4),?65,"C/T: " W $S(LRD:$J(LRK/LRD,5,3),1:"NA")
  Q
-W I LRF S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU W !,LRP,?32,SSN
+W ;I LRF S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU W !,LRP,?32,SSN
+ I LRF S X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU W !,LRP,?32,HRCN  ;IHS/ANMC/CLS 11/1/95
  F F=0:0 S F=$O(^TMP($J,A,B,LRDFN,F)) Q:'F!(LR("Q"))  S Y=F D DT^LRU S LRY=Y D U
  Q
 U F G=0:0 S G=$O(^TMP($J,A,B,LRDFN,F,G)) Q:'G!(LR("Q"))  S LRE=^(G) D:$Y>(IOSL-6)&(LRF) H3 Q:LR("Q")  S X=$P(LRE,"^"),Y=$P(LRE,"^",2) D V
@@ -33,11 +34,13 @@ SET S X=^LRD(65,I,0),V=$S($D(^(8)):$P(^(8),"^",3),1:0),C=$P(X,"^",4),Z=$P(X,"^")
  ;
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,LRO(68)," CROSSMATCH:TRANSFUSIONS (from: ",LRSTR," to ",LRLST,")"
- W:LRQ(2) !,"PATIENT",?19,"* = AUTOLOGOUS",?35,"SSN",!,"BLOOD SAMPLE DATE",?20,"UNIT ID",?35,"XM"
+ ;W:LRQ(2) !,"PATIENT",?19,"* = AUTOLOGOUS",?35,"SSN",!,"BLOOD SAMPLE DATE",?20,"UNIT ID",?35,"XM"
+ W:LRQ(2) !,"PATIENT",?19,"* = AUTOLOGOUS",?35,"HRCN",!,"BLOOD SAMPLE DATE",?20,"UNIT ID",?35,"XM"  ;IHS/ANMC/CLS 11/1/95
  W !,LR("%") Q
 H1 D H Q:LR("Q")  W !?20,"TREATING SPECIALTY: ",A Q
 H2 D H1 Q:LR("Q")  W !?29,"PHYSICIAN: ",B Q
-H3 D H2 Q:LR("Q")  W !,LRP,?32,SSN,?45,"(Cont'd from pg ",LRQ-1,")" Q
+H3 ;D H2 Q:LR("Q")  W !,LRP,?32,SSN,?45,"(Cont'd from pg ",LRQ-1,")" Q
+ D H2 Q:LR("Q")  W !,LRP,?32,HRCN,?45,"(Cont'd from pg ",LRQ-1,")" Q  ;IHS/ANMC/CLS 11/1/95
 A W !,"This report includes the following administrative categories:",!,"WHOLE BLOOD, RBC, FROZEN RBC, DEGLYC RBC, LEUCODEPLETED RBC, and WASHED RBC." Q
  ;
 B D A W !!,"The following abbreviations are used to indicate crossmatch results:",!,"C=COMPATIBLE",!,"CD=COMPATIBLE, DON'T TRANSFUSE",!,"CF=COMPATIBLE, FURTHER STUDY NEEDED",!,"I=INCOMPATIBLE, UNSAFE TO TRANSFUSE"

@@ -1,14 +1,11 @@
 PSAVER1 ;BIR/JMB-Verify Invoices - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**33,60,65,71**; 10/24/97;Build 10
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**33**; 10/24/97
  ;This routine allows the user to edit processed invoices by selecting
  ;the invoice's line item number. If there are no errors after editing
  ;the line item is verified.
  ;
- ;References to global ^DIC(51.5 are covered by IA #1931
- ;References to global ^PSDRUG( are covered by IA #2095
- ;
 EDIT W @IOF,!?18,"<<< EDIT INVOICES TO BE VERIFIED SCREEN >>>",!!?2,"Choose the invoices from the list you want to edit.",!,PSASLN
- S (PSA,PSACNT,PSASTOP)=0,PSATMP="" F  S PSA=+$O(PSAEDIT(PSA)) Q:'PSA  D  Q:PSASTOP
+ S (PSA,PSACNT,PSASTOP)=0 F  S PSA=+$O(PSAEDIT(PSA)) Q:'PSA  D  Q:PSASTOP
  .I $Y+5>IOSL D HEADER Q:PSASTOP
  .S PSAIEN=$P(PSAEDIT(PSA),"^"),PSAIEN1=$P(PSAEDIT(PSA),"^",2),PSAORD=$P(^PSD(58.811,PSAIEN,0),"^")
  .S PSAINV=$P(^PSD(58.811,PSAIEN,1,PSAIEN1,0),"^"),PSAINVDT=+$P(^(0),"^",2),PSACNT=PSACNT+1
@@ -19,11 +16,10 @@ EDIT W @IOF,!?18,"<<< EDIT INVOICES TO BE VERIFIED SCREEN >>>",!!?2,"Choose the 
  S PSASEL=Y
  ;
 SEL ;Select line items to be edit
- K PSAVBKG S PSATMP=""
+ K PSAVBKG
  F PSAPC=1:1 S PSA=$P(PSASEL,",",PSAPC) Q:'PSA  D CORR Q:PSAOUT
  I $O(PSAVBKG(0)) D
- .;K ZTSAVE S ZTDESC="Drug Acct. - Verify Prime Vendor Invoices",ZTIO="",ZTDTH=$H,ZTRTN="^PSAVER6",ZTSAVE("PSAVBKG(")="" D ^%ZTLOAD
- .D ^PSAVER6
+ .K ZTSAVE S ZTDESC="Drug Acct. - Verify Prime Vendor Invoices",ZTIO="",ZTDTH=$H,ZTRTN="^PSAVER6",ZTSAVE("PSAVBKG(")="" D ^%ZTLOAD
  Q
  ;
 HEADER ;Header with screen hold
@@ -32,23 +28,14 @@ HEADER ;Header with screen hold
  W @IOF,!?18,"<<< EDIT INVOICES TO BE VERIFIED SCREEN >>>",!!,PSASLN
  Q
  ;
-CORR N PSASEL1 S PSASEL1=PSASEL N PSASEL  ;;<*65 RJS
- I $D(^PSD(58.811,"ASTAT","L")) D LCKCHK^PSAVER4
- S PSAIEN=$P(PSAEDIT(PSA),"^"),PSAIEN1=$P(PSAEDIT(PSA),"^",2),PSASEL=PSA ;;*65 RJS>
- S PSAMSG="" D VERLOCK^PSAVER4 ; <== PSA*3*60 (RJS-VMP)
- I $L(PSAMSG) D  Q
- .D HDR W !,?5,PSAMSG,! S DIR(0)="E" D ^DIR K DIR S PSASEL=PSASEL1 K PSALOCK(PSA),PSASEL1
+CORR S PSAIEN=$P(PSAEDIT(PSA),"^"),PSAIEN1=$P(PSAEDIT(PSA),"^",2)
  S PSAIN=^PSD(58.811,PSAIEN,1,PSAIEN1,0),PSAINV=$P(^(0),"^"),PSAINVDT=$P(^(0),"^",2),PSAORD=$P(^PSD(58.811,PSAIEN,0),"^")
- D HDR,RECD^PSAVER2 D:PSAOUT
- .I PSAOUT D VERUNLCK^PSAVER4 W !,"** The invoice's status has not been changed to Verified!"
- I $G(PSAOUT)!$G(DUOUT) S PSAOUT=0,PSASEL=PSASEL1 K PSALOCK(PSA),PSASEL1 Q
- S PSALOC=+$P(PSAIN,"^",5),PSAMV=+$P(PSAIN,"^",12)
+ D HDR,RECD^PSAVER2 Q:PSAOUT  S PSALOC=+$P(PSAIN,"^",5),PSAMV=+$P(PSAIN,"^",12)
  I PSALOC!($P(PSAIN,"^",8)="S")!($P(PSAIN,"^",8)="N") D  Q:PSAOUT
  .D SITES^PSAUTL1 S PSALOCN=$S($G(PSALOC)'>0:"UNKNOWN",1:$P(^PSD(58.8,PSALOC,0),"^"))_PSACOMB
  .W:$L(PSALOCN)>76 !!,$P(PSALOCN,"(IP)",1)_"(IP)",!?17,$P(PSALOCN,"(IP)",2) W:$L(PSALOCN)<77 !!,PSALOCN
  .S DR=4 D PHARM^PSAVER2
- I PSAMV!($P(PSAIN,"^",8)="S")!($P(PSAIN,"^",8)="A") W !!,$P($G(^PSD(58.8,PSAMV,0)),"^") S DR=13 D PHARM^PSAVER2
- I X="" D VERUNLCK^PSAVER4 W !,"** The invoice's status has not been changed to Verified!" S PSAOUT=0,PSASEL=PSASEL1 K PSALOCK(PSA),PSASEL1 Q
+ I PSAMV!($P(PSAIN,"^",8)="S")!($P(PSAIN,"^",8)="A") W !!,$P($G(^PSD(58.8,PSAMV,0)),"^") S DR=13 D PHARM^PSAVER2 Q:PSAOUT
  ;
 LINES F  W ! S DIC="^PSD(58.811,"_PSAIEN_",1,"_PSAIEN1_",1,",DA(2)=PSAIEN,DA(1)=PSAIEN1,DIC(0)="QAEMZ",DIC("A")="Select Line#: " D ^DIC K DIC D  Q:PSAOUT
  .I $G(DTOUT)!($G(DUOUT))!(Y<1) S PSAOUT=1 Q
@@ -69,27 +56,17 @@ FIELDS .F PSAPCF=1:1 S PSAFLD=$P(PSAFLDS,",",PSAPCF) Q:'PSAFLD!(PSAOUT)  D
  ..I PSAFLD=4,'PSASET S PSA50IEN=PSADRG D DUOU^PSAVER2 Q
  ..I PSAFLD=5 D STOCK^PSAVER2 Q
  ..I PSAFLD=6 D REORDER^PSAVER2
- ;<== PSA*3*60 (RJS-VMP)
- ;Determines if the invoice's status should be changed to verified. If
- ;so, the status is changed and the new drugs to the location is listed.
- W ! S DIR(0)="Y",DIR("A")="Do you want to change the invoice's status to Verified",DIR("?",1)="Enter YES to change the invoice's status to Verified.",DIR("?")="Enter NO to keep the invoice's status as Processed."
- S DIR("??")="^D CHGYN^PSAVER1" D ^DIR K DIR ;D:'Y VERUNLCK^PSAVER4
- I $G(DIRUT)!('Y) D VERUNLCK^PSAVER4 W !,"** The invoice's status has not been changed to Verified!" S (PSAOUT,PSACHG)=0,PSASEL=PSASEL1 K PSALOCK(PSA),PSASEL1 Q
- S PSACHG=Y,PSAVBKG(PSAIEN,PSAIEN1)=""
- ;==> PSA*3*60 (RJS-VMP)
+ ;
  ;Looks to see if all line items are processed.
 PROCESS S (PSACS,PSAERR,PSALINE,PSALINES,PSALNCNT,PSALNSU,PSAOUT,PSASUP)=0
  S PSAIN=$G(^PSD(58.811,PSAIEN,1,PSAIEN1,0)),PSAORD=$P($G(^PSD(58.811,PSAIEN,0)),"^")
  F  S PSALINE=$O(^PSD(58.811,PSAIEN,1,PSAIEN1,1,PSALINE)) Q:'PSALINE!(PSAOUT)  D
  .S PSADATA=^PSD(58.811,PSAIEN,1,PSAIEN1,1,PSALINE,0),PSALNERR=0,PSALNCNT=PSALNCNT+1
- .D SETLINE^PSAVER3 I PSAOUT D VERUNLCK^PSAVER4 W !,"** The invoice's status has not been changed to Verified!" S (PSAOUT,PSACHG)=0,PSASEL=PSASEL1 K PSALOCK(PSA),PSASEL1 Q
+ .D SETLINE^PSAVER3 Q:PSAOUT
  .S:'+$G(PSALNERR) PSALINES=PSALINES+1 S PSADATA=^PSD(58.811,PSAIEN,1,PSAIEN1,1,PSALINE,0)
  .S:+$P(PSADATA,"^",10) PSACS=PSACS+1
  ;
-CHECK I PSALNCNT'=PSALINES D  Q
- .K PSAHOLD(PSALOC,PSAIEN,PSAIEN1) W !!,"** The invoice has not been placed in a Verified status!"
- .D END^PSAPROC D:+$G(PSAERR) PRINT^PSAVER3
- .D VERUNLCK^PSAVER4 S PSASEL=PSASEL1 K PSALOCK(PSA),PSASEL1,PSAVBKG(PSAIEN,PSAIEN1) Q  ;;<*65 RJS>
+CHECK I PSALNCNT'=PSALINES K PSAHOLD(PSALOC,PSAIEN,PSAIEN1) W !!,"** The invoice has not been placed in a Verified status!" D END^PSAPROC D:+$G(PSAERR) PRINT^PSAVER3 Q
  I +PSALNCNT,PSALNCNT=PSACS D
  .S $P(^PSD(58.811,PSAIEN,1,PSAIEN1,0),"^",8)="A" W !,"All drugs on the invoice are marked as a controlled substance."
  .D:'+$P($G(^PSD(58.811,PSAIEN,1,PSAIEN1,0)),"^",12) MASTER^PSAVER5
@@ -101,8 +78,14 @@ CHECK I PSALNCNT'=PSALINES D  Q
  .S $P(^PSD(58.811,PSAIEN,1,PSAIEN1,0),"^",13)=0
  D END^PSAPROC D:+$G(PSAERR) PRINT^PSAVER3
  Q
- ;<== PSA*3*60 (RJS-VMP)
-CHG D STATUS^PSAVER3,NEWDRUG
+ ;
+CHG ;Determines if the invoice's status should be changed to verified. If
+ ;so, the status is changed and the new drugs to the location is listed.
+ W ! S DIR(0)="Y",DIR("A")="Do you want to change the invoice's status to Verified",DIR("?",1)="Enter YES to change the invoice's status to Verified.",DIR("?")="Enter NO to keep the invoice's status as Processed."
+ S DIR("??")="^D CHGYN^PSAVER1" D ^DIR K DIR
+ I $G(DIRUT)!('Y) S PSACHG=0 W !!,"** The invoice's status has not been changed to Verified!" K PSAHOLD(PSALOC,PSAIEN,PSAIEN1) Q
+ S PSACHG=Y,PSAVBKG(PSAIEN,PSAIEN1)=""
+ D STATUS^PSAVER3,NEWDRUG
  W !!,"The invoice status has been changed to Verified!"
  D END^PSAPROC
  Q

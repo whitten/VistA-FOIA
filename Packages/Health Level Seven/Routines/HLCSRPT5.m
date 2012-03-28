@@ -1,4 +1,5 @@
-HLCSRPT5 ;OIFO-O/LJA - Error Listing code ;3/18/02 10:19
+HLCSRPT5 ;OIFO-O/LJA - Error Listing code ;3/18/02 10:19 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**85**;Oct 13, 1995
  ;
 ERRRPT ; Format a report line (Moved here by HL*1.6*85 from HLCSRPT2)

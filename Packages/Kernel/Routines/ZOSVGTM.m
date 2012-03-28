@@ -1,5 +1,5 @@
 %ZOSV ;ISF/STAFF - View commands & special functions (GT.M). ;09/15/08  14:45
- ;;8.0;KERNEL;**275,425,499**;Jul 10, 1995;Build 14
+ ;;8.0;KERNEL;**275,425,499**;Jul 10, 1995;Build 24
  ; for GT.M for VMS, version 4.3
  ;
 ACTJ() ; # active jobs

@@ -1,13 +1,9 @@
-LRBLPUS1 ;AVAMC/REG/CYM - PATIENT UNIT SELECTION ;11/12/96  21:05 ; 11/30/00 4:21pm
- ;;5.2;LAB SERVICE;**72,139,247,267**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- ;References to ^DIC(4 in this routine are covered by DBIA 2508
- K A,LRB(1),F,Z S Z=0,X="N",%DT="T" D ^%DT S N=Y,H=$P(Y,".") W !! S X=$$READ^LRBLB("Select UNIT: ")
+LRBLPUS1 ; IHS/DIR/AAB - PATIENT UNIT SELECTION 11/12/96 21:05 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72,139**;Sep 27, 1994
+ K A,LRB(1),F,Z S Z=0,X="N",%DT="T" D ^%DT S N=Y,H=$P(Y,".") R !!,"Select UNIT: ",X:DTIME
  Q:X=""!(X[U)  I X["?"!(X=" ") D H G LRBLPUS1
- I LR,$E(X,1,$L(LR(2)))=LR(2) D
- .D ^LRBLBU
- E  W $$STRIP^LRBLB(.X)  ; Strip off the data identifiers just in case
- Q:'$D(X)
+ I LR,$E(X,1,$L(LR(2)))=LR(2) D ^LRBLBU Q:'$D(X)
  S DIC=65,DIC(0)="EQM",DIC("W")="W "" "",$P(^(0),U)",DIC("S")="I $P(^(0),U,16)=DUZ(2),$P(^(0),U,4)=C,$S('$D(^(4)):1,$P(^(4),U)="""":1,1:0)" D ^DIC K DIC S X=$P(Y,U,2)
  I Y<1 W $C(7),"  Enter a valid unit",!!,"You can only select units from your division [",LRAA(4),"]",!,"even though units from other divisions may be displayed." G LRBLPUS1
  S Y=+Y L +^LRD(65,Y):2 I '$T W !!,$C(7),"This unit currently unavailable.  Please try another ",!! G ^LRBLPUS1

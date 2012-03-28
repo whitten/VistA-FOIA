@@ -1,4 +1,5 @@
-ZTEDIT3 ;SF/RWF - VA EDITOR Transfer lines from one place to another ;8/7/98  08:29
+ZTEDIT3 ;SF/RWF - VA EDITOR Transfer lines from one place to another ;8/7/98  08:29 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;7.3;TOOLKIT;**16,120**;Apr 25, 1995
  F %I=1:1 S %A=$T(%+%I),%T=$P(%A," ",1),%B=$P(%A," ",2,256) Q:%T="END"  I $L(%T) S ^%Z(%T)=%B
  G ^ZTEDIT4

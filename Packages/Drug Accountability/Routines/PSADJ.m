@@ -1,5 +1,5 @@
 PSADJ ;BIR/LTL,JMB-Balance Adjustments ;8/21/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12**; 10/24/97
  ;This routine allows the user to review the drug history then enter
  ;adjustments.
  ;
@@ -47,7 +47,7 @@ POST .;Post adjustment if yes.
  .D:Y=1  K PSADRUG Q
  ..W !,"There were ",$S($P($G(^PSD(58.8,PSALOC,1,PSADRUG,0)),"^",4):$P($G(^(0)),"^",4),1:0)," on hand.  There are now ",$P($G(^(0)),"^",4)+$G(PSAREC)," on hand."
  ..W !,"Updating files. Please wait."
- ..F  L +^PSD(58.8,PSALOC,1,PSADRUG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ ..F  L +^PSD(58.8,PSALOC,1,PSADRUG,0):0 I  Q
  ..D NOW^%DTC S PSADT=+$E(%,1,12)
  ..S PSAQ=$S($P($G(^PSD(58.8,PSALOC,1,PSADRUG,0)),"^",4):$P($G(^(0)),"^",4),1:0)
  ..S $P(^PSD(58.8,PSALOC,1,PSADRUG,0),"^",4)=PSAREC+PSAQ
@@ -63,7 +63,7 @@ MON ..S:'$D(^PSD(58.8,PSALOC,1,PSADRUG,5,0)) ^(0)="^58.801A^^"
  ..S DIE="^PSD(58.8,"_PSALOC_",1,"_PSADRUG_",5,",DA(2)=PSALOC,DA(1)=PSADRUG,DA=$E(PSADJDT,1,5)*100
  ..S DR="7////^S X="_($P($G(^PSD(58.8,PSALOC,1,PSADRUG,5,DA,0)),"^",5)+PSAREC)_";3////^S X="_($P($G(^(0)),"^",4)+PSAREC)
  ..D ^DIE W "."
-TR ..F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+TR ..F  L +^PSD(58.81,0):0 I  Q
 FIND ..S PSAT=$P(^PSD(58.81,0),"^",3)+1 I $D(^PSD(58.81,PSAT,0)) S $P(^(0),"^",3)=$P(^(0),"^",3)+1 G FIND
  ..L -^PSD(58.81,0) K DD,DIC,DO W "."
  ..S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,X=PSAT D ^DIC K DIC,DLAYGO W "."

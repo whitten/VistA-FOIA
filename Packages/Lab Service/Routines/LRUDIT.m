@@ -1,6 +1,7 @@
-LRUDIT ;AVAMC/REG - DATA CHANGE AUDIT ;4/19/89  14:25 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRUDIT ; IHS/DIR/FJE - DATA CHANGE AUDIT 4/19/89 14:25 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
 EN D END S (BY,FLDS)="[LRUCNG]",L=0,DIC="^LRO(69.2," K IOP G EN1^DIP
  ;
 EN1 ;from LRBLS,LRMIS

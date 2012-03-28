@@ -1,6 +1,5 @@
 ALPBINP ;OIFO-DALLAS/SED/KC/MW  BCMA - BCBU INPT TO HL7 ;5/2/2002
- ;;3.0;BAR CODE MED ADMIN;**8,37**;May 2007;Build 10
- ;;Per VHA Directive 2004-038, this routine should not be modified.
+ ;;2.0;BAR CODE MED ADMIN;**17**;May 2002
  ;This routine will intercept the HL7 message that it sent from Pharmacy
  ;to CPRS to update order information. The message is then parsed and 
  ;repackage so it can be sent to the BCBU workstation.
@@ -8,9 +7,8 @@ ALPBINP ;OIFO-DALLAS/SED/KC/MW  BCMA - BCBU INPT TO HL7 ;5/2/2002
  ; Reference/IA
  ; EN^PSJBCBU/3876
  ; $$EN^VAFHLPID/263
- ; $$EN^VAFHAPV1/4512
+ ; $$EN^VAFHAPV1/
  ; EN1^GMRADPT/10099
- ; EN^PSJBCMA1/2829
  ;
 IPH(MSG) ;CAPTURE MESSAGE ARRAY FROM PHARMACY
  N VAIN,ALPMSG
@@ -45,7 +43,6 @@ IPH(MSG) ;CAPTURE MESSAGE ARRAY FROM PHARMACY
  K ALPB
  D EN^PSJBCBU(ALPDFN,ALPORD,.ALPB)
 SEED ;Entry point for ^ALPBIND
- N VAIN
  D INIT
  S SUB=0 F  S SUB=$O(ALPB(SUB)) Q:'SUB  D
  . ;convert and move the message to the HLA array for transport
@@ -66,11 +63,9 @@ SEED ;Entry point for ^ALPBIND
  D RXE
  ;Get the Division that the patient is associated with
  D PDIV
- I ALPDIV="DOM",+$$GET^XPAR("PKG.BAR CODE MED ADMIN","PSB BKUP DOM FILTER",1,"Q")>0 Q "0^^Screen of DOMICILIARY"
  I '$D(HLL("LINKS")) Q "0^HL7^Missing HLL Links Array Division # "_ALPDIV
  ;SET NEW PV1
- D NOW^%DTC
- S STRING=$$EN^VAFHAPV1(ALPDFN,%,"2,3,7,18")
+ S STRING=$$EN^VAFHAPV1(ALPDFN,DT,"2,3,7,18")
  S HLA("HLS",PV1)=STRING
  I +ORC>0 D
  . S ALPST=$$STAT^ALPBUTL1($P(HLA("HLS",ORC),HLFS,6))
@@ -139,11 +134,7 @@ RXE ;
  K TYP,ALP1,ALP2,^TMP("PSJ1",$J)
  Q
 PDIV ;PATIENT DIVISION
- ;Check ALPBMDT Variable
- S:+$G(ALPBMDT)'>0 ALPBMDT=0
- S ALPDIV=$$DIV^ALPBUTL1(ALPDFN,ALPBMDT)
- ;Screen Dom
- I ALPDIV="DOM",+$$GET^XPAR("PKG.BAR CODE MED ADMIN","PSB BKUP DOM FILTER",1,"Q")>0 Q
+ S ALPDIV=$$DIV^ALPBUTL1(ALPDFN)
  ;Now do I send the Message or not Based of Division
  I $D(ALPHLL("LINKS")) M HLL("LINKS")=ALPHLL("LINKS")
  I '$D(HLL("LINKS")) D GET^ALPBPARM(.HLL,ALPDIV)
@@ -160,7 +151,6 @@ MEDL(ALPML) ;Use this entry to send MedLog messages
  I +ALPDFN'>0 Q "0^"_ALPML_"^Invalid or Missing Patient - Med-Log"
  ;Get the Division that the patient is associated with
  D PDIV
- I ALPDIV="DOM",+$$GET^XPAR("PKG.BAR CODE MED ADMIN","PSB BKUP DOM FILTER",1,"Q")>0 Q "0^^Screen of DOMICILIARY"
  I '$D(HLL("LINKS")) Q "0^"_ALPML_"^Missing HLL Links Array Med-Log"
  S ALPST=$P($G(^PSB(53.79,ALPML,0)),U,9)
  S ALPBY=$P($G(^PSB(53.79,ALPML,0)),U,7)
@@ -193,31 +183,16 @@ ADMQ ;Need to que a single patient init for admissions
  D ^%ZTLOAD
  K ZTIO,ZTDESC,ZTRTN,ZTSK
  Q
-PMOV(ALPDFN,ALPTYP,ALPTT,ALPBMDT) ;Entry Point to send patient movement
+PMOV(ALPDFN,ALPTYP,ALPTT) ;Entry Point to send patient movement
  N VAIN
- I +$G(ALPDFN)'>0 Q "0^^Missing Patient ID"
+ Q:+$G(ALPDFN)'>0
  D INIT
- ;Check Movement type. If not a discharge then don't pass date and time
- S:$G(ALPTT)'="DISCHARGE" ALPBMDT=0
  ;Get the Division that the patient is associated with
  D PDIV
- I ALPDIV="DOM",+$$GET^XPAR("PKG.BAR CODE MED ADMIN","PSB BKUP DOM FILTER",1,"Q")>0 Q "0^^Screen of DOMICILIARY"
  I '$D(HLL("LINKS")) Q "0^"_ALPDFN_"^Missing HLL Links Array Pat-Move"
  S HLA("HLS",1)=$$EN^VAFHLPID(ALPDFN,"2,7,8,19")
  S HLA("HLS",2)=$$EN^VAFHAPV1(ALPDFN,DT,"2,3,7,18")
  S:$G(ALPTT)="DISCHARGE" $P(HLA("HLS",2),HLFS,37)=$G(ALPTYP)
  D SEND
- I ALPTYP=14!(ALPTYP=41) S ALPTT="ADMISSION" ;FOR RETURN FROM ASIH
  I $G(ALPTT)="ADMISSION" D ADMQ
- ;SEND A DISCHARGE TO DIV SENDING ASIH
- I $G(ALPTYP)[13!($G(ALPTYP)[40) D
- .D INIT
- .S ALPWRD=$P($G(DGPMVI(5)),U,1) ;LAST WARD
- .I +ALPWRD'>0 S ALPRSLT="0^^Screen - No Ward" Q  ;NO WARD
- .S ALPBDIV=$P($G(^DIC(42,ALPWRD,0)),U,11)
- .D GET^ALPBPARM(.HLL,ALPBDIV)
- .S HLA("HLS",1)=$$EN^VAFHLPID(ALPDFN,"2,7,8,19")
- .S HLA("HLS",2)=$$EN^VAFHAPV1(ALPDFN,DT,"2,3,7,18")
- .S $P(HLA("HLS",2),HLFS,37)="ASIH"
- .D SEND
  Q ALPRSLT

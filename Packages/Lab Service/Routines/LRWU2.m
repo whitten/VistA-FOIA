@@ -1,4 +1,6 @@
-LRWU2 ;SLC/RWF - UTILITY # 2 ; 8/5/87  11:12 ;
+LRWU2 ; IHS/DIR/FJE - UTILITY # 2 8/5/87 11:12 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 RANGE ;call input in X, return loop in X9 index is T1
  S X9=""

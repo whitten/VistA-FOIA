@@ -1,13 +1,12 @@
 PSDDFP ;BIR/JPW-Dispense from Pharmacy w/o Green Sheet ; 8 Aug 94
- ;;3.0; CONTROLLED SUBSTANCES ;**16,66,69**;13 Feb 97;Build 13
+ ;;3.0; CONTROLLED SUBSTANCES ;**16**;13 Feb 97
  ;
  ;References to ^PSD(58.8, supported by DBIA2711
- ;References to ^PSD(58.81 supported by DBIA2808
  ;References to ^PSDRUG( supported by DBIA #221
  ;References to ^XUSEC("PSJ RPHARM" supported by DBIA #1095
  ;
  I '$D(PSDSITE) D ^PSDSET Q:'$D(PSDSITE)
- I '$D(^XUSEC("PSJ RPHARM",DUZ)),'$D(^XUSEC("PSD TECH ADV",DUZ)) W $C(7),!!,?9,"** Please contact your Pharmacy Coordinator for access to",!,?12,"dispense narcotic supplies.",!!,"PSJ RPHARM or PSD TECH ADV security key required.",! Q
+ I '$D(^XUSEC("PSJ RPHARM",DUZ)) W $C(7),!!,?9,"** Please contact your Pharmacy Coordinator for access to",!,?12,"dispense narcotic supplies.",!!,"PSJ RPHARM security key required.",! Q
  S PSDUZ=DUZ,PSDUZN=$P($G(^VA(200,PSDUZ,0)),"^")
 ASKD ;ask disp loc
  S PSDS=$P(PSDSITE,U,3),PSDSN=$P(PSDSITE,U,4)
@@ -29,7 +28,7 @@ DRUG ;select drug
  I EXP S Y=EXP X ^DD("DD") S EXPD=Y
  ;
  ;DAVE B (PSD*3*16 - 28APR99) Move lock of 58.8,loc,1,drg up.
- F  L +^PSD(58.8,+PSDS,1,+PSDR,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,+PSDS,1,+PSDR,0):0 I  Q
  S NBKU=$P(^PSD(58.8,+PSDS,1,+PSDR,0),"^",8),NPKG=+$P(^(0),"^",9)
  I NBKU']"" W !!,PSDSN,"is missing narcotic breakdown unit",!,"for ",PSDRN,"." G END
  I 'NPKG W !!,PSDSN,"is missing narcotic package size",!,"for ",PSDRN,"." G END

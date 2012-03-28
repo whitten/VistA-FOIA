@@ -1,4 +1,5 @@
 LRLNC1 ;DALOI/CA-LOOKUP LOINC CODE ;1-OCT-1998
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**215,278**;Sep 27,1994
  ;Reference to ^DD supported by IA 10154
  ;=================================================================

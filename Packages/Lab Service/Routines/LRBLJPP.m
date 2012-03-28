@@ -1,6 +1,7 @@
-LRBLJPP ;AVAMC/REG - PLATLET TX ;2/18/93  09:28 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJPP ; IHS/DIR/FJE - PLATLET TX 2/18/93 09:28 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!,"Platelet transfusions from one date received to another."
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END S LRS=$O(^LAB(61,"B","BLOOD",0)) I 'LRS W $C(7),!,"BLOOD must be an entry in TOPOGRAPHY file (#61)",! G END
  I '$O(^LRO(69.2,LRAA,61,LRS,2,0)) W $C(7),!!,"Must have tests to print entered in the",!,"'Tests for inclusion in transfusion report option' in",!,"Blood bank supervisor menu",! G END
@@ -16,9 +17,12 @@ A S X=^LRD(65,LRI,6),Y=$P(X,"^",4),LRDFN=+X,X=^LR(LRDFN,1.6,Y,0),^TMP($J,LRDFN)=
 B F A=LRLDT:0 S A=$O(^LR(LRDFN,"CH",A)) Q:'A!(A>LRSDT)  S X=^(A,0) F B=1:1:LRT(0) S Z=$S($D(^LR(LRDFN,"CH",A,LRV(B))):$P(^(LRV(B)),"^"),1:"") I Z]"",$P(X,"^",5)=LRS(B) S ^TMP($J,LRDFN,A,0)=+X,^(B)=Z
  Q
 WRT F A=0:0 S A=$O(^TMP($J,A)) Q:'A  S X=^LR(A,0),Y=$P(X,"^",3),X=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),^TMP($J,"B",$P(X,"^"),A)=$P(X,"^",2,99)
- S LRP=0 F LRA=0:0 S LRP=$O(^TMP($J,"B",LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,"B",LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S LRX=^(LRDFN),SSN=$P(LRX,"^",8),Y=$P(LRX,"^",2),LRDPF=$P(^LR(LRDFN,0),U,2) D D^LRU,SSN^LRU S DOB=Y D W
+ ;S LRP=0 F LRA=0:0 S LRP=$O(^TMP($J,"B",LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,"B",LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S LRX=^(LRDFN),SSN=$P(LRX,"^",8),Y=$P(LRX,"^",2),LRDPF=$P(^LR(LRDFN,0),U,2) D D^LRU,SSN^LRU S DOB=Y D W
+ S LRP=0 F LRA=0:0 S LRP=$O(^TMP($J,"B",LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,"B",LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S LRX=^(LRDFN),SSN=$P(LRX,"^",8),Y=$P(LRX,"^",2),LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3) D D^LRU,SSN^LRU S DOB=Y D W
+ ;IHS/ANMC/CLS 11/1/95
  Q
-W D:$Y>(IOSL-6) H Q:LR("Q")  W !!,LRP,?31,SSN,?45,"DOB: ",DOB F A=0:0 S A=$O(^TMP($J,LRDFN,A)) Q:'A!(LR("Q"))  S T=+^(A,0) D T,P
+W ;D:$Y>(IOSL-6) H Q:LR("Q")  W !!,LRP,?31,SSN,?45,"DOB: ",DOB F A=0:0 S A=$O(^TMP($J,LRDFN,A)) Q:'A!(LR("Q"))  S T=+^(A,0) D T,P
+ D:$Y>(IOSL-6) H Q:LR("Q")  W !!,LRP,?31,HRCN,?45,"DOB: ",DOB F A=0:0 S A=$O(^TMP($J,LRDFN,A)) Q:'A!(LR("Q"))  S T=+^(A,0) D T,P  ;IHS/ANMC/CLS 11/1/95
  S X=^LR(LRDFN,0) I $P(X,"^",2)=2 S DFN=$P(X,"^",3) D ^LRBLJPP1
  Q
 P D:$Y>(IOSL-6) H1 Q:LR("Q")  W !,T S Q=$S($D(^TMP($J,LRDFN,A,.1)):^(.1),1:"") W:Q ?15,$E($P(^LAB(66,+Q,0),"^"),1,25),$S($P(Q,"^",6):"("_$P(Q,"^",6)_")",1:"")
@@ -33,6 +37,7 @@ H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,"Mo/Da TIME",?12,"Blood component"
  S X(1)=0 F X=1:1:LRT(0) S X(1)=X(1)+1 S:$X>(IOM-8) X(1)=1 W:$X>(IOM-8) !?32 W ?32+(8*X(1)),$P(LRT(X),"^",7)
  W !,LR("%") Q
-H1 D H Q:LR("Q")  W !!,LRP,?31,SSN,?45,"DOB: ",DOB Q
+H1 ;D H Q:LR("Q")  W !!,LRP,?31,SSN,?45,"DOB: ",DOB Q
+ D H Q:LR("Q")  W !!,LRP,?31,HRCN,?45,"DOB: ",DOB Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q

@@ -1,5 +1,5 @@
-LR7OSUM6 ;DALOI/dcm - Silent Patient cum cont. ;Mar 11, 2003
- ;;5.2;LAB SERVICE;**121,201,187,286,356,372**;Sep 27, 1994;Build 11
+LR7OSUM6 ;VA/DALOI/dcm - Silent Patient cum cont. ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**121,201,187,286,356,372,1027**;NOV 01, 1997;Build 11
  ;
 LRUDT(X) ;Get output date/time
  N LRTIM,I

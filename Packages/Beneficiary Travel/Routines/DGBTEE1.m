@@ -1,5 +1,5 @@
 DGBTEE1 ;ALB/SCK - BENEFICIARY TRAVEL ENTER/EDIT CHECK; 12/7/92 3/19/93
- ;;1.0;Beneficiary Travel;**14**;September 25, 2001;Build 7
+ ;;5.3;Registration;**5,60**;Aug 13, 1993
  Q
 SCREEN ;  called by dgbtee,dgbtce
  Q:'$D(^DGBT(392,DGBTDT,0))
@@ -52,7 +52,7 @@ ACCT ;  allowed to select only valid active accounts
  I Y'>0 W !,"ACCOUNT IS REQUIRED!!" G ACCT
  S DGBTACTN=$P(Y,"^"),DGBTACCT=$P(Y(0),"^",5)
  ;  if account is ALL OTHER - stuff in mileage info
- I $D(DGBTVAR("M")) S DGBTML=$P(DGBTVAR("M"),"^",2),DGBTOWRT=$P(DGBTVAR("M"),"^"),DGBTMLT=$J((DGBTML*DGBTOWRT*DGBTMR),0,2)
+ I $D(DGBTVAR("M")) S DGBTML=$P(DGBTVAR("M"),"^",2),DGBTOWRT=$P(DGBTVAR("M"),"^"),DGBTMLT=DGBTML*DGBTOWRT*DGBTMR
 QUIT ;
  K A,C,I,IA,J,X,XX,^TMP("DGBT",$J),DGBTDIV,DGBTIDT,DGBTCT
  Q

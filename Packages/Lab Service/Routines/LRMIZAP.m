@@ -1,4 +1,6 @@
-LRMIZAP ;SLC/BA - MICRO CONVERSION ; 8/5/87  18:18 ;
+LRMIZAP ; IHS/DIR/FJE - MICRO CONVERSION 8/5/87 18:18 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  ;Only to be used once for conversion of version 2 or version 3 lab to version 4
 ZAP S U="^",(LREND,LRDFN)=0 I $O(^TMP("LRMIZAP",0)) S J=$O(^TMP("LRMIZAP",0)),LRDFN=$S($D(^TMP("LRMIZAP",J,"ZAP")):^("ZAP"),1:1)-1

@@ -1,5 +1,5 @@
 PSAPROC2 ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**34,50,70**; 10/24/97;Build 12
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**34**; 10/24/97
  ;This routine allows the user to edit invoices with errors or missing
  ;data.
  ;
@@ -16,8 +16,6 @@ INV D HDR W !,"  More data is needed on the following invoices. Choose the invoi
  S DIR(0)="LO^1:"_PSACNT,DIR("A")="Select invoices to edit",DIR("?",1)="Enter the number to the left of the invoice",DIR("?")="data to be processed or a range of numbers." W !
  S DIR("??")="^D SELHELP^PSAPROC2" D ^DIR K DIR I $G(DIRUT) S PSAOUT=1 Q
  S PSASEL=Y
- D PLOCK^PSAPROC8(2)  ;; < PSA*3*70 RJS
- I '$G(PSASEL) G EXIT^PSAPROC
  ;
 PROC W ! S DIR("A",1)="Do you want to select the line items to be edited (S) or",DIR("A")="have them automatically (A) displayed for you?",DIR("B")="A",DIR(0)="SB^S:Select;A:Automatically displayed"
  S DIR("?",1)="Enter ""S"" to allow you to select the line items to be edited.",DIR("?",2)="Enter ""A"" to automatically receive prompts for the line items",DIR("?")="that need editing."
@@ -25,9 +23,7 @@ PROC W ! S DIR("A",1)="Do you want to select the line items to be edited (S) or"
  G:Y="S" SEL^PSAPROC6
  ;
 AUTO ;Process line items
- F PSAPC=1:1 S PSAMENU=$P(PSASEL,",",PSAPC) Q:'PSAMENU!(PSAOUT)  D  Q:PSAOUT
- .Q:'$D(PSAERR(PSAMENU))
- .S PSACTRL=$P(PSAERR(PSAMENU),"^",3),(PSALNCNT,PSALINES,PSACS,PSALLSUP)=0
+ F PSAPC=1:1 S PSAMENU=$P(PSASEL,",",PSAPC) Q:'PSAMENU!(PSAOUT)  S PSACTRL=$P(PSAERR(PSAMENU),"^",3),(PSALNCNT,PSALINES,PSACS,PSALLSUP)=0 D  Q:PSAOUT
  .Q:'$D(^XTMP("PSAPV",PSACTRL,"IN"))!('$D(^XTMP("PSAPV",PSACTRL,"IT")))
  .S PSAIN=^XTMP("PSAPV",PSACTRL,"IN"),PSALOC=+$P(PSAIN,"^",7),PSAMV=+$P(PSAIN,"^",12)
  .D HDR W !,"Order#: "_$P(PSAIN,"^",4)_"  Invoice#: "_$P(PSAIN,"^",2)_"  Invoice Date: "_$$FMTE^XLFDT(+PSAIN),!,PSASLN
@@ -47,7 +43,6 @@ AUTO ;Process line items
  ..D EDITDISP^PSAUTL1 D ^PSAPROC9
  .D:'PSAOUT SETINV
  Q:PSAOUT
- I '$O(PSAERR(0)) Q  ;*50 rid select (1-0)
  W @IOF,!,"If you are changing the status of an invoice to Processed, this is the",!,"last time you will be allowed to edit it before it goes to the verifier."
  W !,"If you are not changing the status of an invoice to Processed, you can",!,"edit it now.",!!,"You can edit the invoice's delivery date, pharmacy location, master vault,"
  W !,"and the line item's drug, quantity received, order unit, and dispense units",!,"per order unit. The reorder level can be edited if the pharmacy location or"
@@ -70,7 +65,7 @@ EDITINV ;Edits the invoice before placing in Processed status.
  .W !?1,PSACNT_".",?4,"Order#: "_PSAORD_"  Invoice#: "_PSAINV_"  Invoice Date: "_$$FMTE^XLFDT(+^XTMP("PSAPV",PSACTRL,"IN"))
  K PSASTOP
  S DIR(0)="LO^1:"_PSACNT,DIR("A")="Select invoices",DIR("?",1)="Enter the number to the left of the invoice",DIR("?")="data to be edited or a range of numbers." W !
- S DIR("??")="^D SEL^PSAPROC2" D ^DIR K DIR S:Y="" DUOUT=1 I $G(DTOUT)!($G(DUOUT)) S PSAOUT=1 Q  ;*50
+ S DIR("??")="^D SEL^PSAPROC2" D ^DIR K DIR G:Y="" SETINV I $G(DTOUT)!($G(DUOUT)) S PSAOUT=1 Q
  S PSASEL=Y D ^PSAPROC6
  Q
 HDR ;Screen header

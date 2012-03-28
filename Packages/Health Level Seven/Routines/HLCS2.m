@@ -1,6 +1,17 @@
-HLCS2 ;SF/JC - More Communication Server utilities ; 10/04/2007  14:31
- ;;1.6;HEALTH LEVEL SEVEN;**14,40,43,49,57,58,82,84,109,122**;Oct 13, 1995;Build 14
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLCS2 ;SF/JC - More Communication Server utilities ;7/10/2008 16:57
+ ;;1.6;HEALTH LEVEL SEVEN;**14,40,43,49,57,58,82,84,109,1006**;Oct 13, 1995
+ ;
+ ; Modified - IHS/OIRM/DSD/AEF - 01/02/03 - Line PARAM+12
+ ; IHS/CNI/VEN/TOAD - 10 July 2008 - explanation of mod by Rick Marshall,
+ ; VISTA Expertise Network: During the post-install of HL7*1.6*92, the
+ ; Mail Group field in the HL Communication Server Parameters file is a
+ ; dangling pointer, which can cause an <UNDEF>PARAM+12^HLCS2 error.
+ ; This modification uses the $GET function in the reference to
+ ; ^XMB(3.8,HLMAILP,0) to prevent this error. Although we are long past
+ ; the install of HL*1.6*92, we should keep the $GET protection because
+ ; it's always good practice when accessing global nodes that aren't
+ ; guaranteed to exist. Anne Fugatt of IHS developed this mod.
+ ;
 FWD ; Add supplemental clients from HLL("LINKS") to HLSUP array
  ;This enhancement also supports distribution of a message to
  ;the same client over multiple logical links.
@@ -9,24 +20,10 @@ FWD ; Add supplemental clients from HLL("LINKS") to HLSUP array
  S CNT=0,ROUTINE=1 F  S CNT=$O(HLL("LINKS",CNT)) Q:CNT<1  D
  . S PTR=$P(HLL("LINKS",CNT),"^"),LNK=$P(HLL("LINKS",CNT),"^",2)
  . Q:PTR=""  I +PTR<1 S PTR=$O(^ORD(101,"B",PTR,0)) Q:PTR<1
- . ;
- . ; patch HL*1.6*122: excluding subscribers defined in
- . ; HLP("EXCLUDE SUBSCRIBER",I) = ien of subscriber
- . N I,EXCLUDE
- . S (EXCLUDE,I)=0
- . F  S I=$O(HLP("EXCLUDE SUBSCRIBER",I)) Q:'I  D  Q:EXCLUDE
- .. N TEMP
- .. S TEMP=HLP("EXCLUDE SUBSCRIBER",I)
- .. I 'TEMP,TEMP]"" S TEMP=$O(^ORD(101,"B",TEMP,0))
- .. I TEMP=PTR S EXCLUDE=1
- . Q:EXCLUDE
- . ; 
  . Q:LNK=""  I +LNK<1 S LNK=$O(^HLCS(870,"B",LNK,0)) Q:LNK<1
  . Q:'$D(^HLCS(870,LNK))
  . S CLIAP=$$PTR^HLUTIL2(PTR)
- . ; patch HL*1.6*122: add the 3rd component as receiving facility
- . ; S HLSUP("S",PTR,+LNK)=CLIAP_$S(CLIAP<1:U_HLL("LINKS",CNT),1:"")
- . S HLSUP("S",PTR,+LNK)=CLIAP_U_$S(CLIAP<1:HLL("LINKS",CNT),1:$P(HLL("LINKS",CNT),"^",3))
+ . S HLSUP("S",PTR,+LNK)=CLIAP_$S(CLIAP<1:U_HLL("LINKS",CNT),1:"")
  Q
 ADD ;Deliver message to supplemental client list.
  ;Invoked by HLTP before and after processing normal clients
@@ -38,15 +35,7 @@ ADD ;Deliver message to supplemental client list.
  .S ZLOGLINK=0 F  S ZLOGLINK=$O(HLSUP("S",ZHLEIDS,ZLOGLINK)) Q:ZLOGLINK<1  D
  ..S ZLCLIENT=+HLSUP("S",ZHLEIDS,ZLOGLINK)
  ..I ZLCLIENT<1 S:$G(HLERROR)="" HLERROR="15^Invalid Subscriber Protocol in HLL('LINKS'): "_$P(HLSUP("S",ZHLEIDS,ZLOGLINK),U,2,9) Q
- .. ; patch HL*1.6*122 start
- .. ; S HLOGLINK=ZLOGLINK D SEND^HLMA2(ZHLEIDS,HLMTIEN,ZLCLIENT,"D",.ZMTIENS,ZLOGLINK),STATUS^HLTF0(+ZMTIENS,1)
- .. S HLOGLINK=ZLOGLINK
- .. ; 3rd component for receiving facility
- .. S ZMTIENS("REC-FACILITY")=$P(HLSUP("S",ZHLEIDS,ZLOGLINK),U,3)
- .. D SEND^HLMA2(ZHLEIDS,HLMTIEN,ZLCLIENT,"D",.ZMTIENS,ZLOGLINK)
- .. D STATUS^HLTF0(+ZMTIENS,1)
- .. ; patch HL*1.6*122 end
- .. ;
+ ..S HLOGLINK=ZLOGLINK D SEND^HLMA2(ZHLEIDS,HLMTIEN,ZLCLIENT,"D",.ZMTIENS,ZLOGLINK),STATUS^HLTF0(+ZMTIENS,1)
  K HLL("LINKS"),HLSUP
  Q
 STALL ;STOP ALL LINKS AND FILERS
@@ -94,24 +83,19 @@ LLP(ALL) ;Stop Logical Links
  .;skip this link if not stopping all and Autostart not enabled
  . I 'ALL&('$P(HLDP0,U,6)) Q
  . S HLPARM4=$G(^HLCS(870,HLDP,400))
- . ; patch HL*1.6*122
- . ; TCP Multi listener: quit if TCP service as GT.M, DSM,
- . ; or Cache/VMS
+ . ;TCP Multi listener for non-Cache uses UCX
  . I $P(HLPARM4,U,3)="M" Q:^%ZOSF("OS")'["OpenM"  Q:$$OS^%ZOSV["VMS"
- . ;
  . ;4=status,10=Time Stopped,9=Time Started,11=Task Number,3=Device Type,14=shutdown?
- . S X="HLJ(870,"""_HLDP_","")",@X@(10)=$$NOW^XLFDT,(@X@(11),@X@(9))="@",@X@(14)=1
- . I "Shutdown,SHUTDOWN"'[$P(HLDP0,U,5) S @X@(4)="Halting"
+ . S X="HLJ(870,"""_HLDP_","")",@X@(4)="Halting",@X@(10)=$$NOW^XLFDT,(@X@(11),@X@(9))="@",@X@(14)=1
  . I $P(HLPARM4,U,3)="C"&("N"[$P(HLPARM4,U,4)),'$P(HLDP0,U,12) S @X@(4)="Shutdown"
  . D FILE^HLDIE("","HLJ","","LLP","HLCS2") ;HL*1.6*109
+ . ;Cache system, need to open TCP port to release job
  . I ^%ZOSF("OS")["OpenM",($P(HLPARM4,U,3)="M"!($P(HLPARM4,U,3)="S")) D
- .. ; pass task number to stop listener
+ .. ;pass task number to stop listener
  .. S:$P(HLDP0,U,12) X=$$ASKSTOP^%ZTLOAD(+$P(HLDP0,U,12))
- ; patch HL*1.6*122 start
- ; .. D CALL^%ZISTCP($P(HLPARM4,U),$P(HLPARM4,U,2),10)
- ; .. I POP D HOME^%ZIS Q
- ; .. D CLOSE^%ZISTCP
- ; patch HL*1.6*122 end
+ .. D CALL^%ZISTCP($P(HLPARM4,U),$P(HLPARM4,U,2),10)
+ .. I POP D HOME^%ZIS Q
+ .. D CLOSE^%ZISTCP
  Q
 STRT ;Start Links
  N HLDP,HLDP0,HLDAPP,HLTYPTR,HLBGR,HLENV,HLPARAM0,HLPARM4,HLQUIT,ZTRTN,ZTDESC,ZTSK,ZTCPU
@@ -125,11 +109,8 @@ STRT ;Start Links
  . ;quit if no LL type or no routine
  . Q:'HLTYPTR!(HLBGR="")
  . I HLENV'="" K HLQUIT X HLENV Q:$D(HLQUIT)
- . ; patch HL*1.6*122
- . ; TCP Multi listener: quit if TCP service as GT.M, DSM,
- . ; or Cache/VMS
+ . ;TCP Multi listener for non-Cache uses UCX
  . I $P(HLPARM4,U,3)="M" Q:^%ZOSF("OS")'["OpenM"  Q:$$OS^%ZOSV["VMS"
- . ;
  . I $P(HLPARM4,U,3)="C"&("N"[$P(HLPARM4,U,4)) D  Q
  .. ;4=status 9=Time Started, 10=Time Stopped, 11=Task Number 
  .. ;14=Shutdown LLP, 3=Device Type, 18=Gross Errors
@@ -163,7 +144,11 @@ PARAM() ;Return HL7 site parameters
  S HLDOMP=$P(HLX,U,2) I HLDOMP S HLDOMN=$P(^DIC(4.2,HLDOMP,0),U)
  S HLPROD=$P(HLX,U,3)
  S HLINSP=$P(HLX,U,4) I HLINSP S HLINSN=$P(^DIC(4,HLINSP,0),U),HLINSNM=$P($G(^DIC(4,HLINSP,99)),U)
- S HLMAILP=$P(HLX,U,5) I HLMAILP S HLMAILN=$P(^XMB(3.8,HLMAILP,0),U)
+ ;
+ ; ** IHS mod ** IHS/OIRM/DSD/AEF - 01/02/03 - Prevent UNDEF error
+ ;S HLMAILP=$P(HLX,U,5) I HLMAILP S HLMAILN=$P(^XMB(3.8,HLMAILP,0),U)
+ S HLMAILP=$P(HLX,U,5) I HLMAILP S HLMAILN=$P($G(^XMB(3.8,HLMAILP,0)),U)
+ ;
  S HLPRGCMP=$P(HLX4,U),HLPRGAA=$P(HLX4,U,2),HLPRGALL=$P(HLX4,U,3)
  S HLDEFRET=$P(HLX5,U)
  S HLPARAM=HLDOMP_U_$G(HLDOMN)_U_$G(HLPROD)_U_HLINSP_U_$G(HLINSN)_U_$G(HLINSNM)_U_HLMAILP_U_$G(HLMAILN)_U_HLPRGCMP_U_HLPRGAA_U_HLPRGALL_U_HLDEFRET

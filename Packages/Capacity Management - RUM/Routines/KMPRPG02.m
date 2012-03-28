@@ -1,15 +1,16 @@
-KMPRPG02 ;OAK/RAK - RUM Data by Date for Single Node ;11/19/04  10:32
- ;;2.0;CAPACITY MANAGEMENT - RUM;**1**;May 28, 2003
+KMPRPG02 ;SFISC/RAK - RUM Data by Date for Single Node ;27 Oct 1998
+ ;;1.0;CAPACITY MANAGEMENT - RUM;;Dec 09, 1998
  ;
 EN ;-- entry point.
  ;
  N DATES,DIR,ELEMENT,I,IORVOFF,IORVON,LHTIME,NODE,OPTIONS,OUT,TMP,X,Y
  ;
+ D ZIS^KMPRUTL
  ; temporary global storage for stats.
  S TMP=$NA(^TMP("KMPR HR STATS",$J))
  S OUT=0
  F  D  Q:OUT
- .D HDR^KMPDUTL4(" RUM Data by Date for Single Node ") W !!
+ .W @IOF,!?23,IORVON," RUM Data by Date for Single Node ",IORVOFF,!!
  .D GRPHMSG^KMPRUTL
  .; select element for display.
  .D ELEMENT^KMPRUTL(.Y) I 'Y S OUT=1 Q
@@ -67,7 +68,7 @@ GRAPH ;-- display data in graph.
  S $P(TITLES,U,3)=$P(ELEMENT,U,2)_"/per "_$S(+ELEMENT=1!(+ELEMENT=7):"occurrence",1:"sec")
  S $P(TITLES,U,4)="Date"
  ; call graphics routine.
- D EN^KMPDUG(TMP,TITLES,$G(OPTIONS))
+ D EN^KMPUG(TMP,TITLES,$G(OPTIONS))
  Q
  ;
 EXIT ;

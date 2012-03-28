@@ -1,5 +1,5 @@
-PXAPIIB ;ISA/AAS - SUPPORTED REFERENCES FOR AICS ; 1/5/07 4:59pm  ; Compiled January 18, 2007 10:03:16
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**183**;Aug 12, 1996;Build 3
+PXAPIIB ;ISA/AAS - SUPPORTED REFERENCES FOR AICS ; 12/11/95
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
  ;
  ; -- Output transforms, used for outputting entry during formatting
  ;    and after scanning before sending to PCE.
@@ -53,7 +53,7 @@ TESTIMM ; -- does X point to a valid Immunization?  Kills X if not.
  ;
  I '$G(X) K X S Y="" Q
  I '$D(^AUTTIMM(X,0)) K X S Y="" Q
- I $P($G(^AUTTIMM(X,0)),"^",7) S Y=$P(^AUTTIMM(X,0),"^") K X
+ I $P($G(^AUTTIMM(X,0)),"^",7) S Y=$P(^AUTTEDT(X,0),"^") K X
  Q
  ;
 TESTEXM ; -- does X point to a valid EXAM?  Kills X if not.

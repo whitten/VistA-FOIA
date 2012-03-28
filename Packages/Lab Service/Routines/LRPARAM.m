@@ -1,22 +1,31 @@
-LRPARAM ;SLC/CJS/DALISC/FHS - SET LAB PARAMETERS ;8/11/97
- ;;5.2;LAB SERVICE;**98,121,153,201**;Sep 27, 1994
+LRPARAM ;SLC/CJS/DALISC/MKK - SET LAB PARAMETERS ;8/11/97 [ 04/08/2003  10:18 AM ]
+ ;;5.2;LR;**1011,1013,1015,1018,1019**;MAR 25, 2005
+ ;;5.2;LAB SERVICE;**98,121,153**;Sep 27, 1994
 INIT ;
- S U="^" I '$D(ZTQUEUED) S IOP="HOME" D ^%ZIS
- I '$D(ZTQUEUED),$S('$D(DUZ(2)):1,'DUZ(2):1,1:0) W !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
- I '$D(DUZ(2)) W:'$D(ZTQUEUED) !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
- I 'DUZ(2) W:'$D(ZTQUEUED) !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
+ ;S U="^" I '$D(ZTQUEUED) S IOP="HOME" D ^%ZIS
+ ;I '$D(ZTQUEUED),$S('$D(DUZ(2)):1,'DUZ(2):1,1:0) W !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
+ ;I '$D(DUZ(2)) W:'$D(ZTQUEUED) !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
+ ;I 'DUZ(2) W:'$D(ZTQUEUED) !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
+ ;----- BEGIN IHS MODIFICATION LR*5.2*1018
+ S U="^"
+ I '$G(BLRGUI) S LREND=0 D  Q:$G(LREND)
+ .I '$D(ZTQUEUED) S IOP="HOME" D ^%ZIS
+ .I '$G(DUZ(2)) W:'$D(ZTQUEUED) !,"SORRY ! You must have a site defined. (NO DUZ(2))" S LREND=1 Q
+ S BLRQSITE=$P(^AUTTSITE(1,0),U,1),BLRLOG=$G(^BLRSITE(BLRQSITE,0)),BLRPCC=$P(BLRLOG,U,3),BLRSTOP=$P(BLRLOG,U,9),BLRLOG=$P(BLRLOG,U,2)  ;IHS/DIR/MJL 11/9/99
+ I BLRLOG,'BLRSTOP D JOB^BLRPARAM
+ ;----- END IHS MODIFICATION
 EN ;Entry point for external package calls - [Will not reset IO definitions]
  N X,X1,X2,Y
  K LRPARAM,LRDATA
- D
- . N X,DIK,DIC,%I,DICS,%DT
- . D DT^DICRW
- . S LRDT0=$$FMTE^XLFDT(DT,"5DZ")
- S U="^",VA200="",LRPARAM=1_"^"_$P(^LAB(69.9,1,0),"^",2,255) S:'$D(DTIME) DTIME=300
+ D DT^LRX S U="^",VA200="",LRPARAM=1_"^"_$P(^LAB(69.9,1,0),"^",2,255) S:'$D(DTIME) DTIME=300
  ; LRPARAM("VR") is set to the version of lab installed at this site.
  ;This variable can be used by other packages when interfacing with
  ;laboratory routines (ie. OERR)
  S LRPARAM("VR")=$G(^DD(63,0,"VR"))_U_$G(^DD(100,0,"VR"))_U_$G(^DG(43,1,"VERSION"))
+ ;----- BEGIN IHS MODIFICATION LR*5.2*1018
+ S LRDAHEAD=$P($G(^LAB(69.9,1,9999999)),U,2)  ;IHS/ITSC/TPF 11/18/02 MOVE FIELD TO IHS NUMBERED FIELD **1015**
+ S:LRDAHEAD="" LRDAHEAD=366  ;IHS/ITSC/TPF 06/06/02 DEFAULT ORDER AHEAD **1013**
+ ;----- END IHS MODIFICATION
  D  ; Each Institution can have several associated divisions
  . ; The divisions are used to control editing of clinical results
  . ; performed by another instituion.
@@ -44,6 +53,13 @@ LABKEY ;If DUZ is a LRLAB or LRVERIFY Key holder then LRLABKY is defined. The 1s
  . W:$D(ZTSK) !!?10," ROLLOVER HAS BEEN TASKED  --  TRY ACCESSIONING LATER ",!!,$C(7)
 VIDEO ;Get Video settings for reverse and blinking features
  S LRVIDO="$C(91)",LRVIDOF="$C(93),$C(7)"
+ ;----- BEGIN IHS MODIFICATION LR*5.2*1019
+ ;      Snapshot accidently left "active"
+ ; NEW SNAPSHOT
+ ; S SNAPSHOT=1
+ ; D:$G(SNAPSHOT) ENTRYAUD^BLRUTIL("ENTER VIDEO^LRPARAM")
+ ;----- END IHS MODIFICATION LR*5.2*1019
+ ;
  I $G(IOST(0)) S X=$G(^%ZIS(2,+IOST(0),5)) Q:'$L($P(X,U,4))!('$L($P(X,U,8)))!('$L($P(X,U,5)))!('$L($P(X,U,9)))  S LRVIDO=$P(X,U,4)_","_$P(X,U,8),LRVIDOF=$P(X,U,5)_","_$P(X,U,9)
  Q
 VR() ;Return current version of Laboratory Package installed

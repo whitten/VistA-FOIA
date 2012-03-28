@@ -1,5 +1,5 @@
 XINDX11 ;ISC/GRK - Create phantom routines for functions, options, etc. ;07/08/98  15:06
- ;;7.3;TOOLKIT;**20,27,121**;Apr 25, 1995;Build 7
+ ;;7.3;TOOLKIT;**20,27,121**;Apr 25, 1995;Build 10
  ; Per VHA Directive 2004-038, this routine should not be modified.
  W !,"The option and function files are being processed.",!
  I INP(10)=9.4 G PKG

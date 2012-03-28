@@ -1,10 +1,14 @@
-TIUEDIT ; SLC/JER - Enter/Edit a Document ; 6/11/2002
- ;;1.0;TEXT INTEGRATION UTILITIES;**1,7,22,52,100,109,112**;Jun 20, 1997
+TIUEDIT ; SLC/JER - Enter/Edit a Document ; 3/7/01
+ ;;1.0;TEXT INTEGRATION UTILITIES;**1,7,22,52,100,109**;Jun 20, 1997
  ; Moved LOADDFLT, BOIL, CANXEC, REPLACE, INSMULT to TIUEDI4
  ; Moved DIE, TEXTEDIT from TIUEDIT to TIUEDI4
  ; Separated out modules SETTL, GETVST, ASKOK
  ; Moved SETTL, GETVST, ASKOK from TIUEDIT to TIUEDI4
  ; Changed call to GETREC^TIUEDI1 to call GETRECNW^TIUEDI3
+ ;IHS/ITSC/LJF 02/26/2003  create v note entry & clean up TIUTITLE variable
+ ;IHS/ITSC/LJF 08/22/2003  quit patient loop if called by IPD option (BTIURPT)
+ ;IHS/ITSC/LJF 12/11/2003  review previous notes works for all notes
+ ;
 MAIN(TIUCLASS,SUCCESS,DFN,TIUTITLE,EVNTFLAG,NOSAVE,TIUNDA,TIUSNGL,TIUCHNG) ; Create new document(s)
  ; May branch off to edit existing docmt instead of creating new one.
  ; Call with: [TIUCLASS] --> pointer to file (8925) corresponding to
@@ -50,7 +54,8 @@ MAIN(TIUCLASS,SUCCESS,DFN,TIUTITLE,EVNTFLAG,NOSAVE,TIUNDA,TIUSNGL,TIUCHNG) ; Cre
  ; -- multiple pts; not in OERR, not TRYing DDEF, not single docmt: --
  I $P(TIUPREF,U,6)="M",(+$G(ORVP)'>0),(+$G(NOSAVE)'>0),'+$G(TIUSNGL) D MAIN^TIUEDIM(TIUCLASS,.TIUOUT,.TIUNDA,.TIUCHNG) Q
  ; -- Loop: Create docmt --
- F  D  Q:+$G(ORVP)!+$G(TIUOUT)!+$G(NOSAVE)!+$G(TIUSNGL)
+ ;F  D  Q:+$G(ORVP)!+$G(TIUOUT)!+$G(NOSAVE)!+$G(TIUSNGL)
+ F  D  Q:+$G(ORVP)!+$G(TIUOUT)!+$G(NOSAVE)!+$G(TIUSNGL)!$G(BTIURPT)   ;IHS/ITSC/LJF 08/22/2003
  . N TIU,TIUCMMTX,TIUBY,TIUEDIT,TIUNEW,TIUTYP,VADM,VAIN,CANEDIT
  . ; -- User specifies basic info for new docmt --
  . ; -- Get patient --
@@ -59,12 +64,14 @@ MAIN(TIUCLASS,SUCCESS,DFN,TIUTITLE,EVNTFLAG,NOSAVE,TIUNDA,TIUSNGL,TIUCHNG) ; Cre
  . . S DFN=+$$PATIENT^TIULA
  . ; -- [For progress notes, show available notes]: --
  . S TIUCLASS=$G(TIUCLASS,38)
- . I TIUCLASS=3,$S(+$$ISA^USRLM(DUZ,"TRANSCRIPTIONIST"):0,1:1),(+$G(NOSAVE)'>0) D EXSTNOTE^TIUEDI2(DFN) D:$G(VALMAR)="^TMP(""OR"",$J,""CURRENT"")" FULL^VALM1
+ . ;
+ . ;IHS/ITSC/LJF 12/11/2003
+ . ;I TIUCLASS=3,$S(+$$ISA^USRLM(DUZ,"TRANSCRIPTIONIST"):0,1:1),(+$G(NOSAVE)'>0) D EXSTNOTE^TIUEDI2(DFN) D:$G(VALMAR)="^TMP(""OR"",$J,""CURRENT"")" FULL^VALM1
+ . I $S(+$$ISA^USRLM(DUZ,"TRANSCRIPTIONIST"):0,1:1),(+$G(NOSAVE)'>0) D EXSTNOTE^TIUEDI2(DFN) D:$G(VALMAR)="^TMP(""OR"",$J,""CURRENT"")" FULL^VALM1
+ . ;
  . I +$G(DIROUT)!+$G(DUOUT)!+$G(DTOUT) S TIUOUT=1 Q
  . ; -- Set title array TIUTYP (use TIUTITLE or ask user) --
  . D SETTL^TIUEDI4(.TIUTYP,TIUCLASS,$G(TIUTITLE)) I +$G(TIUTYP)'>0 S TIUOUT=1 Q
- . ; --- Re-direct SURGICAL REPORTS ---
- . I +$$ISA^TIULX(TIUTYP,+$$CLASS^TIUSROI("SURGICAL REPORTS")) D ENTEROP^TIUSROI(DFN,TIUTYP) Q
  . ; -- Get doc parameters for title, X entry action --
  . D DOCPRM^TIULC1(TIUTYP,.TIUDPRM)
  . S TIUENTRY=$$GETENTRY^TIUEDI2(+TIUTYP)
@@ -104,6 +111,9 @@ MAIN(TIUCLASS,SUCCESS,DFN,TIUTITLE,EVNTFLAG,NOSAVE,TIUNDA,TIUSNGL,TIUCHNG) ; Cre
  . . ;    (STOP for Stop codes for stand-alone visits): --
  . . I +$G(TIU("STOP")),(+$P($G(TIUDPRM(0)),U,14)'=1) D DEFER^TIUVSIT(DA,TIU("STOP")) I 1 ;piece 14 = suppress DX/CPT on entry
  . . E  D QUE^TIUPXAP1 ; Post workload now in background
+ . . ;
+ . . D VNOTE^BTIUPCC(DA,+TIU("VISIT"),DFN,"ADD")  ;IHS/ITSC/LJF 02/26/2003 update VNote file
+ . . ;
  . . S TIUCMMTX=$$COMMIT^TIULC1(+$P(TIUTYP(1),U,2))
  . . I TIUCMMTX]"" X TIUCMMTX
  . . D RELEASE^TIUT(DA)
@@ -118,6 +128,7 @@ MAIN(TIUCLASS,SUCCESS,DFN,TIUTITLE,EVNTFLAG,NOSAVE,TIUNDA,TIUSNGL,TIUCHNG) ; Cre
  . . ; --  [Prompt to print DA] --
  . . I +$P($G(TIUDPRM(0)),U,8) D PRINT^TIUEPRNT(DA)
  . K DFN ; Free patient
+ . K TIUTITLE     ;IHS/ITSC/LJF 02/26/2003 clean up variable for next note
  . S TIUPNAME=$$PNAME^TIULC1(TIUCLASS)
  . I $$UP^XLFSTR($E(TIUPNAME,$L(TIUPNAME)))="S" S TIUPNAME=$E(TIUPNAME,1,$L(TIUPNAME)-1)
  . ; -- [loop again] --

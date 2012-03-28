@@ -1,9 +1,13 @@
 PXXDPT ;ISL/DLT - Synchronize Patient File (2) and IHS Patient File (#9000001) ;9/3/96
  ;;1.0;PCE PATIENT CARE ENCOUNTER;**1**;Aug 12, 1996
  ;;1.0;PCE Patient/IHS Subset;;Nov 01, 1994
+ ;IHS/ITSC/LJF 5/28/2003 bypasses VA code - files 2 & 9000001 kept insync by IHS Registration
  ;
 SETSSN ; Entry Point from PX09 cross-reference on File 2, field .09
  ;to define patient entry in 9000001.
+ ;
+ Q   ;IHS/ITSC/LJF 5/28/2003
+ ;
  D CHECK Q:'$T
 EN Q:PX=""  N DFN,PXXLOC S DFN=+DA N DA,X
  I '$D(^AUPNPAT(DFN,0)) L +^AUPNPAT(0) S $P(^AUPNPAT(0),U,3)=DFN,$P(^AUPNPAT(0),U,4)=$P(^AUPNPAT(0),U,4)+1 L -^AUPNPAT(0)
@@ -18,6 +22,9 @@ EN Q:PX=""  N DFN,PXXLOC S DFN=+DA N DA,X
  ;
 KILLSSN ;Entry point from PX09 cross-reference on File 2, field .09 to kill SSN
  ;information from 9000001.
+ ;
+ Q   ;IHS/ITSC/LJF 5/28/2003
+ ;
  D CHECK Q:'$T
  N DFN S DFN=+DA N DA,X
  S X=PX,DA(1)=DFN,DA=$P($G(^PX(815,1,"PXPT")),"^",1) Q:'+DA  X ^DD(9000001.41,.02,1,1,2)
@@ -27,6 +34,9 @@ CHECK ;Check for appropriate variables and globals defined before proceeding
  I $D(^AUPNPAT),$G(DA),$D(^DPT(DA))
  Q
 LOAD ;Logic to use during install to initially load ^AUPNPAT(
+ ;
+ Q   ;IHS/ITSC/LJF 5/28/2003
+ ;
  S PXFG=0
  S DA=+$P($G(^PX(815,1,"PXPT")),"^",2)
  F  S DA=$O(^DPT(DA)) Q:'DA  Q:PXFG=1  S PX=$P($G(^DPT(DA,0)),"^",9) D SETSSN D

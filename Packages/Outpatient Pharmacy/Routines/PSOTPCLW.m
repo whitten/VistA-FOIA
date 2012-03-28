@@ -116,7 +116,7 @@ MMLETTER ;;
  ;; 
  ;;        More information about this benefit can be found on the VA's 
  ;;Internet Web site, at http://www.va.gov/elig/tpb.htm.  If you still have
- ;;questions, please call 1-877-222-8387.
+ ;;questions, please call 1-999-999-9999.
  ;; 
  ;;6.  PLEASE KEEP YOUR FIRST PRIMARY CARE APPOINTMENT!
  ;; 

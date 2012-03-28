@@ -1,4 +1,5 @@
-XQ33 ;SEA/AMF/JLI/MJM - REMOVE UNREFERENCED OPTIONS ;04/13/98  13:29
+XQ33 ;SEA/AMF/JLI/MJM - REMOVE UNREFERENCED OPTIONS ;04/13/98  13:29 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**49,73,46**;Jul 10, 1995
 DUO ; Entry point to delete unreferenced options from the option file.
  W !!,*7,"Do you want to delete unreferenced options" S %=2 D YN^DICN Q:%<0!(%=2)  I '% W !,"Enter a 'Y' if you want an opportunity to delete orphan options which are not",!,"primary menus, secondary menus, or tasked." G DUO

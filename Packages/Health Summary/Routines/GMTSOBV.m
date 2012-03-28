@@ -1,5 +1,5 @@
-GMTSOBV ; SLC/KER - HS Object - Verify                 ; 06/24/2009
- ;;2.7;Health Summary;**58,89**;Oct 20, 1995;Build 61
+GMTSOBV ; SLC/KER - HS Object - Verify                 ; 01/06/2003
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;                
  ; External References
  ;   DBIA  10006  ^DIC  (file #2 and 142.5)
@@ -35,7 +35,7 @@ VTE(X) ; Verify Type Edit
  S GMTSOWN=$P($G(^GMT(142,+GMTSX,0)),"^",3),GMTSNAT=+($P($G(^GMT(142,+GMTSX,"VA")),"^",1))
  I GMTSNAT>0 W:'$D(GMTSQT) !!,"   You can not edit a Nationally exported Health Summary Type.",! Q -1
  I 'GMTSMGR,'GMTSKEY W:'$D(GMTSQT) !!,"   This Health Summary Type is currently locked to prevent alteration.",! Q -1
- I GMTSOWN>0,GMTSOWN'=+($G(DUZ)),'$D(^XUSEC("GMTSMGR",DUZ)) W:'$D(GMTSQT) !!,"   You can not edit a Health Summary Type you don't own.",! Q -1
+ I GMTSOWN>0,GMTSOWN'=+($G(DUZ)) W:'$D(GMTSQT) !!,"   You can not edit a Health Summary Type you don't own.",! Q -1
  S X=GMTSX Q X
 VOE(X) ; Verify Object Edit
  N GMTSX,GMTSOWN,GMTSNAT,GMTSMGR S GMTSX=+($G(X)) Q:$D(GMTSDEV) X

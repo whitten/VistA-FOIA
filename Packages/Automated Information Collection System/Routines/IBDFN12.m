@@ -1,5 +1,5 @@
 IBDFN12 ;ALB/CJM - ENCOUNTER FORM - SELECTORS;MAY 10, 1995
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**12,38,40,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**12,38,40**;APR 24, 1997
  ;
 LOOKUP(FILE,SCREEN,X,NODE) ;
  ; -- lookup X in file using SCREEN
@@ -21,12 +21,8 @@ SLCTCPT(X) ;for CPT codes
  ;pass X by reference
  ;example of use: D SLCTCPT^IBDFN12(.X)
  ;
- N NODE,SCRN
- ;;D LOOKUP(81,"I '$P(^(0),U,4)",.X,.NODE)
- ;
- ;List only active code. (CSV)
- S SCRN="I $P($$CPT^ICPTCOD(Y),U,7)=1" ;Check status for CPT (CSV)
- D LOOKUP(81,SCRN,.X,.NODE)
+ N NODE
+ D LOOKUP(81,"I '$P(^(0),U,4)",.X,.NODE)
  I $D(X) S IBLABEL=$P(NODE,"^",2),(IBID,X)=$P(NODE,"^",1)
  Q
  ;
@@ -34,12 +30,8 @@ SLCTDX(X) ;for ICD9 diagnosis codes
  ;pass X by reference
  ;example of use: D SLCTICD^IBDFN12(.X)
  ;
- N NODE,SCRN
- ;;D LOOKUP(80,"I '$P(^(0),U,9)",.X,.NODE)
- ;
- ;List only active code. (CSV)
- S SCRN="I $P($$ICDDX^ICDCODE(Y),U,10)=1" ;Check status for ICD (CSV)
- D LOOKUP(80,SCRN,.X,.NODE)
+ N NODE
+ D LOOKUP(80,"I '$P(^(0),U,9)",.X,.NODE)
  I $D(X) S IBLABEL=$P(NODE,"^",3),(IBID,X)=$P(NODE,"^",1)
  Q
  ;
@@ -47,13 +39,8 @@ SLCTVST(X) ;for VISIT TYPE codes
  ;pass X by reference
  ;example of use: D SLCTVST^IBDFN12(.X)
  ;
- N NODE,SCREEN
- ;;D LOOKUP(357.69,"I '$P(^(0),U,4)",.X,.NODE)
- ;
- ;List only active code. (CSV)
- S SCRN="I $P($$CPT^ICPTCOD(Y),U,7)=1" ;Check status for CPT (CSV)
- D LOOKUP(357.69,SCRN,.X,.NODE)
- ;
+ N NODE
+ D LOOKUP(357.69,"I '$P(^(0),U,4)",.X,.NODE)
  ;; --change to api cpt ; dhh
  I $G(X) S NODE=$$CPT^ICPTCOD(+NODE),NODE=$G(NODE),(IBID,X)=$P(NODE,"^",2),IBLABEL=$P(NODE,"^",3)
  Q

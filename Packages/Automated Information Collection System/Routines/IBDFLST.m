@@ -1,5 +1,5 @@
 IBDFLST ;ALM/MAF - Maintenance Utility Invalid Codes List - MAY 17 1995
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**9,38,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**9,38**;APR 24, 1997
  ;
  ;
 START ;  -- Ask what invalid code you want to display CPT/ ICD9/ Visit
@@ -49,13 +49,8 @@ CPT D FULL^VALM1 F IBDFIFN=0:0 S IBDFIFN=$O(^ICPT(IBDFIFN)) Q:'IBDFIFN  D
  Q
  ;
  ;  -- Gets ICD9 listing onf invalid codes
- ;  -- Use api for ICD9
-ICD9 ;;F IBDFIFN=0:0 S IBDFIFN=$O(^ICD9(IBDFIFN)) Q:'IBDFIFN  S IBDFNODE=$G(^ICD9(IBDFIFN,0)) I $P(IBDFNODE,"^",9)]"" D
- ;
- ;Use ICD API to check the status for CSV.  No date is passed so the
- ;default day is DT (today).  $P10 = status 0-inactive 1-active
- F IBDFIFN=0:0 S IBDFIFN=$O(^ICD9(IBDFIFN)) Q:'IBDFIFN  S IBDFNODE=$$ICDDX^ICDCODE(IBDFIFN) I '$P(IBDFNODE,U,10) D
- .S IBDFCODE=$P(IBDFNODE,"^",2),IBDFDESC=$P(IBDFNODE,"^",4),IBDFCAT=$S($P(IBDFNODE,"^",6)]""&($G(^ICM(+$P(IBDFNODE,"^",6),0))]""):$P(^ICM($P(IBDFNODE,"^",6),0),"^",1),1:"UNKNOWN") D ALPHA
+ICD9 F IBDFIFN=0:0 S IBDFIFN=$O(^ICD9(IBDFIFN)) Q:'IBDFIFN  S IBDFNODE=$G(^ICD9(IBDFIFN,0)) I $P(IBDFNODE,"^",9)]"" D
+ .S IBDFCODE=$P(IBDFNODE,"^",1),IBDFDESC=$P(IBDFNODE,"^",3),IBDFCAT=$S($P(IBDFNODE,"^",5)]""&($G(^ICM(+$P(IBDFNODE,"^",5),0))]""):$P(^ICM($P(IBDFNODE,"^",5),0),"^",1),1:"UNKNOWN") D ALPHA
  D LOOP
  Q
  ;
@@ -66,8 +61,7 @@ VISIT ;  -- Gets visit code listing of invalid codes
  . S IEN=$O(^IBE(357.69,"B",IBDFVST,0))
  . Q:'IEN
  . S IBDFNODE=$$CPT^ICPTCOD(IBDFVST)
- . Q:$P(IBDFNODE,U,7)=1  ;(CSV) status 0-inactive 1-active
- . ;;Q:+IBDFNODE=-1
+ . Q:+IBDFNODE=-1
  . S IBDFIFN=+IBDFNODE
  . S IBDFCODE=$P(IBDFNODE,"^",2)
  . S IBDFDESC=$P(IBDFNODE,"^",3)

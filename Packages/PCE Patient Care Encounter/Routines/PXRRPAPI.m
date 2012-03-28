@@ -1,5 +1,5 @@
 PXRRPAPI ;ISL/PKR - Build the patient specific info for each patient on the list. ;6/27/97
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**18,121,165**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**18**;Aug 12, 1996
  ;
 PAT ;
  N ACTIVITY,BACDATE,BD,BUSY,DATE,DFN,EACDATE,ED,ERIEN,ERR
@@ -98,8 +98,8 @@ NDIS S BD=$O(^DGPM("APTT3",DFN,BD))
  ;We will need a DBIA to look at lab stuff.
 CLAB S LRDFN=$G(^DPT(DFN,"LR"))
  I LRDFN="" G SAVPAT
- S ED=$$FMDFINVL(BACDATE,0)
- S BD=$$FMDFINVL(EACDATE,0)
+ S ED=$$FMDFINVL^PXRMDATE(BACDATE,0)
+ S BD=$$FMDFINVL^PXRMDATE(EACDATE,0)
 NLAB S BD=$O(^LR(LRDFN,"CH",BD))
  ;If we have passed the ending date we are done.
  I (BD>ED)!(BD="") G SAVPAT
@@ -176,7 +176,7 @@ SAVPAT ;Save the patient data in XTMP in a format suitable for printing.
  ;Critical lab data.
  S IC=0
  F  S IC=$O(^TMP(PXRRXTMP,$J,"CLAB",DFN,IC)) Q:+IC=0  D
- . S TEMP=$$FMDFINVL(IC,1)
+ . S TEMP=$$FMDFINVL^PXRMDATE(IC,1)
  . S JC=0
  . F  S JC=$O(^TMP(PXRRXTMP,$J,"CLAB",DFN,IC,JC)) Q:+JC=0  D
  .. S ^XTMP(PXRRXTMP,FACIEN,HLOCIEN,DFN,"CLAB",TEMP,JC)=^TMP(PXRRXTMP,$J,"CLAB",DFN,IC,JC)
@@ -199,7 +199,7 @@ EXIT ;
  K ^TMP(PXRRXTMP)
  ;
  ;Print the report.
- I PXRRQUE D 
+ I PXRRQUE D
  .;Start the report that was queued but not scheduled.
  . N DESC,ROUTINE,TASK
  . S DESC="Patient Activity Report - print"
@@ -264,8 +264,7 @@ DISCHRG(DFN,DATE,IEN) ;Given a patient and a discharge date find the
  ;Will need a DBIA for these reads.
  ;Try to get DXLS
  I +VAIP(12)>0 S ICD9IEN=$P($G(^DGPT(VAIP(12),70)),U,10)
- ;I +$G(ICD9IEN)>0 S TEMP=TEMP_U_$P(^ICD9(ICD9IEN,0),U,3)
- I +$G(ICD9IEN)>0 S TEMP=TEMP_U_$P($$ICDDX^ICDCODE(ICD9IEN),U,4)
+ I +$G(ICD9IEN)>0 S TEMP=TEMP_U_$P(^ICD9(ICD9IEN,0),U,3)
  ;
  S ^XTMP(PXRRXTMP,FACIEN,HLOCIEN,DFN,"ADMDIS",ADMDATE,DATE)=TEMP
 DISDONE ;
@@ -282,14 +281,4 @@ SSNFORM(SSN) ;Format the social security number with dashes.
  S TEMP=$E(SSN,6,9)
  S FSSN=FSSN_TEMP
  Q FSSN
- ;
- ;=======================================================================
-FMDFINVL(INVDT,DATE) ;Convert an inverse date (LABORATORY format
- ;9999999-date) to Fileman format.
- I $L(INVDT)=0 Q INVDT
- N TEMP
- S TEMP=9999999-INVDT
- ;If DATE is TRUE return only the date portion.
- I DATE S TEMP=$P(TEMP,".",1)
- Q TEMP
  ;

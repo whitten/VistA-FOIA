@@ -1,8 +1,9 @@
-PSORENW2 ;IHS/DSD/JCM - displays renew rx information for edit ; 12/09/92  10:14 am
+PSORENW2 ;IHS/DSD/JCM - displays renew rx information for edit ;05-Apr-2004 19:33;PLS
  ;;7.0;OUTPATIENT PHARMACY;**46,103**;DEC 1997
  ; This routine displays the entered new rx information and
  ; asks if correct, if not allows editing of the data.
  ;------------------------------------------------------------
+ ; Modified - IHS/CIA/PLS - 01/06/04 - Line DISPLAY+4
 START ;
  S (PSORENW("DFLG"),PSORENW2("QFLG"))=0
  D DISPLAY ; Displays information
@@ -16,6 +17,10 @@ DISPLAY ;
  W !!,"Rx # ",PSORENW("NRX #")
  W ?23,$E(PSORENW("FILL DATE"),4,5),"/",$E(PSORENW("FILL DATE"),6,7),"/",$E(PSORENW("FILL DATE"),2,3)
  W !,$G(PSORX("NAME")),?30,"#",PSORENW("QTY")
+ ; IHS/CIA/PLS - 01/06/04 - Added NDC, AWP and COST
+ W ?45,"NDC ",PSORENW("NDC")
+ W " ("_PSORENW("AWP")_")"
+ W " ("_PSORENW("COST")_")"
  S X=PSORENW("SIG") D SIGONE^PSOHELP W !,$E($G(INS1),2,250),!!,$S($G(PSODRUG("TRADE NAME"))]"":PSODRUG("TRADE NAME"),1:PSODRUG("NAME"))
  W !,PSORENW("PROVIDER NAME"),?25,PSORX("CLERK CODE")
  W !,"# of Refills: ",PSORENW("# OF REFILLS"),!

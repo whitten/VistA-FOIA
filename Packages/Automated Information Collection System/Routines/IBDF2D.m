@@ -1,5 +1,5 @@
 IBDF2D ;ALB/CJM - ENCOUNTER FORM - WRITE SELECTION LIST ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**15**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;prints a selection list
 PRINTLST(IBLIST) ;writes the selection list to the print array
  ;IBLIST - pointer to a selection list
@@ -137,5 +137,4 @@ GETDATA(LOCATION) ;gets the dynamic data at print time,@LOCATION=where the list 
  .I $G(REPRINT),($G(RTN("INPUT_RTN"))]"") D REPRINT^IBDFN11(IBPFID,IBLIST,.LOCATION) Q
  .I '$D(RTNLIST(RTN("RTN"))) Q:'$$DORTN^IBDFU1B(.RTN)
  .S:'IBDEVICE("LISTMAN") RTNLIST(RTN("RTN"))=""
- .K RTNLIST(RTN("RTN"))
  Q

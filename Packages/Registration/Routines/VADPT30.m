@@ -1,5 +1,7 @@
-VADPT30 ;ALB/MJK - Current Inpatient Variables; 12 DEC 1988 ; 5/5/05 11:41am
- ;;5.3;Registration;**111,498,509,662**;Aug 13, 1993
+VADPT30 ;ALB/MJK - Current Inpatient Variables; 12 DEC 1988
+ ;;5.3;Registration;**111,498,509,1004**;Aug 13, 1993
+ ;IHS/ANMC/LJF  2/22/2001 Added setting of admitting provider
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
  ;
 VAR ; -- inpatient demographics variables
  ;  input: DFN, VATD  = inverse date ; VACN  =
@@ -31,12 +33,12 @@ VARQ K VAMV0,VAMT,VAID
  ;
 GET ; -- get variables and quit when all set(Y=1)
  S VACA=+$P(VAMV0,"^",14)
- N VAT
  D TS,SET G GETQ:Y
  F VAID=VATD:0 S VAID=$O(^DGPM("APMV",DFN,VACA,VAID)) Q:'VAID  F VAIFN=0:0 S VAIFN=$O(^DGPM("APMV",DFN,VACA,VAID,VAIFN)) Q:'VAIFN  I $D(^DGPM(VAIFN,0)) S VAMV0=^(0) D SET G GETQ:Y
 GETQ K VACA,VAIFN,VAID Q
  ;
-KVAR K VAMV,VAWDA,VAWD,VARM,VAPP,VAAP,VATS,VATD,VAPRC,VAPRT,VACN,VADX,VABO,VAFD Q
+KVAR ;K VAMV,VAWDA,VAWD,VARM,VAPP,VAAP,VATS,VATD,VAPRC,VAPRT,VACN,VADX,VABO,VAFD Q   ;IHS/ANMC/LJF 2/22/2001
+ K VAMV,VAWDA,VAWD,VARM,VAPP,VAAP,VATS,VATD,VAPRC,VAPRT,VACN,VADX,VABO,IHSADM Q  ;IHS/ANMC/LJF 2/22/2001
  ;
 SET ; -- set variables if null
  S Y=0
@@ -60,6 +62,7 @@ TS1 ; set VATS, VAPP, and VAAP
  I 'VAPP,$D(^VA(200,+$P(VAMV0,"^",8),0)) S Y=$P(VAMV0,"^",8)_"^"_$P(^(0),"^") S VAPP=Y
  I 'VAAP,$D(^VA(200,+$P(VAMV0,"^",19),0)) S Y=$P(VAMV0,"^",19)_"^"_$P(^(0),"^") S VAAP=Y
  I 'VATS,$D(^DIC(45.7,+$P(VAMV0,"^",9),0)) S VATS=$P(VAMV0,"^",9)_"^"_$P(^(0),"^")
+ S IHSADM=$P($G(^DGPM(VAIFN,"IHS")),U,2)_U_$$GET1^DIQ(405,VAIFN,9999999.02)  ;IHS/ANMC/LJF 2/22/2001
  Q
  ;
 MV ; -- get latest mv for pt before VAID and not ASIH mv

@@ -1,6 +1,7 @@
-LRBLPP ;AVAMC/REG - BB PATIENT PRINT OPTS ; 7/18/88  07:0 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPP ; IHS/DIR/FJE - BB PATIENT PRINT OPTS 7/18/88 07:0 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  S X="BLOOD BANK" D ^LRUTL Q:Y=-1
  W @IOF W ?31,"Blood Bank Patient Print Options"
 OPTS ;

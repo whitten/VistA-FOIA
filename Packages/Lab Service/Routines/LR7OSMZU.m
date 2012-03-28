@@ -1,4 +1,5 @@
-LR7OSMZU ;slc/dcm - Silent Micro rpt cont. ;8/11/97
+LR7OSMZU ;VA/SLC/DCM - Silent Micro rpt cont. ;8/11/97
+ ;;5.2;LR;**1018,1030**;Nov 01, 1997
  ;;5.2;LAB SERVICE;**121,244**;Sep 27, 1994
 FH ;from LR7OSMZ1, LR7OSMZ2, LR7OSMZ5
  Q
@@ -50,3 +51,12 @@ PRE ;from LR7OSMZ2, LR7OSMZ3, LR7OSMZ4
  . F  S J=+$O(^LR(LRDFN,"MI",LRIDT,LRPRE,J)) Q:J<1  S X=^(J,0) D LINE^LR7OSUM4 S ^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(3,CCNT,X)
  D LINE^LR7OSUM4
  Q
+ ;
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+IHSKEY ; EP -- New "Key" for Micro Reports
+ D LINE^LR7OSUM4
+ S GCNT=GCNT+1,CCNT=1
+ S ^TMP("LRC",$J,GCNT,0)="S=Sensitive     I=Intermediate     R=Resistant     NI=Not Immune     I=Immune"
+ S GCNT=GCNT+1,CCNT=1
+ S ^TMP("LRC",$J,GCNT,0)="IB=Inducible Beta Lactam    NR=Non Reactive    WR=Weakly Reactive    R=Reactive"
+ ; ----- END IHS/OIT/MKK -- LR*5.2*1030

@@ -1,5 +1,5 @@
-DIKCR ;SFISC/MKO-API TO CREATE A NEW-STYLE XREF ;9:55 AM  1 Nov 2002
- ;;22.0;VA FileMan;**95**;Mar 30, 1999
+DIKCR ;SFISC/MKO-API TO CREATE A NEW-STYLE XREF ;9:55 AM  1 Nov 2002 [ 12/09/2003  4:44 PM ]
+ ;;22.0;VA FileMan;**95,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;
 CREIXN(DIKCXREF,DIFLG,DIXR,DIKCOUT,DIKCMSG) ;Create a new-style index

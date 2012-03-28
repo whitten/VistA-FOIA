@@ -1,5 +1,5 @@
 XQ5 ;SF/GFT,MJM,KLD - Menu edit utilities [XUEDITOPT] ;01/30/2008
- ;;8.0;KERNEL;**44,130,484**;Jul 10, 1995;Build 2
+ ;;8.0;KERNEL;**44,130,484**;Jul 10, 1995;Build 5
  ; Per VHA Directive 2004-038, this routine should not be modified.
  ; Option & Input Template: XUEDITOPT
 DIP ;

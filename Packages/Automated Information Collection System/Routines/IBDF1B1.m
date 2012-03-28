@@ -1,5 +1,5 @@
 IBDF1B1 ;ALB/CJM - ENCOUNTER FORM PRINT (IBDF1B continued - print encounter forms for selected appts); 3/1/93
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**3**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
  N IBDEVICE,IBQUIT
  ;
@@ -77,7 +77,6 @@ HDRPG(CLINIC,IBDIV) ;print a header page for clinic
  I $Y W @IOF
  W !!!!!,?((IOM-$L(LN))\2),LN
  W @IOF
- W !!
  Q
 TRLR ;prints a trailer page
  N LN

@@ -1,5 +1,5 @@
 XUSRA ;ISCSF/RWF - Remote access control ;08/27/2003  10:11
- ;;8.0;KERNEL;**70,115,208,265**;Jul 10, 1995
+ ;;8.0;KERNEL;**70,115,208,265**;Jul 10, 1995;Build 5
  Q  ;No entry from top
  ;
  ;OUTSIDE app user cheking, The supported entry-points are:

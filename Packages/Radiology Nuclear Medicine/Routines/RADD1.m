@@ -1,9 +1,5 @@
 RADD1 ;HISC/FPT-Radiology Utility Routine ;6/2/98  16:17
- ;;5.0;Radiology/Nuclear Medicine;**1,5,10,65,94**;Mar 16, 1998;Build 9
- ;
- ;Supported IA #10142 reference to EN^DDIOL
- ;Supported IA #10103 reference to FMADD^XLFDT
- ;
+ ;;5.0;Radiology/Nuclear Medicine;**1,5,10**;Mar 16, 1998
 SECXREF ; sets/kills 'ARES' & 'ASTF' x-refs for secondary resident/staff rads
  ; called from ^DD(74,5
  ;
@@ -38,15 +34,12 @@ SCDTC ; status change date/time check
  S X=RADTHOLD
  K RADTHOLD
  Q
- ;
 PDC() ; do not enter secondary into primary diagnostic code field
  ; called from ^DD(70.03,13,0)
  ; do not select inactive diagnostic code 12/23/96
- ;P94 - IF changed to a post-conditional
- Q:$P(^RA(78.3,+Y,0),U,5)="Y" 0
- Q:$D(^RADPT(DA(2),"DT",DA(1),"P",DA,"DX","B",+Y)) 0
+ I $P(^RA(78.3,+Y,0),U,5)="Y" Q 0
+ I $D(^RADPT(DA(2),"DT",DA(1),"P",DA,"DX","B",+Y)) Q 0
  Q 1
- ;
 SDC() ; do not enter primary into secondary diagnostic code field
  ; called from ^DD(70.14,.01,0)
  ; do not select inactive diagnostic code 12/23/96
@@ -66,22 +59,12 @@ SDC3 ;
  I '$D(^RADPT(DA(2),"DT",DA(1),"P",DA,0)) Q 0
  I $P(^RADPT(DA(2),"DT",DA(1),"P",DA,0),"^",13)=+Y Q 0
  Q 1
- ;
-NODEL ; Do not permit deletion of the PRIMARY DIAGNOSTIC CODE (70.03,
- ; 13), PRIMARY INTERPRETING RESIDENT (70.03,12) or PRIMARY
- ; INTERPRETING STAFF (70.03,15) if a SECONDARY DIAGNOSTIC CODE
- ; multiple (70.03,13.1) is associated with the exam record.
- ; 
- ; P94: WRITE removed; EN^DDIOL added
- ;
- ;Note: the IF statement has to remain because $T needs to be
- ;set in order to properly influence the "DEL" node.
- ;
+NODEL ; no deletion of primary dx code, primary resident or staff if there
+ ; is a secondary
  S RASECCHK=0,RASECCHK=$O(^RADPT(DA(2),"DT",DA(1),"P",DA,RAMULT,RASECCHK))
- I RASECCHK D EN^DDIOL("   Required","","?0")
+ I RASECCHK W "   Required"
  K RAMULT,RASECCHK
  Q
- ;
 PRCCPT() ; Displays the procedure type and CPT code if applicable.
  ; This code is called from ^DD(71,0,"ID","WRITE") and rtn RAPROD
  N RA,RATXT S RA(0)=$G(^(0)),RA("I")=+$G(^("I")),RATXT=""
@@ -123,6 +106,15 @@ CPTCHK(RADA) ; Check if the CPT code is inactive nationally.
  S RATXT(3)=" " D EN^DDIOL(.RATXT)
  K X
  Q
+DCHK(RADG,RADT,Y) ; Check if drug if DRUG is active AND a Radiopharmaceu-
+ ; tical.
+ ; 'RASTAT=1' if active AND RADG condition met
+ ; 'RASTAT=0' if inactive OR RADG condition not met
+ ; VERSION 5.0 called from ^DD(70.21,.01,12.1)
+ ; 'Y'    is the IEN for the Drug file
+ ; 'RADT' is the cutoff date for drugs in the drug file
+ ; 'RADG':$S(RADG="R":Radiopharm,"P":non-Radioharm,1:non-Radiopharm)
+ Q $$DCHK^RADD4()
  ;
 VALADM(RAD0,Y,RADT,RAUTH) ;edit validation
  ;Used to validate/screen radiopharm dosage administrator,

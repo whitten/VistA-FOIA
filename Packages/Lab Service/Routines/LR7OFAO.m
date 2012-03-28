@@ -1,4 +1,6 @@
-LR7OFAO ;slc/dcm - Setup file 69 for AP orders ;8/11/97
+LR7OFAO ; IHS/DIR/AAB - Setup file 69 for AP orders ; [ 8/11/97 ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**121**;Sep 27, 1994
 EN(LRODT,LRDFN,LRSAMP,LRORDR,LRNT,LRPRAC,LRLLOC,LRSDT,ORIFN,LRSPEC,LRSS) ;Start here
  ;LRODT=Order date

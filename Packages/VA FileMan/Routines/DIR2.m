@@ -1,4 +1,5 @@
-DIR2 ;SFISC/XAK-READER (SETUP VARS,REPLACE...WITH) ;5:51 AM  15 Feb 2000
+DIR2 ;SFISC/XAK-READER (SETUP VARS,REPLACE...WITH) ;5:51 AM  15 Feb 2000 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**30**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ; Check that the inputs to the reader are there and setup variables

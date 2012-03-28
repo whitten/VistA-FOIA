@@ -1,5 +1,5 @@
 IBDFDE0 ;ALB/AAS - AICS Data Entry, Check out interview; 24-FEB-96
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**29,36,44**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**29,36**;APR 24, 1997
  ;
 % G ^IBDFDE
  ;
@@ -37,7 +37,7 @@ CHKOUT(SDOE) ; -- ask check out questions
  .I $G(IBDCO("SC"))="" K IBDCO("SC") W "   Deleted!"
  I $G(IBDCO("SC"))<0 K IBDCO("SC") S IBQUIT=1 G CHKOUTQ
  ;
- I $G(IBDCO("SC")) G MST ; if service connected others don't apply
+ I $G(IBDCO("SC")) G CHKOUTQ ; if service connected others don't apply
  ;
  I $$AO^SDCO22(DFN,+SDOE)!($D(IBDF("AO"))) S IBDCO("AO")=$$ASKYN("Was treatment related to Agent Orange Exposure",$G(IBDCO("AO"))) D
  .I $G(IBDCO("AO"))="" K IBDCO("AO") W "   Deleted!"
@@ -51,7 +51,7 @@ CHKOUT(SDOE) ; -- ask check out questions
  .I $G(IBDCO("EC"))="" K IBDCO("EC") W "   Deleted!"
  I $G(IBDCO("EC"))<0 K IBDCO("EC") S IBQUIT=1 G CHKOUTQ
  ;
-MST ;- Ask Military Sexual Trauma question (patch IBD*3*36)
+ ;- Ask Military Sexual Trauma question (patch IBD*3*36)
  I $$MST^SDCO22(DFN,+SDOE)!($D(IBDF("MST"))) S IBDCO("MST")=$$ASKYN("Was treatment related to MST (Note: ask provider only)",$G(IBDCO("MST"))) D
  .I $G(IBDCO("MST"))="" K IBDCO("MST") W "   Deleted!"
  I $G(IBDCO("MST"))<0 K IBDCO("MST") S IBQUIT=1 G CHKOUTQ

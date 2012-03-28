@@ -1,14 +1,9 @@
 VBECA3B ;DALOI/RLM-API interfaces for CPRS ;9/20/00  12:44
- ;;1.0;VBECS;**3**;Apr 14, 2005;Build 21
- ;
- ; Note: This routine supports data exchange with an FDA registered
- ; medical device. As such, it may not be changed in any way without
- ; prior written approval from the medical device manufacturer.
- ; 
- ; Integration Agreements:
- ; 
- QUIT
- ;
+ ;;0.5;VBECS;**294**;Sep 6, 2000
+ ; This routine retrieves data maintained by a regulated medical
+ ; device.  The routine must not be modified by anyone other than the
+ ; device manufacturer.
+ Q
 CPRS ;
  K VBECBBD D CR,SPC,TRX
  K VBECA,VBECB,VBECI
@@ -33,7 +28,7 @@ SPC ;Specimen
   . . I VBECI=10,VBDTA="NOT DONE" S VBDTA="ND"
   . . I VBECI=11,VBDTA="NOT DONE" S VBDTA="ND"
   . . I (VBECI=2.1)!(VBECI=2.4)!(VBECI=2.6) S VBDTA=$S(VBDTA="N":"Neg",1:VBDTA)
-  . . I (VBECI=2.9)!(VBECI=6)!(VBECI=11),VBDTA'="ND" W !,VBDTA S VBDTA=$S(VBDTA?1"N".E:"Neg",VBDTA?1"P".E:"Pos",1:VBDTA) W !,VBDTA
+  . . I (VBECI=2.9)!(VBECI=6)!(VBECI=11) S VBDTA=$S(VBDTA?1"N".E:"Neg",VBDTA?1"P".E:"Pos",1:VBDTA)
   . . S ^TMP("BBD",$J,"SPECIMEN",VBECA)=^TMP("BBD",$J,"SPECIMEN",VBECA)_VBDTA_"^"
   . . ;S ^TMP("BBD",$J,"SPECIMEN",VBECA)=^TMP("BBD",$J,"SPECIMEN",VBECA)_$G(^TMP("VBDATA",$J,"SPECIMEN",VBECA,"63.01,"_VBECI))_"^"
  K VBECA,VBECB,VBECI

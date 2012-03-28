@@ -1,7 +1,8 @@
-LRBLPH ;AVAMC/REG - PATIENT DRUG LIST ;2/18/93  09:44
- ;;5.2;LAB SERVICE;**247,408**;Sep 27, 1994;Build 8
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- Q  D V^LRU S LRDPAF=1 D ^LRDPA G:LRDFN<1 END I +LRDPF'=2 W $C(7),!,"Must be entry in Patient File (2)" G LRBLPH
+LRBLPH ; IHS/DIR/FJE - PATIENT DRUG LIST 09:44 ; [ 2/18/93 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
+ D V^LRU S LRDPAF=1 D ^LRDPA G:LRDFN<1 END I +LRDPF'=2 W $C(7),!,"Must be entry in Patient File (2)" G LRBLPH
  W ! S ZTRTN="QUE^LRBLPH" D BEG^LRUTL G:POP!($D(ZTSK)) END
 QUE U IO K ^TMP($J) D L^LRU,S^LRU
  D H S LR("F")=1
@@ -14,6 +15,7 @@ QUE U IO K ^TMP($J) D L^LRU,S^LRU
 OUT D END^LRUTL,END Q
  ;
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
- D F^LRU W !,"Medication List for ",PNM," ",SSN,!,LR("%") Q
+ ;D F^LRU W !,"Medication List for ",PNM," ",SSN,!,LR("%") Q
+ D F^LRU W !,"Medication List for ",PNM," ",HRCN,!,LR("%") Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q

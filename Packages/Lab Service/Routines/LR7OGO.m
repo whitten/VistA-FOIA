@@ -1,4 +1,5 @@
 LR7OGO ;SLC/STAFF- Interim report rpc other ;12/12/97  14:22
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**187**;Sep 27, 1994
  ;
 ALLTESTS(Y,FROM,DIR) ; from ORWLRR

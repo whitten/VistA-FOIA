@@ -1,10 +1,11 @@
-PSIVUDL ;BIR/PR,MLM-IV ORDER INFORMATION FOR UNIT DOSE LABEL ;25 Nov 98 / 9:12 AM
- ;;5.0; INPATIENT MEDICATIONS ;**21,58,110**;16 DEC 97
+PSIVUDL ;BIR/PR,MLM-IV ORDER INFORMATION FOR UNIT DOSE LABEL ;05-Dec-2003 10:27;PLS
+ ;;5.0; INPATIENT MEDICATIONS ;**21,58**;16 DEC 97
  ;
  ; References to ^PS(52.6 supported by DBIA #1231
  ; References to ^PS(52.7 supported by DBIA #2173
  ; References to ^PS(55 supported by DBIA #2191
  ;
+ ; Modified - IHS/CIA/PLS - 12/05/03 - Line ENP+4 and NXTLNE+2
  ;Needs DFN and PSJORD
 EN(DFN,ON,PSJLWD,PSJLRB) ; Entry to print MAR label for all types of IV orders.
  N PSJLABEL,VAIN,VADM S (PSJACNWP,PSJLABEL)=1 D ENIV^PSJAC
@@ -24,12 +25,12 @@ EN(DFN,ON,PSJLWD,PSJLRB) ; Entry to print MAR label for all types of IV orders.
  .F X=1:1:PSJLAT(0) S PSJLAT(X)=$P(PSJLAT,"-",X)
  ;
 ENP ; Print MAR label for IV order.
- S PSGLRN=$S(ON["P":$G(^PS(53.1,+ON,4)),1:$G(^PS(55,DFN,"IV",+ON,4)))
- I $G(DFN),$G(ON) N PSGLREN S PSGLREN=+$$LASTREN^PSJLMPRI(DFN,ON)
- N PSGLRNDT S PSGLRNDT=$P(PSGLRN,"^",2),PSGLRN=+PSGLRN I PSGLRNDT,$G(PSGLREN) I $G(PSGLREN)>PSGLRNDT S PSGLRN=0
+ S PSGLRN=+$S(ON["P":$G(^PS(53.1,+ON,4)),1:$G(^PS(55,DFN,"IV",+ON,4)))
  I ON["P",P(2)="",+PSGLRN S X="P E N D I N G"
  E  S X=$S(P(2)]"":$E(P(2),1,5)_$E(P(2),9,14),1:"           ")_" |"_P(3)
- W $C(13),?1,$E(P("LOG"),1,5)," |",X,?36,"(",$E(VADM(1),1),$E(VADM(2),6,9),")",?42,"|",$G(PSJLAT(1)),?52,VADM(1),?88,$J($S(PSJLRB]"":PSJLRB,1:"*NF*"),12)
+ ; IHS/CIA/PLS - 12/05/03 - Commented out next line and changed from SSN to HRN
+ ;W $C(13),?1,$E(P("LOG"),1,5)," |",X,?36,"(",$E(VADM(1),1),$E(VADM(2),6,9),")",?42,"|",$G(PSJLAT(1)),?52,VADM(1),?88,$J($S(PSJLRB]"":PSJLRB,1:"*NF*"),12)
+ W $C(13),?1,$E(P("LOG"),1,5)," |",X,?36,"(",$G(PSJPBID),")",?42,"|",$G(PSJLAT(1)),?52,VADM(1),?88,$J($S(PSJLRB]"":PSJLRB,1:"*NF*"),12)
  S:'+PSGLRN PSGLRN="_____"
  I +PSGLRN,$D(^VA(200,+PSGLRN,0))#2 S X=^(0),X=$S($P(X,"^",2)]"":$P(X,"^",2),1:$P(X,"^")),PSGLRN=$S(X'[",":X,1:$E(X,$F(X,","))_$E(X))
  S PSJCNT=2,X=0,MSG="",PSJCONT="See next label for continuation"
@@ -58,7 +59,9 @@ DONE ;
  Q
 NXTLNE(NL) ; Print info to right of drug (x=line number,NL=new label)
  N Y
- W:PSJCNT=2 ?42,PSGLST W ?43,"|",$G(PSJLAT(PSJCNT)) I PSJCNT=2 W ?52,$P(VADM(2),U,2),?70,$E($$ENDTC^PSGMI(+VADM(3)),1,8),"  (",VADM(4),")",?85,$J($S(PSJTM]"":PSJTM,1:"NOT FOUND"),15)
+ ; IHS/CIA/PLS - 12/05/03 - Comment out next line and changed from SSN to HRN
+ ;W:PSJCNT=2 ?42,PSGLST W ?43,"|",$G(PSJLAT(PSJCNT)) I PSJCNT=2 W ?52,$P(VADM(2),U,2),?70,$E($$ENDTC^PSGMI(+VADM(3)),1,8),"  (",VADM(4),")",?85,$J($S(PSJTM]"":PSJTM,1:"NOT FOUND"),15)
+ W:PSJCNT=2 ?42,PSGLST W ?43,"|",$G(PSJLAT(PSJCNT)) I PSJCNT=2 W ?52,$G(PSJPPID),?70,$E($$ENDTC^PSGMI(+VADM(3)),1,8),"  (",VADM(4),")",?85,$J($S(PSJTM]"":PSJTM,1:"NOT FOUND"),15)
  I PSJCNT=3 W ?52,$S(VADM(5)]"":$P(VADM(5),U,2),1:"____"),?65,"DX: ",VAIN(9)
  I PSJCNT=4,PSJLDT S Y=PSJLR D
  .W ?52,$$ENDTC^PSGMI(PSJLDT)

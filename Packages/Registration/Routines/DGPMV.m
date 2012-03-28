@@ -1,5 +1,7 @@
-DGPMV ;ALB/MRL/MIR - PATIENT MOVEMENT DRIVER; 10 MAR 89
+DGPMV ;ALB/MRL/MIR - PATIENT MOVEMENT DRIVER; 10 MAR 89 [ 03/16/2004  7:49 AM ]
  ;;5.3;Registration;**60,200,268**;Aug 13, 1993
+ ;IHS/ANMC/LJF  2/21/2001 Removed patient laygo; changed DHCP to IHS
+ ;              3/08/2001 Added check for temporary chart #
  ;
  ;OPTION         VALUE OF DGPMT
  ;------         --------------
@@ -14,7 +16,18 @@ PAT K ORACTION,ORMENU
  D LO^DGUTL I '$D(IOF) S IOP=$S($D(ION):ION,1:"HOME") D ^%ZIS K IOP
 PAT1 W ! I DGPMT=5 S DGPMN=0 D SPCLU^DGPMV0 G OREN:'DGER,Q
  S DIC="^DPT(",DIC(0)="AEQMZ",DIC("A")=$S('$D(DGPMPC):$P("Admit^Transfer^Discharge^Check-in^Check-out^Specialty Change for","^",DGPMT),1:"Provider Change for")_" PATIENT: "
- S:DGPMT=1 DIC(0)=DIC(0)_"L",DLAYGO=2 S:"^1^4^"'[("^"_DGPMT_"^") DIC("S")="I $D(^DGPM($S(DGPMT'=5:""APTT1"",1:""APTT4""),+Y))" D ^DIC K DIC,DLAYGO G Q:Y'>0 S DFN=+Y,DGPMN=$P(Y,"^",3)
+ ;
+ ;IHS/ANMC/LJF 2/21/2001 remove ability to add new patient
+ ;S:DGPMT=1 DIC(0)=DIC(0)_"L",DLAYGO=2 S:"^1^4^"'[("^"_DGPMT_"^") DIC("S")="I $D(^DGPM($S(DGPMT'=5:""APTT1"",1:""APTT4""),+Y))" D ^DIC K DIC,DLAYGO G Q:Y'>0 S DFN=+Y,DGPMN=$P(Y,"^",3)
+ S:"^1^4^"'[("^"_DGPMT_"^") DIC("S")="I $D(^DGPM($S(DGPMT'=5:""APTT1"",1:""APTT4""),+Y))" D ^DIC K DIC,DLAYGO G Q:Y'>0 S DFN=+Y,DGPMN=$P(Y,"^",3)
+ ;IHS/ANMC/LJF 2/21/2001 end of changes
+ ;
+ ;IHS/ANMC/LJF 3/08/2001 checking for temporary chart #
+ I $$HRCN^BDGF2(DFN,DUZ(2))["T" D  G PAT1
+ . D MSG^BDGF("Cannot Admit Patient with Temporary chart number",1,0)
+ . D MSG^BDGF("Please contact medical records for new chart number",1,0)
+ ;IHS/ANMC/LJF 3/08/2001 end of new code
+ ;
 OREN S DGUSEOR=$$USINGOR()
  I DGUSEOR Q:'$D(ORVP)  S DFN=+ORVP,DGPMN="",Y(0)=$G(^DPT(DFN,0))
  I $$LODGER(DFN)&(DGPMT=1) D  Q
@@ -24,7 +37,12 @@ OREN S DGUSEOR=$$USINGOR()
  .D DISPOQ K DGPMDER
 MOVE ;
  S XQORQUIT=1,DGPME=0 D UC
- G CHK:"^1^4^"[("^"_DGPMT_"^") I '$D(^DGPM("APTT"_$S(DGPMT'=5:1,1:4),DFN)) W !!,"'",$P(Y(0),"^",1),"' HAS NEVER BEEN ",$S(DGPMT'=5:"ADMITTED",1:"CHECK-IN")," TO THE DHCP ADMISSIONS MODULE" G PAT1:'DGUSEOR,Q
+ ;
+ ;IHS/ANMC/LJF 2/21/2001 changed DHCP to IHS
+ ;G CHK:"^1^4^"[("^"_DGPMT_"^") I '$D(^DGPM("APTT"_$S(DGPMT'=5:1,1:4),DFN)) W !!,"'",$P(Y(0),"^",1),"' HAS NEVER BEEN ",$S(DGPMT'=5:"ADMITTED",1:"CHECK-IN")," TO THE DHCP ADMISSIONS MODULE" G PAT1:'DGUSEOR,Q
+ G CHK:"^1^4^"[("^"_DGPMT_"^") I '$D(^DGPM("APTT"_$S(DGPMT'=5:1,1:4),DFN)) W !!,"'",$P(Y(0),"^",1),"' HAS NEVER BEEN ",$S(DGPMT'=5:"ADMITTED",1:"CHECK-IN")," TO THE IHS ADMISSIONS MODULE" G PAT1:'DGUSEOR,Q
+ ;IHS/ANMC/LJF 2/21/2001 end of change
+ ;
 CHK D:DGPMN REG I 'DGPME,$D(^DPT(DFN,.35)),+^(.35) S Y=+^(.35) D DIED
  D NEW^DGPMVODS I $S('DGODSON:0,'$D(^DPT(DFN,.32)):1,'$D(^DIC(21,+$P(^(.32),"^",3),0)):1,1:0) S DGPME=1
  D:'DGPME ^DGPMV1 G PAT1:'DGUSEOR,Q

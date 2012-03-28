@@ -1,4 +1,4 @@
-SDXACSE ; GENERATED FROM 'SDXACSE' INPUT TEMPLATE(#490), FILE 409.5;05/28/97
+SDXACSE ; GENERATED FROM 'SDXACSE' INPUT TEMPLATE(#1849), FILE 409.5;10/29/04
  D DE G BEGIN
 DE S DIE="^SDV(",DIC=DIE,DP=409.5,DL=1,DIEL=0,DU="" K DG,DE,DB Q:$O(^SDV(DA,""))=""
  K %Z Q
@@ -13,17 +13,17 @@ TR R X:DTIME E  S (DTOUT,X)=U W $C(7)
 A K DQ(DQ) S DQ=DQ+1
 B G @DQ
 RE G PR:$D(DE(DQ)) D W,TR
-N I X="" G A:DV'["R",X:'DV,X:D'>0,A
+N I X="" G NKEY:$D(^DD("KEY","F",DP,DIFLD)),A:DV'["R",X:'DV,X:D'>0,A
 RD G QS:X?."?" I X["^" D D G ^DIE17
  I X="@" D D G Z^DIE2
  I X=" ",DV["d",DV'["P",$D(^DISV(DUZ,"DIE",DLB)) S X=^(DLB) I DV'["D",DV'["S" W "  "_X
 T G M^DIE17:DV,^DIE3:DV["V",P:DV'["S" X:$D(^DD(DP,DIFLD,12.1)) ^(12.1) I X?.ANP D SET I 'DDER X:$D(DIC("S")) DIC("S") I  W:'$D(DB(DQ)) "  "_% G V
  K DDER G X
-P I DV["P" S DIC=U_DU,DIC(0)=$E("EN",$D(DB(DQ))+1)_"M"_$E("L",DV'["'") S:DIC(0)["L" DLAYGO=+$P(DV,"P",2) I DV'["*" D ^DIC S X=+Y,DIC=DIE G X:X<0
+P I DV["P" S DIC=U_DU,DIC(0)=$E("EN",$D(DB(DQ))+1)_"M"_$E("L",DV'["'") S:DIC(0)["L" DLAYGO=+$P(DV,"P",2) G:DV["*" AST^DIED D NOSCR^DIED S X=+Y,DIC=DIE G X:X<0
  G V:DV'["N" D D I $L($P(X,"."))>24 K X G Z
  I $P(DQ(DQ),U,5)'["$",X?.1"-".N.1".".N,$P(DQ(DQ),U,5,99)["+X'=X" S X=+X
 V D @("X"_DQ) K YS
-Z K DIC("S"),DLAYGO I $D(X),X'=U S DG(DW)=X S:DV["d" ^DISV(DUZ,"DIE",DLB)=X G A
+Z K DIC("S"),DLAYGO I $D(X),X'=U D:$G(DE(DW,"INDEX")) SAVEVALS G:'$$KEYCHK UNIQFERR^DIE17 S DG(DW)=X S:DV["d" ^DISV(DUZ,"DIE",DLB)=X G A
 X W:'$D(ZTQUEUED) $C(7),"??" I $D(DB(DQ)) G Z^DIE17
  S X="?BAD"
 QS S DZ=X D D,QQ^DIEQ G B
@@ -41,26 +41,31 @@ SET N DIR S DIR(0)="SV"_$E("o",$D(DB(DQ)))_U_DU,DIR("V")=1
  I $D(DB(DQ)),'$D(DIQUIET) N DIQUIET S DIQUIET=1
  D ^DIR I 'DDER S %=Y(0),X=Y
  Q
+SAVEVALS S @DIEZTMP@("V",DP,DIIENS,DIFLD,"O")=$G(DE(DQ)) S:$D(^("F"))[0 ^("F")=$G(DE(DQ))
+ I $D(DE(DW,"4/")) S @DIEZTMP@("V",DP,DIIENS,DIFLD,"4/")=""
+ E  K @DIEZTMP@("V",DP,DIIENS,DIFLD,"4/")
+ Q
+NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
+KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="SDXACSE",DQ=1
- S:$D(DTIME)[0 DTIME=300 S D0=DA,DIEZ=490,U="^"
-1 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=1 D X1 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
-X1 I '$D(SDAPTYP)!('$D(SDAPTYPR))!('$D(SDCPT))!('$D(SDJ)) W !,*7,"Variables must be defined, edit using option." S Y="@89"
+ N DIEZTMP,DIEZAR,DIEZRXR,DIIENS,DIXR K DIEFIRE,DIEBADK S DIEZTMP=$$GETTMP^DIKC1("DIEZ")
+ M DIEZAR=^DIE(1849,"AR") S DICRREC="TRIG^DIE17"
+ S:$D(DTIME)[0 DTIME=300 S D0=DA,DIIENS=DA_",",DIEZ=1849,U="^"
+1 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=1 D X1 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
+X1 I '$D(DUZ)!('$D(SDAPTYP))!('$D(SDCPT))!('$D(SDJ)) W !,*7,"Variables must be defined, edit using option." S Y="@89"
  Q
-2 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=2 D X2 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
-X2 I '$S($D(SDUZ):1,$D(DUZ):1,1:0) W !,*7,"User not defined." S Y="@89"
- Q
-3 S D=0 K DE(1) ;10
- S DIFLD=10,DGO="^SDXACSE1",DC="14^409.51P^CS^",DV="409.51P40.7'",DW="0;1",DOW="CLINIC STOP CODE",DLB="Select "_DOW S:D DC=DC_D
+2 S D=0 K DE(1) ;10
+ S DIFLD=10,DGO="^SDXACSE1",DC="11^409.51P^CS^",DV="409.51P40.7'",DW="0;1",DOW="CLINIC STOP CODE",DLB="Select "_DOW S:D DC=DC_D
  S DU="DIC(40.7,"
- I $D(DSC(409.51))#2,$P(DSC(409.51),"I $D(^UTILITY(",1)="" X DSC(409.51) S D=$O(^(0)) S:D="" D=-1 G M3
+ I $D(DSC(409.51))#2,$P(DSC(409.51),"I $D(^UTILITY(",1)="" X DSC(409.51) S D=$O(^(0)) S:D="" D=-1 G M2
  S D=$S($D(^SDV(DA,"CS",0)):$P(^(0),U,3,4),$O(^(0))'="":$O(^(0)),1:-1)
-M3 I D>0 S DC=DC_D I $D(^SDV(DA,"CS",+D,0)) S DE(3)=$P(^(0),U,1)
+M2 I D>0 S DC=DC_D I $D(^SDV(DA,"CS",+D,0)) S DE(2)=$P(^(0),U,1)
  S X="`"_+SDY
  S Y=X
  S X=Y,DB(DQ)=1 G:X="" N^DIE17:DV,A I $D(DE(DQ)),DV["I"!(DV["#") D E^DIE0 G A:'$D(X)
  G RD
-R3 D DE
+R2 D DE
  G A
  ;
-4 S DQ=5 ;@89
-5 G 0^DIE17
+3 S DQ=4 ;@89
+4 G 0^DIE17

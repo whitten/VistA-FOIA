@@ -54,7 +54,7 @@ MUL ;
  S X=" S Y="""_$S(DIEZP]"":DIEZP_U_$P(%,U,2,9),1:%)_""",DG="""_DW_""",DC=""^"_+DV_""" D DIEN^DIWE K DE(1) G A" D L S X=" ;" D L,AF
  S ^UTILITY($J,"AF",+DV,.01,DIEZ)="" D AB G NX^DIEZ0
  ;
-1 S X=" S DIFLD="_DI_",DGO=""^"_DNM_DNR_""",DC="""_X_""",DV="""_DV_""",DW=""0;1"",DOW="""_$S(DIEZP]"":DIEZP,1:$P(^(0),U))_""",DLB=$P($$EZBLD^DIALOG(8042,DOW),"": "") S:D DC=DC_D",DPP=DV["M",DU=$P(^(0),U,3) D L,DU:DU]""
+1 S X=" S DIFLD="_DI_",DGO=""^"_DNM_DNR_""",DC="""_X_""",DV="""_DV_""",DW=""0;1"",DOW="""_$S(DIEZP]"":DIEZP,1:$P(^(0),U))_""",DLB=$P($$EZBLD^DIALOG(8042,DOW),"":"") S:D DC=DC_D",DPP=DV["M",DU=$P(^(0),U,3) D L,DU:DU]""
  S X=$P(" G RE:D",U,DPP)_" I $D(DSC("_+DV_"))#2,$P(DSC("_+DV_"),""I $D(^UTILITY("",1)="""" X DSC("_+DV_") S D=$O(^(0)) S:D="""" D=-1 G M"_DQ D L
  S:+DW'=DW DW=""""_DW_"""" S X=" S D=$S($D("_DIE_"DA,"_DW_",0)):$P(^(0),U,3,4),$O(^(0))'="""":$O(^(0)),1:-1)" D L
  S X="M"_DQ_" I D>0 S DC=DC_D I $D("_DIE_"DA,"_DW_",+D,0)) S DE("_DQ_")=$P(^(0),U,1)" D L

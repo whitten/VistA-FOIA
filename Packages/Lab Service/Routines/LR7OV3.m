@@ -1,4 +1,6 @@
-LR7OV3 ;slc/dcm - Update file 60 with Blood Component Request (66.9) ;8/11/97
+LR7OV3 ; IHS/DIR/AAB - Update file 60 with Blood Component Request (66.9) ; [ 8/11/97 ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**121**;Sep 27, 1994
  ;
 EN ;Start here to load Blood Product Requests from file 66.9

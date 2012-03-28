@@ -1,4 +1,5 @@
 LR7OSMZ4 ;slc/dcm - Silent Micro rpt - AFB, FUNGUS ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,244**;Sep 27, 1994
 TB ;from LR7OSMZ1
  S X=^LR(LRDFN,"MI",LRIDT,11)

@@ -1,5 +1,6 @@
-SCRPW71 ;BP-CIOFO/KEITH - Clinic appointment availability extract (cont.) ; 14 May 99  9:19 PM
+SCRPW71 ;BP-CIOFO/KEITH - Clinic appointment availability extract (cont.) ; 14 May 99  9:19 PM [ 10/06/2000  10:21 AM ]
  ;;5.3;Scheduling;**192**;AUG 13, 1993
+ ;IHS/ANMC/LJF 10/6/2000 IHS uses only one clinic code
  ;
 CLINIC(SC,SDFMT,SDSTRTDT,MAXDT,MAX,SDPAST) ;Evaluate a clinic
  ;Input: SC=clinic ifn
@@ -29,6 +30,7 @@ CPAIR(SC0,SDCP) ;Validate primary stop code, get credit pair
  ;Input: SC0=zeroeth node of HOSPITAL LOCATION record
  ;Input: SDCP=variable to return clinic credit pair (pass by reference)
  ;Output: 1=success, 0=invalid primary stop code
+ S SDCP=+$P($G(^DIC(40.7,+$P(SC0,U,7),0)),U,2) Q $S(SDCP<1:0,1:1)  ;IHS/ANMC/LJF 10/6/2000
  N SDSSC
  S SDCP=$P($G(^DIC(40.7,+$P(SC0,U,7),0)),U,2),SDCP=$S(SDCP<100:0,SDCP>999:0,1:SDCP)
  Q:SDCP'>0 0

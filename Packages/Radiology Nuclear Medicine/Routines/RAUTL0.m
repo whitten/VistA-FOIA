@@ -1,15 +1,12 @@
 RAUTL0 ;HISC/CAH,FPT,GJC-Utility Routine ;11/5/99  13:19
- ;;5.0;Radiology/Nuclear Medicine;**2,13,10,71**;Mar 16, 1998;Build 10
- ; 07/05/2006 BAY/KAM Remedy Call 124379 Patch RA*5*71
+ ;;5.0;Radiology/Nuclear Medicine;**2,13,10**;Mar 16, 1998
+ ;
 UPSTAT ;QUEUE ONE REPORT TO UPDATE STATUS
- ;07/05/2006 BAY/KAM/GJC If RAHLTCPB is defined, do not broadcast ORM messages. RAHLTCPB is referenced in UP2^RAUTL1
- ;which is called from UP1^RAUTL1
  N RAIO S RAIO=+$P($G(^RA(79,+RAMDIV,"RDEV")),"^") ; Resource Device?
  S ZTRTN="STAT^RAUTL0",ZTIO=$S(RAIO>0:$$GET1^DIQ(3.5,RAIO_",",.01),1:"")
  S ZTDTH=$H,ZTDESC="Rad/Nuc Med UPDATE STATUS OF ONE REPORT" S SDUZ=$G(RADUZ) S:'SDUZ SDUZ=DUZ F I="RAMDIV","RAMDV","RARPT","RAONLINE","RAAB","RAMLC","RAIMGTY","SDUZ" S ZTSAVE(I)=""
  S:$G(RADUZ) ZTSAVE("RADUZ")="" ;rpt may be verified by voice
- ; 07/05/2006 BAY/KAM Added next line
- S:$G(RAHLTCPB) ZTSAVE("RAHLTCPB")="" ;rpt v'fied by VR; do not broadcast ORM messages.
+ ;G STAT  ;IHS/ITSC/CLS 12/12/2003 use for debugging
  D ^%ZTLOAD K SDUZ
  I $D(ZTSK),'$D(RAQUEUED) W !,?5,"Status update queued!",! R X:2
  Q

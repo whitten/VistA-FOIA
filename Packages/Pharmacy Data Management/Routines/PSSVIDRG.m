@@ -1,5 +1,5 @@
 PSSVIDRG ;BIR/PR,WRT-ADD OR EDIT IV DRUGS ; 04/17/98 9:13
- ;;1.0;PHARMACY DATA MANAGEMENT;**2,10,32,38,125**;9/30/97;Build 2
+ ;;1.0;PHARMACY DATA MANAGEMENT;**2,10,32,38**;9/30/97
  ;
  ;Reference to ENIVKV^PSGSETU is supported by DBIA # 2153.
  ;Reference to ^PSIV is supported by DBIA # 2155.
@@ -7,14 +7,14 @@ PSSVIDRG ;BIR/PR,WRT-ADD OR EDIT IV DRUGS ; 04/17/98 9:13
  ;Reference to ^PSIVXU is supported by DBIA # 2157.
  ;
 ENS ;Enter here to enter/edit solutions
- S DRUGEDIT=1,FI=52.7 L +^PS(FI):$S($G(DILOCKTM)>0:DILOCKTM,1:3) E  W $C(7),!!,"Someone else is entering drugs ... try later !",!! G K
+ S DRUGEDIT=1,FI=52.7 L +^PS(FI):1 E  W $C(7),!!,"Someone else is entering drugs ... try later !",!! G K
 ENS1 ;
  N DA,DIC,DLAYGO S DIC=FI,DIC(0)="AEQML",DLAYGO=52.7 D ^DIC I Y<0 G K1
  S PSSASK="SOLUTIONS",DRUG=+Y,DIE=DIC,(DA,ENTRY)=+Y,DR=".01:.02" D ^DIE,EECK S DIE="^PS(52.7,",DA=ENTRY,DR="1;D GETD^PSSVIDRG;2:8;10:15;17:99999" D ^DIE,MFS^PSSDEE
  Q
  ;
 ENA ;Enter here to enter/edit additives.
- S DRUGEDIT=1,FI=52.6 L +^PS(FI):$S($G(DILOCKTM)>0:DILOCKTM,1:3) E  W $C(7),!!,"Someone else is entering drugs ... try later !",!! G K
+ S DRUGEDIT=1,FI=52.6 L +^PS(FI):1 E  W $C(7),!!,"Someone else is entering drugs ... try later !",!! G K
 ENA1 ;
  N DA,DIC,DIE,DLAYGO S DIC=FI,DIC(0)="AEQL",DLAYGO=52.6 D ^DIC I Y<0 G K1
  S PSSASK="ADDITIVES",DRUG=+Y,DIE=DIC,(DA,ENTRY)=+Y,DR=".01" D EECK S DIE="^PS(52.6,",DA=ENTRY,DR="[PSSIV ADD]" D ^DIE,MFA^PSSDEE

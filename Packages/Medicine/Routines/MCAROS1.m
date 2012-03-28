@@ -1,4 +1,4 @@
-MCAROS1 ; GENERATED FROM 'MCARSR1' PRINT TEMPLATE (#994) ; 10/04/96 ; (FILE 694.5, MARGIN=80)
+MCAROS1 ; GENERATED FROM 'MCARSR1' PRINT TEMPLATE (#3718) ; 11/29/04 ; (FILE 694.5, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(994,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3718,"DXS")
+ S I(0)="^MCAR(694.5,",J(0)=694.5
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 W "III. CARDIAC CATHETERIZATION AND ANGIOGRAPHIC DATA"
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 S DIP(1)=$S($D(^MCAR(694.5,D0,2)):^(2),1:"") S X="LVEDP                    "_$P(DIP(1),U,6)_"mm Hg" K DIP K:DN Y W X
  D N:$X>34 Q:'DN  W ?34 W "Lv Contraction Score (from contrast or"

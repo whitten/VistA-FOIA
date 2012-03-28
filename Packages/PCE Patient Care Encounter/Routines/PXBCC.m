@@ -1,8 +1,8 @@
-PXBCC ;ISL/JVS - CURSOR CONTROLS-UTILITY ROUTINES ;9/10/04 11:33am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**7,73,141,124,164**;Aug 12, 1996
+PXBCC ;ISL/JVS - CURSOR CONTROLS-UTILITY ROUTINES ;10/16/96  10:09
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**7,73**;Aug 12, 1996
  ;
  ; Variable List
- ; PXBSAVE= A Second copy fo the top Margin in a window
+ ; PXBSAVE= A Second dopy fo the top Margin in a window
  ; PXBCNT=  A Count of how many Items listed in top window
  ;
 ZERO ;--ZERO $X & $Y
@@ -31,7 +31,7 @@ WINDOW(PXBCNT,DOWN) ;--set up window area
  S PXBSAVE=IOTM I '$D(IOSC) D TERM
  S IOBM=(IOSL-1)
  W IOSC W @IOSTBM W IORC ;--Create smaller window
- I '$D(DOWN) F I=1:1:2 W IOCUD ;-- move cursor down twice
+ I '$D(DOWN) F I=1:1:2 W IOCUD ;-- move currsor down twice
  S PXBWIN=""
  Q
 WIN17(PXBCNT) ;--set up window area on the 17th line
@@ -73,7 +73,7 @@ FULL0 ;--set terminal to full scrolling window
  I IOSTBM]"" S IOTM=1,IOBM=IOSL W IOSC W @IOSTBM W IORC
  S X=IOM X ^%ZOSF("RM")
  Q
-CLEAR1 ;--clean out all cursor control variables
+CLEAR1 ;--clean out all cursor control varibles
  D KILL^%ZISS,GKILL^%ZISS
  Q
 UNDON ;--underline on
@@ -95,8 +95,7 @@ REVCPT(LINE,PXRVON) ;--Reverse Video a particular CPT CODE,PROVIDER OR POV
  N ENTRY,XLINE,I,IOTM,IOBM,COL,DX,DY
  S ENTRY=$G(PXBSAM(LINE))
  ;Actual line on which CPT code displayed
- ;S XLINE=LINE#10+4
- S XLINE=PXBSAM(LINE,"LINE")#10+4 ;PX*1.0*164
+ S XLINE=(PXBSAM(LINE,"LINE")#10)+4
  I XLINE<5 S XLINE=XLINE+10
  I '$D(IOSC) D TERM
  S COL=4
@@ -125,7 +124,7 @@ REVPRV(LINE) ;--Reverse Video a particular CPT CODE,PROVIDER OR POV
 REVPOV(LINE) ;--Reverse Video a particular CPT CODE,PROVIDER OR POV
  Q:$G(NOREV)=1
  N ENTRY,XLINE,I,IOTM,IOBM,COL,DX,DY
- S ENTRY=$G(PXBSAM(LINE)),XLINE=(LINE*2-1#10)+4
+ S ENTRY=$G(PXBSAM(LINE)),XLINE=(LINE#10)+4
  I XLINE<5 S XLINE=XLINE+10
  I '$D(IOSC) D TERM
  S COL=4

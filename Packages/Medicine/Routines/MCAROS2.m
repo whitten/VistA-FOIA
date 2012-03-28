@@ -1,4 +1,4 @@
-MCAROS2 ; GENERATED FROM 'MCARSR2' PRINT TEMPLATE (#995) ; 10/04/96 ; (FILE 694.5, MARGIN=80)
+MCAROS2 ; GENERATED FROM 'MCARSR2' PRINT TEMPLATE (#3719) ; 11/29/04 ; (FILE 694.5, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(995,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3719,"DXS")
+ S I(0)="^MCAR(694.5,",J(0)=694.5
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 W "IV. OPERATIVE RISK SUMMARY DATA"
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 W "Physician's preoperative "
  D N:$X>34 Q:'DN  W ?34 X DXS(1,9) K DIP K:DN Y W X
@@ -37,7 +38,7 @@ BEGIN ;
  S I(1)=11,J(1)=694.586 F D1=0:0 Q:$O(^MCAR(694.5,D0,11,D1))'>0  X:$D(DSC(694.586)) DSC(694.586) S D1=$O(^(D1)) Q:D1'>0  D:$X>4 T Q:'DN  D A1
  G A1R
 A1 ;
- S X=$G(^MCAR(694.5,D0,11,D1,0)) D N:$X>4 Q:'DN  W ?4 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(699.6,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,60)
+ S X=$G(^MCAR(694.5,D0,11,D1,0)) D N:$X>4 Q:'DN  W ?4 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(699.6,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,60)
  Q
 A1R ;
  K Y

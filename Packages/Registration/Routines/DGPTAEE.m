@@ -1,5 +1,5 @@
 DGPTAEE ;ALB/MTC - Austin Edit Checks Error Driver ; 23 NOV 92
- ;;5.3;Registration;**64,338,678**;Aug 13, 1993
+ ;;5.3;Registration;**64,338**;Aug 13, 1993
  ;
 EN ;-- entry point for list manager
  D BUILD
@@ -55,7 +55,7 @@ WRER ;-- This function will write errors in DGER into ^TMP
  ;      <position in transmission string>:<position in display string>
  ;
 ER101 ;-- 101 error position string
- ;;1:1^2:8^3:18^4:32^5:47^6:52^7:55^8:62^9:66^10:70^11:73^12:1^13:15^14:20^15:24^16:27^17:34^18:41^19:44^20:52^^^^24:71
+ ;;1:1^2:8^3:18^4:32^5:47^6:52^7:55^8:62^9:66^10:70^11:73^12:1^13:15^14:20^15:24^16:27^17:34^18:41^19:44^20:52
  ;
 ER501 ;-- 501 error position string
  ;;1:1^2:8^3:18^4:32^5:47^6:56^7:60^8:64^9:69^10:1^11:9^12:17^13:25^14:33^15:1^16:14^17:23^18:27^19:31^20:34^21:37^22:42^23:45:^24:50^

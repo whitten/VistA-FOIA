@@ -1,8 +1,5 @@
 RARTST1 ;HISC/CAH,FPT,GJC,DAD AISC/MJK,RMO-Reports Distribution ;7/23/97  12:44
- ;;5.0;Radiology/Nuclear Medicine;**56**;Mar 16, 1998;Build 3
- ;Supported IA #10040 ^SC(
- ;Supported IA #10060 and #2056 GET1^DIQ of file 200
- ;Supported IA #10007 DO^DIC1
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 1 ;;Routing Queue
  N RAOMA S RAOMA="",DIC(0)="AEMQZ"
  S DIC("A")="Select Routing Queue: ",DIC("B")="WARD REPORTS"
@@ -37,8 +34,7 @@ S4 U IO D HD4 F RADTI=0:0 S RADTI=$O(^RABTCH(74.3,RAB,"L",RADTI)) Q:'RADTI  I $D
 Q4 K DIC,RAPOP,RADTI,RAPAGE,RARTCNT,RABN,RAIOM,RAIOSL,RAB,RADTE,RADATE,RADUZ,RACT,RARTMES,X,Y D CLOSE^RAUTL
 Q41 K POP,DUOUT,I,RAMES,ZTDESC,ZTRTN,ZTSAVE
  Q
-P4 N DIERR
- S Y=RADTE D D^RAUTL S RADATE=Y,RACT=$S(RACT="P":"PRINT",RACT="R":"RE-PRINT",1:"UNKNOWN"),RADUZ=$$GET1^DIQ(200,RADUZ_",",.01) S:RADUZ="" RADUZ="UNKNOWN"
+P4 S Y=RADTE D D^RAUTL S RADATE=Y,RACT=$S(RACT="P":"PRINT",RACT="R":"RE-PRINT",1:"UNKNOWN"),RADUZ=$S($D(^VA(200,RADUZ,0)):$P(^(0),"^"),1:"UNKNOWN")
  D HD4:($Y+4)>IOSL Q:"^"[X  W !,RADATE,?20,RACT,?30,$E(RADUZ,1,15),?50,$E(RARTMES,1,20),?72,RARTCNT
  Q
 HD4 S RAPAGE=$S($D(RAPAGE):RAPAGE+1,1:1)
@@ -59,11 +55,9 @@ HD4 S RAPAGE=$S($D(RAPAGE):RAPAGE+1,1:1)
  S RAB=+Y G SELECT^RARTST3
  ;
 8 ;;Report's Print Status
- S DIC("A")="Select Report: ",DIC="^RARPT(",DIC(0)="AEMQZ"
- S DIC("S")="I $P(^(0),U,5)'=""X"""
- D DICW,^DIC K DIC I Y<0 D 81 Q
- I $P(Y(0),"^",5)'="V" W !!,$C(7),"Report has not been 'verified'." W ! D 81 G 8
- I '$D(^RABTCH(74.4,"B",+Y)) W !!,$C(7),"Report is not in any distribution queue." W ! D 81 G 8
+ S DIC("A")="Select Report: ",DIC="^RARPT(",DIC(0)="AEMQZ" D DICW,^DIC K DIC I Y<0 D 81 Q
+ I $P(Y(0),"^",5)'="V" W !!,*7,"Report has not been 'verified'." W ! D 81 G 8
+ I '$D(^RABTCH(74.4,"B",+Y)) W !!,*7,"Report is not in any distribution queue." W ! D 81 G 8
  S RADFN=+$P(Y(0),U,2),(D0,RARPT)=+Y F RAD0=0:0 S RAD0=$O(^RABTCH(74.4,"B",D0,RAD0)) Q:RAD0'>0  S RAB=$S($D(^RABTCH(74.4,RAD0,0)):$P(^(0),"^",11),1:""),RARDIFN=RAD0,RAY3=$G(^RABTCH(74.4,RARDIFN,0)) I RAY3]"" D UPDLOC^RAUTL10
  K DXS D RPTST^RARTST2A(RARPT)
 81 K %,C,D,D0,DDH,DILCT,DIPGM,DISTP,DN,DISYS,POP,RASSN,RAY3

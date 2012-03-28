@@ -1,5 +1,5 @@
-PXCAVST ;ISL/dee & LEA/Chylton - Validates data from the PCE Device Interface for the Visit and Providers ;6/6/05
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**14,33,74,111,116,130,168**;Aug 12, 1996;Build 14
+PXCAVST ;ISL/dee & LEA/Chylton - Validates data from the PCE Device Interface for the Visit and Providers ;11/19/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**14,33,74,111**;Aug 12, 1996
  Q
  ;
 ENCOUNT(PXCA,PXCABULD,PXCAERRS,PXCAEVAL) ;
@@ -25,8 +25,7 @@ ENCOUNT(PXCA,PXCABULD,PXCAERRS,PXCAEVAL) ;
  . S PXCA("ERROR","ENCOUNTER",0,0,1)="Encounters that do not have an appointment must have a procedure^"
  E  I PXCAITEM>(DT+.7) S PXCA("ERROR","ENCOUNTER",0,0,1)="Encounter Date/Time is later that today^"_PXCAITEM
  I '$D(^SC(PXCAHLOC,0)) S PXCA("ERROR","ENCOUNTER",0,0,3)="HOSPITAL LOCATION Missing is not in file 44^"_PXCAHLOC
- ;Allow a disposition clinic to be used as HOSPITAL LOCATION  ;PX*1.0*116
- ;I $D(^PX(815,1,"DHL","B",PXCAHLOC)) S PXCA("ERROR","ENCOUNTER",0,0,3)="HOSPITAL LOCATION Can not be a disposition clinic^"_PXCAHLOC
+ I $D(^PX(815,1,"DHL","B",PXCAHLOC)) S PXCA("ERROR","ENCOUNTER",0,0,3)="HOSPITAL LOCATION Can not be a disposition clinic^"_PXCAHLOC
  D EVALCODE^PXCAVST2(.PXCAEVAL)
  D SCC^PXUTLSCC(PXCAPAT,PXCADT,PXCAHLOC,PXCAVSIT,$P(PXCAENC,"^",6,11),.PXCAOUT,.PXCAERR)
  S PXCAITEM=$P(PXCAERR,"^",1)
@@ -51,15 +50,9 @@ ENCOUNT(PXCA,PXCABULD,PXCAERRS,PXCAEVAL) ;
  S PXCAITEM=$P(PXCAERR,"^",5)
  I PXCAITEM=-1 S PXCA("ERROR","ENCOUNTER",0,0,10)="MST flag bad^"_$P(PXCAENC,"^",10)
  I PXCAITEM=-2,$P(PXCAENC,"^",10)=1 S PXCA("WARNING","ENCOUNTER",0,0,10)="MST flag must be N/A not YES for this patient^"_$P(PXCAENC,"^",10)
- S PXCAITEM=$P(PXCAERR,"^",17)
- I PXCAITEM=-1 S PXCA("ERROR","ENCOUNTER",0,0,17)="HNC flag bad^"_$P(PXCAENC,"^",17)
+ S PXCAITEM=$P(PXCAERR,"^",16)
+ I PXCAITEM=-1 S PXCA("ERROR","ENCOUNTER",0,0,18)="HNC flag bad^"_$P(PXCAENC,"^",17)
  I PXCAITEM=-2,$P(PXCAENC,"^",11)=1 S PXCA("WARNING","ENCOUNTER",0,0,17)="HNC flag must be N/A not YES for this patient^"_$P(PXCAENC,"^",17)
- S PXCAITEM=$P(PXCAERR,"^",18)
- I PXCAITEM=-1 S PXCA("ERROR","ENCOUNTER",0,0,18)="CV flag bad^"_$P(PXCAENC,"^",18)
- I PXCAITEM=-2,$P(PXCAENC,"^",11)=1 S PXCA("WARNING","ENCOUNTER",0,0,18)="CV flag must be N/A not YES for this patient^"_$P(PXCAENC,"^",18)
- S PXCAITEM=$P(PXCAERR,"^",19)
- I PXCAITEM=-1 S PXCA("ERROR","ENCOUNTER",0,0,19)="PROJ 112/SHAD flag bad^"_$P(PXCAENC,"^",19)
- I PXCAITEM=-2,$P(PXCAENC,"^",11)=1 S PXCA("WARNING","ENCOUNTER",0,0,19)="PROJ 112/SHAD flag must be N/A not YES for this patient^"_$P(PXCAENC,"^",19)
  S $P(PXCAENC,"^",6,11)=PXCAOUT
  S PXCAITEM=+$P(PXCAENC,"^",13)
  I PXCAITEM D

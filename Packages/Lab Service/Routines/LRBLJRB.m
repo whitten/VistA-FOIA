@@ -1,6 +1,7 @@
-LRBLJRB ;AVAMC/REG - UNIT ISSUE BOOK ;2/18/93  09:30 ;
- ;;5.2;LAB SERVICE;**247,267**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJRB ; IHS/DIR/FJE - UNIT ISSUE BOOK 2/18/93 09:30 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!?20,"UNIT issue book" D END
  W !!,"Delete issue book entries over 31 days " S %=2 D YN^LRU G:%<1 END D:%=1 D
  W !!?15,"1. Print issue book entries by date",!?15,"2. Print issue book entries by patient"
@@ -18,8 +19,9 @@ QUE U IO K ^TMP($J) D L^LRU,S^LRU,H1 S LR("F")=1
  Q:LR("Q")  D SUM W:IOST'?1"C".E @IOF D END^LRUTL,END Q
 X S W=^LRD(65,B,0),G=^(3,C,0),T=+G D T S L=$P(G,"^",4),M=$P(^LAB(66,$P(W,"^",4),0),"^",2),V=$P(G,"^",3) S:V="" V="?" S V=$S($D(^VA(200,V,0)):$P(^(0),"^",2),1:V)
  D:$Y>(IOSL-6) H1 Q:LR("Q")
- W !,T,?12,$P(W,"^"),?28,M,?33,$P(G,"^",2),?37,V,?41,$E($P(G,"^",5),1,9),?51,$E($P(G,"^",6),1,19),?71,$E(L,1,8) S X=$P(G,"^",7)
- I X S X=$S($D(^DPT(X,0)):$P(^(0),"^",9),1:"") I X]"" S LRDPF=2,SSN=X D SSN^LRU W:IOM>80 ?81,SSN W:IOM<81 !?51,SSN
+ W !,T,?12,$P(W,"^"),?25,M,?30,$P(G,"^",2),?34,V,?38,$E($P(G,"^",5),1,12),?51,$E($P(G,"^",6),1,19),?71,$E(L,1,8) S X=$P(G,"^",7)
+ ;I X S X=$S($D(^DPT(X,0)):$P(^(0),"^",9),1:"") I X]"" S LRDPF=2,SSN=X D SSN^LRU W:IOM>80 ?81,SSN W:IOM<81 !?51,SSN
+ I X S DFN=X,X=$S($D(^DPT(X,0)):$P(^(0),"^",9),1:"") I X]"" S LRDPF=2,SSN=X D SSN^LRU W:IOM>80 ?81,HRCN W:IOM<81 !?51,HRCN  ;IHS/ANMC/CLS 11/1/95
  S:L="" L="UNKNOWN" S:'$D(G(L)) G(L)=0 S G(L)=G(L)+1 S:'$D(G(L,M)) G(L,M)=0 S G(L,M)=G(L,M)+1 Q
 T S T=T_"000",T=$E(T,4,5)_"/"_$E(T,6,7)_$S(T[".":" "_$E(T,9,10)_":"_$E(T,11,12),1:"") Q
 W I '$D(^LRD(65,B,3,C,0)) K ^LRD(65,"AL",C,B) Q
@@ -28,7 +30,8 @@ W I '$D(^LRD(65,B,3,C,0)) K ^LRD(65,"AL",C,B) Q
 HDR I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,"TRANSFUSION SERVICE   Unit issue book" Q
  ;
-H1 D HDR Q:LR("Q")  W !,"Mo/Da TIME",?12,"Unit ID",?27,"Prod",?32,"Insp",?37,"By",?41,"Issued to",?51,"Patient",?71,"Location" W:IOM>80 ?81,"Patient SSN" W:IOM<81 !?53,"SSN" W !,LR("%") Q
+H1 ;D HDR Q:LR("Q")  W !,"Mo/Da TIME",?12,"Unit ID",?24,"Prod",?29,"Insp",?34,"By",?38,"Issued to",?51,"Patient",?71,"Location" W:IOM>80 ?81,"Patient SSN" W:IOM<81 !?53,"SSN" W !,LR("%") Q
+ D HDR Q:LR("Q")  W !,"Mo/Da TIME",?12,"Unit ID",?24,"Prod",?29,"Insp",?34,"By",?38,"Issued to",?51,"Patient",?71,"Location" W:IOM>80 ?81,"Patient HRCN" W:IOM<81 !?53,"HRCN" W !,LR("%") Q
  ;
 D S X="T-31",%DT="" D ^%DT F A=0:0 S A=$O(^LRD(65,"AL",A)) Q:'A!(A>Y)  K ^LRD(65,"AL",A) W "."
  W $C(7),!!,"Deletion completed.",! Q

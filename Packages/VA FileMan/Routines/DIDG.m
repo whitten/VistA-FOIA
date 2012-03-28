@@ -1,5 +1,5 @@
-DIDG ;SFISC/RWF-GLOBAL MAP ;1:24 PM  1 Mar 2002
- ;;22.0;VA FileMan;**105**;Mar 30, 1999
+DIDG ;SFISC/RWF-GLOBAL MAP ;1:24 PM  1 Mar 2002 [ 12/09/2003  4:48 PM ]
+ ;;22.0;VA FileMan;**105,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  K W S DJ(Z)=D0,F=0,W=F(Z),M=1,DP=0
  W !

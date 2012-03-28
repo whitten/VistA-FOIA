@@ -1,4 +1,5 @@
-XGSW ;SFISC/VYD - screen window primitives ;01/11/95  15:58
+XGSW ;SFISC/VYD - screen window primitives ;01/11/95  15:58 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 WIN(T,L,B,R,S) ;draw a bordered window

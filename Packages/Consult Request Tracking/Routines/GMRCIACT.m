@@ -1,7 +1,5 @@
-GMRCIACT ;SLC/JFR - PROCESS ACTIONS ON IFC ;08/16/10  08:46
- ;;3.0;CONSULT/REQUEST TRACKING;**22,47,58,66**;DEC 27, 1997;Build 30
- ;;Per VHA Directive 2004-038, this routine should not be modified.
- ;#2051($$FIND1^DIC), #2053(DIE), #2165 HLMA1, #2701 MPIF001, #10103 XLFDT, #3065 XLFNAME, #2171 XUAF4
+GMRCIACT ;SLC/JFR - PROCESS ACTIONS ON IFC ;02/10/02 22:13
+ ;;3.0;CONSULT/REQUEST TRACKING;**22**;DEC 27, 1997
  Q  ;don't start here!
 NW(ARRAY) ;process and file new order
  ;Input:
@@ -17,7 +15,7 @@ NW(ARRAY) ;process and file new order
  . I '$O(^GMR(123,"AIFC",GMRCROUT,GMRCFCN,0)) Q  ;no dup
  . S GMRCITER=802
  . D APPACK^GMRCIAC2(0,"AR",GMRCITER) ;send app. ack w/ error
- . K ^TMP("GMRCIN",$J) Q
+ . K ^TMP("GMRCIN",$J) Q 
  I '$D(^TMP("GMRCIN",$J,"PID")) Q  ;prepare reject message (no PID)
  D  ;get patient DFN from ICN in message
  . N PAT
@@ -26,10 +24,9 @@ NW(ARRAY) ;process and file new order
  . S GMRCFDA(.02)=+PAT
  I '$G(GMRCFDA(.02)) D  Q  ;reject message, patient is unknown
  . N STA S STA=$P($P(^TMP("GMRCIN",$J,"ORC"),"|",2),U,2)
- . N OBR S OBR=^TMP("GMRCIN",$J,"OBR")
- . D PTERRMSG^GMRCIERR(^TMP("GMRCIN",$J,"PID"),STA,,OBR)
+ . D PTERRMSG^GMRCIERR(^TMP("GMRCIN",$J,"PID"),STA)
  . D APPACK^GMRCIAC2(0,"AR",201) ; send app. ack w/error
- . K ^TMP("GMRCIN",$J) Q
+ . K ^TMP("GMRCIN",$J) Q 
  D  ;get ordered item and service
  . S GMRCITM=$P(^TMP("GMRCIN",$J,"OBR"),"|",4)
  . I GMRCITM["VA1233" D  ; proc
@@ -50,7 +47,6 @@ NW(ARRAY) ;process and file new order
  S GMRCFDA(.01)=$$NOW^XLFDT
  S GMRCFDA(3)=$$HL7TFM^XLFDT($P(GMRCORC,"|",15))
  S GMRCFDA(6)=$$FIND1^DIC(101,"","X","GMRCPLACE - ON CALL")
- S GMRCFDA(17)=$$HL7TFM^XLFDT($P($P(GMRCORC,"|",7),U,4)) ;WAT/66 Earliest Date
  D  ;get urgency to file
  . N URG
  . S URG=$$URG^GMRCHL7A($P($P(GMRCORC,"|",7),U,6))
@@ -108,7 +104,7 @@ NW(ARRAY) ;process and file new order
  ;
 DIS(GMRCAR) ;dis-associate a result from a remote request
  ;Input:
- ; GMRCAR = array name containing message
+ ; GMRCAR = array name containing message 
  ;      e.g.  ^TMP("GMRCIF",$J)
  N GMRCDA,GMRCFDA,FDA,GMRCERR,GMRCORC
  M ^TMP("GMRCID",$J)=@GMRCAR
@@ -140,7 +136,7 @@ OTHER(GMRCAR) ;process most IFC actions
  ;will process the receive, schedule, DC, cancel and added comment action
  ;
  ;Input:
- ; GMRCAR = array name containing message
+ ; GMRCAR = array name containing message 
  ;      e.g.  ^TMP("GMRCIF",$J)
  ;
  N GMRCDA,GMRCFDA,GMRCORC,GMRCLAT,GMRCACT,GMRCROL,FDA
@@ -148,7 +144,7 @@ OTHER(GMRCAR) ;process most IFC actions
  M ^TMP("GMRCIN",$J)=@GMRCAR
  ;
  S GMRCORC=^TMP("GMRCIN",$J,"ORC")
- S GMRCDA=$$GETDA^GMRCIAC2(GMRCORC)  ;get ien to work on
+ S GMRCDA=$$GETDA^GMRCIAC2(GMRCORC)  ;get ien to work on 
  S GMRCROL=$P(^GMR(123,GMRCDA,12),U,5)
  I '$$LOCKREC^GMRCUTL1(GMRCDA) D  Q  ;couldn't lock record
  . D APPACK^GMRCIAC2(GMRCDA,"AR",901) ; send app. ACK
@@ -181,7 +177,7 @@ OTHER(GMRCAR) ;process most IFC actions
  .... S GMRCTX="Comment Added to remote"
  ... N ACT S ACT=1
  ... F  S ACT=$O(^GMR(123,GMRCDA,40,ACT)) Q:'ACT!($D(GMRCTX))  D
- .... I $P(^GMR(123,GMRCDA,40,ACT,0),U,2)=25,$O(^GMR(123,GMRCDA,40,ACT)) D
+ .... I $P(^GMR(123,GMRCDA,40,ACT,0),U,2)=25,$O(^(40,ACT)) D
  ..... S GMRCTX="Comment Added to remote"
  .. I '$D(GMRCTX),GMRCROL="F" Q  ;sch & rec on filler part of FWD 2 IFC
  .. I GMRCLAT=8 S GMRCTX="Scheduled remote"

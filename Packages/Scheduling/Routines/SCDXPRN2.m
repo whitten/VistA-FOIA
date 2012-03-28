@@ -1,5 +1,5 @@
 SCDXPRN2 ;ALB/JRP - HISTORY FILE REPORTS;21-JUL-1997
- ;;5.3;Scheduling;**128,135,405**;AUG 13, 1993
+ ;;5.3;Scheduling;**128,135**;AUG 13, 1993
  ;
 FULLHIST ;Print full transmission history report
  ; - Report based within the ACRP Transmission History file (#409.77)
@@ -10,9 +10,7 @@ FULLHIST ;Print full transmission history report
  ;
  ;Declare variables
  N VAUTSTR,VAUTNI,VAUTVB,VAUTNALL,VAUTD,VAUTC,VAUTN
- N SCDXBEG,SCDXEND,SCDXGLO,X,Y,SCDXH,SCDXLOCK
- ;SD*5.3*405 lock user from running multiple times in same session
- I $D(^TMP("RPT-LOCK",$J,DUZ)) W !!,"Sorry, you either have this report already running or queued to run.",!,"Please try again later.",!! Q
+ N SCDXBEG,SCDXEND,SCDXGLO,X,Y,SCDXH
  ;Initialize selection global
  S SCDXGLO=$NA(^TMP("SCDXPRN2",$J,"SELECT"))
  K @SCDXGLO
@@ -57,21 +55,16 @@ FULLHIST ;Print full transmission history report
  K SCDXH
  S SCDXBEG=+$P(X,"^",1)
  S SCDXEND=+$P(X,"^",2)
- S SCDXLOCK=$J_U_DUZ  ;SD*5.3*405 lock variable for when report is queued
- S ^TMP("RPT-LOCK",$J,DUZ)=""  ;SD*5.3*405 set lock for current user
  ;Queue/run
  W !!
  S ZTDESC="ACRP TRANSMISSION HISTORY REPORT"
  S ZTSAVE("SCDXBEG")=""
  S ZTSAVE("SCDXEND")=""
  S ZTSAVE("SCDXGLO")=""
- S ZTSAVE("SCDXLOCK")=""  ;SD*5.3*405
  S ZTSAVE($$OREF^DILF(SCDXGLO))=""
  S IOP="Q"
  D EN^XUTMDEVQ("PRINT^SCDXPRN2",ZTDESC,.ZTSAVE)
  ;Done - reset IO variables (safety measure) and quit
- I POP K ^TMP("RPT-LOCK",$J,DUZ)
- I $D(X) I X="^" K ^TMP("RPT-LOCK",$J,DUZ)
  D HOME^%ZIS
  Q
  ;
@@ -81,8 +74,6 @@ PRINT ;Print report
  ;         SCDXEND - End date (FileMan)
  ;                 - Refers to date/time of transmission (not encounter)
  ;         SCDXGLO - Global containing selection criteria
- ;         SCDXLOCK- Equals user's DUZ and locks the same user from
- ;                   queueing the report more than once at the same time
  ;                   This was output of calls to VAUTOMA for division,
  ;                   clinic, and patient (full global reference)
  ;           Divisions selected   Clinics selected     Patients selected
@@ -95,7 +86,7 @@ PRINT ;Print report
  ;       : User will be prompted for device except on queued entry
  ;
  ;Declare variables
- N DIC,L,BY,FR,TO,DHD,FLDS,DISPAR,DIOBEG,DIOEND,IOP,SCDXSLVE,DOLJ
+ N DIC,L,BY,FR,TO,DHD,FLDS,DISPAR,DIOBEG,DIOEND,IOP,SCDXSLVE
  ;Define sort criteria
  S DIC="^SD(409.77,"
  S L=0
@@ -127,8 +118,6 @@ PRINT ;Print report
  K SCDXBEG,SCDXEND,SCDXGLO
  ;If queued, purge task
  S:($D(ZTQUEUED)) ZTREQ="@"
- ;SD*5.3*405 remove lock for current user
- K ^TMP("RPT-LOCK",$P(SCDXLOCK,U,1),$P(SCDXLOCK,U,2))
  Q
  ;
 SORT ;Sort routine

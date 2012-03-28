@@ -1,15 +1,18 @@
-PSOPOLY ;BHAM ISC/SAB - patients with a minimum amount of rx's within a # of days ;10/06/93
- ;;7.0;OUTPATIENT PHARMACY;**19,28,132,326**;DEC 1997;Build 11
+PSOPOLY ;BHAM ISC/SAB - patients with a minimum amount of rx's within a # of days ;11-Oct-2007 15:21;SM
+ ;;7.0;OUTPATIENT PHARMACY;**19,28,132,1006**;DEC 1997
  ;External reference ^PS(55 supported by DBIA# 2228
  ;External reference ^PSDRUG( supported by DBIA# 221
  ;External reference ^DPT( supported by DBIA# 10035
  ;External reference ^PS(50.606 supported by DBIA 2174
  ;External reference ^PS(50.7 supported by DBIA 2223
+ ; Modified - IHS/MSC/PLS - 10/11/07 - Line PSOPOLY+10 and other references to Non-VA Meds
  K ^TMP($J),DIR S PG=0
  S DIR("A")="Number Of Days To Begin Search",DIR("?")="^D HLP^PSOPOLY",DIR(0)="N^1:730:0",DIR("B")=180 D ^DIR G:$D(DIRUT) END S DAYS=Y K DIR
- S DIR("A")="Minimum Number Of Rxs and Active Non-VA Meds",DIR("B")=7,DIR("?")="^D HLP1^PSOPOLY",DIR(0)="N^1:100:0" D ^DIR G:$D(DIRUT) END S RX=Y K DIR
-PAT W !! S DIC("A")="Enter Patient's Name or ^ALL for All Patients: "
- S DIC(0)="QEM" D EN^PSOPATLK S Y=PSOPTLK G:$E(Y,1,2)="^A"!($E(Y,1,2)="^a") ALL G:"^"[$E(Y) END S (PSODFN,DFN)=+Y
+ ;IHS/MSC/PLS - 10/11/07
+ ;S DIR("A")="Minimum Number Of Rxs and Active Non-VA Meds",DIR("B")=7,DIR("?")="^D HLP1^PSOPOLY",DIR(0)="N^1:100:0" D ^DIR G:$D(DIRUT) END S RX=Y K DIR
+ S DIR("A")="Minimum Number Of Rxs and Active Outside Medications",DIR("B")=7,DIR("?")="^D HLP1^PSOPOLY",DIR(0)="N^1:100:0" D ^DIR G:$D(DIRUT) END S RX=Y K DIR
+PAT R !!,"Enter Patient's Name or ^ALL for All Patients: ",X:DTIME G:'$T END G:$E(X,1,2)="^A"!($E(X,1,2)="^a") ALL
+ S DIC(0)="QEM",DIC="^DPT(" D ^DIC G:"^"[$E(X) END G:Y<0 PAT S (PSODFN,DFN)=+Y
  D:$P($G(^PS(55,DFN,0)),"^",6)'=2 EN^PSOHLUP(DFN) S ALL=0 D DEV G:$G(QP)!($D(ZTSK)) END
 ENQ D CON,PID^VADPT S DFN=PSODFN I '$O(^PS(55,DFN,"P","A",PSDATE)),'$O(^PS(55,DFN,"NVA",0)) G NRX
 BEG S RXS=0 S:$G(PSDATEX) PSDATE=PSDATEX
@@ -53,12 +56,12 @@ CON ;convert data to date
  S %DT="",X="T-"_DAYS D ^%DT S SDT=Y,(PSDATE,PSDATEX)=SDT-1,X="T" D ^%DT S EDT=Y,RXS=0
  Q
 NRX ;prints no rx message
- D HDR U IO W:'ALL !,$P(^DPT(DFN,0),"^")_" ("_VA("BID")_")" W !?20,">>>> No Active Prescriptions and/or Non-VA Meds found within the Range <<<<" W @IOF G END
+ D HDR U IO W:'ALL !,$P(^DPT(DFN,0),"^")_" ("_VA("BID")_")" W !?20,">>>> No Active Prescriptions and/or Outside Medications found within the Range <<<<" W @IOF G END
  Q
 HLP ;help module
  W !!,$C(7),"Enter numeric value greater than zero.",!,"The value must a whole number, no decimals or fractions.",!!
  Q
-HLP1 W !!,$C(7),"Enter a numeric value greater than zero.",!,"The number seven (7) is the default, no decimals or fractions.",!,"The count will include both Active Prescriptions and Non-VA Medications.",!!
+HLP1 W !!,$C(7),"Enter a numeric value greater than zero.",!,"The number seven (7) is the default, no decimals or fractions.",!,"The count will include both Active Prescriptions and Outside Medications.",!!
  Q
 DEV K %ZIS,IOP,ZTSK S %ZIS("B")="",PSOION=ION,%ZIS="QM" D ^%ZIS K %ZIS I POP S QP=1,IOP=PSOION D ^%ZIS K IOP,PSOION Q
  I $G(IOM)<132 W $C(7),!!,"Printout Must be 132 Columns.",!! G DEV
@@ -67,17 +70,18 @@ DEV K %ZIS,IOP,ZTSK S %ZIS("B")="",PSOION=ION,%ZIS="QM" D ^%ZIS K %ZIS I POP S Q
  Q
 HDR ;report header
  S PG=PG+1 U IO W @IOF,?55,"Poly Pharmacy Report",!?50,$E(SDT,4,5)_"-"_$E(SDT,6,7)_"-"_($E(SDT,1,3)+1700)_"    to    "_$E(EDT,4,5)_"-"_$E(EDT,6,7)_"-"_($E(EDT,1,3)+1700)
- W !?37," for "_DAYS_" Days for "_RX_" or More Active Prescriptions and/or Non-VA Meds"
+ W !?37," for "_DAYS_" Days for "_RX_" or More Active Prescriptions and/or Outsided Meds"
  W ?122,"Page "_PG,!,"Patient",?40,"ID#",?62,"Active Rx's",!,?2,"Class",?22,"Drug",?65,"Status",?77,"Last Filled",?92,"Provider",?121,"Rx Number"
  W ! F I=1:1:132 W "-"
  Q
 NVA ;displays non-va meds
  Q:'$O(^PS(55,PSODFN,"NVA",0))  N TITLE
- S PSOSTA=">>>Non-VA MEDS (Not dispensed by VA)<<<"
+ S PSOSTA=">>>Outside Medications (Not dispensed by VA)<<<"
  S STR=($L(PSOSTA)+IOM/2)-$L(PSOSTA),STP=IOM-(STR+$L(PSOSTA)) F I=1:1:STR S TITLE=$G(TITLE)_" "
  S TITLE=TITLE_PSOSTA F I=1:1:STP S TITLE=TITLE_" "
+ ;S TITLE=TITLE_"*"
  D:($Y+7)>IOSL HDR W !!,TITLE
- I $G(CLASS)="NVA" W !,DFN_" ("_VA("BID")_")",?40,"Total Non-VA Meds: "_$P(^TMP($J,DFN,CLASS),"^",2)
+ I $G(CLASS)="NVA" W !,DFN_" ("_VA("BID")_")",?40,"Total Outside Meds: "_$P(^TMP($J,DFN,CLASS),"^",2)
  F NVAO=0:0 S NVAO=$O(^PS(55,PSODFN,"NVA",NVAO)) Q:'NVAO  D
  .Q:$P(^PS(55,PSODFN,"NVA",NVAO,0),"^",7)  Q:'$P(^PS(55,PSODFN,"NVA",NVAO,0),"^")
  .S DUPRX0=^PS(55,PSODFN,"NVA",NVAO,0)

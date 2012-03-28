@@ -1,7 +1,7 @@
 XMR1 ;ISC-SF/GMB-SMTP Receiver HELO/MAIL/RCPT (RFC 821) ;02/10/2004  06:31
  ;;8.0;MailMan;**6,24**;Jun 28, 2002
 HELO ; Recv: "HELO REMOTE.MED.VA.GOV <security num>"
- ; Send: "250 OK LOCAL.MED.VA.GOV <security num> [8.0,DUP,SER,FTP]"
+ ; Send: "250 OK DOMAIN.NAME <security num> [8.0,DUP,SER,FTP]"
  N X,Y,XMDOMREC
  I XMP="" S XMSG="501 Missing domain specification" X XMSEN Q
  I '$D(^XMB("NETNAME")) S XMSG="550 Unchristened local domain" X XMSEN Q
@@ -122,8 +122,8 @@ VALSET(XMINST,XMRVAL) ;check validation number
  L -^DIC(4.2,XMINST,0)
  K XMRVAL
  Q
-MAIL ; Recv: "MAIL FROM:<USER.JOE@REMOTE.MED.VA.GOV>"
- ; Send: "250 OK Message-ID:12345@LOCAL.MED.VA.GOV"
+MAIL ; Recv: "MAIL FROM:<USER.JOE@DOMAIN.NAME>"
+ ; Send: "250 OK Message-ID:12345@DOMAIN.NAME"
  N XMD
  S XMP=$P(XMP,":",2,999)
  S XMP=$$SCRUB^XMR3(XMP)

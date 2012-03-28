@@ -1,7 +1,8 @@
-PSJDOSE ;BIR/MV-POSSIBLE DOSES UTILITY ; 1/28/10 8:21am
- ;;5.0; INPATIENT MEDICATIONS ;**50,65,106,111,216**;16 DEC 97;Build 10
+PSJDOSE ;BIR/MV-POSSIBLE DOSES UTILITY ;16 Jan 2001  1:53 PM
+ ;;5.0; INPATIENT MEDICATIONS ;**50,65,106**;16 DEC 97
  ;
  ; Reference to ^PSSORPH is supported by DBIA #3234.
+ ; Reference to ^VALM1 is supporetd by DBIA #10116.
  ;
  ;PSJDSFLG: Set to 1 if Dose and DD are not compatible
  ;PSJDSSEL: The selected dose in format:
@@ -54,12 +55,14 @@ AGAIN ;Prompt for dosage order again
  . W !?4,$J(PSJX,3),".    ",$P(PSJDOX(PSJDL),U,PSJPIECE)
  . I '(PSJX#16) S DIR(0)="E" D ^DIR
  W !
- K DIR S DIR(0)="F^1:60"  ;*216 - No null dosage
+ K DIR S DIR(0)="FO^1:60"
  S DIR("A")=$S(+PSJX:"Select from list of Available Dosages or Enter Free Text Dose",1:"DOSAGE ORDERED")
  S:$G(PSGDO)]"" DIR("B")=PSGDO
  S DIR("?")="^D ENHLP^PSGOEM(53.1,109)" D ^DIR
  S PSJY=Y
  ;
+ ;* Dosage Ordered entered is null
+ I PSJY="" S PSJDSUPD=1,PSGDO="",PSJDSSEL=U_+PSJDD_U_1 Q
  I $S($D(DTOUT):1,$D(DUOUT):1,$D(DIRUT):1,1:0) S PSGOROE1=1 Q
  ;
  ;* If select for the presented list (possible and local doses)
@@ -124,6 +127,7 @@ SETDUPD(X) ;
  Q
 EDITDD ;Editing DDs
  NEW DA,DR,DIE
+ ;S DIE="^PS(53.45,",DA=PSJSYSP,DR=2,DR(2,53.4502)=".01;.02//1" D ^DIE
  S DIE="^PS(53.45,",DA=PSJSYSP,DR=2,DR(2,53.4502)=".02//1" D ^DIE
  I '$O(^PS(53.45,PSJSYSP,2,0)) W $C(7),!!,"WARNING:      This order must have at least one dispense drug before pharmacy can",!?9,"verify it!"
  Q
@@ -132,28 +136,22 @@ DOSECHK ;
  Q:'$P(PSJSYSU,";",4)
  Q:$G(PSGDO)=""
  NEW PSJX,PSJXDD,PSJCNT S PSJCNT=0
- ;*216 Be sure PSJDT is set
- I '$G(PSJDT) N X,% D NOW^%DTC S PSJDT=X
  F PSJX=0:0 S PSJX=$O(^PS(53.45,PSJSYSP,2,PSJX)) Q:'PSJX  D
  . S PSJXDD=$G(^PS(53.45,PSJSYSP,2,PSJX,0)) Q:PSJXDD=""
  . S:$P(PSJXDD,U,2)="" $P(^PS(53.45,PSJSYSP,2,PSJX,0),U,2)=1
- . ;*216 Don't count inactive Disp. Drug
- . I $P(PSJXDD,U,3)'="",$P(PSJXDD,U,3)'>PSJDT Q
  . S PSJCNT=PSJCNT+1
  D DOSECHK1
  Q
 DOSECHK1 ;
  NEW PSJX,PSJXDD,PSJXUNIT,PSJUNIT,PSJXFLG,PSJTOT
- ;*216 Be sure PSJDT is set
- I '$G(PSJDT) N X,% D NOW^%DTC S PSJDT=X
  S PSJUNIT=$P(PSGDO,+PSGDO,2,$L(PSGDO,+PSGDO))
  S (PSJDSFLG,PSJXFLG,PSJTOT)=0
  S PSJX=0 F  S PSJX=$O(^PS(53.45,PSJSYSP,2,PSJX)) Q:'PSJX!PSJDSFLG!PSJXFLG  D
  . S PSJXDD=$G(^PS(53.45,PSJSYSP,2,PSJX,0))
  . S PSJXDUP=$S(+$P(PSJXDD,U,2):$P(PSJXDD,U,2),1:1)
- . ;*216 Don't count inactive Disp. Drug
- . I $P(PSJXDD,U,3)'="",$P(PSJXDD,U,3)'>PSJDT Q
  . D DOSE^PSSORPH(.PSJXDOX,+PSJXDD,"U")
+ . ;Quit if no dose or it is local possible dose
+ . ;I $P(PSJXDOX(1),U)=""!(+PSJXDOX(1)=-1) S PSJXFLG=1 Q
  . I $S('$D(PSJXDOX):1,$P(PSJXDOX(1),U)="":1,1:+PSJXDOX(1)=-1) S PSJXFLG=1 Q
  . S PSJXUNIT=""
  . S:PSJUNIT["/" PSJXUNIT=PSJUNIT
@@ -169,14 +167,16 @@ ONEDD ;
  F X=0:0 S X=$O(PSJXDOX(X)) Q:'X!'PSJDSFLG  D
  . I +PSJXDOX(X)'=+PSGDO,(PSJXUNIT=$P(PSJXDOX(X),U,2)),$S(PSJXDUP=$P(PSJXDOX(X),U,3):1,1:PSJXDUP=$P(PSJXDOX(X),U,12)) D  Q:PSJDSFLG
  .. N CHK S CHK=+PSGDO/$P(PSJXDOX(X),U,5) S CHK=+$FN(CHK,"",4) S:$E(CHK)="." CHK="0"_CHK I CHK=PSJXDUP S PSJDSFLG=0
- . I +PSJXDOX(X)=+PSGDO,$TR($P(PSJXDOX(X),U,11)," ")=$TR(PSGDO," "),$S(PSJXDUP=$P(PSJXDOX(X),U,3):1,1:PSJXDUP=$P(PSJXDOX(X),U,12)) S PSJDSFLG=0
+ . I +PSJXDOX(X)=+PSGDO,(PSJXUNIT=$P(PSJXDOX(X),U,2)),$S(PSJXDUP=$P(PSJXDOX(X),U,3):1,1:PSJXDUP=$P(PSJXDOX(X),U,12)) S PSJDSFLG=0
  Q
 BCMAUPD(PSJDD) ;
+ ;PSJDD = DD IEN
  NEW PSJCNT
  K PSJBCMA
  F X=0:0 S X=$O(PSJXDOX(X)) Q:'X  D
  . Q:'+$P(PSJXDOX(X),U,12)
  . S PSJCNT=+$G(PSJCNT)+1
+ . ;S PSJBCMA(+PSJDD,$P(PSJXDOX(X),U,12))=PSJCNT
  . S PSJBCMA(+PSJDD,$P(PSJXDOX(X),U,12),PSJCNT)=$P(PSJXDOX(X),U,1,2)
  Q
 DSPWARN ;

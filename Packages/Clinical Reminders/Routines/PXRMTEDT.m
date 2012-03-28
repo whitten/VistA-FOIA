@@ -1,7 +1,7 @@
-PXRMTEDT ; SLC/PKR - Edit a taxonomy item. ;12/23/2005
- ;;2.0;CLINICAL REMINDERS;**4**;Feb 04, 2005;Build 21
+PXRMTEDT ; SLC/PKR - Edit a taxonomy item. ;05/03/2001
+ ;;1.5;CLINICAL REMINDERS;**2,5**;Jun 19, 2000
  ;
- ;===============================================
+ ;=======================================================================
  N CS1,CS2,DA,DIC,DLAYGO,DTOUT,DUOUT,Y
 GETNAME ;Get the name of the reminder taxonomy to edit.
  K DA,DIC,DLAYGO,DTOUT,DUOUT,Y
@@ -17,83 +17,67 @@ GETNAME ;Get the name of the reminder taxonomy to edit.
  I ($D(DTOUT))!($D(DUOUT)) Q
  I Y=-1 G END
  S DA=$P(Y,U,1)
- S CS1=$$FILE^PXRMEXCS(811.2,DA)
- D EDIT(DIC,DA)
- ;See if any changes have been made, if so do the edit history.
- S CS2=$$FILE^PXRMEXCS(811.2,DA)
- I CS2'=0,CS2'=CS1 D SEHIST^PXRMUTIL(811.2,DIC,DA)
+ I $$LOCKXTL^PXRMBXTL(DA) D
+ . S CS1=$$FILE^PXRMEXCS(811.2,DA)
+ . D EDIT(DIC,DA)
+ .;See if any changes have been made, if so do the edit history.
+ . S CS2=$$FILE^PXRMEXCS(811.2,DA)
+ . I CS2'=0,CS2'=CS1 D SEHIST^PXRMUTIL(811.2,DIC,DA)
+ D ULOCKXTL^PXRMBXTL(DA)
  G GETNAME
 END ;
  Q
  ;
- ;===============================================
+ ;=======================================================================
 EDIT(ROOT,DA) ;
- N DIE,DR,DIDEL,RESULT,X
+ N DIE,DR,DIDEL
  S DIE=ROOT,DIDEL=811.2
- S DIE("NO^")="OUTOK"
  W !!,"General Taxonomy Data"
-NAME S DR=".01"
+ S DR=".01"
  D ^DIE
- ;If DA is undefined then the entry was deleted.
+ ;If DA is undefined that the entry was deleted.
  I '$D(DA) Q
  I $D(Y) Q
  ;
-BD S DR=".02"
+ S DR=".02"
  D ^DIE
  I '$D(DA) Q
- I $D(Y) G NAME
+ I $D(Y) Q
  ;
-CLASS ;
- ;Class
+ ;Class, sponsor, review date
  W !!
- S DR="100"
+ S DR="100;101;102"
  D ^DIE
- I $D(Y) G BD
- ;Sponsor
- S DR="101"
- D ^DIE
- I $D(Y) G CLASS
- ;Make sure Class and Sponsor Class are in synch.
- S RESULT=$$VSPONSOR^PXRMINTR(X)
- I RESULT=0 G CLASS
- ;Review date
-RD W !!
- S DR="102"
- D ^DIE
- I $D(Y) G CLASS
+ I $D(Y) Q
  ;
-PDS W !!
+ W !!
  S DR="4"
  D ^DIE
  I '$D(DA) Q
- I $D(Y) G RD
+ I $D(Y) Q
  ;
-UINP S DR="10"
+ S DR="10"
  D ^DIE
  I '$D(DA) Q
- I $D(Y) G PDS
+ I $D(Y) Q
  ;
-IFL S DR="1.6"
+ S DR="1.6"
  D ^DIE
  I '$D(DA) Q
- I $D(Y) G UINP
+ I $D(Y) Q
  ;
-ICD0 W !!,"ICD0 Range of Coded Values"
+ W !!,"ICD0 Range of Coded Values"
  S DR="2103"
- S DR(2,811.22103)=".01;1"
  D ^DIE
  I $D(Y) Q
  ;
-ICD9 W !!,"ICD9 Range of Coded Values"
+ W !!,"ICD9 Range of Coded Values"
  S DR="2102"
- S DR(2,811.22102)=".01;1"
  D ^DIE
- I $D(Y) G ICD0
+ I $D(Y) Q
  ;
-CPT W !!,"CPT Range of Coded Values"
+ W !!,"CPT Range of Coded Values"
  S DR="2104"
- S DR(2,811.22104)=".01;1"
  D ^DIE
- I $D(Y) G ICD9
+ I $D(Y) Q
  Q
- ;

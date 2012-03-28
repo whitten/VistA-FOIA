@@ -1,4 +1,4 @@
-XTKERM3 ;SF/RWF - Kermit protocol Send/Receive packet ;8/19/92  11:19 ;
+XTKERM3 ;SF/RWF - Kermit protocol Send/Receive packet ;8/19/92  11:19 ; [ 10/10/95  3:34 PM ]
  ;;7.3;TOOLKIT;;Apr 25, 1995
  ;Packet <Mark><Len><Seq><type><data><Check><Eol>
 A ;Setup <Maxl><Timeout><Npad><Padc><Eol><Qctrl><Qbin>

@@ -27,7 +27,7 @@ SIGNON ; .ACT - run at user sign-on display message if NEEDS AN NPI
  ; following to insure CBO List is scheduled to run on first day of month
  S XVALTIME=$E(DT,6,7) I '((XVALTIME="01")!(XVALTIME="15")) Q
  S XVAL=+$E($$NOW^XLFDT(),6,10) I XVAL>(XVALTIME_".19"),XVAL<(XVALTIME_".1958") D  ; 7 PM TO 7:58 PM ON 1ST OF MONTH
- . S OPT=$$FIND1^DIC(19.2,"","","XUS NPI CBO LIST") I OPT'>0 L +^TMP("XUS NPI CBO LOCK"):0 Q:'$T  D CBOQUEUE L -^TMP("XUS NPI CBO LOCK") Q
+ . S OPT=$$FIND1^DIC(19.2,"","","XUS NPI CBO LIST") I OPT'>0 L +^TMP("XUSNPI CBO LOCK"):0 Q:'$T  D CBOQUEUE L -^TMP("XUS NPI CBO LOCK") Q
  . S DATETIME=$$GET1^DIQ(19.2,OPT_",",2)
  . I DATETIME'=$$FMTE^XLFDT(DT_".2") L +^DIC(19.2,OPT):0 Q:'$T  D SETQUEUE(OPT,DT_".2") L -^DIC(19.2,OPT) Q
  . I '$$GET1^DIQ(19.2,OPT_",",99.1) L +^DIC(19.2,OPT):0 Q:'$T  D  L -^DIC(19.2,OPT)

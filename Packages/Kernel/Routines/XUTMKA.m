@@ -1,4 +1,5 @@
-XUTMKA ;ISF/RWF - Send alerts for Taskman ;11/23/99  07:57
+XUTMKA ;ISF/RWF - Send alerts for Taskman ;11/23/99  07:57 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**127**
 EN1 N CNT K ^TMP($J)
  W !,"List of Devices that haven't been successfully opened.",!

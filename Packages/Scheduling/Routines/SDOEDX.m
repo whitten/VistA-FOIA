@@ -1,5 +1,5 @@
 SDOEDX ;ALB/MJK - ACRP DX APIs For An Encounter ;8/12/96
- ;;5.3;Scheduling;**131,556**;Aug 13, 1993;Build 3
+ ;;5.3;Scheduling;**131**;Aug 13, 1993
  ;
 DX(SDOE,SDERR) ; -- SDOE ASSIGNED A DIAGNOSIS
  ;   API ID: 64
@@ -85,8 +85,7 @@ GETPDXQ Q SDPDX
 VALDX(SDDXID,SDERR) ; -- validate dx input
  ;
  ; -- do checks
- ;IF SDDXID,$D(^ICD9(SDDXID,0)) Q 1
- I SDDXID,+$$ICDDX^ICDCODE(SDDXID)>0 Q 1
+ IF SDDXID,$D(^ICD9(SDDXID,0)) Q 1
  ;
  ; -- build error msg
  N SDIN,SDOUT

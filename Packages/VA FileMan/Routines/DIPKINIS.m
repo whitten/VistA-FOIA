@@ -13,7 +13,7 @@ PAC(PKG,VER) ; called from package init (DIFROM7 created this routine)
  Q:'$D(^%ZOSF("UCI"))  Q:'$D(^%ZOSF("PROD"))
  X ^%ZOSF("UCI") I Y'=^%ZOSF("PROD") Q
  ;
- S SERVER="S.A5CSTS@FORUM.VA.GOV"
+ S SERVER="S.A5CSTS@DOMAIN.NAME"
  S PACKAGE=$P($P(PKG,";",3),U)
  S SITE=$G(^XMB("NETNAME"))
  S START=$P($G(^DIC(9.4,VER(0),"PRE")),U,2) I '$L(START) S START="Unknown"

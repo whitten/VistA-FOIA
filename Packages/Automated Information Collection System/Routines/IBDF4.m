@@ -1,5 +1,5 @@
 IBDF4 ;ALB/CJM - ENCOUNTER FORM - BUILD FORM(editing group's selections) ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**19,38,56**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**19,38**;APR 24, 1997
  ;
 SLCTNS ;
  N IBRTN
@@ -117,7 +117,7 @@ NARR ; -- edit provider narrative, but only for selections where the
  ;    interface allows editing
  N DIE,DA,DR
  I $P($G(^IBE(357.6,+$P($G(^IBE(357.2,+IBLIST,0)),U,11),0)),U,17) D
- .S DIE="^IBE(357.3,",DA=SLCTN,DR=2.01 D ^DIE K DIE,DA,DR
+ .S DIE="^IBE(357.3,",DA=SLCTN,DR=2.01 D ^DIE
  Q
  ;
 TERM ; -- map selection to clinical lexicon, but only for selections where
@@ -129,7 +129,6 @@ TERM ; -- map selection to clinical lexicon, but only for selections where
  .;D CONFIG^GMPTSET("ICD","ICD") (this is an alternate filter)
  .Q:'$D(IBDLEX)
  .S DIE="^IBE(357.3,",DA=SLCTN,DR="2.02//"_$P($G(^IBE(357.3,DA,0)),"^") D ^DIE
- K DIC
  Q
  ;
 CODES ; -- allow selection of a second code to pass through for this entry

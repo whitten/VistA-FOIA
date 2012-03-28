@@ -1,4 +1,4 @@
-XUS6 ;ISCSF/RWF - Clear users at startup. ;06/17/2003  13:18
+XUS6 ;ISCSF/RWF - Clear users at startup. ;06/17/2003  13:18 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**258,312**;Jul 10, 1995
  I '$D(ZTQUEUED) W !,"This is only to be run by taskman at startup." Q
 A ;

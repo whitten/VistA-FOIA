@@ -1,7 +1,5 @@
-RAO7PC3 ;HISC/SWM&CRT-Procedure Call utilities. ;8/15/08  16:45
- ;;5.0;Radiology/Nuclear Medicine;**16,26,27,56,95**;Mar 16, 1998;Build 7
- ;Supported IA #2056 GET1^DIQ
- ;Supported IA 10104 UP^XLFSTR
+RAO7PC3 ;HISC/SWM&CRT-Procedure Call utilities. ;7/30/01  10:28
+ ;;5.0;Radiology/Nuclear Medicine;**16,26,27**;Mar 16, 1998
  ;; api to return entire report (same as auto e-mail's)
 EN3(X) ; Return narrative text for exam(s)
  ; Input:
@@ -56,7 +54,7 @@ EN30(RAOIFN) ; Return narrative text for exam(s).
  Q
 CASE(Y) ;
  N N,RABNOR,RACASE,RACIEN,RADIAG,RAEXAM,RAINCLUD,RAOPRC,RAORD,BLANK
- N RAMSG,RAPDIAG,RAPROC,RARDE,RARPT,RARPTST,RASPACE,SKIP,X,ZZRADFN,X0,X1,X2,RASIGVES,RARPTST2
+ N RAMSG,RAPDIAG,RAPROC,RARDE,RARPT,RARPTST,RASPACE,SKIP,X,ZZRADFN,X0,X1,X2,RASIGVES
  ;
  S RACIEN=Y,$P(BLANK," ",80)=""
  S RAEXAM(0)=$G(^RADPT(RADFN,"DT",RAINVXDT,"P",RACIEN,0)) Q:RAEXAM(0)']""
@@ -70,14 +68,13 @@ CASE(Y) ;
  S RAOPRC(0)=$G(^RAMIS(71,+$P(RAORD(0),"^",2),0))
  S RAOPRC=$S($P(RAOPRC(0),"^")]"":$P(RAOPRC(0),"^"),1:"Unknown")
  S RAPDIAG(0)=$G(^RA(78.3,+$P(RAEXAM(0),"^",13),0))
- S RARPT=+$P(RAEXAM(0),"^",17),RARPTST2=$$UL^RAO7PC1A($$RSTAT^RAO7PC1A())
+ S RARPT=+$P(RAEXAM(0),"^",17)
  S RARPT(0)=$G(^RARPT(RARPT,0)),RARPTST=$P(RARPT(0),"^",5)
  S RASIGVES="" I RARPTST="V",$P(RARPT(0),U,10)]"",$P(RARPT(0),U,9)]"" S X2=RARPT,X1=$P(RARPT(0),U,9),X=$P(RARPT(0),U,10) D DE^XUSHSHP S:X]"" RASIGVES="/ES/"_X
  S RARDE=$$GET1^DIQ(74,RARPT_",",8,"E")
  ; View whole report if Rad User or status is R or V.
  D CHKUSR^RAUTL2 S RAINCLUD=RAMSG
- ;allow V, R, EF rpts to be seen by non-Radiology CPRS users - patch 95
- S RAINCLUD=$S(RAMSG:1,"^V^R^EF^"[("^"_RARPTST_"^"):1,1:0)
+ S RAINCLUD=$S(RAMSG:1,RARPTST="V":1,RARPTST="R":1,1:0)
  S RABNOR=$$UP^XLFSTR($P(RAPDIAG(0),"^",4)) S:RABNOR'="Y" RABNOR=""
  ;
  I $P(RAEXAM(0),"^",25) S ^TMP($J,"RAE3",RADFN,"ORD")=RAOPRC
@@ -85,7 +82,7 @@ CASE(Y) ;
  ;
  I RAPSET'<0 D
  .S ^TMP($J,"RAE3",RADFN,RACIEN,RAPROC)="^"_RABNOR_"^"_RAORD(7)
- .S $P(^TMP($J,"RAE3",RADFN,RACIEN,RAPROC),"^")=RARPTST2
+ .S $P(^TMP($J,"RAE3",RADFN,RACIEN,RAPROC),"^")=$$RPTST
  S:RAPSET<0 ^TMP($J,"RAE3",RADFN,RACIEN,RAPROC)=""
  S:RAPSET=1 RAPSET=-1
  ;
@@ -101,9 +98,9 @@ CASE(Y) ;
  I RAY0<0!(RAY1<0)!(RAY2<0)!(RAY3<0) K RAFFLF Q
  ;
  S RAVERF=0
- I RARPTST2="No Report" D
+ I $$RPTST="No Report" D
  .S:'$D(RAMDIV) RAMDIV=+$P(^RADPT(RADFN,"DT",RAINVXDT,0),"^",3)
- .S:'$D(RAMDV) RAMDV=$S($D(^RA(79,RAMDIV,.1)):^(.1),1:""),RAMDV=$TR(RAMDV,"YNyn","1010")
+ .S:'$D(RAMDV) RAMDV=$S($D(^RA(79,RAMDIV,.1)):^(.1),1:"")
  D PRT1^RARTR
  S RADFN=ZZRADFN
  Q:'$D(^TMP($J,"RA AUTOE"))
@@ -111,7 +108,7 @@ CASE(Y) ;
  ; Now manipulate ^TMP($J,"RA AUTOE" and save as ^TMP($J,"RAE3"
  ; Step 1: Change Case Number to Exam Date
  ; Step 2: Remove Impression, Report & Diagnostic Codes if not
- ;         Released or Verified or Electronically Filed
+ ;         Released or Verified
  ;         Also remove "Att Phys" and "Pri Phys"
  ; Step 3: Change Status to Report Status & add Reported Date
  ; Step 4: If No Report then get Clin History from file #70.
@@ -125,8 +122,8 @@ STEP2 K SKIP S N=1 F  S N=$O(^TMP($J,"RA AUTOE",N)) Q:N=""  D
  . I (X1="Att Phys: ")!(X1="Pri Phys: ") D
  .. S ^TMP($J,"RA AUTOE",N)=$E(BLANK,1,41)_$E(X0,42,$L(X0))
  .. Q
- .;I RARPTST2="No Report",($E(^TMP($J,"RA AUTOE",N),1,21)="    Clinical History:") D STEP4
- .I $E(^TMP($J,"RA AUTOE",N),1,12)="    Report: " D STEP3 Q:RARPTST2="No Report"
+ .;I $$RPTST="No Report",($E(^TMP($J,"RA AUTOE",N),1,21)="    Clinical History:") D STEP4
+ .I $E(^TMP($J,"RA AUTOE",N),1,12)="    Report: " D STEP3 Q:$$RPTST="No Report"
  .I 'RAINCLUD,$E(^TMP($J,"RA AUTOE",N),1,15)="    Impression:" D
  ..S SKIP=1,^TMP($J,"RAE3",RADFN,RACIEN,RAPROC,N+0.1)=""
  .I 'RAINCLUD,$E(^TMP($J,"RA AUTOE",N),1,28)="    Primary Diagnostic Code:" D
@@ -141,8 +138,8 @@ STEP2 K SKIP S N=1 F  S N=$O(^TMP($J,"RA AUTOE",N)) Q:N=""  D
 XIT K ^TMP($J,"RA AUTOE")
  Q
  ;
-STEP3 S ^TMP($J,"RAE3",RADFN,RACIEN,RAPROC,N-0.4)="    Report Status: "_RARPTST2
- I RARPTST2="No Report" S N="^" Q
+STEP3 S ^TMP($J,"RAE3",RADFN,RACIEN,RAPROC,N-0.4)="    Report Status: "_$$RPTST
+ I $$RPTST="No Report" S N="^" Q
  S $P(RASPACE," ",46)=""
  S ^TMP($J,"RAE3",RADFN,RACIEN,RAPROC,N-0.4)=^(N-0.4)_$E(RASPACE,1,46-$L(^(N-0.4)))_"Date Reported: "_RARDE
  I RARPTST="V" D
@@ -161,3 +158,7 @@ STEP4 I +$O(^RADPT(RADFN,"DT",RAINVXDT,"P",RACIEN,"H",0)) D
  ..S RAIN=$E(RAIN,1,$L(RAIN)-$L(RAI))_RAI
  ..S ^TMP($J,"RAE3",RADFN,RACIEN,RAPROC,RAIN)="      "_$G(^RADPT(RADFN,"DT",RAINVXDT,"P",RACIEN,"H",Z,0))
  Q
+ ;
+RPTST() ; Return Full Report Status
+ Q $S(RARPTST="V":"Verified",RARPTST="R":"Released/Not Verified",RARPTST="D":"Draft",RARPTST="PD":"Problem Draft",1:"No Report")
+ ;

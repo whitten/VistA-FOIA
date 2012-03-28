@@ -1,5 +1,9 @@
-TIURC1 ; SLC/JER - Additional Review screen actions ;4/13/05
- ;;1.0;TEXT INTEGRATION UTILITIES;**100,113,184**;Jun 20, 1997
+TIURC1 ; SLC/JER - Additional Review screen actions ;3/16/01
+ ;;1.0;TEXT INTEGRATION UTILITIES;**100**;Jun 20, 1997
+ ;9/28 split TIURC, with COPY to end going here to new rtn TIURC1
+ ;IHS/ITSC/LJF 7/10/2003 made mod to ORU1 call until OR v3 installed
+ ;             8/22/2003 bypass VA rebuild if called by BTIURPT
+ ;
 COPY ; Copy
  N DA,DIE,DR,TIU,TIUCHNG,TIUDATA,TIUI,TIUY,Y,DIROUT
  N TIUVIEW,TIULST,TIUNREC,TIUDAARY,OLDNREC
@@ -17,9 +21,7 @@ COPY ; Copy
  . . W !!,$C(7),$P(TIUVIEW,U,2),!
  . . I $$READ^TIUU("EA","RETURN to continue...") ; pause
  . S OLDNREC=$G(TIUNREC)
- . ; -- Single docmt copy.  Does COPY1.
- . ;    Generates list TIUNREC of new recs for feedback
- . D EN^VALM("TIU COPY DOCUMENT")
+ . D EN^VALM("TIU COPY DOCUMENT") ;generates list TIUNREC of new recs
  . K ^TMP("TIUVIEW",$J)
  . I $G(TIUNREC)'=OLDNREC D
  . . S TIUDAARY(TIUI)=TIUDA
@@ -29,8 +31,11 @@ COPY ; Copy
  . F TIUI=1:1:$L($G(TIUNREC),",") D
  . . S TIUNDA=$P(TIUNREC,",",TIUI),TIUITEM=+$G(^TMP("TIUR",$J,0))
  . . D ADDELMNT^TIUR2(TIUNDA,+TIUITEM,1)
+ ;I $G(TIULST)]"" S VALMSG="** Item"_$S($L(TIULST,",")>1:"s ",$L(TIULST,"-")>1:"s ",1:" ")_TIULST_" Copied; See end of list **"
+ ;E  S VALMSG="** No changes made... **"
  S TIUCHNG("REFRESH")=1
- D UPRBLD^TIURL(.TIUCHNG,.VALMY) K VALMY
+ ;D UPRBLD^TIURL(.TIUCHNG,.VALMY) K VALMY               ;IHS/ITSC/LJF 08/22/2003
+ D:'$G(BTIURPT) UPRBLD^TIURL(.TIUCHNG,.VALMY) K VALMY   ;IHS/ITSC/LJF 08/22/2003 don't rebuild if called by BTIURPT
  S VALMBCK="R"
  D VMSG^TIURS1($G(TIULST),.TIUDAARY,"copied")
  Q
@@ -67,7 +72,8 @@ COPY1 ; Copy a document
  S TIUTYP(1)="1^"_+TIUTYP_U_TIUTNM_U
  W !!,"Please Choose One or More Patients for whom the document should be copied:",!
  F  D  Q:+TIUPOP
- . D PATIENT^ORU1(.TIUPAT,1)
+ . ;D PATIENT^ORU1(.TIUPAT,1)    ;IHS/ITSC/LJF 7/10/2003
+ . D PATIENT^ORU1(.TIUPAT)       ;IHS/ITSC/LJF 7/10/2003 extra subsrcipt requires OR v3
  . I +TIUPAT'>0 D  Q
  . . W !,$C(7),"No patient(s) selected..."
  . . I $$READ^TIUU("EA","Press RETURN to continue...") W !
@@ -93,6 +99,7 @@ COPY1 ; Copy a document
  . . X TIUVMETH
  . . I $D(TIU),+$G(TIUASK) D
  . . . N TIUNEW,TIUITEM,DA,DR,DIE
+ . . . ;S DA=$$GETREC^TIUEDI1(DFN,.TIU,1,.TIUNEW,.TIUDPRM) Q:+DA'>0
  . . . S DA=$$GETRECNW^TIUEDI3(DFN,.TIU,TIUTYP(1),.TIUNEW,.TIUDPRM) Q:+DA'>0
  . . . I '+$G(TIUNEW) D  Q
  . . . . W !!,$C(7),"A ",$P(TIUTYP(1),U,3)," already exists for this visit."
@@ -102,10 +109,9 @@ COPY1 ; Copy a document
  . . . D COPY14(DA,TIUOD14,.TIU),COPY17(DA,TIUOD17),COPYTEXT(TIUDA,DA)
  . . . I $D(^TIU(8925,DA,"TEMP")) D MERGTEXT^TIUEDI1(DA,.TIU) K ^TIU(8925,+DA,"TEMP")
  . . . S DR=".05///"_$$UPPER^TIULS($$STATUS^TIULC(DA)),DIE=8925 D ^DIE
+ . . . S TIUCHNG=1,TIUNREC=$G(TIUNREC)_$S(+$G(TIUNREC):",",1:"")_DA
  . . . I +$D(^TIU(8925,+DA,"TEXT"))>9!(+$O(^TIU(8925,"DAD",+DA,0))>0) D
  . . . . N TIUDA,TIUCPYNG S TIUDA=+DA,TIUCPYNG=1 D EDIT1^TIURA
- . . . I '$G(DA) Q  ;Docmt deleted in TIURA
- . . . S TIUCHNG=1,TIUNREC=$G(TIUNREC)_$S(+$G(TIUNREC):",",1:"")_DA
  . S TIUPOP='+$$AGAIN
  Q
 CHKTITLE(TIUTYP) ; Title Status
@@ -128,7 +134,7 @@ COPY12(DA,TIUD0,TIUD12,TIU) ; Copy 12-node
  S DR="1201////"_$$NOW^TIULC_";1202////"_+$G(DUZ)_";1203////"_$P(TIUD12,U,3)_";1204////"_$G(DUZ)_";1205////"_$P($G(TIU("LOC")),U)
  S DR=DR_";1206////"_$P(TIUD12,U,6)_";1207////"_$P(TIUD12,U,7)_";1209////"_$P(TIUD12,U,9)
  I +$$REQCOSIG^TIULP(+TIUD0,DA,+$G(DUZ)) S DR=DR_";1208////"_$P(TIUD12,U,8)
- S DR=DR_";1210////"_$P(TIUD12,U,10)_";1211////"_+$G(TIU("VLOC"))_";1212////"_$P($G(TIU("INST")),U)
+ S DR=DR_";1210////"_$P(TIUD12,U,10)_";1211////"_+$G(TIU("VLOC"))
  D ^DIE
  Q
 COPY13(DA,TIUD13,TIU) ; Copy 13-node

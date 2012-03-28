@@ -1,16 +1,14 @@
-HLOUSR1 ;ALB/CJM/OAK/PIJ -ListManager Screen for viewing messages;12 JUN 1997 10:00 am ;03/21/2010
- ;;1.6;HEALTH LEVEL SEVEN;**126,134,137,138,143,147**;Oct 13, 1995;Build 15
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOUSR1 ;ALB/CJM -ListManager Screen for viewing messages;12 JUN 1997 10:00 am ;03/14/2005  08:08
+ ;;1.6;HEALTH LEVEL SEVEN;**126**;Oct 13, 1995
  ;
 EN ;
- N MSGIEN,SEGS
+ N MSGIEN
  S MSGIEN=$$PICKMSG
  I 'MSGIEN S VALMBCK="R" Q
  D EN^VALM("HLO SINGLE MESSAGE DISPLAY")
  Q
  ;
 HDR ;
- ;
  Q
  ;
 BLANK ;
@@ -26,14 +24,12 @@ DISPLAY ;
  D SHOWMSG($P(MSGIEN,"^"),$P(MSGIEN,"^",2))
  Q
  ;
-PICKMSG(DEFAULT) ;
+PICKMSG() ;
  ;ask the user to select a message & return its ien
- ;Input: DEFAULT (optional) message id to display to user as default
  N MSGIEN,DIR,COUNT,LIST
  D FULL^VALM1
  S DIR(0)="F3:30"
  S DIR("A")="Message ID"
- S:$L($G(DEFAULT)) DIR("B")=DEFAULT
  S DIR("?")="Enter the full Message Control ID or Batch Control ID of the message, or '^' to exit."
 PICK D ^DIR
  I $D(DIRUT)!(Y="") Q 0
@@ -85,58 +81,32 @@ SHOWMSG(MSGIEN,SUBIEN) ;
  ;Input:
  ;Output:
  ;
- N MSG,I,TEMP,LINE,HDR,TRIES,STATUS
+ N MSG,I,TEMP,LINE
  S VALMCNT=0
  S SUBIEN=+$G(SUBIEN)
  I '$$GETMSG^HLOMSG(MSGIEN,.MSG) W !,"UNABLE TO DISPLAY THE MESSAGE",!! Q
- I SUBIEN S STATUS=MSG("STATUS") D GETMSGB^HLOMSG1(.MSG,SUBIEN,.MSG) I MSG("STATUS")="" S MSG("STATUS")=STATUS
- S HDR(1)=MSG("HDR",1),HDR(2)=MSG("HDR",2)
- I $$PARSEHDR^HLOPRS(.HDR)
+ I SUBIEN D GETMSGB^HLOMSG1(.MSG,SUBIEN,.MSG)
+ ;
  S I=0
  ;** administrative information **
  S @VALMAR@($$I,0)=$$CJ("Administrative Information",80)
  D CNTRL^VALM10(VALMCNT,26,30,IORVON,IORVOFF)
- ;; ***patch HL*1.6*138 start
- S LINE="MsgID: "_$$LJ(MSG("ID"),18) ;;
- S:MSG("ACK TO")]"" LINE=LINE_$$LJ(" Application Ack To:",26)_MSG("ACK TO") ;;
- S:MSG("ACK BY")]"" LINE=LINE_$$LJ(" Application Ack'd By:",26)_MSG("ACK BY") ;;
- S @VALMAR@($$I,0)=LINE ;;
- ;;
- S LINE=""
- S:MSG("DIRECTION")="OUT" TRIES=$G(^HLB(MSGIEN,"TRIES"))
- ;
- ;determine current status - as opposed to final status
- D
- .I MSG("STATUS")="SU" S MSG("STATUS")="SUCCESSFUL" Q
- .I MSG("STATUS")="ER" S MSG("STATUS")="ERROR" Q
- .I MSG("DIRECTION")="IN" D  Q
- ..I '$G(MSG("STATUS","APP HANDOFF")) S MSG("STATUS")="PENDING ON RECEIVING APPLICATION" Q
- .I MSG("DIRECTION")="OUT" D  Q
- ..I MSG("DT/TM")="" D  Q
- ...I $O(^HLB("QUEUE","OUT",MSG("STATUS","LINK NAME")_":"_MSG("STATUS","PORT"),MSG("STATUS","QUEUE"),0))=MSG("IEN") S MSG("STATUS")="TRANSMISSION IN PROGRESS" Q
- ...S MSG("STATUS")="PENDING ON OUTGOING QUEUE" Q
- ..I $G(HDR("APP ACK TYPE"))="AL",'$G(MSG("STATUS","APP ACK'D")),$G(MSG("ACK BY"))="" S MSG("STATUS")="TRANSMITTED, PENDING RECEIPT OF APPLICATION ACKNOWLEDGEMENT" Q
- ;; ***patch HL*1.6*138 end
- ;
- S LINE="Status: "_$$LJ(MSG("STATUS"),79)
+ S LINE="MsgID: "_$$LJ(MSG("ID"),18)
+ S LINE=LINE_"Status: "_$$LJ(MSG("STATUS"),5)
+ S:MSG("ACK TO")]"" LINE=LINE_$$LJ(" Ack To:",14)_MSG("ACK TO")
+ S:MSG("ACK BY")]"" LINE=LINE_$$LJ(" Ack'd By:",14)_MSG("ACK BY")
  S @VALMAR@($$I,0)=LINE
  I MSG("STATUS","ERROR TEXT")]"" S @VALMAR@($$I,0)="Error: "_"** "_MSG("STATUS","ERROR TEXT")_" **"
- ;;**138 start cjm
- ;S @VALMAR@($$I,0)="Dir:   "_$$LJ($S(MSG("DIRECTION")="IN":"INCOMING",1:"OUTGOING"),10)_$$LJ("  Trans Dt/Tm: ",12)_$$FMTE^XLFDT(MSG("DT/TM"),2)_$$LJ("  Purge DT/TM: ",8)_$$FMTE^XLFDT(MSG("STATUS","PURGE"),2)
- S @VALMAR@($$I,0)="Direction: "_$$LJ($S(MSG("DIRECTION")="IN":"IN",1:"OUT"),4)_$$LJ("  TransDt/Tm"_$S($G(TRIES):"("_TRIES_"x): ",1:": "),12)_$$FMTE^XLFDT(MSG("DT/TM"),2)_$$LJ("  Purge DT/TM: ",8)_$$FMTE^XLFDT(MSG("STATUS","PURGE"),2)
- ;** 138 end cjm
+ S @VALMAR@($$I,0)="Dir:   "_$$LJ($S(MSG("DIRECTION")="IN":"INCOMING",1:"OUTGOING"),30)_$$LJ("  Trans Dt/Tm: ",12)_$$FMTE^XLFDT(MSG("DT/TM"),2)
  S @VALMAR@($$I,0)="Link:  "_$$LJ(MSG("STATUS","LINK NAME"),29)_"   "_$$LJ("Queue: ",13)_MSG("STATUS","QUEUE")
- I $L($G(MSG("STATUS","SEQUENCE QUEUE"))) D
- .S @VALMAR@($$I,0)="Sequence Queue: "_MSG("STATUS","SEQUENCE QUEUE")_"    Moved: "_$S(MSG("STATUS","MOVED TO OUT QUEUE"):"YES",1:"NO")
  I MSG("STATUS","ACCEPT ACK'D") D
- .S @VALMAR@($$I,0)="Accept Ack: "_$$LJ(MSG("STATUS","ACCEPT ACK ID"),26)_$$LJ(" DT/TM Ack'd: ",14)_$$FMTE^XLFDT(MSG("STATUS","ACCEPT ACK DT/TM"),2)
+ .S @VALMAR@($$I,0)="Accept Ack: "_$$LJ(MSG("STATUS","ACCEPT ACK ID"),26)_$$LJ(" At: ",14)_$$FMTE^XLFDT(MSG("STATUS","ACCEPT ACK DT/TM"),2)
  .S @VALMAR@($$I,0)="   "_MSG("STATUS","ACCEPT ACK MSA")
  I MSG("DIRECTION")="IN" D
+ .N ACTION,HDR
  .S LINE="App Response Rtn: "
- .;START HL*1.6*138 CJM
- .;I $L($G(MSG("STATUS","APP ACK RESPONSE"))) S LINE=$$LJ(LINE_MSG("STATUS","APP ACK RESPONSE"),38)_" Executed: "_$S(MSG("STATUS","APP HANDOFF"):"   YES",1:"   NO")
- .S LINE=$$LJ(LINE_$S($L($G(MSG("STATUS","ACTION"))):MSG("STATUS","ACTION"),1:"n/a"),38)_" Executed: "_$S('$L($G(MSG("STATUS","ACTION"))):"n/a",MSG("STATUS","APP HANDOFF"):"   YES",1:"   NO")
- .;;END HL*1.6*138 CJM
+ .M HDR=MSG("HDR")
+ .I $$PARSEHDR^HLOPRS(.HDR),$$ACTION^HLOAPP(.HDR,.ACTION) S LINE=$$LJ(LINE_ACTION,38)_" Executed: "_$S(MSG("STATUS","APP HANDOFF"):"   YES",1:"   NO")
  .S @VALMAR@($$I,0)=LINE
  I MSG("DIRECTION")="OUT",(MSG("STATUS","APP ACK'D")!MSG("STATUS","ACCEPT ACK'D")) D
  .S LINE=""
@@ -157,85 +127,55 @@ SHOWMSG(MSGIEN,SUBIEN) ;
  E  D
  .S @VALMAR@($$I,0)=$$CJ("Individual Message Text (Batched)",80)
  .D CNTRL^VALM10(VALMCNT,23,35,IORVON,IORVOFF)
- ;; START 138
- ;D SHOWBODY(.MSG,$G(SUBIEN))
- D SHOWBODY(.MSG,$G(SUBIEN),.SEGS)
- ;; END 138
+ D SHOWBODY(.MSG,$G(SUBIEN))
  ;
  ;** display its application acknowledgment **
- ;**P143 START CJM
- ;I MSG("ACK BY")]"",$$FINDMSG^HLOMSG1(MSG("ACK BY"),.TEMP)=1 S MSGIEN=TEMP(1) D
- I $G(MSG("ACK BY IEN")) S MSGIEN=MSG("ACK BY IEN") D
- .;**P143 END CJM
- .N MSG,STATUS
+ I MSG("ACK BY")]"",$$FINDMSG^HLOMSG1(MSG("ACK BY"),.TEMP)=1 S MSGIEN=TEMP(1) D
+ .N MSG
  .Q:'$$GETMSG^HLOMSG(+MSGIEN,.MSG)
- .I $P(MSGIEN,"^",2) S STATUS=MSG("STATUS") D GETMSGB^HLOMSG1(.MSG,SUBIEN,.MSG) I MSG("STATUS")="" S MSG("STATUS")=STATUS
+ .I $P(MSGIEN,"^",2) D GETMSGB^HLOMSG1(.MSG,$P(MSGIEN,"^",2),.MSG)
  .S @VALMAR@($$I,0)=""
  .S @VALMAR@($$I,0)=$$CJ("Application Acknowledgment",80)
  .D CNTRL^VALM10(VALMCNT,26,30,IORVON,IORVOFF)
  .D SHOWBODY(.MSG,$P(MSGIEN,"^",2))
- ;
- ;** display the original message **
- ;**P143 START CJM
- ;I MSG("ACK TO")]"",$$FINDMSG^HLOMSG1(MSG("ACK TO"),.TEMP)=1 S MSGIEN=TEMP(1) D
- I $G(MSG("ACK TO IEN")) S MSGIEN=MSG("ACK TO IEN") D
- .;**P143 END CJM
- .N MSG
- .Q:'$$GETMSG^HLOMSG(+MSGIEN,.MSG)
- .I $P(MSGIEN,"^",2) S STATUS=MSG("STATUS") D GETMSGB^HLOMSG1(.MSG,SUBIEN,.MSG) I MSG("STATUS")="" S MSG("STATUS")=STATUS
- .S @VALMAR@($$I,0)=""
- .S @VALMAR@($$I,0)=$$CJ("Original Message",80)
- .D CNTRL^VALM10(VALMCNT,26,30,IORVON,IORVOFF)
- .D SHOWBODY(.MSG,$P(MSGIEN,"^",2))
  Q
  ;
-SHOWBODY(MSG,SUBIEN,SEGS) ;
+SHOWBODY(MSG,SUBIEN) ;
  N NODE,I,SEG,QUIT
  S QUIT=0
- S SEGS("ARY")=VALMAR
- S SEGS("TOP")=VALMCNT+1
  M SEG=MSG("HDR")
- D ADD(.SEG,.SEGS)
+ D ADD(.SEG)
  S MSG("BATCH","CURRENT MESSAGE")=0
  I MSG("BATCH") D
  .I $G(SUBIEN) D  Q
  ..S MSG("BATCH","CURRENT MESSAGE")=SUBIEN
- ..F  Q:'$$HLNEXT^HLOMSG(.MSG,.SEG)  D ADD(.SEG,.SEGS)
+ ..F  Q:'$$HLNEXT^HLOMSG(.MSG,.SEG)  D ADD(.SEG)
  .S MSG("BATCH","CURRENT MESSAGE")=0
  .N LAST S LAST=0
  .F  Q:'$$NEXTMSG^HLOMSG(.MSG,.SEG)  D  Q:QUIT
- ..D ADD(.SEG,.SEGS)
+ ..D ADD(.SEG)
  ..S LAST=MSG("BATCH","CURRENT MESSAGE")
- ..F  Q:'$$HLNEXT^HLOMSG(.MSG,.SEG)  D ADD(.SEG,.SEGS)
- .I MSG("DIRECTION")="OUT" K SEG S SEG(1)="BTS"_$E($G(MSG("HDR",1)),4)_LAST D ADD(.SEG,.SEGS)
- .;
+ ..F  Q:'$$HLNEXT^HLOMSG(.MSG,.SEG)  D ADD(.SEG)
+ .I MSG("DIRECTION")="OUT" K SEG S SEG(1)="BTS"_$E($G(NODE(1)),4)_LAST D ADD(.SEG)
  E  D
  .F  Q:'$$HLNEXT^HLOMSG(.MSG,.SEG)  D  Q:QUIT
- ..D ADD(.SEG,.SEGS)
- S SEGS("BOT")=VALMCNT
+ ..D ADD(.SEG)
  Q
 I() ;
  S VALMCNT=VALMCNT+1
  Q VALMCNT
-ADD(SEG,SEGS) ;
+ADD(SEG) ;
  N QUIT,I,J,LINE
  S QUIT=0
- S SEGS=$G(SEGS)+1
  S (I,J)=1
  S LINE(1)=$E(SEG(1),1,80),SEG(1)=$E(SEG(1),81,9999)
  I SEG(1)="" K SEG(1)
  D SHIFT(.I,.J)
  S @VALMAR@($$I,0)=LINE(1)
- ;; START 138
- D CNTRL^VALM10(VALMCNT,1,3,IOINHI,IOINORM)
- ;;END 138
- S SEGS(SEGS)=VALMCNT
  S I=1
  F  S I=$O(LINE(I)) Q:'I  D
  .S @VALMAR@($$I,0)=LINE(I)
- .;;START 138
- .;D CNTRL^VALM10(VALMCNT,1,1,IORVON,IORVOFF)
- .;END 138
+ .D CNTRL^VALM10(VALMCNT,1,1,IORVON,IORVOFF)
  Q
  ;
 SHIFT(I,J) ;
@@ -248,7 +188,7 @@ SHIFT(I,J) ;
  .I SEG(I)="" K SEG(I)
  E  D
  .S J=J+1
- .S LINE(J)=""
+ .S LINE(J)="-"
  D SHIFT(.I,.J)
  Q
  ;
@@ -277,20 +217,14 @@ SCRLMODE ;scroll mode
 HLP ;
  Q
  ;
-IFOPEN(LINK,TIME) ;
+IFOPEN(LINK) ;
  ;returns 1 if the link can be opened, otherwise 0
  ;
  ;Inputs:
  ;  LINK - name of the link (required), optionally post-fixed with ":"_<port #>, will default to that defined for link
- ;  TIME (optional) defaults to 15 seconds
  ;
  N LINKNAME,LINKARY,POP,IO,IOF,IOST,OPEN,PORT
  S OPEN=0
- ;
- ;**P147 CJM adds TIME as an optional input parameter
- I '$G(TIME) S TIME=15
- ;**P147 CJM END
- ;
  S LINKNAME=$P(LINK,":")
  S PORT=$P(LINK,":",2)
  Q:LINKNAME="" 0
@@ -304,7 +238,7 @@ IFOPEN(LINK,TIME) ;
  .S DATA(.08)=LINKARY("DOMAIN")
  .Q:$$UPD^HLOASUB1(870,LINKARY("IEN"),.DATA)
  D:$G(LINKARY("IP"))'=""
- .D CALL^%ZISTCP(LINKARY("IP"),LINKARY("PORT"),TIME)
+ .D CALL^%ZISTCP(LINKARY("IP"),LINKARY("PORT"),15)
  .S OPEN='POP
  I 'OPEN,LINKARY("DOMAIN")'="",$G(^HLTMP("DNS LAST",LINKARY("IEN")))<$$DT^XLFDT D
  .N IP
@@ -314,7 +248,7 @@ IFOPEN(LINK,TIME) ;
  ..N DATA
  ..S DATA(400.01)=IP,LINKARY("IP")=IP
  ..Q:$$UPD^HLOASUB1(870,LINKARY("IEN"),.DATA)
- ..D CALL^%ZISTCP(LINKARY("IP"),LINKARY("PORT"),TIME)
+ ..D CALL^%ZISTCP(LINKARY("IP"),LINKARY("PORT"),15)
  ..S OPEN='POP
  C:OPEN IO
  ;D CLOSE^%ZISTCP

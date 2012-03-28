@@ -1,7 +1,5 @@
 IBDFDE ;ALB/AAS - AICS Data Entry, Entry point by form ; 24-FEB-96
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**3,51**;APR 24, 1997
- ;
- W !,?4,"** This option is OUT OF ORDER **" QUIT   ;Code set Versioning
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 % N %,%H,C,I,J,X,Y,ADD,DEL,ASKOTHER,DIR,DIC,DA,CNT,DFN,DIRUT,DUOUT,DTOUT,POP,RTN,FRMDATA,IBY,IBQUIT,IBDF,IBDOBJ,IBDPTSTI,IBDPTSTE,IBDPTNM,IBDPTDTI,SEL
  N IBDPTDTE,IBDFMNME,IBDFMIEN,IBDFMSTI,IBDFMSTE,IBDFMIDI,IBDCLNME,IBFORM,IBDCLNPH,IBDPID,IBDPTPRI,IBDSEL,IBDPI,IBDCO,PXCA,SDCLST,PXCASTAT,PXKNODA,PXKNODB,IBDREDIT,IBDASK,IBDPRE,IBDOK,IBD,IBDCKOUT
@@ -58,9 +56,6 @@ OVER ; -- start here to re-edit an entry
  .W:'IBDCKOUT "."
  .W:IBDCKOUT " and was checked out",!,"on "_$$FMTE^XLFDT(IBDCKOUT)_", Status is "_$G(IOINHI)_IBDPTSTE_$G(IOINORM)_".",!
  .S DIR("?")="Data Entry on this form appears to have been completed by either scanning or data entry.  Deleting or editing of data is not allowed with this option.  Answer 'Yes' if you wish to continue, or 'No' if to select another form."
- .S DIR("?",1)="Enter ?? to see a list of data stored in PCE."
- .S DIR("?",2)=" "
- .S DIR("??")="^D WRITE^IBDFRPC5"
  .S DIR(0)="Y",DIR("B")="No",DIR("A")="Are you sure you want to continue"
  .D ^DIR K DIR I Y=1 S IBQUIT=0
  ;
@@ -70,9 +65,6 @@ OVER ; -- start here to re-edit an entry
  .S IBQUIT=1
  .W !!,"Appointment has already been Checked Out on "_$$FMTE^XLFDT(IBDCKOUT)_",",!,"Status is: "_$G(IOINHI)_IBDPTSTE_$G(IOINORM)_".",!
  .S DIR("?")="This appointment appears to have been checked out on "_$$FMTE^XLFDT(IBDCKOUT)_".  Deleting or editing of data is not allowed with this option.  Answer 'Yes' if you wish to continue, or 'No' if to select another form."
- .S DIR("?",1)="Enter ?? to see a list of data stored in PCE."
- .S DIR("?",2)=" "
- .S DIR("??")="^D WRITE^IBDFRPC5"
  .S DIR(0)="Y",DIR("B")="No",DIR("A")="Are you sure you want to continue"
  .D ^DIR K DIR I Y=1 S IBQUIT=0
  ;

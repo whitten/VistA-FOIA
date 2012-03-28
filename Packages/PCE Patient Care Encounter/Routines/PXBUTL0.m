@@ -1,5 +1,5 @@
-PXBUTL0 ;ISL/JVS,ESW - UTILITIES-3 LINE HELP MESSAGES ;6/17/03 10:29
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**108,124,152**;Aug 12, 1996
+PXBUTL0 ;ISL/JVS,ESW - UTILITIES-3 LINE HELP MESSAGES ; 12/5/02 11:47am
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**108**;Aug 12, 1996
  ;
 HELP(CAT) ;Help messages written when ?'s are entered.
  ;Each message must have 3 line although any of them can be blank.
@@ -127,22 +127,13 @@ WH3 ;--WHICH when selecting different line options 3 ?
  S MES(3)=""
  Q
 QU1 ;--QUANTITY when changing quantity of CPT's ?
- S MES(1)="This is the number of times this CPT was done"
- S MES(2)="to the patient during the encounter."
- S MES(3)=""
- Q
-QU2 ;--QUANTITY when changing quantity of CPT'S ??
- S MES(1)="Enter a number between 0 and 999 indicating how many"
- S MES(2)="times this procedure was performed on the patient"
- S MES(3)="during this encounter."
- Q
-OP1 ;--ORDERING PROVIDER for CPT's ?
- S MES(1)="This is the ordering provider for the Procedure"
+ S MES(1)="This is the number of times this CPT was done to the patient"
  S MES(2)="during the encounter."
  S MES(3)=""
  Q
-OP2 ;--ORDERING PROVIDER for CPT'S ??
- S MES(1)="Enter the ordering provider for this"
- S MES(2)="procedure performed on the patient"
+QU2 ;--QUANTITY when changing quantity of CPT'S ??
+ S MES(1)="Enter a number between 0 and 99 indicating how many times"
+ S MES(2)="this procedure was performed on the patient"
  S MES(3)="during this encounter."
  Q
+ ;

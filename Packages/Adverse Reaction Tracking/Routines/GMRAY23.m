@@ -19,7 +19,7 @@ PRETRAN ;Load descriptions for files 120.82 and 120.83
  Q
  ;
 GETERMS ;Make the request for the allergy standardized terms to be pushed to the site
- N TMP,GMRADOM
+ Q  N TMP,GMRADOM
  S TMP=$$GETIEN^HDISVF09("ALLERGIES",.GMRADOM)
  D EN^HDISVCMR(GMRADOM,"")
  Q

@@ -1,4 +1,5 @@
-XPDNTEG ;ISC/XTSUMBLD KERNEL - Package checksum checker ;JUL 10, 1995@09:24:52
+XPDNTEG ;ISC/XTSUMBLD KERNEL - Package checksum checker ;JUL 10, 1995@09:24:52 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;JUL 10, 1995
  ;;7.2;JUL 10, 1995@09:24:52
  S XT4="I 1",X=$T(+3) W !!,"Checksum routine created on ",$P(X,";",4)," by KERNEL V",$P(X,";",3),!

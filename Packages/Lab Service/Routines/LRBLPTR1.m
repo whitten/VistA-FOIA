@@ -1,6 +1,7 @@
-LRBLPTR1 ;AVAMC/REG - TRANSFUSIONS/HEM RESULTS ;3/5/91  09:20 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPTR1 ; IHS/DIR/FJE - TRANSFUSIONS/HEM RESULTS 3/5/91 09:20 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  S LRS=$O(^LAB(61,"B","BLOOD",0)) I 'LRS W $C(7),!,"BLOOD must be an entry in TOPOGRAPHY file (#61)",! Q
  S X="BLOOD BANK" D ^LRUTL Q:Y=-1  S B=0 F A=0:0 S A=$O(^LRO(69.2,LRAA,61,LRS,2,A)) Q:'A  S Y=^(A,0),W=$P(Y,"^",2),Y=+Y D S
  S LRT(0)=B I 'B W $C(7),!!,"Must have tests to print entered in the",!,"'Tests for inclusion in transfusion report option' in",!,"Blood bank supervisor menu",! Q
@@ -27,5 +28,6 @@ H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,W(2),?31,W(10),?45,"DOB: ",W(4),!,"Location:",?12,W(5),!,"Mo/Da TIME",?12,"Blood component"
  S X(1)=0 F X=1:1:LRT(0) S X(1)=X(1)+1 S:$X>(IOM-8) X(1)=1 W:$X>(IOM-8) !?32 W ?32+(8*X(1)),$P(LRT(X),"^",7)
  W !,LR("%") Q
-G S X=^LR(LRDFN,0),(LRDPF,LRPF)=$P(X,"^",2),Y=$P(X,"^",3),X=^DIC(LRPF,0,"GL"),X=@(X_Y_",0)"),W(2)=$P(X,"^"),DFN=$S(LRPF=2:Y,1:""),Y=$P(X,"^",3),SSN=$P(X,"^",9),W(5)=$S($D(^(.1)):^(.1),1:"") D SSN^LRU,D^LRU S W(4)=Y,W(10)=SSN Q
+G ;S X=^LR(LRDFN,0),(LRDPF,LRPF)=$P(X,"^",2),Y=$P(X,"^",3),X=^DIC(LRPF,0,"GL"),X=@(X_Y_",0)"),W(2)=$P(X,"^"),DFN=$S(LRPF=2:Y,1:""),Y=$P(X,"^",3),SSN=$P(X,"^",9),W(5)=$S($D(^(.1)):^(.1),1:"") D SSN^LRU,D^LRU S W(4)=Y,W(10)=SSN Q
+ S X=^LR(LRDFN,0),(LRDPF,LRPF)=$P(X,"^",2),(DFN,Y)=$P(X,"^",3),X=^DIC(LRPF,0,"GL"),X=@(X_Y_",0)"),W(2)=$P(X,"^"),Y=$P(X,"^",3),SSN=$P(X,"^",9),W(5)=$S($D(^(.1)):^(.1),1:"") D SSN^LRU,D^LRU S W(4)=Y,W(10)=HRCN Q  ;IHS/ANMC/CLS 11/1/95
  ;

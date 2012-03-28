@@ -1,5 +1,5 @@
-LRSTUF1 ;DALOI/CJS - MASS DATA ENTRY INTO FILE 63.04 ;5/13/03 1300
- ;;5.2;LAB SERVICE;**153,286**;Sep 27, 1994
+LRSTUF1 ;VA/DALOI/CJS - MASS DATA ENTRY INTO FILE 63.04 ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**153,286,1027**;NOV 01, 1997
  K ^TMP("LR",$J,"VTO"),M,LRSB,^TMP("LR",$J,"TMP")
  S DIC=68,DIC(0)="AEZMOQ" D ^DIC Q:Y<1  S LRAA=+Y
  S X=$$SELPL^LRVERA(DUZ(2))
@@ -31,7 +31,10 @@ L3 S LRA=X K LRSTUFF,DIC I X<3 W !,"What do you want entered?: " R LRSTUFF:DTIME
 LOOP R !,"Enter your selection(s) > ",X:DTIME I X="?" W !,"Enter a string of numbers separated with , . ^ or space,",!,"or a range of numbers, e.g. 50-75.  You may enter more than one line." G LOOP
  S D=$S(X[",":",",X[".":".",X["^":"^",1:" ") F I=1:1 S LRAC=$P(X,D,I) D:LRAC["-" RANGE^LRSTUF2 Q:LRAC=""  S LRAC(+LRAC)=""
  G LOOP:'(X=""!(X="^"))
- I $O(LRAC(0))>0 W !,"Editing the following:" S LRAC=0 F  S LRAC=$O(LRAC(LRAC)) Q:LRAC<1  I $D(^LRO(68,LRAA,1,LRAD,1,LRAC,0)) S LRDFN=+^(0),LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,"Acc #: ",LRAC,?15,PNM,?45,SSN
+ ; I $O(LRAC(0))>0 W !,"Editing the following:" S LRAC=0 F  S LRAC=$O(LRAC(LRAC)) Q:LRAC<1  I $D(^LRO(68,LRAA,1,LRAD,1,LRAC,0)) S LRDFN=+^(0),LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,"Acc #: ",LRAC,?15,PNM,?45,SSN
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ I $O(LRAC(0))>0 W !,"Editing the following:" S LRAC=0 F  S LRAC=$O(LRAC(LRAC)) Q:LRAC<1  I $D(^LRO(68,LRAA,1,LRAD,1,LRAC,0)) S LRDFN=+^(0),LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,"Acc #: ",LRAC,?15,PNM,?45,HRCN  ;IHS/ANMC/CLS
+ ;----- EN DIHS MODIFICATIONS
  K ^TMP("LR",$J,"T"),A,LRTSTS,LRORD
  S X=DUZ D DUZ^LRX
  R !,"If everything is OK, enter your initials: ",LRINI:DTIME I LRINI'=LRUSI!'$L(LRUSI) W !,"NOT APPROVED" G LREND

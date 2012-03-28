@@ -1,5 +1,5 @@
 PXRMGEDT ; SLC/PJH - PXRM General Edit/Add. ;11/08/2000
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
+ ;;1.5;CLINICAL REMINDERS;**2**;Jun 19, 2000
  ;
  ;
  ;Called from protocol PXRM SELECTION ADD

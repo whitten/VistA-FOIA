@@ -1,4 +1,5 @@
-LRAPBR3 ;DALOI/WTY - AP Browser Print Cont.;04/06/01
+LRAPBR3 ;VA/DALOI/WTY - AP Browser Print Cont.;04/06/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**259**;Sep 27, 1994
  ;
  ; This routine was created from LRSPRPT1 to be used for printing

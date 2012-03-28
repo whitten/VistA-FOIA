@@ -1,5 +1,8 @@
-SCRPRAC ;ALB/CMM - Practitioner Demographics ; 29 Jun 99  04:11PM
+SCRPRAC ;ALB/CMM - Practitioner Demographics ; 29 Jun 99  04:11PM [ 11/02/2000  10:08 AM ]
  ;;5.3;Scheduling;**41,52,177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 added call to list template
+ ;                        removed title line for list template
+ ;                        added blank lines between providers
  ;
  ;Practitioner Demographics Report
  ;
@@ -49,6 +52,8 @@ RET S NUMBER=0
  Q NUMBER
  ;
 QENTRY ;
+ I $E(IOST,1,2)="C-" D ^BSDSCRAC Q   ;IHS/ANMC/LJF 11/2/2000
+IHS ;EP; entry point for list template  ;IHS/ANMC/LJF 11/2/2000
  ;driver entry point
  S TITL="Practitioner Demographics"
  S STORE="^TMP("_$J_",""SCRPRAC"")"
@@ -87,10 +92,13 @@ PRINTIT(STORE,TITL) ;
  S PNAME="",(NEW,PAGE)=1,STOP=0 W:$E(IOST)="C" @IOF
  F  S PNAME=$O(@STORE@(PNAME)) Q:PNAME=""!(STOP)  S PIEN=0 D
  .F  S PIEN=$O(@STORE@(PNAME,PIEN)) Q:'PIEN!(STOP)  D
- ..I NEW D TITLE^SCRPU3(.PAGE,TITL)
+ ..;I NEW D TITLE^SCRPU3(.PAGE,TITL)           ;IHS/ANMC/LJF 11/2/2000
+ ..I '$G(VALM),NEW D TITLE^SCRPU3(.PAGE,TITL)  ;IHS/ANMC/LJF 11/2/2000
  ..;I 'NEW,$E(IOST)="C" D HOLD^SCRPU3(.PAGE,TITL)
  ..;I 'NEW,$E(IOST)'="C" 
- ..I 'NEW D NEWP1^SCRPU3(.PAGE,TITL)
+ ..;I 'NEW D NEWP1^SCRPU3(.PAGE,TITL)           ;IHS/ANMC/LJF 11/2/2000
+ ..I '$G(VALM),'NEW D NEWP1^SCRPU3(.PAGE,TITL)  ;IHS/ANMC/LJF 11/2/2000
+ ..I 'NEW W !!                                  ;IHS/ANMC/LJF 11/2/2000
  ..Q:STOP  S (NEW,SCI)=0
  ..F  S SCI=$O(@STORE@(PNAME,PIEN,SCI)) Q:'SCI!(STOP)  D
  ...I $E(IOST)="C",$Y>(IOSL-3) D HOLD^SCRPU3(.PAGE,TITL) Q:STOP  D CONT

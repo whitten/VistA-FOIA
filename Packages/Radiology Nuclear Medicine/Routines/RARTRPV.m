@@ -1,14 +1,9 @@
-RARTRPV ;HISC/FPT-Resident Pre-Verify Report ;09/26/08  16:29
- ;;5.0;Radiology/Nuclear Medicine;**26,56,95**;Mar 16, 1998;Build 7
- ;Supported IA #10104 REPEAT^XLFSTR
- ;Supported IA #10035 ^DPT(
- ;Supported IA #10060 and 2056 GET1^DIQ of file 200
- ;Supported IA #10076 ^XUSEC
- N DIERR
+RARTRPV ;HISC/FPT-Resident Pre-Verify Report ;10/3/97  15:54
+ ;;5.0;Radiology/Nuclear Medicine;**26**;Mar 16, 1998
  D SET^RAPSET1 I $D(XQUIT) K XQUIT Q
- K RAVER S:$D(^VA(200,DUZ,0)) RAVER=$P(^(0),"^") I '$D(RAVER) W !!,$C(7),"Your name must be defined in the NEW PERSON File to continue." G Q
- I '$D(^VA(200,"ARC","R",DUZ)) W !!,$C(7),"You are not classified as a Rad/Nuc Med Interpreting Resident." G Q
- S RAINACT=$$GET1^DIQ(200,DUZ_",",53.4,"I") ; grab Inactive Date (if any)
+ K RAVER S:$D(^VA(200,DUZ,0)) RAVER=$P(^(0),"^") I '$D(RAVER) W !!,*7,"Your name must be defined in the NEW PERSON File to continue." G Q
+ I '$D(^VA(200,"ARC","R",DUZ)) W !!,*7,"You are not classified as a Rad/Nuc Med Interpreting Resident." G Q
+ S RAINACT=$P($G(^VA(200,DUZ,"PS")),"^",4) ; grab Inactive Date (if any)
  I RAINACT,(RAINACT'>DT) W !!,$C(7),"You are not classified as an active Rad/Nuc Med Interpreting Resident." K RAINACT G Q
  K RAINACT S RAONLINE="" W ! D ES^RASIGU G Q:'%
  S RARAD=DUZ,RAD="ARES"
@@ -16,7 +11,7 @@ RARTRPV ;HISC/FPT-Resident Pre-Verify Report ;09/26/08  16:29
 SRTRPT K RA,RARPTX,^TMP($J,"RA") S (RATOT,RARPT)=0
  F  S RARPT=$O(^RARPT(RAD,RARAD,RARPT)) Q:'RARPT  I $D(^RARPT(RARPT,0)) S RARTDT=$S($P(^(0),"^",6)="":9999999.9999,1:$P(^(0),"^",6)) I $P(^RARPT(RARPT,0),U,12)="" D
  .Q:$$STUB^RAEDCN1(RARPT)  ;skip stub report 031501
- .Q:"^V^EF^X^"[("^"_$P($G(^RARPT(+RARPT,0)),"^",5)_"^")  ;skip if V,EF,X
+ .Q:$P($G(^RARPT(+RARPT,0)),"^",5)="V"  ;skip if already verified 031501
  .S ^TMP($J,"RA","DT",RARTDT,RARPT)=""
  .S RATOT=RATOT+1
  I 'RATOT W !!,"You have no Unverified Reports." G Q
@@ -72,14 +67,14 @@ RASET S Y=RARPT D RASET^RAUTL2 Q:'Y
  . Q
  Q
 LOCK S RACN=+$P(^RARPT(RARPT,0),"^",4)
- W !!,$C(7),"Another user is editing this report",$S($G(RACN)]"":" (Case # "_RACN_")",1:""),".  Please try again later." H 4 K RACN G GETRPT
+ W !!,*7,"Another user is editing this report",$S($G(RACN)]"":" (Case # "_RACN_")",1:""),".  Please try again later." H 4 K RACN G GETRPT
  Q
 VER ; report was verified since tmp global was built
  S RACN=$G(^RARPT(RARPT,0))
  S RACN("CASE")=+$P(RACN,U,4)
  S RACN("PAT")=+$P(RACN,U,2)
  S RACN("VER")=+$P(RACN,U,9)
- W !!,$C(7),$$GET1^DIQ(200,+RACN("VER")_",",.01)_" verified report for "_$P(^DPT(RACN("PAT"),0),U)
+ W !!,*7,$P($G(^VA(200,+RACN("VER"),0)),U)_" verified report for "_$P(^DPT(RACN("PAT"),0),U)
  W !,"(Case # "_RACN("CASE")_") since you began this option."
  H 4 K RACN G GETRPT
  Q
@@ -89,6 +84,6 @@ EDTCHK ; is user permitted to edit report
  K RASTATUS
  I $D(^XUSEC("RA MGR",DUZ)) Q
  I $P(RAMDV,"^",22)=1 Q
- W $C(7),!!,"The STATUS for this case is CANCELLED. You may not enter a report.",!!
+ W *7,!!,"The STATUS for this case is CANCELLED. You may not enter a report.",!!
  S RARDX="C" ;Reset RARDX so user can only verify.
  Q

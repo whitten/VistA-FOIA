@@ -1,5 +1,5 @@
 RAO7RO ;HISC/GJC,FPT-Request message from OE/RR. ;9/11/98  11:56
- ;;5.0;Radiology/Nuclear Medicine;**1,2,13,15,75**;Mar 16, 1998;Build 4
+ ;;5.0;Radiology/Nuclear Medicine;**1,2,13,15**;Mar 16, 1998
  ;
  ;------------------------- Variable List -------------------------------
  ; RAFLG=flag indicates ORC reached     RAHLFS="|"
@@ -38,9 +38,7 @@ EN1(RAMSG) ; Pass in the message from OE/RR.  Decipher information.
  ..I RAERR=35 S RAERR1=RAERR1_" Req Entered Dt="_$G(RAORC15)
  ..S RAERR=$$EN1^RAO7RO1(RAERR)_" "_$G(RAERR1) K RAERR1
  ..D REJ^RAO7OKS("OC",RAERR) Q
- .;if CLINICAL HISTORY was passed from CPRS and it failed the CLINICAL HISTORY data
- .;requirements, reject the message
- .I $P(RACLIN,U)=1,$P(RACLIN,U,2)'=1 S RAERR=$$EN1^RAO7RO1(15) D REJ^RAO7OKS("OC",RAERR) Q
+ .I $G(RACLIN) S RAERR=$$EN1^RAO7RO1(15) D REJ^RAO7OKS("OC",RAERR) Q
  .K ERR
  .; Update 'REQUEST STATUS TIMES' multiple if parameter dictates!
  .I "Yy"[RADIV(.119) D

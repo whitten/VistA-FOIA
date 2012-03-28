@@ -83,7 +83,7 @@ NOVA ;Sites are not allowed to use VA in their names.
  . N DIE,DR
  . S DIE=ROOT,DR="[PXTT EDIT PAT. EDUCATION]"
  . D ^DIE
- . Q 
+ . Q
  Q
  ;
  ;=======================================================================

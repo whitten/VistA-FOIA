@@ -1,4 +1,5 @@
-LRLABLIO ;DALOI/TGA/JMC - TESTS LABEL PRINTER ;8/8/89  11:17
+LRLABLIO ;DALOI/TGA/JMC - TESTS LABEL PRINTER ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**1018,1022,1027**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**107,161,218**;Sep 27, 1994
  ;
  ; Reference to File #3.5 supported by DBIA #2469
@@ -25,13 +26,25 @@ LRLABLIO ;DALOI/TGA/JMC - TESTS LABEL PRINTER ;8/8/89  11:17
  S %ZIS("A")="Print labels on: ",%ZIS="NQ"
  ; Setup handle for user's LABEL device.
 2 D OPEN^%ZISUTL("LRLABEL",,.%ZIS)
- I POP!(IO=IO(0)) D BD Q
+ ; I POP!(IO=IO(0)) D BD Q
+ ;----- BEGIN IHS/OIT/MKK MOD LR*5.2*1022
+ ;      If OR half of the above IF statement, (IO=IO(0)), is left in,
+ ;      then it is impossible to test printer to the screen.
+ I POP D BD Q
+ ;----- END IHS/OIT/MKK MOD LR*5.2*1022
  S LRLABLIO=ION_";"_IOST_";"_IOM_";"_IOSL
  I $D(IO("Q")) S LRLABLIO("Q")=1
  I $E(IOST,1)'="P" D  G:Y'=1 2
  . N DIR,DIRUT,DTOUT,DUOUT
  . D USE^%ZISUTL("LRHOME")
- . S DIR(0)="YAO",DIR("A",1)="NOT printing on a printer.",DIR("A")="Are you sure"
+ . ;S DIR(0)="YAO",DIR("A",1)="NOT printing on a printer.",DIR("A")="Are you sure?"
+ . ;----- BEGIN IHS/OIT/MKK MOD LR*5.2*1022
+ . S DIR(0)="YAO"
+ . S DIR("A",1)="     NOT printing on a printer."
+ . S DIR("A",2)=" "
+ . S DIR("A")="     Is this correct? "
+ . S DIR("B")="YES"
+ . ;----- END IHS/OIT/MKK MOD LR*5.2*1022
  . D ^DIR
  ; Device on another cpu, can't test.
  I $D(IOCPU) D  Q
@@ -49,7 +62,7 @@ LRLABLIO ;DALOI/TGA/JMC - TESTS LABEL PRINTER ;8/8/89  11:17
  S DIR("?")="Enter 'YES' if you want to test the printer, 'NO' if you do not."
  D ^DIR
  I $D(DIRUT) D BD Q
- I Y<1 G K ; Don't want to test
+ I Y<1 G K  ; Don't want to test
  D OPEN^%ZISUTL("LRLABEL",LRLABLIO)
  I POP D  G 1
  . D USE^%ZISUTL("LRHOME")
@@ -71,14 +84,22 @@ T ; Print test label
  ;
  N I,N,PNM,SSN
  N LRACC,LRBAR,LRBARID,LRCE,LRDAT,LRINFW,LRLLOC,LRPREF,LRAN,LRRB,LRTOP,LRTS,LRUID,LRURG,LRURG0,LRURGA,LRXL
+ NEW DOB,SEX            ; IHS/OIT/MKK - LR*5.2*1027
  ;
  ; Set up variables for test label
  S PNM="TEST-LABEL-DO-NOT-USE",SSN="000-00-0000P",LRDAT="XX/XX/XX",LRLLOC="LAB",LRRB=1
  S LRACC="SITE-TEST-LABEL",LRCE="9999999",LRPREF="SMALL "
  S LRTOP="TEST-TUBE",LRTS(1)="Don't-use",LRTS(2)="this-label"
- S LRINFW="Patient  info  field",(LRBARID,LRUID)="0000000000",LRAN="000",I=1,N=1,LRXL=0
+ S LRINFW="Patient-info-field",(LRBARID,LRUID)="0000000000",LRAN="000",I=1,N=1,LRXL=0
  S (LRURG,LRURG0)=1
  S LRURGA=$$URGA^LRLABLD(LRURG0)
+ ; ----- BEGIN IHS/OIT/MKK MOD LR*5.2*1022
+ S LRAA=0
+ S LRAD=0
+ S PROV="TEST,PROV"
+ S DOB="XX/XX/XX"
+ S SEX="X"
+ ; ----- END IHS/OIT/MKK MOD LR*5.2*1022
  ;
  D LRBAR^LRLABLD
  D USE^%ZISUTL("LRLABEL"),@LRLABEL

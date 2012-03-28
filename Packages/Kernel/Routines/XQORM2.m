@@ -1,4 +1,5 @@
-XQORM2 ; SLC/KCM - Lookup for Menu Utility ;11/18/92  15:23
+XQORM2 ; SLC/KCM - Lookup for Menu Utility ;11/18/92  15:23 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**56,62**;Jul 10, 1995
 EN ;From: XQORM  Entry: X,XQORM  Exit: X,Y,XQORM
  N K K Y,OROTHER I X=" " D  Q:'$L(X)

@@ -1,4 +1,5 @@
-XUTMD1 ;SEA/RDS - TaskMan: Option, XUTMDEL, Part 2 (Bulk Delete) ;1/31/96  10:15
+XUTMD1 ;SEA/RDS - TaskMan: Option, XUTMDEL, Part 2 (Bulk Delete) ;1/31/96  10:15 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**20**;Jul 10, 1995
  ;
 COUNT ;Ask Whether To First Count The Number Of Tasks To Delete

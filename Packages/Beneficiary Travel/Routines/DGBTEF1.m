@@ -1,12 +1,10 @@
 DGBTEF1 ;ALB/SCK - BENEFICIARY TRAVEL UPDATE PARAMETERS INTO FILES ;12/14/92 3/12/93
- ;;1.0;Beneficiary Travel;**2,14**;September 25, 2001;Build 7
+ ;;5.3;Registration;**13,35**;Aug 13, 1993
 RATES ;enter/edit bene travel parameters;option DGBT BENE TRAVEL RATES
- S DA=1,DR="720;723;721",DIE="^DG(43," D ^DIE G QUIT:X="^"!($D(DTOUT))!($D(Y)) K DA,DE,DQ,DR,DIE
- Q  ;This Q was added under direction of CBO to remove site's ability to edit rates
+ S DA=1,DR="720;721",DIE="^DG(43," D ^DIE G QUIT:X="^"!($D(DTOUT))!($D(Y)) K DA,DE,DQ,DR,DIE
  W !!,"New travel rates are determined each fiscal year.  The rates should be",!,"entered each year with the effective date of Oct 1.",!
  W !,"Changing values for the current or past fiscal years could result in changes",!,"to the claims already entered.",!
 DATE ;  change deductible rates for FY
- Q  ;This Q was added under direction of CBO to remove site's ability to edit rates
  S DIR("A")="Select EFFECTIVE DATE",DIR(0)="DO^^E",DIR("?")="^D HELP1^DGBTEF1"
  D ^DIR K DIR G QUIT:$D(DIRUT) G HELP:$E(Y,4,7)'="1001" S X=+Y
  S DIC="^DG(43.1,",DIC(0)="ELQMZ"
@@ -38,7 +36,7 @@ ED ;  edit data for new account
  W ! K X,DA
  S (DIE,DIC)="^DGBT(392.3,",DIC(0)="AEQLMZ",DLAYGO=392.3,DIC("DR")=""
  D ^DIC K DIC G:$D(DTOUT)!$D(DUOUT)!(X="") QUIT1 G:Y'>0 ED
- S DR="2///"_$P(Y(0)," ",1)_";3;4;5" ; account number now stuffed, not asked
+ S DR="2///"_$E(Y(0),1,3)_";3;4;5" ; account number now stuffed, not asked
  S DA=+Y L ^DGBT(392.3,DA):2 E  W !?5,"Another user is editing this entry.",*7 G ED
  S DIE("NO^")=1
  D ^DIE L  K DR,DIE,DIE("NO^")

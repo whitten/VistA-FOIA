@@ -1,4 +1,5 @@
-LRMISEZ2 ;AVAMC/REG/SLC/BA - MICRO INFECTION CTRL SURVEY ; 10/1/87  17:12 ;
+LRMISEZ2 ; IHS/DIR/AAB - MICRO INFECTION CTRL SURVEY 10/1/87 17:12 ; [ 05/15/2003  12:30 PM ]
+ ;;5.2T9;LR;**1006,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**201**;Sep 27, 1994
  ;from LRMISEZ1
 TYPE I LRM("L")'="N" S LRPG=0,S="LOC" D HDR,M W @IOF
@@ -24,10 +25,13 @@ OR S LROR=0 F I=0:0 S LROR=$O(^TMP($J,S,M,LRLLOC,LRNAME,LRSIT,LRAC,LROR)) Q:LROR
  Q
 BG S LRBG=0 F I=0:0 S LRBG=$O(^TMP($J,S,M,LRLLOC,LRNAME,LRSIT,LRAC,LROR,LRBG)) Q:LRBG=""  S:S="LOC" ^TMP($J,"SE",LRBG,M,LRLLOC,LRSIT,LRAC,LROR,LRNAME)=$P(^(LRBG),U,1,4) S LRBUG=$P(^LAB(61.2,+$E(LRBG,4,25),0),U) D:$Y>61 HDR,LD D FX
  Q
-FX S X=^TMP($J,S,M,LRLLOC,LRNAME,LRSIT,LRAC,LROR,LRBG),SSN=$P(X,U,2),LRQUANT=$P(X,U,3),X=+X,LRDAT=$$Y2K^LRX(X)_" ",LRPNM=$P(LRNAME,U)
- I 'LRPAT,S="PAT" W ?25,$E(SSN,1,3),"-",$E(SSN,4,5),"-",$E(SSN,6,9),! S LRPAT=1,X=43 D LIN
+FX ;S X=^TMP($J,S,M,LRLLOC,LRNAME,LRSIT,LRAC,LROR,LRBG),SSN=$P(X,U,2),LRQUANT=$P(X,U,3),X=+X,LRDAT=$$Y2K^LRX(X)_" ",LRPNM=$P(LRNAME,U)
+ S X=^TMP($J,S,M,LRLLOC,LRNAME,LRSIT,LRAC,LROR,LRBG),SSN=$P(X,U,2),HRCN=$P(X,U,2),LRQUANT=$P(X,U,3),X=+X,LRDAT=$$Y2K^LRX(X)_" ",LRPNM=$P(LRNAME,U)  ;IHS/ANMC/CLS 08/18/96
+ ;I 'LRPAT,S="PAT" W ?25,$E(SSN,1,3),"-",$E(SSN,4,5),"-",$E(SSN,6,9),! S LRPAT=1,X=43 D LIN
+ I 'LRPAT,S="PAT" W ?25,HRCN,! S LRPAT=1,X=43 D LIN  ;IHS/ANMC/CLS 08/18/96
  I $Y>61 D HDR,LD W !,$E(LRBUG,1,13),?13,$E($P(LRSIT,U),1,7)
- W:S'="PAT" !,$E(LRPNM,1,10),?11,SSN,?21,LRDAT,$E($P(LRSIT,U),1,7)," Quantity: ",LRQUANT
+ ;W:S'="PAT" !,$E(LRPNM,1,10),?11,SSN,?21,LRDAT,$E($P(LRSIT,U),1,7)," Quantity: ",LRQUANT
+ W:S'="PAT" !,$E(LRPNM,1,10),?11,HRCN,?21,LRDAT,$E($P(LRSIT,U),1,7)," Quantity: ",LRQUANT  ;IHS/ANMC/CLS 08/18/96
  W:S="PAT" !,LRDAT,$E($P(LRSIT,U),1,7)," Quantity: ",LRQUANT
  S LRSUM=LRSUM+1 W !?2,$E(LRBUG,1,32),?34,$J(LRSUM,3),")",?37,$J(LRAC,5),?43
  S LRLIN="",$P(LRLIN,"| ",O+1)="|"
@@ -39,8 +43,12 @@ NOD Q:'$D(LRZ(LRYA))  S $P(LRLIN,"|",LRZ(LRYA)+1)=^TMP($J,S,M,LRLLOC,LRNAME,LRSI
 HDR S LRPG=LRPG+1,%DT="T",X="N" D ^%DT,D^LRU W @IOF,!,Y,?21,"INFECTION CONTROL SURVEY REPORT BY ",$S(S="LOC":"LOCATION",S="DOC":"PROVIDER",1:"PATIENT"),?70,"PAGE ",$J(LRPG,5)
  I LRLOS W !,?2,"** Reports only those specimens collected > ",LRLOS,$S(LRLOS>1:" days",1:" day")," from admission date **"
  W !,LRAAN,?6,"From: ",LRST," To: ",LRLST,?43 F I=0:0 S I=$O(B(I)) Q:I=""  W "|",$E($P(B(I),U,2),1)
- W "|",!,$S(S="LOC":"Location",S="DOC":"Provider",1:"Patient") W:S="PAT" ?25,"SSN" W ?43 F I=0:0 S I=$O(B(I)) Q:I=""  W "|",$E($P(B(I),U,2),2)
- W:S'="PAT" "|",!,?2,"Patient",?11,"SSN",?21,"Date",?30,$S(LRSIT(1)="S":"Spec",1:"Sample"),?43
+ ;W "|",!,$S(S="LOC":"Location",S="DOC":"Provider",1:"Patient") W:S="PAT" ?25,"SSN" W ?43 F I=0:0 S I=$O(B(I)) Q:I=""  W "|",$E($P(B(I),U,2),2)
+ W "|",!,$S(S="LOC":"Location",S="DOC":"Provider",1:"Patient") W:S="PAT" ?25,"HRCN" W ?43 F I=0:0 S I=$O(B(I)) Q:I=""  W "|",$E($P(B(I),U,2),2)  ;IHS/ANMC/CLS 08/18/96
+ ;W:S'="PAT" "|",!,?2,"Patient",?11,"SSN",?21,"Date",?30,$S(LRSIT(1)="S":"Spec",1:"Sample"),?43
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018 IHS TESTING CHANGE
+ W:S'="PAT" "|",!,?2,"Patient",?11,"HCRN",?21,"Date",?30,$S(LRSIT(1)="S":"Spec",1:"Sample"),?43
+ ;----- END IHS MODIFICATIONS
  W:S="PAT" "|",!,?2,"Date",?11,"Spec",?43
  F I=0:0 S I=$O(B(I)) Q:I=""  W "|",$E($P(B(I),U,2),3)
  I $D(LRAP) W "|",!,?10,"** ANTIBIOTIC PATTERN **",?43 F I=0:0 S I=$O(B(I)) Q:I=""  W "|",$S($L($P(B(I),U,3)):$P(B(I),U,3),1:" ")

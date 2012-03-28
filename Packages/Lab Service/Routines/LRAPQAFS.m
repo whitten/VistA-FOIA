@@ -1,4 +1,5 @@
-LRAPQAFS ;AVAMC/REG - FROZEN SECTION/SURG PATH RPTS ;8/14/95  18:13
+LRAPQAFS ;AVAMC/REG - FROZEN SECTION/SURG PATH RPTS ;8/14/95  18:13 [ 04/11/2003  11:26 AM ]
+ ;;5.2T9;LR;**1002,1008,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**72,242,252**;Sep 27, 1994
  S LRDICS="SP" D ^LRAP G:'$D(Y) END
  W !!,"Frozen section search with optional permanent path reports.",!,"This report may take a while and should be queued to print at non-peak hours.",!,"OK to continue " S %=2 D YN^LRU G:%'=1 END
@@ -9,7 +10,11 @@ QUE U IO K ^TMP($J) S LRN="ALL",LRS(99)=1,LR("DIWF")="W",(LR,LR("A"),LR(1),LR(2)
  S ^TMP($J,0)=S(2)_U_"FS"_U_LRO(68)_U_S(7)
  F X=0:0 S LRSDT=$O(^LR(LRXR,LRSDT)) Q:'LRSDT!(LRSDT>LRLDT)  D LRDFN^LRAPSM
  D ^LRAPSM1 G:LR("Q") OUT D EN2^LRUA,SET^LRUA S LRQ=0,LRA=1
- I LRQA F A=0:0 S A=$O(^TMP($J,A)) Q:'A  S X=A,%DT="" D ^%DT S LRY=$E(X,1,3) F B=0:0 S B=$O(^TMP($J,A,B)) Q:'B  S ^TMP("LRAP",$J,LRY,B)=""
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+Y2K S LRTMPA=$G(DT),LRTMPA=$S($E(LRTMPA,1)=2:200,1:300)  ;IHS/DIR/FJE 
+ I LRQA F A=0:0 S A=$O(^TMP($J,A)) Q:'A  S LRY=A+LRTMPA F B=0:0 S B=$O(^TMP($J,A,B)) Q:'B  S ^TMP("LRAP",$J,LRY,B)="" ;IHS/DIR/FJE
+ ;I LRQA F A=0:0 S A=$O(^TMP($J,A)) Q:'A  S X=A,%DT="" D ^%DT S LRY=$E(X,1,3) F B=0:0 S B=$O(^TMP($J,A,B)) Q:'B  S ^TMP("LRAP",$J,LRY,B)=""
+ ;----- END IHS MODIFICATIONS
  F LRY=0:0 S LRY=$O(^TMP("LRAP",$J,LRY)) Q:'LRY!(LR("Q"))  F LRAN=0:0 S LRAN=$O(^TMP("LRAP",$J,LRY,LRAN)) Q:'LRAN!(LR("Q"))  S LRDFN=$O(^LR(LRXREF,LRY,LRABV,LRAN,0)),LRI=$O(^(LRDFN,0)) D EN^LRSPRPT D:LRC L^LRAPQAMR
 OUT K ^TMP("LRAP",$J) D END^LRUTL,END Q
  ;

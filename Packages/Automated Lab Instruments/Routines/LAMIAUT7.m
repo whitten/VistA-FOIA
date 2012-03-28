@@ -1,4 +1,6 @@
-LAMIAUT7 ;FHS/SLC - CREATE LOAD LIST FOR VITEK ;7/20/90  09:34
+LAMIAUT7 ; IHS/DIR/AAB - CREATE LOAD LIST FOR VITEK 7/20/90 09:34 ; [ 7/20/90 10:15 AM ]
+ ;;5.2;LA;**1003**;SEP 01, 1998
+ ;
  ;;5.2;AUTOMATED LAB INSTRUMENTS;**42**;Sep 27, 1994
 EN ;
  S U="^",(LROPEN,LREND)=0 D DT^LRX S LRAD=DT K ^TMP("LR",$J,"T"),DIC,LRHOLD,LRTSTS
@@ -17,7 +19,8 @@ CLEAR ;
  S %DT="AEP",%DT("A")=" Accession Date : ",%DT("B")=$S(LRP="D":LRDT0,1:$$FMTE^XLFDT($E(DT,1,3)_"0000","1D")) D DATE^LRWU I Y<1 S LRO(68.2,LRINST,3)=0 G EXIT
  S LRAD=+Y,LRALL=0 S:'LRTYPE LRTRAY=1 I '$O(^LRO(68.2,LRINST,10,0)) W !!?10,"No profile defined for this Load/List ",$C(7) G EXIT
 PROF ;
- S LRALL=0 W !?5,"ALL PROFILES " S %=2 D YN^DICN G:%<0 EXIT S:%=1 LRALL=1 I %=2 K DIC S DIC="^LRO(68.2,"_LRINST_",10,",DIC(0)="AQEZ" D ^DIC G:Y<1 EXIT S LRPROF=+Y D PROF^LAMIAUT8 I LREND D EXIT Q
+ ;S LRALL=0 W !?5,"ALL PROFILES " S %=2 D YN^DICN G:%<0 EXIT S:%=1 LRALL=1 I %=2 K DIC S DIC="^LRO(68.2,"_LRINST_",10,",DIC(0)="AQEZ" D ^DIC G:Y<1 EXIT S LRPROF=+Y D PROF^LAMIAUT8 I LREND D EXIT Q
+ S LRALL=0 W !?5,"ALL PROFILES " S %=1 D YN^DICN G:%<0 EXIT S:%=1 LRALL=1 I %=2 K DIC S DIC="^LRO(68.2,"_LRINST_",10,",DIC(0)="AQEZ" D ^DIC G:Y<1 EXIT S LRPROF=+Y D PROF^LAMIAUT8 I LREND D EXIT Q  ;IHS/ANMC/CLS 11/1/95
  I %=0 W !!?5,"You may select a single profile or all profiles defined. ",!! G PROF
  I LRALL F LRPROF=0:0 S LRPROF=$O(^LRO(68.2,LRINST,10,LRPROF)) Q:LRPROF<1  D PROF^LAMIAUT8 I LREND D EXIT Q
  I '$D(LRAA) W !!?10,"No Accession area defined ",! D EXIT Q
@@ -37,7 +40,8 @@ ACCESS ;
 CHK ;
  S P=0 F A=0:0 S A=$O(LRACNL(A)) Q:A=""  X LRACNL(A)_"S:$D(^LRO(68,LRAA,1,LRAD,1,T1,0)) X=+^(0)_U_+^(5,1,0),^TMP(""LR"",$J,""T"",T1)=X"
 SHOW ;
- S A=0 D HDR F A=A:0 S A=$O(^TMP("LR",$J,"T",A)) Q:A=""  S LRDFN=+^(A),X=^LR(LRDFN,0),LRDPF=$P(X,U,2),DFN=$P(X,U,3) D PT^LRX W !,A_")",?15,PNM,?35,SSN D:$Y>20 WAIT Q:LREND
+ ;S A=0 D HDR F A=A:0 S A=$O(^TMP("LR",$J,"T",A)) Q:A=""  S LRDFN=+^(A),X=^LR(LRDFN,0),LRDPF=$P(X,U,2),DFN=$P(X,U,3) D PT^LRX W !,A_")",?15,PNM,?35,SSN D:$Y>20 WAIT Q:LREND
+ S A=0 D HDR F A=A:0 S A=$O(^TMP("LR",$J,"T",A)) Q:A=""  S LRDFN=+^(A),X=^LR(LRDFN,0),LRDPF=$P(X,U,2),DFN=$P(X,U,3) D PT^LRX W !,A_")",?15,PNM,?35,HRCN D:$Y>20 WAIT Q:LREND  ;IHS/ANMC/CLS 11/1/95
 WAIT ;
  W !!,?10,$S(A>0:"Is this partial list correct ",1:" All OK ? ") S %=1 D YN^DICN I %=1 D HDR Q
  I %<1 S LREND=1 Q
@@ -45,4 +49,5 @@ W1 W !!,"(A)dd OR (D)elete " R W:DTIME I '$T!($E(W)="^") S LREND=1 Q
  Q:W=""  I "AD"'[W W !,$C(7) G W1
  F WW=0:0 W !?5,"Enter number to "_$S(W="A":"Add ",1:"Delete ") R X:DTIME Q:'$T!(X="")!($E(X)="^")  D:X'="?" @($S(W="A":"ADD",1:"DELETE")_"^LAMIAUT8") I X="?" W !?10,"Enter accession number, one at a time."
 HDR ;
- W @IOF,!!!,"Acc #)",?15," Patient Name           SSN ",!! Q
+ ;W @IOF,!!!,"Acc #)",?15," Patient Name           SSN ",!! Q
+ W @IOF,!!!,"Acc #)",?15," Patient Name           HRCN ",!! Q  ;IHS/ANMC/CLS 11/1/95

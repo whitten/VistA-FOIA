@@ -1,9 +1,12 @@
-ORCHTAB2 ;SLC/MKB/REV-Add item to tab listing cont ;03/11/03 14:01
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**27,58,181**;Dec 17, 1997
+ORCHTAB2 ;SLC/MKB-Add item to tab listing cont ;05-Nov-2010 08:31;DU
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**27,58**;Dec 17, 1997;Build 3
+ ;IHS/MSC/MGH Modifed to display no assessment available
 GMRA ; -- allergies
- N ORY,ORI,ALLG,SEV,ID,SIGNS,J,ORIFN,DATA,X,ORTX
+ N ORY,ORI,ALLG,SEV,ID,SIGNS,J,ORIFN,DATA,X,ORTX,UNASS
  D SUBHDR^ORCHTAB("Allergies/Adverse Reactions")
  D EN1^GMRAOR1(+ORVP,"ORY")
+ S UNASS=$$UNASS^GMRAOR1(+ORVP)
+ I UNASS=0 S X="Not Asssessible" D LINE^ORCHTAB
  I '$G(ORY) S X=$S($G(ORY)="":"No assessment available",1:"No known allergies") D LINE^ORCHTAB Q
  S ORI=0 F  S ORI=$O(ORY(ORI)) Q:ORI'>0  D
  . S ALLG=$P(ORY(ORI),U),SEV=$P(ORY(ORI),U,2),ID=$P(ORY(ORI),U,3)
@@ -70,10 +73,7 @@ PROB ; -- problem
  S DATA(1)=$$PAD^ORCHTAB($$DATE^ORCHTAB($P(ORX,U,5)),10)_$$PAD^ORCHTAB($$DATE^ORCHTAB($P(ORX,U,6)),10)_$S($P(ORX,U,2)="I":"inactive",1:"active "_$P(ORX,U,9)),DATA=1
  I COMM,$O(ORY(ORI,0)) S ORJ=0 F  S ORJ=$O(ORY(ORI,ORJ)) Q:ORJ'>0  S X=" "_ORY(ORI,ORJ) I $L(X)>1 S ORTX=ORTX+1,ORTX(ORTX)="" D TXT^ORCHTAB ;add comments
  S FIRST=LCNT+1 D ADD^ORCHTAB
- I $L($P(ORX,U,10)) S $E(^TMP("OR",$J,ORTAB,FIRST,0),5)=$P(ORX,U,10)  ; unverified flag    ($)
- ; CSV change - check for active code, for active problem list only
- ; Inactive code flag (#) takes precedence and replaces unverified flag ($)
- I $P(ORX,U,2)="A",'$$CODESTS^GMPLX(ID,DT) S $E(^TMP("OR",$J,ORTAB,FIRST,0),5)="#"
+ I $L($P(ORX,U,10)) S $E(^TMP("OR",$J,ORTAB,FIRST,0),5)=$P(ORX,U,10)
  Q
  ;
 NOTE ; -- progress note

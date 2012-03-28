@@ -1,5 +1,5 @@
 PXCEDATE ;ISL/dee - Used for things related to Date and Time ;6/20/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**47,161**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**47**;Aug 12, 1996
  ;; ;
  Q
  ;
@@ -23,7 +23,7 @@ ASKDATE(DBEG,DEND) ;
  ;
 EDATE(PRMPT,DFLT) ; Get early date
  N %DT,X,Y
- S %DT="AEX"
+ S %DT="AEPX"
  S %DT("A")=" Start "_$S($L($G(PRMPT)):PRMPT_" ",1:"")_"Date: "
  S %DT("B")=$S($L($G(DFLT)):$$FMTE^XLFDT(DFLT,5),1:"T-30")
  D ^%DT

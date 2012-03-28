@@ -1,5 +1,5 @@
-DIKCFORM ;SFISC/MKO-ENTRY POINTS FOR THE 'DIKC EDIT' FORM ;2:57 PM  25 Apr 2002
- ;;22.0;VA FileMan;**20,68,108**;Mar 30, 1999
+DIKCFORM ;SFISC/MKO-ENTRY POINTS FOR THE 'DIKC EDIT' FORM ;2:57 PM  25 Apr 2002 [ 12/09/2003  4:10 PM ]
+ ;;22.0;VA FileMan;**20,68,108,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;
  ;==========================

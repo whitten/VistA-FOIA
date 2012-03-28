@@ -1,25 +1,12 @@
 RARTR1 ;HISC/FPT,GJC-Queue/print Radiology Reports (cont.) ;1/8/97  08:08
- ;;5.0;Radiology/Nuclear Medicine;**8,18,56,97**;Mar 16, 1998;Build 6
- ;Supported IA #1571 ^LEX(757.01
- ;Supported IA #10104 REPEAT^XLFSTR
- ;Supported IA #10060 and #2056 $$GET1^DIQ for file 200
+ ;;5.0;Radiology/Nuclear Medicine;**8,18**;Mar 16, 1998
  ;last modification by SS for P18 JUNE 29,00
 PRTDX ; print dx codes on report
- N RATMP,RATMP1
  I '$D(RAUTOE) D HANG^RARTR2:($Y+RAFOOT+4)>IOSL Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL
  S RADXCODE=$P(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0),U,13)
- I '$D(RAUTOE) D
- . W !?RATAB,"Primary Diagnostic Code: ",!?RATAB+4
- . W $S($D(^RA(78.3,+RADXCODE,0)):$P(^(0),U,1),1:"")
- . S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RADXCODE,0)),U,6),.01)
- . W:RATMP]"" " (",RATMP,")"
- . Q
+ I '$D(RAUTOE) W !?RATAB,"Primary Diagnostic Code: ",!?RATAB+4,$S($D(^RA(78.3,+RADXCODE,0)):$P(^(0),U,1),1:"")
  I $D(RAUTOE) D
- . S RATMP1="    Primary Diagnostic Code: "
- . S RATMP1=RATMP1_$S($D(^RA(78.3,+RADXCODE,0)):$P(^(0),U,1),1:"")
- . S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RADXCODE,0)),U,6),.01)
- . I RATMP]"" S RATMP1=RATMP1_" ("_RATMP_")"
- . S ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))=RATMP1
+ . S ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))="    Primary Diagnostic Code: "_$S($D(^RA(78.3,+RADXCODE,0)):$P(^(0),U,1),1:"")
  . Q
  I '$D(RAUTOE) D HANG^RARTR2:($Y+RAFOOT+4)>IOSL Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL
  I '$D(RAUTOE),('$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"DX",0))) W ! Q
@@ -27,11 +14,7 @@ PRTDX ; print dx codes on report
  . W !!?RATAB,"Secondary Diagnostic Codes: "
  . S RADXCODE=0
  . F  S RADXCODE=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"DX","B",RADXCODE)) Q:RADXCODE'>0!('$D(^RA(78.3,+RADXCODE,0)))!($D(RAOOUT))  D
- .. D HANG^RARTR2:($Y+RAFOOT+4)>IOSL Q:$D(RAOOUT)
- .. D HD^RARTR:($Y+RAFOOT+4)>IOSL
- .. W !?RATAB+4,$P(^RA(78.3,RADXCODE,0),U,1)
- .. S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RADXCODE,0)),U,6),.01)
- .. W:RATMP]"" " (",RATMP,")"
+ .. D HANG^RARTR2:($Y+RAFOOT+4)>IOSL Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL W !?RATAB+4,$P(^RA(78.3,RADXCODE,0),U,1)
  .. Q
  . K RADXCODE W !
  . Q
@@ -43,18 +26,13 @@ PRTDX ; print dx codes on report
  . S RADXCODE=0
  . F  S RADXCODE=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"DX","B",RADXCODE)) Q:RADXCODE'>0  D
  .. Q:'$D(^RA(78.3,+$G(RADXCODE),0))#2
- .. S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RADXCODE,0)),U,6),.01)
- .. S RATMP1="      "_$P(^RA(78.3,+$G(RADXCODE),0),U)
- .. S RATMP1=RATMP1_$S(RATMP="":"",1:" ("_RATMP_")")
- .. S ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))=RATMP1
+ .. S ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))="      "_$P(^RA(78.3,+$G(RADXCODE),0),U)
  .. Q
  . S ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))=""
  . Q
  Q
 WARNING ; this printed report should not be used for charting
- S RARPTSTT=$$RSTAT^RAO7PC1A()
- S:RARPTSTT="NO REPORT" RARPTSTT="REPORT STATUS UNKNOWN"
- S:RAST="R" RARPTSTT="("_RARPTSTT_")"
+ S RARPTSTT=$S(RAST="D":"DRAFT",RAST="PD":"PROBLEM DRAFT",RAST="R":"(RELEASED/NOT VERIFIED)",1:"REPORT STATUS UNKNOWN")
  S RAPOSITN=(80-$L(RARPTSTT)\2)
  I '$D(RAUTOE) D  ;P18 modif
  . W !?RAPOSITN-1,$$REPEAT^XLFSTR("*",$L(RARPTSTT)+2)
@@ -72,18 +50,17 @@ WARNING ; this printed report should not be used for charting
  Q
 SECRES ; Print from the secondary resident multiple
  Q:'$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SRR",0))  ; no data, quit
- N RASR,RASRSBN,RASRSBT,DIERR,RAZ
+ N RASR,RASRSBN,RASRSBT
  I '$D(RAUTOE) D:($Y+RAFOOT+4)>IOSL HANG^RARTR2 Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL
  W:'$D(RAUTOE) !,"Secondary Interpreting Resident:"
  S:$D(RAUTOE) ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))="Secondary Interpreting Resident:"
  S RASR=0
  F  S RASR=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SRR",RASR)) Q:RASR'>0  D
  . S RASR(0)=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SRR",RASR,0))
- . S RAZ=$$GET1^DIQ(200,+RASR(0)_",",.01)
- . Q:RAZ=""
- . S RASRSBN=$E($$GET1^DIQ(200,+RASR(0)_",",20.2),1,25)
- . S:RASRSBN']"" RASRSBN=$E(RAZ,1,25)
- . S RASRSBT=$$GET1^DIQ(200,+RASR(0)_",",20.3) ; max:; 50 chars
+ . Q:'$D(^VA(200,+RASR(0),0))
+ . S RASRSBN=$E($P($G(^VA(200,+RASR(0),20)),"^",2),1,25)
+ . S:RASRSBN']"" RASRSBN=$E($P($G(^VA(200,+RASR(0),0)),"^"),1,25)
+ . S RASRSBT=$P($G(^VA(200,+RASR(0),20)),"^",3) ; max: 50 chars
  . I RASRSBT']"" S RASRSBT=$$TITLE^RARTR0(+RASR(0))
  . I '$D(RAUTOE) D:($Y+RAFOOT+4)>IOSL HANG^RARTR2 Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL
  . W:'$D(RAUTOE) !?2,$S(RASRSBN]"":RASRSBN,1:"Unknown"),", ",$E(RASRSBT,1,((IOM-$X)-16))
@@ -111,18 +88,17 @@ SECRES ; Print from the secondary resident multiple
  Q
 SECSTF ; Print from the secondary staff multiple
  Q:'$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SSR",0))  ; no data, quit
- N RASS,RASSSBN,RASSSBT,DIERR,RAZ
+ N RASS,RASSSBN,RASSSBT
  I '$D(RAUTOE) D:($Y+RAFOOT+4)>IOSL HANG^RARTR2 Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL
  W:'$D(RAUTOE) !,"Secondary Interpreting Staff:"
  S:$D(RAUTOE) ^TMP($J,"RA AUTOE",$$INCR^RAUTL4(RAACNT))="Secondary Interpreting Staff:"
  S RASS=0
  F  S RASS=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SSR",RASS)) Q:RASS'>0  D
  . S RASS(0)=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"SSR",RASS,0))
- . S RAZ=$$GET1^DIQ(200,+RASS(0)_",",.01)
- . Q:RAZ=""
- . S RASSSBN=$E($$GET1^DIQ(200,+RASS(0)_",",20.2),1,25)
- . S:RASSSBN="" RASSSBN=$E(RAZ,1,25)
- . S RASSSBT=$$GET1^DIQ(200,+RASS(0)_",",20.3) ; max: 50 chars
+ . Q:'$D(^VA(200,+RASS(0),0))
+ . S RASSSBN=$E($P($G(^VA(200,+RASS(0),20)),"^",2),1,25)
+ . S:RASSSBN']"" RASSSBN=$E($P($G(^VA(200,+RASS(0),0)),"^"),1,25)
+ . S RASSSBT=$P($G(^VA(200,+RASS(0),20)),"^",3) ; max: 50 chars
  . I RASSSBT']"" S RASSSBT=$$TITLE^RARTR0(+RASS(0))
  . I '$D(RAUTOE) D:($Y+RAFOOT+4)>IOSL HANG^RARTR2 Q:$D(RAOOUT)  D HD^RARTR:($Y+RAFOOT+4)>IOSL
  . W:'$D(RAUTOE) !?2,$S(RASSSBN]"":RASSSBN,1:"Unknown"),", ",$E(RASSSBT,1,((IOM-$X)-16))

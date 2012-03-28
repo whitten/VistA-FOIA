@@ -1,8 +1,5 @@
 RASTREQN ;HIRMFO/GJC-Status Requirement check for Radiopharms ;11/18/97  15:13
- ;;5.0;Radiology/Nuclear Medicine;**40,65**;Mar 16, 1998;Build 8
- ;
- ;supported IA #10104 reference to UP^XLFSTR and REPEAT^XLFSTR
- ;Supported IA #2056 refernce to GETS^DIQ
+ ;;5.0;Radiology/Nuclear Medicine;**40**;Mar 16, 1998
  ;
  ; *** 'RASTREQN' is called from routine: 'RASTREQ' ***
 EN1(RADIO,RAJ) ; Check if all the required radiopharmaceutical data has
@@ -24,13 +21,13 @@ EN1(RADIO,RAJ) ; Check if all the required radiopharmaceutical data has
  Q:$P(RAPROC(0),"^",2)=1  ; Never ask Rpharms & Dosages
  ;----------------------------------------------------------------------
  N RA702 S RA702=+$P(RAJ,"^",28) ; ien in NUC MED EXAM DATA (70.2) file
- N RA7021,RACNT,RAI,RAMES2,RAREQ,RAZ S RAI=0
+ N RA7021,RACNT,RAI,RAMES2,RAREQ,RAZ S RAI=0 W:'$D(ZTQUEUED)#2 !
  I 'RA702,($P(RADIO,"^")="Y") D  Q
  . K X S RAZ="Radiopharmaceutical" X:$D(RAMES1) RAMES1
  . Q
  F  S RAI=$O(^RADPTN(RA702,"NUC",RAI)) Q:RAI'>0  D
  . S RA7021=$G(^RADPTN(RA702,"NUC",RAI,0)),RACNT=0
- . S RAMES2="W:$G(K)=$P($G(^RA(72,+$G(RANXT72),0)),U,3)&('$D(ZTQUEUED)#2) !,""Radiopharmaceutical: "",$$EN1^RAPSAPI(+$P(RA7021,""^""),.01)"
+ . S RAMES2="W:$G(K)=$P($G(^RA(72,+$G(RANXT72),0)),U,3)&('$D(ZTQUEUED)#2) !,""Radiopharmaceutical: "",$$GET1^DIQ(50,+$P(RA7021,""^"")_"","",.01)"
  . I $P(RADIO,"^")="Y",($P(RA7021,"^")=""!($P(RA7021,"^",7)="")) D
  .. K X S RACNT=RACNT+1 X:$D(RAMES1)&(RACNT=1) RAMES2
  .. I $P(RA7021,"^")="" S RAZ="Radiopharmaceutical" X:$D(RAMES1) RAMES1
@@ -64,6 +61,7 @@ EN1(RADIO,RAJ) ; Check if all the required radiopharmaceutical data has
  .. I $P(RA7021,"^",14)="" S RAZ="Volume" X:$D(RAMES1) RAMES1
  .. I $P(RA7021,"^",15)="" S RAZ="Form" X:$D(RAMES1) RAMES1
  .. Q
+ . W:'$D(ZTQUEUED)#2 ! ; spacing
  . Q
  Q
 NORADIO(RAPRI,RANXT72) ; This function will determine if Rpharm
@@ -85,7 +83,6 @@ NORADIO(RAPRI,RANXT72) ; This function will determine if Rpharm
  ;----------------------------------------------------------------------
  Q 0 ; ask Rpharm & Dosage fields
 DISDEF(RADA) ; Display Radiopharmaceutical default data
- ; called from input templs: [RASTATUS CHANGE] and [RA EXAM EDIT]
  ; Input: RADA -> ien of the Nuc Med Exam Data record
  Q:'$O(^RADPTN(RADA,"NUC",0))  ; Radiopharms missing, no data
  N RADARY,RADEUC,RAFLDS,RAIENS,RAOPUT,X,Y W !

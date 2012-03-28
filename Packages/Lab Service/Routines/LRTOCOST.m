@@ -1,4 +1,5 @@
-LRTOCOST ;KC/RENO/DALISC/FHS ORDERING STATISTICS/COST REPORT ; 12/3/1997
+LRTOCOST ;KC/RENO/DALISC/FHS - ORDERING STATISTICS/COST REPORT ; 12/3/1997 [ 04/23/2003  7:18 AM ]
+ ;;5.2;LR;**1018,1022**;September 20, 2007
  ;;5.2;LAB SERVICE;**153,201,221**;Sep 27, 1994
  ;Original routine written by Keith Cox - Reno VAMC
 EN S LREND=0 K LRGLB
@@ -75,7 +76,14 @@ DETAIL I $G(LRDET) D
  . S I=$O(^TMP("LR",$J,6,0)) I '$L(I) D HDR W !?7,"No Detailed data to report",!! Q
  . S LRGLB="^TMP(""LR"","_$J_",6)",LRPNM=""
  . D HDR Q:$G(LREND)
- . F  S LRGLB=$Q(@LRGLB) Q:$QS(LRGLB,2)'=$J!($QS(LRGLB,3)'=6)!($G(LREND))  D
+ .; F  S LRGLB=$Q(@LRGLB) Q:$QS(LRGLB,2)'=$J!($QS(LRGLB,3)'=6)!($G(LREND))  D
+ .;----- BEGIN IHS MODIFICATIONS LR*5.2*1018 IHS TESTING CHANGE
+ . ; F  S LRGLB=$Q(@LRGLB) Q:LRGLB=""  Q:$QS(LRGLB,2)'=$J!($QS(LRGLB,3)'=6)!($G(LREND))  D
+ .;----- END IHS MODIFICATIONS
+ . ; ----- IHS/OIT/MKK - Begin IHS PATCH 1022 MODIFICATION
+ . ;       The Patch 18 "fix" above doesn't work.
+ . F  S LRGLB=$Q(@LRGLB) Q:$G(LRGLB)=""  Q:$QS(LRGLB,2)'=$J!($QS(LRGLB,3)'=6)!($G(LREND))  D
+ . . ; ----- IHS/OIT/MKK - End IHS PATCH 1022 MODIFICATION
  . . D:$Y>(IOSL-4) HDR Q:$G(LREND)
  . . S LRLOCN=$QS(LRGLB,4) I LRLOCN'=LRLOC W !!?10,"***** "_LRLOCN_" *****" S LRLOC=LRLOCN
  . . S LRNAME=$QS(LRGLB,5)_"  "_$QS(LRGLB,6)_" "_$$FMTE^XLFDT($QS(LRGLB,7))
@@ -123,6 +131,11 @@ SET I $D(LRT)=11,'$D(LRT(LRTST))#2 Q
  . S X=^DIC(LRDPF,0,"GL")_LRDFN_",0)",X=$S($D(@X):@X,1:"")
  . Q:X=""
  . S PNM=$P(X,U),SSN=$P(X,U,9)
+ . ; ----- IHS/OIT/MKK - Begin IHS PATCH 1022 MODIFICATION
+ . ;       The following IHS line of code was inadvertnatly left off during
+ . ;       the Patch 18 process after the VA patches updated this routine.
+ . S:SSN="" SSN="999-99-9999" ;FJE
+ . ; ----- IHS/OIT/MKK - End IHS PATCH 1022 MODIFICATION
  . S ^TMP("LR",$J,6,LRPPHY,PNM,SSN,LRCDT,LRPTST)=$S(LRCOST:LRCOST,1:1)
  Q
 HDR Q:$G(LREND)  I $E(IOST)="C",$G(LRPAGE) S DIR(0)="E" D ^DIR S:$D(DUOUT)!($D(DIRUT))!($D(DTOUT)) LREND=1 Q:$G(LREND)

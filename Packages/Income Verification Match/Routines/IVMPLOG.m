@@ -1,6 +1,7 @@
-IVMPLOG ;ALB/CJM,RTK,ERC - API for IVM PATIENT file; ; 8/15/08 12:49pm
- ;;2.0;INCOME VERIFICATION MATCH;**9,19,12,21,17,28,36,40,49,68,115**; 21-OCT-94;Build 28
+IVMPLOG ;ALB/CJM,RTK - API for IVM PATIENT file; ; 12/6/00 5:28pm [ 07/13/2001  6:33 AM ]
+ ;;2.0;INCOME VERIFICATION MATCH;**9,19,12,21,17,28,36**; 21-OCT-94
  ;;Per VHA Directive 10-93-142, this routine should not be modified.
+ ;IHS/ANMC/LJF  7/13/2001 added quit to EVENT subroutine
  ;
  ;
 FIND(DFN,YEAR) ;
@@ -210,15 +211,15 @@ LOG(DFN,YEAR,EVENTS) ;
  .Q:'$T
  .S IEN=$$FIND(DFN,YEAR)
  .I IEN L -^IVM(301.5,0) Q
- .S DATA(.01)=DFN,DATA(.02)=YEAR,DATA(.04)=1,DATA(1.01)=5,DATA(1.02)=2,DATA(1.03)=$$NOW^XLFDT
+ .S DATA(.01)=DFN,DATA(.02)=YEAR
  .S IEN=$$ADD^DGENDBS(301.5,,.DATA)
  .L -^IVM(301.5,0)
  I IEN,$D(EVENTS),$$SETSTAT(IEN,.EVENTS)
  Q IEN
  ;
-DELETE(DFN,TESTDATE,MT,RX,HARDSHIP,LTC) ;
- ;Description: Used to notify HEC that deletion of a MT,RX Copay test,
- ;LTC copay exemption test or hardship has occurred
+DELETE(DFN,TESTDATE,MT,RX,HARDSHIP) ;
+ ;Description: Used to notify HEC that deletion of a MT,RX Copay test, or
+ ;hardship has occurred
  ;
  ;Input:
  ;  DFN - ien of record in the PATIENT file.
@@ -226,7 +227,6 @@ DELETE(DFN,TESTDATE,MT,RX,HARDSHIP,LTC) ;
  ;  MT - if $D(MT),MT then a MT was deleted
  ;  RX - if $D(RX),RX then a RX copay test was deleted
  ;  HARDSHIP - if $D(HARDSHIP),HARDSHIP then a hardship was deleted
- ;  LTC - if $G(LTC) then a LTC copay exemption test was deleted
  ;Output: none
  ;
  N YEAR,IEN,DATA
@@ -239,11 +239,11 @@ DELETE(DFN,TESTDATE,MT,RX,HARDSHIP,LTC) ;
  I $D(HARDSHIP),HARDSHIP S DATA(.1)=TESTDATE
  I $D(MT),MT S DATA(.08)=TESTDATE
  I $D(RX),RX S DATA(.09)=TESTDATE
- I $G(LTC) S DATA(.11)=TESTDATE
  I $$UPD^DGENDBS(301.5,IEN,.DATA)
  Q
  ;
 EVENT(DFN) ;
+ Q   ;IHS/ANMC/LJF 7/13/2001
  ;Description: Called in response to enrollment events. Determines
  ;whether for this patient transmission is appropriate, and if so the
  ;patient is logged for transmission.
@@ -260,13 +260,11 @@ EVENT(DFN) ;
  ;
  ;if the eligibility/enrollment upload is in progess, or there is no enrollment, do nothing
  Q:($G(DGENUPLD)="ENROLLMENT/ELIGIBILITY UPLOAD IN PROGRESS")
- ;remove screen for non-vets, IVM 115 - ERC
- I '$$VET1^DGENPTA(DFN) S EVENTS("ENROLL")=1 I $$LOG(DFN,$$YEAR(DFN),.EVENTS) Q 
  I ('$$FINDCUR^DGENA(DFN)),('$$VET^DGENPTA(DFN)) Q
  N STATUS
  S STATUS=$$STATUS^DGENA(DFN)
  ; Purple Heart added status 21
- I $$VET1^DGENPTA(DFN)!(STATUS=1)!(STATUS=2)!(STATUS=9)!(STATUS=15)!(STATUS=16)!(STATUS=17)!(STATUS=18)!(STATUS=19)!(STATUS=20)!(STATUS=21)!(STATUS=23) D
+ I $$VET1^DGENPTA(DFN)!(STATUS=1)!(STATUS=2)!(STATUS=9)!(STATUS=15)!(STATUS=16)!(STATUS=17)!(STATUS=18)!(STATUS=21) D
  .N EVENTS
  .S EVENTS("ENROLL")=1
  .I $$LOG(DFN,$$YEAR(DFN),.EVENTS) ;no need to inform on success or failure

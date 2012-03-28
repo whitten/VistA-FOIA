@@ -1,7 +1,16 @@
-LRCKPTR ;SLC/RWF - CHECK ^LR & ^DPT CROSS POINTERS ; 8/30/87  17:20 ;
+LRCKPTR ;VA/SLC/RWF - CHECK ^LR & ^DPT CROSS POINTERS ;JUL 06, 2010 3:14 PM;
+ ;;5.2;LAB SERVICE;**1018,1027**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**272,293**;Sep 27, 1994
- W !,"CHECK OF POINTERS TO/FROM THE ^LR FILE",!!,"Want me to add missing nodes. " S %=2,U="^" D YN^DICN I %<1 W:%=0 !!,"a 'yes' and I will add missing zero nodes that are reported,",!,"  and missing pointers to ^LR." Q:%<0  G LRCKPTR
- S LRFIX=(%=1)
+ ; W !,"CHECK OF POINTERS TO/FROM THE ^LR FILE",!!,"Want me to add missing nodes. " S %=2,U="^" D YN^DICN I %<1 W:%=0 !!,"a 'yes' and I will add missing zero nodes that are reported,",!,"  and missing pointers to ^LR." Q:%<0  G LRCKPTR
+ ; S LRFIX=(%=1)
+ ; ----- BEGIH IHS/OIT/MKK - LR*5.2*1027 -- DO NOT allow "FIX" of MISSING nodes
+ W !,"CHECK OF POINTERS TO/FROM THE ^LR FILE",!!
+ S LRFIX=0              ; Set Flag to DO NOT FIX
+ D ^XBFMK
+ S DIR(0)="EO"
+ D ^DIR
+ I +$G(DIRUT) Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1027
  S DFN=0,%ZIS="Q" D ^%ZIS Q:POP
  I $D(IO("Q")) K IO("Q") S ZTRTN="DQ^LRCKPTR",ZTSAVE("LRFIX")="",ZTDESC="Integrity Report" D ^%ZTLOAD K ZTRTN,ZTIO,ZTDESC,ZTSAVE,ZTSK D ^%ZISC Q
 DQ S:$D(ZTQUEUED) ZTREQ="@" D ENT W !! W:$E(IOST,1,2)="P-" @IOF K LRFIX Q

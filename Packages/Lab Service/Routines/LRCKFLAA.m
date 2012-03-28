@@ -1,4 +1,5 @@
 LRCKFLAA ;DALOI/RWF/RLM-CHECK LOAD LIST & AUTO INSTRUMENT FILES (CONT);2/5/91 12:32
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**272**;Sep 27, 1994
  ; Reference to CHK^DIE supported by IA #2053
  ; Reference to $$FMTE^XLFDT supported by IA #10103

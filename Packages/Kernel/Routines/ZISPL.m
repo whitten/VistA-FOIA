@@ -1,21 +1,22 @@
-ZISPL ;SF/RWF - UTILITIES FOR SPOOLING ;03/31/2003  08:53
- ;;8.0;KERNEL;**23,69,291**;Jul 10, 1995
+ZISPL ;SF/RWF - UTILITIES FOR SPOOLING ;04/07/98  16:16 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
+ ;;8.0;KERNEL;**23,69**;Jul 10, 1995
  ;This is the general code for managment of the spooler file.
 DELETE ;delete a document from the file.
 A S DIC("A")="Delete which SPOOL DOCUMENT: " D GETDOC G:Y<0 EXIT
- I '$P(ZISPL0,U,7) W !,$C(13),"This Document hasn't been printed.  Are you sure??"
+ I '$P(ZISPL0,U,7) W !,*7,"This Document hasn't been printed.  Are you sure??"
  S DIR(0)="S^n:NO;y:YES;c:CLEAR",DIR("A")="...OK TO DELETE",DIR("B")="NO" D ^DIR K DIR G:$D(DIRUT)!("yc"'[Y) EXIT
  S ZISY=Y D DSD($P(ZISPL0,U,10)) ;delete data
  I ZISY["c" S X=^XMB(3.51,ZISDA,0),^(0)=$P(X,"^",1)_"^^^^"_DUZ_"^^^"_$P(X,"^",8) K ^XMB(3.51,ZISDA,2) W " ... DOCUMENT CLEARED!!" G EXIT
  ;
  D DSDOC(ZISDA) ;Delete entry
- W "  ...DOCUMENT DELETED!!",$C(13),!
+ W "  ...DOCUMENT DELETED!!",*7,!
  G EXIT
 DEL ;Called from mailman to delete the document.
  Q  ;Obsolete
 GETDOC ;Get a spool document to work on.
- S Y=-1 Q:$D(DUZ)[0  S ZISPLU=$S($D(^VA(200,DUZ,"SPL")):^("SPL"),1:"") I $P(ZISPLU,"^",1)'["y" W !,?5,$C(13),"You must be authorized by IRM to use spooling" Q
- S DIC=3.51,DIC(0)="AEMQZ" D ^DIC Q:Y<0  I $P(Y(0),U,2)]"" W !,?5,$C(13),"This spool is still active and can't be worked on." G GETDOC
+ S Y=-1 Q:$D(DUZ)[0  S ZISPLU=$S($D(^VA(200,DUZ,"SPL")):^("SPL"),1:"") I $P(ZISPLU,"^",1)'["y" W !,?5,*7,"You must be authorized by IRM to use spooling" Q
+ S DIC=3.51,DIC(0)="AEMQZ" D ^DIC Q:Y<0  I $P(Y(0),U,2)]"" W !,?5,*7,"This spool is still active and can't be worked on." G GETDOC
  S ZISDA=+Y,ZISPL0=Y(0) K DIC Q
  ;
 PRINT ;
@@ -52,72 +53,31 @@ BROWSE ;Use FM Browser to look at document
  D GETDOC Q:Y'>0  S ZISDA=$P(ZISPL0,U,10) G EXIT:ZISDA'>0
  D BROWSE^DDBR($NA(^XMBS(3.519,ZISDA,2)),"NR",$P(ZISPL0,U)) G EXIT
  ;
-MAIL ;Make into a mail message (move text from file #3.519 to file #3.9)
- N ZISPLU,ZISDA,ZISPL0,XS,ZISLINES,DIR,X,Y
- S ZISPLU=$G(^VA(200,DUZ,"SPL")) I $P(ZISPLU,U,3)["n" W !,"You are not authorized to convert Spool Documents into MailMan Messages." G EXIT
- D GETDOC G:'$D(ZISPL0) EXIT
- S XS=$P(ZISPL0,"^",10) I 'XS D MSG1 G EXIT
- S ZISLINES=$P(ZISPL0,U,9) I '+ZISLINES D MSG1 G EXIT
- K DIR,X,Y
- S DIR(0)="Y"
- S DIR("A")="Convert spool doc: "_$P(ZISPL0,U)_" into a MailMan message"
- S DIR("B")=$$EZBLD^DIALOG(39054) ; Yes
- D ^DIR G:'Y EXIT
- N XMDUZ,ZISSUBJ,ZISINSTR,ZISABORT,XMV
- S ZISABORT=0
- D INITAPI^XMVVITAE
- D ASK(.ZISSUBJ,.ZISINSTR,.ZISABORT) I ZISABORT G CLEAN
- G:ZISLINES<500 MAILIT
- W !
- K DIR,X,Y
- S DIR(0)="Y"
- S DIR("A",1)="You have "_ZISLINES_" lines of text to convert into a MailMan message."
- S DIR("A")="Do you wish to queue this conversion process"
- S DIR("B")=$$EZBLD^DIALOG(39054) ; Yes
- D ^DIR I $D(DIRUT) G CLEAN
- G:'Y MAILIT
- N ZTIO,ZTRTN,ZTDESC,ZTDTH,ZTSAVE,I
- S ZTIO="",ZTRTN="MAILTASK^ZISPL",ZTDESC="Convert spool document into MailMan message"
- F I="ZISDA","XMDUZ","ZISSUBJ","ZISINSTR(","XMV(","^TMP(""XMY"",$J,","^TMP(""XMY0"",$J," S ZTSAVE(I)=""
- D ^%ZTLOAD
- I '$G(ZTSK) W !,"Queueing failed."
- E  W !,$$EZBLD^DIALOG(34501.1,ZTSK) ; Request queued.  Task number: |1|
- G CLEAN
-MAILTASK ;
- N XS
- S XS=$P($G(^XMB(3.51,ZISDA,0)),"^",10)
- I 'XS D DSDOC(ZISDA) Q
-MAILIT ;
- W:'$D(ZTQUEUED) !!,$$EZBLD^DIALOG(34234) ; Moving to a MailMan message...
- N XMZ
- D CRE8XMZ^XMXAPI(ZISSUBJ,.XMZ) I $D(XMERR) G CLEAN
- D MOVEBODY^XMXAPI(XMZ,"^XMBS(3.519,"_XS_",2)") I $D(XMERR) G CLEAN
- W:'$D(ZTQUEUED) !,$$EZBLD^DIALOG(34236) ; Finished moving.
- D SENDMSG^XMAPHOST(DUZ,XMZ,.ZISINSTR)
- D DSDOC(ZISDA),DSD(XS)
-CLEAN ;
- I $D(XMERR) D
- . I '$D(ZTQUEUED) D SHOWERR^XMXAPIU Q
- . K XMERR,^TMP("XMERR",$J)
- D CLEANUP^XMXADDR
+MAIL ;Make into a mail message
+ S ZISPLU=$S($D(^VA(200,DUZ,"SPL")):^("SPL"),1:"") I $P(ZISPLU,U,3)["n" W !,"You are not authorized to convert Spool Documents into Mail Messages." G EXIT
+ S Y=-1 D GETDOC G:Y'>0 EXIT S XS=$P(ZISPL0,"^",10) I 'XS D MSG1 G EXIT
+ S DIR(0)="Y",DIR("A")="Convert spool doc: "_$P(ZISPL0,U)_" into a mail message",DIR("B")="YES" D ^DIR G EXIT:$D(DIRUT),EXIT:Y'=1
+ ;The following code will move the text from file #3.519 into file #3.9,
+ S %=$P(ZISPL0,U,9) I '+% D MSG1 G EXIT
+ G DQMAIL:%<500 W !,"You have "_%_" lines of text to convert into a mail message.",!,"Do you wish to queue this conversion process" S %=1 D YN^DICN G EXIT:$D(DIRUT),DQMAIL:%=2
+ ;
+ S ZTIO="",ZTRTN="DQMAIL^ZISPL",ZTDESC="Convert spool document into mail message",ZTSAVE("ZISDA")="" D ^%ZTLOAD G EXIT
+ ;
+DQMAIL W:'$D(ZTQUEUED) !,"Moving it..."
+ S ZISPL0=$G(^XMB(3.51,ZISDA,0)),XS=$P(ZISPL0,"^",10),XMY(DUZ)="",XMTEXT="^XMBS(3.519,"_XS_",2,",XMSUB="Spool document: "_$P(ZISPL0,"^")
+ D:XS>0 ^XMD ;to make new I $D(XMZ) S XMDUZ=DUZ D NNEW^XMA
+ D DSDOC(ZISDA),DSD(XS) W:'$D(ZTQUEUED) !,"  Now a normal mail message.."
  G EXIT
-ASK(ZISSUBJ,ZISINSTR,ZISABORT) ;
- S ZISSUBJ=$E("Spool document: "_$P(ZISPL0,"^"),1,65)
- D SUBJ^XMXAPIU(.ZISSUBJ) I $D(XMERR) S ZISABORT=1 Q
- D FROMWHOM^XMAPHOST(DUZ,.ZISINSTR,.ZISABORT) Q:ZISABORT
- S ZISINSTR("ADDR FLAGS")="R"
- D TOWHOM^XMXAPIU(DUZ,"","S",.ZISINSTR)
- I $D(XMERR) S ZISABORT=1
- Q
-DSD(DA) ; Delete an entry in the spool data file.
+ ;
+DSD(DA) ;Delete an entry in the spool data file.
  Q:DA'>0  N DIK K ^XMB(3.51,"AM",DA) S DIK="^XMBS(3.519," D ^DIK
  Q
-DSDOC(DA) ; Delete an entry in the spool doc file.
+DSDOC(DA) ;Delete an entry in the spool doc file.
  Q:DA'>0  N DIK S DIK="^XMB(3.51," D ^DIK
  Q
-MSG1 W !,"This spool document doesn't have any text."
- Q
+ ;
+MSG1 W !,"This spool document doesn't have any text." Q
 MSG2 W !,"You have exceeded the total spool document line limit allowed."
  W !,"Therefore, this spool document is incomplete."
- W !!,"Do you still wish to print this document"
- Q
+ W !!,"Do you still wish to print this document" Q
+ ;

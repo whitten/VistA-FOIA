@@ -1,5 +1,5 @@
-DGPREP1 ;ALB/SCK - Program to Display Pre-Registration List Cont. 1 ; 12/9/03 3:22pm
- ;;5.3;Registration;**109,136,574**;Aug 13, 1993
+DGPREP1 ;ALB/SCK - Program to Display Pre-Registration List Cont. 1 ; 12/19/96
+ ;;5.3;Registration;**109,136**;Aug 13, 1993
  Q
 EH ; Edit call log information
  ;   Variables
@@ -104,7 +104,6 @@ INITLE(DGPY) ; Initialize for Load/Edit
  S (DGPRFLG,DGPLOC)=1
  W !!
  D ^DG10
- Q:$G(DGPFLG)&($G(DGRPOUT))
  ;
  S DGPST=$$SELST
  I DGPST']"" S VALMBCK="R" Q
@@ -190,7 +189,6 @@ DIREDT ;  Direct edit of a patient in the PRE-REGISTRATION CALL LIST, bypassing 
  ;    DGPSTMP - Date/time stamp
  ;
  N DFN,DGPDIV,DGPST,DGPIDX,DGPFLG,DGNEW,DGPXX,DGPSTMP,DGPX,DGPIFN,DGMODE
- N DGRPOUT
  ;
  K DTOUT,DUOUT,DIC
  S DIC=2,DIC(0)="AEQZM"
@@ -213,13 +211,11 @@ DIREDT ;  Direct edit of a patient in the PRE-REGISTRATION CALL LIST, bypassing 
  ;
  D INITLE(.DGPSTMP)
  ;
- I $G(DGRPOUT) G UNLCK
- ;
  I $G(DGPFLG),DGPIDX]"" D
  . S DA=DGPIDX
  . S DIE="^DGS(41.42,"
  . S DR="4///Y" I DGPSTMP]"" S DR=DR_";3///^S X=DGPSTMP"
  . D ^DIE K DIE
  ;
-UNLCK I $G(DGPIDX)]"" L -^DGS(41.42,DGPIDX)
+ I $G(DGPIDX)]"" L -^DGS(41.42,DGPIDX)
  Q

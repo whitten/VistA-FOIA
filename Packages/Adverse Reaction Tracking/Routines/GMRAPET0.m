@@ -1,5 +1,5 @@
-GMRAPET0 ;HIRMFO/RM-VERIFIED ALLERGY TASKS ;11/17/06  10:27
- ;;4.0;Adverse Reaction Tracking;**6,17,21,20,38**;Mar 29, 1996;Build 2
+GMRAPET0 ;HIRMFO/RM-VERIFIED ALLERGY TASKS ;13-Jan-2011 11:02;MGH
+ ;;4.0;Adverse Reaction Tracking;**6,17,21,20,1002**;Mar 29, 1996;Build 32
 EN1(GMRADFN,GMRAPA,GMRACT,GMRAOUT) ;
  ; ENTRY TO PERFORM ALL OF THE TASKS NECESSARY FOR
  ;                 A PROGRESS NOTE TO BE ENTERED BY ART
@@ -49,15 +49,16 @@ EN1(GMRADFN,GMRAPA,GMRACT,GMRAOUT) ;
  ; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
  ;S:'GMRAOUT GMRAPN=+$$PN^GMRPART(GMRADFN,GMRADUZ,GMRADT,GMRACW,GMRAHLOC)
  ;---REPLACED LINE ABOVE WITH LINE BELOW;1/13/97 VAUGHN---
- I 'GMRAOUT D
- .S GMRAPN=0 D NEW^TIUPNAPI(.GMRAPN,GMRADFN,GMRADUZ,GMRADT,GMRACW,$G(GMRAHLOC),$S($G(GMRAXBOS):0,1:1)) ;17,21 Allow editing if not in GUI
+ ;IHS/MSC/MGH Removed TIU note title creation
+ ;I 'GMRAOUT D
+ ;.S GMRAPN=0 D NEW^TIUPNAPI(.GMRAPN,GMRADFN,GMRADUZ,GMRADT,GMRACW,$G(GMRAHLOC),$S($G(GMRAXBOS):0,1:1)) ;17,21 Allow editing if not in GUI
  ;----------END-------
- I GMRAPN=-1,'$G(GMRAXBOS) S GMRAOUT=1 W !,"No Progress Note was created." ;21
- I GMRAPN=0,'$G(GMRAXBOS) W !,"Progress note has not been signed." ;21
+ ;I GMRAPN=-1,'$G(GMRAXBOS) S GMRAOUT=1 W !,"No Progress Note was created." ;21
+ ;I GMRAPN=0,'$G(GMRAXBOS) W !,"Progress note has not been signed." ;21
  D EXIT
  Q
 EXIT ; Clean up of variables
- K ^TMP("TIUP",$J),GMRALOC,GMRAHLOC,GMRADUZ ;38 Removed variable GMRAPN from list of variables to kill
+ K ^TMP("TIUP",$J),GMRAPN,GMRALOC,GMRAHLOC,GMRADUZ
  Q
 ASK ; Simple file manager query for a location in file 44
  N DIC

@@ -1,11 +1,17 @@
-LROE ;DALOI/CJS/FHS-LAB ORDER ENTRY AND ACCESSION ;8/11/97
- ;;5.2;LAB SERVICE;**100,121,201,221,263,286,360**;Sep 27, 1994;Build 1
+LROE ;DALOI/CJS/FHS-LAB ORDER ENTRY AND ACCESSION ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**1027,1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**100,121,201,221,263,286**;NOV 01, 1997
  K LRORIFN,LRNATURE,LREND,LRORDRR
  S LRLWC="WC"
+ D:+$P($G(^BLRSITE($G(DUZ(2)),0)),U,10) ENTRYAUD^BLRUTIL("^LROE 0.0")
+ S:$G(BLROPT)=""!($G(BLROPT(0))'=$P(XQY0,U)) BLROPT="ACCWARD",BLROPT(0)=$P(XQY0,U)  ;IHS/OIRM TUC/AAB 2/1/97
  D ^LRPARAM
+ D:+$P($G(^BLRSITE($G(DUZ(2)),0)),U,10) ENTRYAUD^BLRUTIL("^LROE 5.0")
  I $G(LREND) S LREND=0 Q
+ D:+$P($G(^BLRSITE($G(DUZ(2)),0)),U,10) ENTRYAUD^BLRUTIL("^LROE 0.9")
 L5 ;
 NEXT ;from LROE1
+ D:+$P($G(^BLRSITE($G(DUZ(2)),0)),U,10) ENTRYAUD^BLRUTIL("NEXT^LROE 0.0")
  K DIR
  I $D(LROESTAT) D:$P(LRPARAM,U,14) ^LRCAPV I $G(LREND) K LRLONG,LRPANEL Q
  S (LRODT,X,DT)=$$DT^XLFDT(),LRODT0=$$FMTE^XLFDT(DT,5)
@@ -16,24 +22,17 @@ NEXT ;from LROE1
  I $T D ^DIR G END:$D(DIRUT) I Y'=1 W !,"OK, try later." Q
  S X="T-7",%DT="" D ^%DT S LRTM7=+Y
  ;W @IOF
+ D BLRRL           ; IHS/cmi/maw 9/9/2004 added check for ship manifest
  K DIC,LRSND,LRSN
  W !!,"Select Order number: " R LRORD:DTIME Q:LRORD["^"!(LRORD[".")!($D(LRLONG)&(LRORD=""))
  W @IOF S M9=0 G QUICK^LROE1:LRORD=""
- I $L(LRORD)>8 W !,"The order number entered is too long." H 1 G NEXT
  S:LRORD?.N LRORD=+LRORD IF LRORD'?.N D QMSG G NEXT
+ D BLRRL ;cmi/anch/maw 8/4/2004 check for shipping manifest from previous order
  I '$D(^LRO(69,"C",LRORD)) W !!?10,"No order exist with that number ",$C(7),! G NEXT
  S (LRCHK,LRNONE)=1,(M9,LRODT)=0
  F  S LRODT=+$O(^LRO(69,"C",LRORD,LRODT)) Q:LRODT<1  D
  . S DA=0 F  S DA=$O(^LRO(69,"C",LRORD,LRODT,DA)) Q:DA<1  S LRCHK=LRCHK-1 S:LRNONE'=2 LRNONE=0 D LROE2
- I DOD'="" S Y=DOD D DD^LRX W !,!,?5,@LRVIDO,"Patient ",PNM," died on: ",Y,@LRVIDOF W !
- I DOD'="" D  I Y=0!($D(DIRUT)) K DIRUT,DTOUT,DUOUT,Y D KVAR^LRX G NEXT
- . K Y
- . S DIR(0)="Y"
- . S DIR("A")="Do you wish to continue with this accession [Yes/No]"
- . S DIR("T")=120
- . D ^DIR K DIR
- I LRNONE=2,LRCHK<1 W !,"The order has already been partially accessioned." H 1
- I LRNONE=2,LRCHK>0 W !,"The order has already been accessioned." H 1 G NEXT
+ I LRNONE=2 W !,"The order has already been",$S(LRCHK<1:" partially",1:"")," accessioned." H 1
  I LRNONE=1 W !,"No order exists with that number." H 1 G NEXT
  I '$$GOT(LRORD,LRODT) G NEXT ;W !!,"All tests for this order have been canceled.",!,"Are you sure you want to accession it" S %=1 D YN^DICN I %'=1 G NEXT
  K DIR S DIR("A")="Is this the correct order",DIR(0)="Y"
@@ -49,16 +48,18 @@ NEXT ;from LROE1
  S LRTIM=+LRCDT
  ;S:'$P(^LRO(69,LRODT,1,LRSN,0),U,8) $P(^(0),U,8)=LRTIM
  S LRUN=$P(LRCDT,U,2) K LRCDT,LRSN
-MORE I M9>1 K DIR S DIR("A")="Do you have the entire order",DIR(0)="Y" D ^DIR K DIR S:Y=1 M9=0
+MORE ; I M9>1 K DIR S DIR("A")="Do you have the entire order",DIR(0)="Y" D ^DIR K DIR S:Y=1 M9=0
+ I M9>1 K DIR S DIR("A")="Do you have the entire order",DIR(0)="Y" D ^DIR K DIR S:Y=1 M9=0    ; IHS/OIT/MKK -- LR*5.2*1027
  I $D(DIRUT) D UNL69 G NEXT
+ S YYYLRORD=LRORD
  S (LRODT,LRSND)=0
  F  S LRODT=$O(^LRO(69,"C",LRORD,LRODT)) Q:LRODT<1  D
  . S LRSND=0
  . F  S LRSND=$O(^LRO(69,"C",LRORD,LRODT,LRSND)) Q:LRSND<1  D
- . . I $D(^LRO(69,LRODT,1,LRSND,1)),$P(^(1),U,4)="C" Q
  . . S LRSN(LRSND)=LRSND,LRSN=LRSND
  . . K LRAA D Q15^LROE2 K LRSN
  D TASK,UNL69
+ D ORDNSTOR^BLRAAORU(YYYLRORD)  K YYYLRORD      ; IHS/OIT/MKK - LR*5.2*1030 - Store Ask-At-Order Questions
  G NEXT
  ;
  ;
@@ -67,7 +68,16 @@ LROE2 ;
  K LRSN
  S (LRSN,LRSN(DA))=+DA
  I '$D(^LRO(69,LRODT,1,LRSN,0)) Q
- S M9=$G(M9)+1,LRZX=^LRO(69,LRODT,1,LRSN,0),LRDFN=+LRZX,LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,PNM,?30,SSN S LRWRDS=LRWRD
+ ; S M9=$G(M9)+1,LRZX=^LRO(69,LRODT,1,LRSN,0),LRDFN=+LRZX,LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3) D PT^LRX W !,PNM,?30,SSN S LRWRDS=LRWRD
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1027
+ S M9=$G(M9)+1
+ S LRZX=^LRO(69,LRODT,1,LRSN,0)
+ S LRDFN=+LRZX
+ S LRDPF=$P(^LR(LRDFN,0),U,2)  S DFN=$P(^(0),U,3)
+ D PT^LRX
+ W !,PNM,?30,HRCN
+ S LRWRDS=LRWRD
+ ;----- END IHS MODIFICATIONS LR*5.2*1027
  W ?45,"Requesting location: ",$P(LRZX,U,7) S Y=$P(LRZX,U,5) D DD^LRX W !,"Date/Time Ordered: ",Y,?45,"By: ",$S($D(^VA(200,+$P(LRZX,U,2),0)):$P(^(0),U),1:"")
  S LRSVSN=LRSN D ORDER^LROS S LRSN=LRSVSN
  Q
@@ -99,6 +109,7 @@ STAT ;
  I X<1 D END Q
  I X'=DUZ(2) N LRPL S LRPL=X
  ;
+ S:$G(BLROPT)=""!($G(BLROPT(0))'=$P(XQY0,U)) BLROPT="ACCORD",BLROPT(0)=$P(XQY0,U)  ;IHS/OIRM TUC/AAB 2/1/97
  S LRLONG="",LRPANEL=0,LROESTAT=""
  S %H=$H-60 D YMD^LRX S LRTM60=9999999-X
  D LROE K LRTM60,LRLONG,LREND,LROESTAT
@@ -150,3 +161,17 @@ GOT(ORD,ODT) ;See if all tests have been canceled
 UNL69 ;
  L -^LRO(69,"C",+$G(LRORD))
  Q
+ ;
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1021
+BLRRL ;EP - cmi/anch/maw 8/4/2004 added to check for shipping manifest and print
+ ;cmi/anch/maw REF LAB
+ ;cmi/anch/maw 9/28/2004 changed to write only when a shipping manifest
+ K BLRINS,BLRDXS  ;cmi/7/1/2010 reference lab ledi variables
+ Q:$G(BLRGUI)
+ Q:'$G(^BLRSITE(DUZ(2),"RL"))  ;reference lab not set up
+ Q:$P($G(^BLRSITE(DUZ(2),"RL")),U,22)
+ I $D(^TMP("BLRRL",$J)) D
+ . W !,"Printing Shipping Manifests for Reference Lab..."
+ . D PRT^BLRSHPM
+ Q
+ ;----- END IHS MODIFICATIONS cmi/anch/maw end REF LAB LR*5.2*1021

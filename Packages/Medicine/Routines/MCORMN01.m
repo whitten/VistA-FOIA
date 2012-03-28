@@ -1,7 +1,5 @@
 MCORMN01 ;WISC/DCB-HL7 MESSAGE BUILDER PART 2 ;5/2/96  13:30
- ;;1.0;CLINICAL PROCEDURES;**5**;Apr 01, 2004;Build 1
- ; Reference IA #10106 for HLFNC calls.
- ;              #10061 for VADPT call.
+ ;;2.3;Medicine;;09/13/1996
  W !,"This is not a valid entry point" Q
 MSH(PROC,SAP,SNF,RAP,RNF,MST,PCI,VID) ;MSH Messaging Line
  N MSH,Y,%,%I
@@ -13,7 +11,7 @@ MSH(PROC,SAP,SNF,RAP,RNF,MST,PCI,VID) ;MSH Messaging Line
  Q MSH
 PID(DFN) ;PID Messaging Line
  N PID,VADM,SSN,PTN,DOB,SEX,LOOP
- D DEM^VADPT
+ D ^VADPT
  S SSN=$$M11^HLFNC($P(VADM(2),U,1)),PTN=$$CONVERT("P200",VADM(1))
  S DOB=$$CONVERT("D",$P(VADM(3),U))
  S SEX=$P(VADM(5),U)

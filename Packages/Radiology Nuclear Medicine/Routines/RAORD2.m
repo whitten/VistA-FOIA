@@ -1,6 +1,5 @@
 RAORD2 ;HISC/CAH,FPT,GJC,DAD AISC/RMO-Detailed Request Display ;9/3/99  13:48
- ;;5.0;Radiology/Nuclear Medicine;**5,10,51,45,75**;Mar 16, 1998;Build 4
- K XQADATA
+ ;;5.0;Radiology/Nuclear Medicine;**5,10**;Mar 16, 1998
  D HOME^%ZIS K DIC S DIC="^DPT(",DIC(0)="AEMQ"
  W ! D ^DIC G Q:Y<0
  S RADFN=+Y,RANME=$S($D(^DPT(RADFN,0)):$P(^(0),"^"),1:"Unknown")
@@ -14,27 +13,19 @@ RAORD2 ;HISC/CAH,FPT,GJC,DAD AISC/RMO-Detailed Request Display ;9/3/99  13:48
  . Q
  W ! K DIR S DIR(0)="E" D ^DIR K DIR I $D(DUOUT)!($D(DTOUT)) D Q Q
  D ^RAORDS G Q:'$D(RAORDS)
-OERR ; Entry Point for OE/RR Cancel/Hold Alert
- I $D(XQADATA) D
- . S RAORDS(1)=+XQADATA
- . I $P(XQADATA,",",2)'="" S RADFN=$P(XQADATA,",",2)
+OERR ;Entry Point for OE/RR Cancel/Hold Alert
+ S:$D(XQADATA) RAORDS(1)=+XQADATA,RADFN=$P(XQADATA,",",2)
  S RAPKG="",RAOSTSYM="dc^c^h^^p^^^s",$P(RALNE,"-",79)="",RAX=""
  F RAOLP=1:1 S RAOIFN=$S($D(RAORDS(RAOLP)):RAORDS(RAOLP),1:0) Q:'RAOIFN!(RAX=U)  D DISORD
- ;
  K:RAX="^" XQAID,XQAKILL I $D(XQAID) S DFN=$P(XQAID,",",2) D DELETE^XQALERT
 Q K %,DIC,I,OREND,RA,RACI,RACNI,RADFN,RADIV,RADIVPAR,RADPT0,RADTI,RALNE
  K RANME,RAOFNS,RAOIFN,RAOLP,RAORD0,RAORDS,RAOSTS,RAOSTSYM,RAOVSTS,RAPKG
  K RAONE,RAQUIT,RASSN,X,XQAID,XQALERT,Y,RAX,VA200,VAERR,VAIP
- K RAPARENT,RACMFLG
+ K RAPARENT
  K DFN,DIPGM,DISYS,DIW,DIWI,DIWT,DIWTC,DIWX,DN,RA6,RA7,POP,^TMP($J,"PRO-ORD")
  K ^TMP($J,"RA L-TYPE"),^TMP($J,"RAORDS"),^TMP($J,"RA DIFF PRC") Q
  ;
- ;
 DISORD Q:'$D(^DPT(RADFN,0))  S RADPT0=^(0),RA("NME")=$P(RADPT0,"^"),RA("DOB")=$P(RADPT0,"^",3),RASSN=$$SSN^RAUTL Q:'$D(^RAO(75.1,RAOIFN,0))  S RAORD0=^(0)
- ;determine if ordered procedure has CM assoc.; return null if none
- S RAZPRC0=$G(^RAMIS(71,+$P(RAORD0,U,2),0))
- S RACMFLG("O")=$$CMEDIA^RAO7UTL(+$P(RAORD0,U,2),$P(RAZPRC0,U,6))
- K RAZPRC0
  I $D(^RADPT("AO",RAOIFN,RADFN)) D DPRC(RAOIFN,RADFN)
  S RA("PROC. NODE")=$G(^RAMIS(71,+$P(RAORD0,U,2),0))
  S RA("PRC")=$E($P(RA("PROC. NODE"),U),1,36)
@@ -50,7 +41,6 @@ DISORD Q:'$D(^DPT(RADFN,0))  S RADPT0=^(0),RA("NME")=$P(RADPT0,"^"),RA("DOB")=$P
  S RA("CNCAT")="("_RA("PRCIT")_" "_RA("PRCTY")_" "_RA("CPT")_")"
  S $E(RA("PROC INFO"),38,60)=RA("CNCAT") K RA("CNCAT"),RA("PRCIT")
  K RA("PRCTY"),RA("CPT")
- S RA("STY_REA")=$P($G(^RAO(75.1,RAOIFN,.1)),U) ;P75
  K RA("MOD") F I=0:0 S I=$O(^RAO(75.1,RAOIFN,"M","B",I)) Q:'I  I $D(^RAMIS(71.2,+I,0)) S RA("MOD")=$S('$D(RA("MOD")):$P(^(0),"^"),1:RA("MOD")_", "_$P(^(0),"^"))
  S RA("OST")=$P($P(^DD(75.1,5,0),$P(RAORD0,"^",5)_":",2),";")_$S($P(RAOSTSYM,"^",$P(RAORD0,"^",5))="":"",1:" ("_$P(RAOSTSYM,"^",$P(RAORD0,"^",5))_")")
  S RA("PHY")=$S($D(^VA(200,+$P(RAORD0,"^",14),0)):$P(^(0),"^"),1:"")
@@ -61,17 +51,14 @@ DISORD Q:'$D(^DPT(RADFN,0))  S RADPT0=^(0),RA("NME")=$P(RADPT0,"^"),RA("DOB")=$P
  K RA("ODT") S X=$P(RAORD0,"^",16) I X S:$P(X,".",2) X=$P(X,".")_"."_$$NOSECNDS^RAORD3($P(X,".",2)) S RA("ODT")=$$FMTE^XLFDT(X,"1P")
  S RA("USR")=$S($D(^VA(200,+$P(RAORD0,"^",15),0)):$P(^(0),"^"),1:"")
  D HDR ; display a header
- W !,"Requested :",?12,RA("PROC INFO")
+ W !,"Requested:",?17,RA("PROC INFO")
  I $D(^TMP($J,"RA DIFF PRC")) D
- .N CRTN,I S CRTN=0,I="" W !,"Registered:"
- .F  S I=$O(^TMP($J,"RA DIFF PRC",I)) Q:I']""  D
- ..W:CRTN ! W ?12,I S CRTN=1
- .Q
- I $G(RACMFLG("O"))'="" W:$X ! W ?12,"** The requested procedure has contrast media assigned **"
- I $G(RACMFLG("R"))'="" W:$X ! W ?12,"** A registered procedure uses contrast media **"
+ . N I S I="" W !,"Registered:"
+ . F  S I=$O(^TMP($J,"RA DIFF PRC",I)) Q:I']""  W ?11,I,!
+ . Q
  W:$D(RA("MOD")) !,"Procedure Modifiers:",?22,RA("MOD")
  W !!,"Current Status:",?22,$E(RA("OST"),1,24)
- W !,"Requester:",?22,$E(RA("PHY"),1,24)
+ W !,"Requestor:",?22,$E(RA("PHY"),1,24)
  W !?1,"Tel/Page/Dig Page: ",RA("RPHOINFO")
  W !,"Patient Location:",?22,$E(RA("HLC"),1,20)
  W:$D(RA("ROOM-BED")) !,"Room-Bed:",?22,$E(RA("ROOM-BED"),1,20)
@@ -115,12 +102,8 @@ HDR ; Header for the 'Detailed Request Display' option.  Called from above
  ; (D HDR) and from RAORD3
  W @IOF,?22,"**** Detailed Display ****",!!,"Name: ",RA("NME"),"    (",RASSN,")" S Y=RA("DOB") D D^RAUTL W ?45,"Date of Birth: ",Y,!,RALNE
  Q
- ;
-DPRC(RAOIFN,RADFN) ; If the ordered procedure has been registered check
- ;if this is an examset. If not an examset, find the status of the exam
- ;RA("ST"). Also, check if the ordered procedure has been changed at
- ;time of registration (DPROC^RAUTL15). If it has, store the data off
- ;in ^TMP($J,"RA DIFF PRC").
+DPRC(RAOIFN,RADFN) ; If the requested and registered procedures differ,
+ ; store off the registered procedure in ^TMP($J,"RA DIFF PRC")
  ;
  ; NOTE: The only time we don't set ^TMP($J,"RA DIFF PRC") is when
  ; we are using the 'Detailed Request Display' option and the ordered
@@ -129,9 +112,6 @@ DPRC(RAOIFN,RADFN) ; If the ordered procedure has been registered check
  ; registered procedure and exam case number if the order
  ; is active.
  ;
- ;Set the variable RACMFLG("R") to "Y" if an exam, either a single or
- ;descendant, has used contrast media during the examination.
- ;
  N RA7003,RACNI,RADTI,RAFLG K RA("ST"),^TMP($J,"RA DIFF PRC")
  S (RADTI,RAFLG)=0
  F  S RADTI=+$O(^RADPT("AO",RAOIFN,RADFN,RADTI)) Q:RADTI'>0  D
@@ -139,7 +119,6 @@ DPRC(RAOIFN,RADFN) ; If the ordered procedure has been registered check
  . F  S RACNI=$O(^RADPT("AO",RAOIFN,RADFN,RADTI,RACNI)) Q:RACNI'>0  D
  .. I $D(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0)) D
  ... S RA7003=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0)),RAFLG=RAFLG+1
- ... S:$G(RACMFLG("R"))="" RACMFLG("R")=$S($P(RA7003,U,10)="Y":"Y",1:"")
  ... S RA("ST")=$$GET1^DIQ(72,+$P(RA7003,"^",3)_",",.01)
  ... N RAPRC S RAPRC=$$DPROC^RAUTL15(RADFN,RADTI,RACNI,RAOIFN)
  ... S:RAPRC]"" ^TMP($J,"RA DIFF PRC",RAPRC)=""

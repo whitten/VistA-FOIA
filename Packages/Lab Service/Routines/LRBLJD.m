@@ -1,18 +1,11 @@
-LRBLJD ;AVAMC/REG/CYM - BB UNIT DISPOSITION ;7/25/96  11:53 ; 12/18/00 2:06pm
- ;;5.2;LAB SERVICE;**25,72,78,247,267,408**;Sep 27, 1994;Build 8
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- ;
- ; References to ^DD(65, supported by DBIA3261
- ;
- Q  D END S LR("M")=1,LRN="",X="BLOOD BANK" D ^LRUTL G:Y=-1 END S X=$P(^DD(65,4.1,0),U,3),LR(3)="" F Y=1:1 S Z=$P($P(X,";",Y),":",2) Q:Z=""  I $A(Z)'=84 S LRB(Y)=Z
+LRBLJD ; IHS/DIR/AAB - BB UNIT DISPOSITION 7/25/96 11:53 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**25,72,78**;Sep 27, 1994
+ D END S LR("M")=1,LRN="",X="BLOOD BANK" D ^LRUTL G:Y=-1 END S X=$P(^DD(65,4.1,0),U,3),LR(3)="" F Y=1:1 S Z=$P($P(X,";",Y),":",2) Q:Z=""  I $A(Z)'=84 S LRB(Y)=Z
  W !?15,"Division: ",LRAA(4)
  I LRCAPA S X="UNIT MODIFICATION",X("NOCODES")=1 D X^LRUWK G:'$D(X) END K X S LRW("MO")=LRT S X="UNIT LOG-IN/SEND-OUT" D X^LRUWK G:'$D(X) END S LRW("S")=LRT F A=0:0 S A=$O(LRT(A)) Q:'A  S LRW("S",A)=""
  K LRT D BAR^LRBLB
-ASK S X="N",%DT="T" D ^%DT S LRF=Y K %DT W !! S X=$$READ^LRBLB("Select UNIT ID FOR DISPOSITION: ") G:X=""!(X[U) END
- I LR,$E(X,1,$L(LR(2)))=LR(2) D
- .D ^LRBLBU
- E  W $$STRIP^LRBLB(.X)  ; Strip off data identifiers just in case
- G:'$D(X) ASK
+ASK S X="N",%DT="T" D ^%DT S LRF=Y K %DT R !!,"Select UNIT ID FOR DISPOSITION: ",X:DTIME G:X=""!(X[U) END I X?7N.N,X'["?",LR,$E(X,1,$L(LR(2)))=LR(2) D ^LRBLBU G:'$D(X) ASK
  D REST,K^LRU K ^TMP($J),DA,LR("CK"),LR("C"),LR("%5"),LR("%4"),LR("%3"),LR("%2"),LR("%"),LRO,LRM,LRV,LRE,LRP,LRJ,LRT G ASK
 REST S (DIC,DIE)="^LRD(65,",DIC(0)="EFQMZ",DIC("S")="I $P(^(0),U,16)=DUZ(2),$S('$D(^(4)):1,$P(^(4),U,2):0,$P(^(4),U)="""":1,1:0)" D ^DIC K DIC Q:Y<1
  S DA=+Y,LRV(10)=$P(Y(0),"^",10),LRV(4)=+$P(Y(0),"^",4),LRV(26)=$P(^LAB(66,LRV(4),0),U,26),LRV(15)=$P(Y(0),"^",15) D EN^LRBLJDA Q:$D(LR("%"))

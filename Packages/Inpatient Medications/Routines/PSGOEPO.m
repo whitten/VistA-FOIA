@@ -1,9 +1,10 @@
-PSGOEPO ;BIR/CML3-PRINT ORDERS ENTERED BY PROVIDER ;12 Mar 98 / 3:23 PM
+PSGOEPO ;BIR/CML3-PRINT ORDERS ENTERED BY PROVIDER ;29-Aug-2004 10:34;PLS
  ;;5.0; INPATIENT MEDICATIONS ;**8,58**;16 DEC 97
  ;
  ; Reference to ^PS(51.2 is supported by DBIA 2178.
  ; Reference to ^PS(55 is supported by DBIA 2191.
  ;
+ ; Modified - IHS/CIA/PLS - 08/29/04 - LINE  HEADER+1
  K %ZIS,IO("Q"),ZTSAVE S IOP=$P(PSJSYSO,"^"),%ZIS=$S($P(PSJSYSO,"^",2)=IO:"",1:"NQ") D ^%ZIS K IOP I $P(PSJSYSO,"^",2)=IO(0) G ENQOP
  S PSGTIR="ENQOP^PSGOEPO",PSGTID=$H,ZTDESC="PROVIDER ORDERS PRINT",ZTSAVE("PSGOEPOF")="",ZTSAVE("PSJSYSU")="" S:PSGOEPOF'="A" ZTSAVE("PSGOP")="" D ENTSK^PSGTI K ZTSK G DONE
  ;
@@ -24,7 +25,9 @@ DONE ;
  K AD,DA,DIK,DO,FD,LN1,MORE,MR,ND,ND1,ND2,ND6,OCNT,OD,PSGID,PSGOD,PSGOEPO,PSGOEPOD,PSGOEPOF,PSGORD,SD,ST Q
  ;
 HEADER ;
- W:$Y @IOF W !!?2,"NURSE: Remove one copy and send to Pharmacy.",!!!!!,LN1,!?1,"VA FORM 10-1158",?21,"PROVIDER'S MEDICATION ORDERS",?53,"Printed: ",PSGOEPOD,!,LN1
+ ; IHS/CIA/PLS - 08/29/04 - Removed reference to VA FORM
+ ;W:$Y @IOF W !!?2,"NURSE: Remove one copy and send to Pharmacy.",!!!!!,LN1,!?1,"VA FORM 10-1158",?21,"PROVIDER'S MEDICATION ORDERS",?53,"Printed: ",PSGOEPOD,!,LN1
+ W:$Y @IOF W !!?2,"NURSE: Remove one copy and send to Pharmacy.",!!!!!,LN1,!?1,"",?21,"PROVIDER'S MEDICATION ORDERS",?53,"Printed: ",PSGOEPOD,!,LN1
  W !?3,"|Date/|",?33,"ORDERS",?58,"| |  Nurse's",!,"No.|Time |Action",?19,"Check here if NO SUBSTITUTE allowed. ->",?58,"| |  Signature",!,LN1
  Q
  ;

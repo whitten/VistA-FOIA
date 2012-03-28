@@ -1,4 +1,5 @@
-XQOR2 ; SLC/KCM - Process Extended Actions, Protocols ;8/23/91  10:33 ;
+XQOR2 ; SLC/KCM - Process Extended Actions, Protocols ;8/23/91  10:33 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 ACT ;From: STAK^XQOR1
  I ^TMP("XQORS",$J,0,"FILE")=";ORD(101,",$D(@(^TMP("XQORS",$J,XQORS,"REF")_"26)"))'[0 S X=^(26) X:$L(X) X

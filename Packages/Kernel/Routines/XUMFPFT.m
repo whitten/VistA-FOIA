@@ -1,4 +1,4 @@
-XUMFPFT ;CIOFO-SF/RAM - Master File Param FACILITY TYPE ;06/28/00
+XUMFPFT ;CIOFO-SF/RAM - Master File Param FACILITY TYPE ;06/28/00 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**206,217**;Jul 10, 1995
  ;
  ; This routine sets up the parameters required by the FACILITY TYPE

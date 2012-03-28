@@ -1,4 +1,5 @@
-DIFROMSI ;SCISC/DCL-EDE IN ;3:19 PM  16 Nov 2001
+DIFROMSI ;SCISC/DCL-EDE IN ;3:19 PM  16 Nov 2001 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**94**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 FPRE(DIFRFILE,DIFRFLG,DIFRNAME,DIFRSA) ;

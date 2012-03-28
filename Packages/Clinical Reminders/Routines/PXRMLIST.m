@@ -1,39 +1,27 @@
-PXRMLIST ; SLC/PKR/PJH - Clinical Reminders list functions. ;07/17/2007
- ;;2.0;CLINICAL REMINDERS;**6**;Feb 04, 2005;Build 123
- ;Used in the reminder exchange utility for building lists of
- ;reminders, Exchange File entries, etc.
- ;=======================================================
+PXRMLIST ; SLC/PKR - Clinical Reminders list functions. ;06/05/2001
+ ;;1.5;CLINICAL REMINDERS;**5**;Jun 19, 2000
+ ;Used in the reminder exchange utility.
+ ;======================================================================
 FRDEF(NAME,PNAME) ;Format the reminder name and print name.
- N IND,TEMP
+ N IND,LEN,TEMP
  S TEMP=$$LJ^XLFSTR(NAME,40," ")
  S TEMP=TEMP_PNAME
  Q TEMP
  ;
- ;=======================================================
-FMT(NUMBER,NAME,SOURCE,DATE,FMTSTR,NL,OUTPUT) ;Format  entry number, name,
- ;source, and date packed for LM display.
- N TEMP,TSOURCE
- S TEMP=NUMBER_U_NAME
+ ;======================================================================
+FRE(NUMBER,NAME,SOURCE,DATE) ;Format  entry number, name, source,
+ ;and date packed.
+ N TEMP,TNAME,TSOURCE
+ S TEMP=$$RJ^XLFSTR(NUMBER,4," ")
+ S TNAME=$E(NAME,1,27)
+ S TEMP=TEMP_"  "_$$LJ^XLFSTR(TNAME,29," ")
  S TSOURCE=$E($P(SOURCE,",",1),1,12)_"@"_$E($P(SOURCE," at ",2),1,12)
- S TEMP=TEMP_U_TSOURCE
+ S TEMP=TEMP_$$LJ^XLFSTR(TSOURCE,23," ")
  S DATE=$$FMTE^XLFDT(DATE,"5Z")
- S TEMP=TEMP_U_DATE
- D COLFMT^PXRMTEXT(FMTSTR,TEMP," ",.NL,.OUTPUT)
- Q
+ S TEMP=TEMP_"  "_$$LJ^XLFSTR(DATE,30," ")
+ Q TEMP
  ;
- ;=======================================================
-LIST ;Print a list of location lists.
- N BY,DIC,FLDS,FR,L,PXRMEDOK
- S PXRMEDOK=1
- S BY=".01"
- S DIC="^PXRMD(810.9,"
- S FLDS="[PXRM LOCATION LIST LIST]"
- S FR=""
- S L=0
- D EN1^DIP
- Q
- ;
- ;=======================================================
+ ;======================================================================
 MRKINACT(TEXT) ;Append the inactive mark to TEXT in column 77.
  N IC,NSPA
  S NSPA=77-$L(TEXT)
@@ -41,17 +29,18 @@ MRKINACT(TEXT) ;Append the inactive mark to TEXT in column 77.
  S TEXT=TEXT_"X"
  Q TEXT
  ;
- ;=======================================================
+ ;======================================================================
 QUERYAO() ;See if the user wants only active reminders listed.
- N DIR,DIROUT,DIRUT,DTOUT,DUOUT,X,Y
+ N X,Y
+ K DIRUT,DTOUT,DUOUT
  S DIR(0)="YA"
  S DIR("A")="List active reminders only? "
  S DIR("B")="Y"
  W !
- D ^DIR
+ D ^DIR K DIR
  Q Y
  ;
- ;=======================================================
+ ;======================================================================
 RDEF(DEFLIST,ARO) ;Build a list of the name and print name of all
  ;reminder definitions.
  N INACTIVE,IEN,NAME,PNAME,REMINDER
@@ -72,28 +61,24 @@ RDEF(DEFLIST,ARO) ;Build a list of the name and print name of all
  S DEFLIST("VALMCNT")=VALMCNT
  Q
  ;
- ;=======================================================
-REXL(RLIST) ;Build a list of exchange repository entries.
- N DATE,EXIEN,FMTSTR,IND,NAME,NL,NUM,OUTPUT,SOURCE,STR
+ ;======================================================================
+RE(RLIST,IEN) ;Build a list of repository entries.
+ N DATE,IND,NAME,SOURCE
  ;Build the list in alphabetical order.
- S FMTSTR=$$LMFMTSTR^PXRMTEXT(.VALMDDF,"RLLL")
- S (NUM,VALMCNT)=0
+ S VALMCNT=0
  S NAME=""
  F  S NAME=$O(^PXD(811.8,"B",NAME)) Q:NAME=""  D
  . S DATE=""
  . F  S DATE=$O(^PXD(811.8,"B",NAME,DATE)) Q:DATE=""  D
- .. S EXIEN=$O(^PXD(811.8,"B",NAME,DATE,""))
- .. S SOURCE=$P(^PXD(811.8,EXIEN,0),U,2)
- .. S NUM=NUM+1
- .. S ^TMP(RLIST,$J,"SEL",NUM)=EXIEN
- .. D FMT(NUM,NAME,SOURCE,DATE,FMTSTR,.NL,.OUTPUT)
- .. F IND=1:1:NL D
- ... S VALMCNT=VALMCNT+1,^TMP(RLIST,$J,VALMCNT,0)=OUTPUT(IND)
- ... S ^TMP(RLIST,$J,"IDX",VALMCNT,NUM)=""
- S ^TMP(RLIST,$J,"VALMCNT")=VALMCNT
+ .. S IND=$O(^PXD(811.8,"B",NAME,DATE,""))
+ .. S SOURCE=$P(^PXD(811.8,IND,0),U,2)
+ .. S VALMCNT=VALMCNT+1
+ .. S RLIST(VALMCNT,0)=$$FRE(VALMCNT,NAME,SOURCE,DATE)
+ .. S IEN(VALMCNT)=IND
+ S RLIST("VALMCNT")=VALMCNT
  Q
  ;
- ;=======================================================
+ ;======================================================================
 SPONSOR ;Print a list of Sponsors.
  N BY,DIC,FLDS,FR,L,PXRMEDOK
  S PXRMEDOK=1

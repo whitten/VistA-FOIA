@@ -1,4 +1,5 @@
-XLFDT4 ;ISCSF/RWF - Exclude time ;7/8/94  07:58
+XLFDT4 ;ISCSF/RWF - Exclude time ;7/8/94  07:58 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**71**;Jul 10, 1995
  Q
 WI(XLSCH,XLRD) ;Test Entry Point

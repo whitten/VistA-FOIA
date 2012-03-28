@@ -1,5 +1,11 @@
-VALM0 ;MJK/ALB - List Manager (cont.);08:19 PM  17 Jan 1993
- ;;1;List Manager;;Aug 13, 1993
+VALM0 ;MJK/ALB - List Manager (cont.);08:19 PM  17 Jan 1993 [ 07/24/98  9:06 AM ]
+ ;;1;List Manager;**1001,1002**;Aug 13, 1993
+ ;IHS/ANMC/LJF 3/5/96 IHS PATCH #1001
+ ;  -- Added code to turn line wrap OFF; needed if WP field was called
+ ;IHS/ANMC/LJF 5/21/97 IHS PATCH #1002
+ ;  -- Added check for variable VALMNOFF to suppress form feed after
+ ;     last list template.  Set VALMNOFF=1 in EXIT subrtn for your
+ ;     list template
  ;
 INIT(NAME,PARMS) ;
  D STACK
@@ -13,6 +19,7 @@ INITQ K VALMX,X Q
 TERM ; -- set up term characteristics
  D HOME^%ZIS
  S VALMWD=IOM,X=$$IO_";IOBON;IOBOFF;IOSGR0" D ENDR^%ZISS
+ S X="IOAWM0" D ENDR^%ZISS W IOAWM0 K IOAWM0 ;IHS PATCH #1001
  S VALMSGR=$S($G(IOSGR0)]"":IOSGR0,1:$G(IOINORM))
  ; -- cursor off/on to avoid bouncing
  S (VALMCON,VALMCOFF)=""
@@ -44,7 +51,8 @@ POP ; -- clean up and unstack vars
  ;
  ; -- final clean up
  I 'VALMEVL D  G POPQ
- .D CLEAR^VALM1
+ .;D CLEAR^VALM1 ;IHS PATCH #1002
+ .D:'$G(VALMNOFF) CLEAR^VALM1 K VALMNOFF  ;IHS PATCH #1002
  .S X=VALMWD X ^%ZOSF("RM")
  .S Y=$$IO F I=1:1 S X=$P(Y,";",I) Q:X=""  K @X
  .K IOBON,IOBOFF,IOSGR0,VALMSGR

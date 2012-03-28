@@ -1,5 +1,6 @@
 LR7OU5 ;DALOI/DCM/FHS-NLT LINKING UTILITY SEMI-MANUAL ; 2/23/07 6:53am
- ;;5.2;LAB SERVICE;**127,201,272,334**;Sep 27, 1994;Build 12
+ ;;5.2;LAB SERVICE;**1028**;NOV 01, 1997;Build 53
+ ;;5.2;LAB SERVICE;**127,201,272,334**;Sep 27, 1994;Build 45
  ; Reference to ^%ZIS supported by IA #10086
  ; Reference to ^%ZISC supported by IA #10089
  ; Reference to ^%ZTLOAD supported by IA #10063

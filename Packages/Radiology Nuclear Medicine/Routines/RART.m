@@ -1,11 +1,7 @@
 RART ;HISC/CAH,FPT,GJC AISC/MJK,TMP,RMO-Reporting Menu ;11/16/98  15:02
- ;;5.0;Radiology/Nuclear Medicine;**2,5,15,18,43,82,56,97**;Mar 16, 1998;Build 6
- ;Supported IA #1571 ^LEX(757.01
- ;Private IA #4793 CREATE^WVRALINK
- ;Supoprted IA #3544 ^VA(200,"ARC"
+ ;;5.0;Radiology/Nuclear Medicine;**2,5,15,18,43**;Mar 16, 1998
  ;;last modification by SS for P18 June 15, 2000
 3 ;;Verify a Report
- N I5
  D SET^RAPSET1 I $D(XQUIT) K XQUIT Q
  I $D(RANOSCRN) S X=$$DIVLOC^RAUTL7() I X D Q QUIT
  G:$D(^VA(200,"ARC","S",DUZ))!($D(^XUSEC("RA VERIFY",DUZ))) 30
@@ -13,7 +9,7 @@ RART ;HISC/CAH,FPT,GJC AISC/MJK,TMP,RMO-Reporting Menu ;11/16/98  15:02
  G:'$D(^VA(200,"ARC","R",DUZ)) 30
  I $P(RAMDV,"^",18)'=1 W !!,$C(7),"Interpreting Residents are not allowed to verify reports." G Q
 30 K RAUP S RAPGM=30,RAREPORT=1 D ^RACNLU G Q:X="^" I '$D(^RARPT(+RARPT,0)) W !!?2,$C(7),"No report available!" G 30
- S I5=$P(^RARPT(+RARPT,0),"^",5) I "^V^EF^"[("^"_I5_"^") W !!?2,$C(7),"Report already ",$S(I5="V":"verified",1:"electronically filed") G 30
+ I $P(^RARPT(+RARPT,0),"^",5)="V" W !!?2,$C(7),"Report already verified!" G 30
 SS1 Q:$$VERONLY^RAUTL11=-1  ;P18 case info 
 31 S DIE("NO^")="",DA=RARPT,DR="[RA VERIFY REPORT ONLY]",DIE="^RARPT("
  S RAIMGTYI=$P($G(^RADPT(RADFN,"DT",RADTI,0)),U,2),RAIMGTYJ=$P($G(^RA(79.2,+RAIMGTYI,0)),U)
@@ -50,11 +46,10 @@ UNL31 ; copy then unlock
 32 K RAXIT
  I $G(RAPGM)="GETRPT^RARTVER" I $E(RACT'="V"),($P(^RARPT(RARPT,0),U,14)]"") D RETURN^RARTVER2
 PACS I (RACT="V")!(RACT="R") D TASK^RAHLO4
- I "^V^EF^"[("^"_RACT_"^"),$T(CREATE^WVRALINK)]"" D CREATE^WVRALINK(RADFN,RADTI,RACNI) ;women's health
+ I RACT="V",$T(CREATE^WVRALINK)]"" D CREATE^WVRALINK(RADFN,RADTI,RACNI) ;women's health
  ;
  I RAPGM="NXT^RABTCH1" G @RAPGM
-TIME D:RACT="V"
- .N RAHLTCPB S RAHLTCPB=1 D UPSTAT^RAUTL0 K RAAB
+TIME D:RACT="V" UPSTAT^RAUTL0 K RAAB
  I $G(RARDX)="S" D
  . D SAVE^RARTVER2
  . I $G(RAPGM)="GETRPT^RARTVER" D
@@ -74,21 +69,15 @@ OERR1 ; Jump to 'OERR1^RART1' This is necessary to support the reference to
  G OERR1^RART1 Q
  ;
 PRTDX ; print dx codes on report display (called from RART1)
- N RATMP
  K RAFLG D WAIT^RART1:($Y+6)>IOSL&('$D(RARTVERF))
  Q:X="^"!(X="T")!(X="P")
  S RADXCODE=$P(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0),U,13)
  W !?3,"Primary Diagnostic Code: ",!?2,$S($D(^RA(78.3,+RADXCODE,0)):$P(^(0),U,1),1:"") K RAFLG
- S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RADXCODE,0)),U,6),.01)
- W:RATMP]"" " (",RATMP,")"
  D WAIT^RART1:($Y+6)>IOSL&('$D(RARTVERF)) Q:X="^"!(X="T")!(X="P")
  I '$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"DX",0)) W ! Q
  W !!?3,"Secondary Diagnostic Codes: "
  S RADXCODE=0
- F  S RADXCODE=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"DX","B",RADXCODE)) Q:RADXCODE'>0!('$D(^RA(78.3,+RADXCODE,0)))!($D(RAOOUT))  K RAFLG D WAIT^RART1:($Y+6)>IOSL&('$D(RARTVERF)) Q:X="^"!(X="T")!(X="P")  D
- . W !?2,$P(^RA(78.3,RADXCODE,0),U,1)
- . S RATMP=$$GET1^DIQ(757.01,$P($G(^RA(78.3,+RADXCODE,0)),U,6),.01)
- . W:RATMP]"" " (",RATMP,")"
+ F  S RADXCODE=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"DX","B",RADXCODE)) Q:RADXCODE'>0!('$D(^RA(78.3,+RADXCODE,0)))!($D(RAOOUT))  K RAFLG D WAIT^RART1:($Y+6)>IOSL&('$D(RARTVERF)) Q:X="^"!(X="T")!(X="P")  W !?2,$P(^RA(78.3,RADXCODE,0),U,1)
  W !
  Q
 EXIT ; Kill variables created when user prints 'Abnormal Rad/Nuc Med Report

@@ -1,4 +1,5 @@
-XUDHRES ;ISCSF/RWF - Resource device utility. ;4/30/98  11:17
+XUDHRES ;ISCSF/RWF - Resource device utility. ;4/30/98  11:17 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**49,69**;Dec 30, 1996
  W !,"No entry from the top.",! Q
  ;

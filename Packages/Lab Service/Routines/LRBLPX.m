@@ -1,13 +1,14 @@
-LRBLPX ;AVAMC/REG/CYM - XMATCH RESULTS ;08/20/2001 3:45 PM
- ;;5.2;LAB SERVICE;**72,77,247,275,408**;Sep 27, 1994;Build 8
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- Q  D V^LRU,CK^LRBLPUS G:Y=-1 END
+LRBLPX ; IHS/DIR/AAB - XMATCH RESULTS 6/13/96 20:25 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72,77**;Sep 27, 1994
+ D V^LRU,CK^LRBLPUS G:Y=-1 END
  S LRB=$O(^LAB(61.3,"C",50710,0)) I 'LRB D EN1^LRBLU
  W !!?28,"Enter crossmatch results",!!?28,LRAA(4) K LRDPAF S LRW=$P(^VA(200,DUZ,0),"^",2)
  I LRCAPA D CK^LRBLPX1 I '$D(LRT) D END Q
 ASK W ! K ^TMP($J),LRZ,LRV,DIC D ^LRDPA K DIC,DIE,DR G:LRDFN=-1 END D R G ASK
  ;
-R S X=^LR(LRDFN,0),LRDPF=$P(X,U,2),LRPABO=$P(X,"^",5),LRPRH=$P(X,"^",6),LRP=PNM W !,LRP," ",SSN(1),?37,$J(LRPABO,2),?40,LRPRH D AB
+R ;S X=^LR(LRDFN,0),LRDPF=$P(X,U,2),LRPABO=$P(X,"^",5),LRPRH=$P(X,"^",6),LRP=PNM W !,LRP," ",SSN(1),?37,$J(LRPABO,2),?40,LRPRH D AB
+ S X=^LR(LRDFN,0),LRDPF=$P(X,U,2),LRPABO=$P(X,"^",5),LRPRH=$P(X,"^",6),LRP=PNM W !,LRP," ",HRCN,?37,$J(LRPABO,2),?40,LRPRH D AB  ;IHS/ANMC/CLS 08/16/96
  S LRV=0 F E=0:0 S E=$O(^LR(LRDFN,1.8,E)) Q:'E  F B=0:0 S B=$O(^LR(LRDFN,1.8,E,1,B)) Q:'B  S X=^(B,0) D S
  I 'LRV W $C(7),!,"No units currently selected for XMATCH",! Q
  I LRV=1 G E
@@ -21,14 +22,9 @@ S S X(1)=+$P(X,"^",2) I '$D(^LR(LRDFN,LRSS,X(1),0)) K ^LR(LRDFN,1.8,E,1,B) S X=^
  S LRV=LRV+1,(LRJ,^TMP($J,LRV))=^LR(LRDFN,1.8,E,1,B,0)_"^"_E D:LRV#20=0 M D ^LRBLPX1
  Q
 E W !! S LRJ=^TMP($J,LRV),LRR="",(LRI,DA(2))=+LRJ,DA=$P(LRJ,"^",2),LRC=$P(LRJ,"^",3),DIE="^LRD(65,LRI,2,LRDFN,1,",DA(1)=LRDFN
- ;
- ; LR*5.2*275 - Specific Requirement 6 from SRS
- ; BNT - Modified DR string below to only set the .05, .09, and 3 fields
- ;       if data is entered in the .04 field.
- ;       Also moved it down two lines just prior to the DIE call.
+ S DR=".05////^S X=DUZ;.09///NOW;.04;S LRR=X;S:LRR="""" Y=0;D:LRR=""IG"" IG^LRBLPX;3"
  K F D EN^LRBLPX1 Q:$D(F(2))  I $D(F(1)) W !!?4,"Sorry, must have ABO/Rh results to enter XMATCH results" Q
  I $D(F(6)) W !!?4,"Antibody screen results not entered.  OK to continue " S %=2 D YN^LRU Q:%'=1
- S DR=".04;S LRR=X;S:LRR="""" Y=0;.05////^S X=DUZ;.09///NOW;D:LRR=""IG"" IG^LRBLPX;3"
  D ^DIE I $D(^LRD(65,LRI,2,LRDFN,1,+DA,0))#2 S LRAD=^(0) S:$P(LRAD,"^",10)]"" $P(^(0),"^",10)=""
  K DIE,DR,DA I $G(Y)>0!(LRR="") S DIE="^LRD(65,LRI,2,",DA=LRDFN,DA(1)=LRI,DR=".02///@" D ^DIE K DIE Q
  I LRR'="C",LRR'="IG",'$P(^LRD(65,LRI,2,LRDFN,0),"^",2) G K
@@ -40,7 +36,8 @@ K L +^LR(LRDFN,1.8):5 I '$T W $C(7),!!,"I can't finish this. Someone else is edi
  Q
  ;
 LBL S X=^LRD(65,LRI,0),Y(7)=$P(X,"^",7),Y(8)=$P(X,"^",8),Y=$P(^(2,LRDFN,0),"^",2) D DT^LRU
- S Y(1)=$P(X,"^")_"^"_LRP_" "_SSN_"^"_"Patient "_LRPABO_" "_LRPRH_" "_Y_"^"_"Unit    "_Y(7)_" "_Y(8)_" # "_$P(X,"^")
+ ;S Y(1)=$P(X,"^")_"^"_LRP_" "_SSN_"^"_"Patient "_LRPABO_" "_LRPRH_" "_Y_"^"_"Unit    "_Y(7)_" "_Y(8)_" # "_$P(X,"^")
+ S Y(1)=$P(X,"^")_"^"_LRP_" "_HRCN_"^"_"Patient "_LRPABO_" "_LRPRH_" "_Y_"^"_"Unit    "_Y(7)_" "_Y(8)_" # "_$P(X,"^")  ;IHS/ANMC/CLS 08/16/96
  S X=^LRD(65,LRI,2,LRDFN,1,$P(LRJ,"^",2),0),Y(5)=$P(X,"^",5),Y(5)=$S(Y(5)="":"",$D(^VA(200,Y(5),0)):$P(^(0),"^",2),1:Y(5)),X=$P(X,"^",4),X=$$EXTERNAL^DILFD(65.02,.04,"",X),Y(1)=Y(1)_"   "_Y(5)_"^"_X
 EN ;from LRBLPUS2
  S:'$D(^LRO(69.2,LRAA,9,0)) ^(0)="^69.25A^^" L +^LRO(69.2,LRAA,9):5 I '$T W $C(7),!!,"I won't be able to make this CAUTION TAG now.  Someone else is using that function",! Q

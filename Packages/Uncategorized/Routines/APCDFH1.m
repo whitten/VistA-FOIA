@@ -1,0 +1,63 @@
+APCDFH1 ; IHS/CMI/LAB - LIST MANAGER API'S FOR FAMILY HISTORY AND API FOR REP FACTORS 19 Jun 2008 2:14 PM ; 
+ ;;2.0;IHS PCC SUITE;**2**;MAY 14, 2009
+ ;
+ ;
+FM ;EP - called from d/e input template APCD FP (FP)
+ S APCDREPI=DA
+ D EN^XBNEW("FM1^APCDFH","APCDREPI;APCDDATE")
+ K Y
+ Q
+FM1 ;EP - called from XBNEW call
+ S APCDC=0 K APCDCM
+ W !!,"Contraceptive Methods currently on recorded:"
+ I '$O(^AUPNREP(APCDREPI,2101,0)) S APCDC=0 W "  None recorded" G FM12
+ D EN^DDIOL("Contraceptive Method","","!?3"),EN^DDIOL("Start Date","","?43"),EN^DDIOL("End Date","","?63")
+ D EN^DDIOL($$REPEAT^XLFSTR("-",75),"","!?3")
+ K APCDCM S X=0,APCDC=0 F  S X=$O(^AUPNREP(APCDREPI,2101,X)) Q:X'=+X  D
+ .S APCDC=APCDC+1,APCDCM(APCDC)=X
+ .W !?2,APCDC,")  ",$P(^AUTTCM($P(^AUPNREP(APCDREPI,2101,X,0),U),0),U),?43,$$FMTE^XLFDT($P(^AUPNREP(APCDREPI,2101,X,0),U,2)),?63,$$FMTE^XLFDT($P(^AUPNREP(APCDREPI,2101,X,0),U,3))
+FM12 ;
+ D EN^DDIOL("","","!!")
+ K DIR
+ S DIR(0)="S^A:ADD a new Contraceptive Method"_$S(APCDC:";E:Edit an Existing Contraceptive Method;D:Delete an Existing Contraceptive Method",1:"")_";Q:QUIT"
+ S DIR("A")="Which action",DIR("B")="Q" KILL DA D ^DIR KILL DIR
+ I $D(DIRUT) G FM13
+ I Y="Q" G FM13
+ S Y="FM"_Y
+ D @Y
+ G FM1
+FM13 ; 
+ K Y
+ Q
+FMA ;
+ S DIC("A")="Enter CONTRACEPTIVE METHOD: ",DIC="^AUTTCM(",DIC(0)="AEMQ" D ^DIC
+ I Y=-1 K DIC Q
+ S APCDCMI=+Y
+ S DIC="^AUPNREP("_APCDREPI_",2101,"
+ S DA(1)=APCDREPI
+ S DIC("P")=$P(^DD(9000017,2101,0),U,2)
+ S X=APCDCMI
+ S DIC("DR")=".02BEGUN;.03ENDED"  ;.04///^S X=$S($G(APCDDATE):$$FMTE^XLFDT(APCDDATE),1:$$FMTE^XLFDT(DT))"
+ K DD,D0,DO
+ D FILE^DICN
+ Q
+FME ;
+ D EN^DDIOL("","","!")
+ K DIR
+ S DIR(0)="N^1:"_APCDC_":0",DIR("A")="Edit Which One" KILL DA D ^DIR KILL DIR
+ I $D(DIRUT) Q
+ K DIC,DA,DR
+ S DA=APCDCM(Y),DA(1)=APCDREPI,DR=".01;.02;.03" ;.04///^S X=$S($G(APCDDATE):$$FMTE^XLFDT(APCDDATE),1:$$FMTE^XLFDT(DT))"
+ S DIE="^AUPNREP("_APCDREPI_",2101,"
+ D ^DIE
+ Q
+FMD ;
+ D EN^DDIOL("","","!")
+ K DIR
+ S DIR(0)="N^1:"_APCDC_":0",DIR("A")="Edit Which One" KILL DA D ^DIR KILL DIR
+ I $D(DIRUT) Q
+ K DIC,DA,DR
+ S DA=APCDCM(Y),DA(1)=APCDREPI,DR=".01///@"
+ S DIE="^AUPNREP("_APCDREPI_",2101,"
+ D ^DIE
+ Q

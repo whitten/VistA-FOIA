@@ -1,5 +1,5 @@
 XDRDEDT ;SF-IRMFO/REM - EDIT STATUS FIELD IN FILE 15 ;10/10/08  13:38
- ;;7.3;TOOLKIT;**23,43,113**;Apr 25, 1995;Build 5
+ ;;7.3;TOOLKIT;**23,43,113**;Apr 25, 1995;Build 9
  ;;Per VHA Directive 2004-038, this routine should not be modified.
 EN ;;
  N XDRFIL,X,X1,X2,N1,N2,XDRDELET,XDROSTAT

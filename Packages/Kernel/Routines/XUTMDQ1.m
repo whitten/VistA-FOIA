@@ -1,4 +1,5 @@
-XUTMDQ1 ;SEA/RDS - TaskMan: Option, XUTMDQ, Part 2 (Bulk DQ) ;11/28/90  16:07 ;
+XUTMDQ1 ;SEA/RDS - TaskMan: Option, XUTMDQ, Part 2 (Bulk DQ) ;11/28/90  16:07 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 COUNT ;Ask Whether To First Count The Number Of Tasks To Unschedule

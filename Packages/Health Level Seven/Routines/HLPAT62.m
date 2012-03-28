@@ -1,4 +1,5 @@
-HLPAT62 ;SFISC/GMB - Post-patch stuff ;11/15/2000  15:16
+HLPAT62 ;SFISC/GMB - Post-patch stuff ;11/15/2000  15:16 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;7.1;MailMan;**62**;Jun 02, 1994
 ENTER ;
  Q:$D(^HLCS(870,"AISTAT"))

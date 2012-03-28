@@ -1,5 +1,6 @@
 VADPT61 ;ALB/MJK - Patient ID Utilities (cont.); 12 AUG 89 @1200
- ;;5.3;Registration,;**749**;Aug 13, 1993;Build 10
+ ;;5.3;Registration;**1004**;Aug 13, 1993
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
  ;
 1 ;;ID Format Enter/Edit
  W ! S DIC="^DIC(8.2,",DIC(0)="AELMQ" D ^DIC K DIC G Q1:+Y<1
@@ -25,11 +26,11 @@ WARN ; -- interaction warning
  Q
  ;
 BEG ;
- S VASTART=$$NOW^XLFDT
+ D NOW^%DTC S VASTART=%
  Q
  ;
 END ;
- S VAEND=$$NOW^XLFDT,L=0
+ D NOW^%DTC S VAEND=%,L=0
  K XMY
  S XMSUB=$P($T(OPTS+VAOPT),";",4),XMDUZ=.5,XMTEXT="VATEXT(",XMY(DUZ)=""
  I VAOPT=3 S XMSUB=XMSUB_" (Format: "_$S($D(^DIC(8.2,VAFMT,0)):$P(^(0),U),1:"UNKNOWN")_")"

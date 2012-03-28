@@ -1,7 +1,5 @@
 RADLQ3 ;HISC/GJC-Delq Status/Incomplete Rpt's ;5/7/97  15:58
- ;;5.0;Radiology/Nuclear Medicine;**87,93,47**;Mar 16, 1998;Build 21
- ; 11/15/07 BAY/KAM RA*5*87 Rem Call 217642 change pat ssn to display last four
- ; 05/09/08 BAY/KAM RA*5*93 Rem Call 246868 correct printing of *** OUTPATIENT ***
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 DISPXAM ; Display exam statuses for selected Imaging Types.  These exam
  ; statuses need the 'DELINQUENT STATUS REPORT?' field tripped to
  ; 'yes' in file 72.
@@ -41,9 +39,7 @@ OUTPUT ; Print out the results
  I $Y>(IOSL-RAEOS) D  Q:RAXIT
  . S RAXIT=$$EOS^RAUTL5() D:'RAXIT HDR^RADLQ2
  . Q
- ; 05/09/08 BAY/KAM RA*5*93 Rem Call 246868 Added RAVAR Check to next
- ;                                          line
- I RAEOS=6,RAVAR="O" D
+ I RAEOS=6 D
  . N RASTR S RASTR="*** OUTPATIENT ***"
  . S RASTR(0)=$$REPEAT^XLFSTR(" ",((IOM-($L(RASTR)*3))\2))
  . S RASTR(1)=RASTR_RASTR(0)_RASTR_RASTR(0)_RASTR
@@ -52,31 +48,17 @@ OUTPUT ; Print out the results
  ; Note: Inform the user that the following data will be for outpatients.
  ;       Since only inpatient and outpatient is possibly stored, any
  ;       change in the variable RAVAR will be a change to 'outpatient'.
- ; 11/15/07 BAY/KAM RA*5*87 Rem Call 217642 Added next line
- S RASSN=$E(RASSN,8,11)
  I IOM=132 D  ;132 column format
- . I $$USESSAN^RAHLRU1() D
- .. W !,RANME,?RATAB(1),RACN,?RATAB(2)+7,RASSN,?RATAB(3),RADT,?RATAB(4)
- .. W $E(RAWHE,1,25),?RATAB(5),RAVRFIED
- .. W !?RATAB(6),$E(RAPRC,1,30),?RATAB(7),$E(RAST,1,30)
- .. W ?RATAB(8),RARP,?RATAB(9),$E(RAIPHY,1,20),?RATAB(10),RATECH
- . I '$$USESSAN^RAHLRU1() D
- .. W !,RANME,?RATAB(1),RACN,?RATAB(2),RASSN,?RATAB(3),RADT,?RATAB(4)
- .. W $E(RAWHE,1,25),?RATAB(5),RAVRFIED
- .. W !?RATAB(6),$E(RAPRC,1,30),?RATAB(7),$E(RAST,1,30)
- .. W ?RATAB(8),RARP,?RATAB(9),$E(RAIPHY,1,20),?RATAB(10),RATECH
+ . W !,RANME,?RATAB(1),RACN,?RATAB(2),RASSN,?RATAB(3),RADT,?RATAB(4)
+ . W $E(RAWHE,1,25),?RATAB(5),RAVRFIED
+ . W !?RATAB(6),$E(RAPRC,1,30),?RATAB(7),$E(RAST,1,30)
+ . W ?RATAB(8),RARP,?RATAB(9),$E(RAIPHY,1,20),?RATAB(10),RATECH
  . Q
  E  D  ;default to 80 column
- . I $$USESSAN^RAHLRU1() D
- .. W !,$E(RANME,1,20),?RATAB(1),RACN,?RATAB(2)+7,RASSN,?RATAB(3),RADT
- .. W ?RATAB(4),$E(RAWHE,1,15),?RATAB(5),RAVRFIED
- .. W !?RATAB(6),$E(RAPRC,1,20),?RATAB(7),$E(RAST,1,11)
- .. W ?RATAB(8),RARP,?RATAB(9),$E(RAIPHY,1,15),?RATAB(10),RATECH
- . I '$$USESSAN^RAHLRU1() D
- .. W !,$E(RANME,1,20),?RATAB(1),RACN,?RATAB(2),RASSN,?RATAB(3),RADT
- .. W ?RATAB(4),$E(RAWHE,1,15),?RATAB(5),RAVRFIED
- .. W !?RATAB(6),$E(RAPRC,1,20),?RATAB(7),$E(RAST,1,11)
- .. W ?RATAB(8),RARP,?RATAB(9),$E(RAIPHY,1,15),?RATAB(10),RATECH
+ . W !,$E(RANME,1,20),?RATAB(1),RACN,?RATAB(2),RASSN,?RATAB(3),RADT
+ . W ?RATAB(4),$E(RAWHE,1,15),?RATAB(5),RAVRFIED
+ . W !?RATAB(6),$E(RAPRC,1,20),?RATAB(7),$E(RAST,1,11)
+ . W ?RATAB(8),RARP,?RATAB(9),$E(RAIPHY,1,15),?RATAB(10),RATECH
  . Q
  W !,RALN1
  S RAVAR(0)=RAVAR ; track the patient status: inpatient -or- outpatient

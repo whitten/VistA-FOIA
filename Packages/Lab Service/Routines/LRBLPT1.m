@@ -1,6 +1,7 @@
-LRBLPT1 ;AVAMC/REG - TRANSFUSION RESULTS (COND'T) ;12/11/92  07:38 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPT1 ; IHS/DIR/FJE - TRANSFUSION RESULTS (COND'T) 12/11/92 07:38 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !! S LRJ=^TMP($J,LRV),(X,LRI)=+LRJ,F=$P(LRJ,"^",7),X=^LRD(65,X,0),LRC=$P(X,"^",11),M=^LAB(66,$P(X,"^",4),0),M(1)=$P(M,"^",24),M=$P(M,"^"),LRW=$P(X,"^",5),LR(65,.04)=+$P(X,"^",4)
  D U W !,"Is this the unit " S %=1 D YN^LRU Q:%'=1
 DT S %DT="AEXT",%DT("A")="DATE/TIME TRANSFUSION COMPLETED: ",%DT(0)="-N" D ^%DT K %DT Q:Y<1  S LRR=Y,LRQ(1)="" I Y'["." W $C(7),"  Enter date & TIME" G DT

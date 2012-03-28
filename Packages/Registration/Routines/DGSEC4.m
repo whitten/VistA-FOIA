@@ -1,6 +1,11 @@
-DGSEC4 ;ALB/MM,JAP - Utilities for record access & sensitive record processing;10/6/99 ; 10/26/05 12:46pm
- ;;5.3;Registration;**249,281,391,471,684,699**;Aug 13, 1993
- ;
+DGSEC4 ;ALB/MM,JAP - Utilities for record access & sensitive record processing;10/6/99 ; 1/5/00 2:41pm [ 03/17/2005  12:44 PM ]
+ ;;5.3;Registration;**249,281,391,471,1002,1004,1005,1009,1011,1013**;Aug 13, 1993
+ ;IHS/ANMC/LJF  8/31/2001 changed warning message text
+ ;              1/04/2002 if in log as non-sensitive, track anyway
+ ;IHS/ITSC/WAR  3/17/2005 Fix dealing with calls from other apps/pkgs
+ ;IHS/OIT/LJF  11/03/2005 PATCH 1004 moved message code to IHS routine
+ ;             01/06/2006 PATCH 1005 accounted for tracking all patients (IHS feature)
+ ;             08/31/2007 PATCH 1008 added code for user with restircted access to some patients
  ;Line tags OWNREC & SENS moved from DGSEC in DG*5.3*249 when DGSEC 
  ;reached the maximum routine size.
  ;
@@ -20,7 +25,9 @@ PTSEC(RESULT,DFN,DGMSG,DGOPT) ;RPC/API entry point for patient sensitive & recor
  ;                  Accessing own record
  ;                4-Access to Patient (#2) file records denied
  ;                  SSN not defined
- ;   RESULT(2-10) = error or display messages
+ ;                5-Access to Patient for this User is denied ;IHS/OIT/LJF 08/31/2007 PATCH 1008
+ ;
+ ;    RESULT(2-8) = error or display messages
  ;
  ;Input parameters: DFN = Patient file entry (Required)
  ;                  DGMSG = If 1, generate message (optional)
@@ -30,13 +37,27 @@ PTSEC(RESULT,DFN,DGMSG,DGOPT) ;RPC/API entry point for patient sensitive & recor
  I $G(DFN)="" D  Q
  .S RESULT(1)=-1
  .S RESULT(2)="Required variable missing."
- S DGMSG=$G(DGMSG)
+ ;
+ ;IHS/OIT/LJF 08/31/2007 PATCH 1008
+ ;S DGMSG=$G(DGMSG)
+ S DGMSG=$G(DGMSG,1)
+ I $$STATUS^BDGSPT2(DUZ,DFN,1)["RESTRICTED ACCESS" D  Q
+ .S RESULT(1)=5 Q:DGMSG'=1
+ .S RESULT(2)="Sorry, you are restricted from accessing this patient's record."
+ .S RESULT(3)="If you have questions, please contact your HIM department."
+ ;end of PATCH 1008 code
+ ;
  D OWNREC(.RESULT,DFN,$G(DUZ),DGMSG)
  I RESULT(1)=1 S RESULT(1)=3 Q
  I RESULT(1)=2 S RESULT(1)=4 Q
  K RESULT
  D SENS(.RESULT,DFN,$G(DUZ))
- I RESULT(1)=1 D
+ ;
+ ;IHS/OIT/LJF 01/06/2006 PATCH 1005 account for tracking all patients
+ ;I RESULT(1)=1 D
+ I (RESULT(1)=1)!(RESULT(1)=0) D
+ .I (RESULT(1)=0)&($$GET1^DIQ(43,1,9999999.01)'="YES")&('$P($G(^DGSL(38.1,+DFN,0)),U,2)) Q  ;cmi/maw 1/26/2010 PATCH 1011
+ .;
  .I $G(DUZ)="" D  Q
  ..;DUZ must be defined to access sensitive record & update DG Security log
  ..S RESULT(1)=-1
@@ -97,8 +118,6 @@ OWNREC(DGREC,DFN,DGDUZ,DGMSG,DGNEWPT,DGPTSSN) ;Determine if user accessing his/h
  I $D(^XUSEC("DG RECORD ACCESS",DGDUZ)) Q
  I $G(DGMSG)="" S DGMSG=1
  N DGNPERR
- ; quit if user is a proxy user, i.e., not a real person
- I $$ACTIVE^XUSAP(DGDUZ),$$USERTYPE^XUSAP(DGDUZ,"CONNECTOR PROXY")!($$USERTYPE^XUSAP(DGDUZ,"APPLICATION PROXY")) Q
  S DGNPSSN=$$GET1^DIQ(200,DGDUZ_",",9,"I","","DGNPERR")
  I 'DGNPSSN D  Q
  .S DGREC(1)=2
@@ -150,15 +169,23 @@ SENS(DGSENS,DFN,DGDUZ,DDS,DGSENFLG) ;Determine if sensitive record
  ;
  N DGMSG,DGA1,DG1,DGDATE,DGLNE,DGT,DGTIME,DGEMPLEE
  ;Patient file DFN must be defined.
- I '$D(DFN) D  Q 
+ I '$D(DFN) D  Q
  .S DGSENS(1)=-1
  .S DGSENS(2)="DFN not defined."
  S DGSENS(1)=0
+AUDIT I DFN>0,$$GET^XPAR("ALL","DI AUDIT PATIENT LOOKUPS") D ACCESSED^DIET(2,DFN)  ;ihs/cmi/maw 3/7/2011 added for certification via Medsphere
  I $D(DGSENFLG) Q
  ;Determine if patient is employee
  S DGEMPLEE=$$EMPL(DFN)
  ;Quit if not an employee & not found in DG Security Log file
  I 'DGEMPLEE,('$D(^DGSL(38.1,+DFN,0))) Q
+ ;
+ ;IHS/ANMC/LJF 1/04/2002
+ ; if flagged as non-sensitive, set to 0 but no message
+ ;IHS/ITSC/WAR 3/17/2005 REM'd next line.See call in ^DGSEC
+ ;I 'DGEMPLEE,$G(^DGSL(38.1,+DFN,0)),$P(^(0),U,2)=0 S DGSENS(1)=0_U_0 Q
+ ;IHS/ANMC/LJF 1/04/2002
+ ;
  ;Quit if not an employee and not flagged as sensitive
  I 'DGEMPLEE,($P($G(^DGSL(38.1,+DFN,0)),U,2)'=1) Q
  ;DUZ & user name must be defined
@@ -183,12 +210,21 @@ SENS(DGSENS,DFN,DGDUZ,DDS,DGSENFLG) ;Determine if sensitive record
 PRIV ;Privacy Act statement for DGSENS array
  S $P(DGLNE,"* ",38)=""
  I $G(DDS)="" S DGSENS(4)=DGLNE
- S DGSENS(5)="* This record is protected by the Privacy Act of 1974 and the Health    *"
- S DGSENS(6)="* Insurance Portability and Accountability Act of 1996. If you elect    *"
- S DGSENS(7)="* to proceed, you will be required to prove you have a need to know.    *"
- S DGSENS(8)="* Accessing this patient is tracked, and your station Security Officer  *"
- S DGSENS(9)="* will contact you for your justification.                              *"
- I $G(DDS)="" S DGSENS(10)=DGLNE
+ ;
+ ;IHS/OIT/LJF 11/03/2005 PATCH 1004 call IHS rtn to build message array
+ D MSG^BDGSECU
+ ;S DGSENS(5)="* This record is protected by the Privacy Act of 1974. If you elect     *"
+ ;S DGSENS(6)="* to proceed, you will be required to prove you have a need to know.    *"
+ ;
+ ;IHS/ANMC/LJF 8/31/2001 changed message text         
+ ;S DGSENS(7)="* Accessing this patient is tracked, and your station Security Officer  *"
+ ;S DGSENS(8)="* will contact you for your justification.                              *"
+ ;S DGSENS(7)="* Accessing this patient is tracked.  The assigned Sensitive Patient    *"
+ ;S DGSENS(8)="* Tracking monitor will contact you for your justification.             *"
+ ;IHS/ANMC/LJF 8/31/2001 end of mods
+ ;IHS/OIT/LJF 11/03/2005 end of new mod
+ ;
+ I $G(DDS)="" S DGSENS(9)=DGLNE
  Q
 EMPL(DFN,DGCHELIG) ;Does patient have any eligibility codes equal to
  ;                EMPLOYEE

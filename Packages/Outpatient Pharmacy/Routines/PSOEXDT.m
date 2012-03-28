@@ -1,5 +1,5 @@
-PSOEXDT ;BHAM ISC/SAB - set exp. date and determine rx status ; 10/24/92 13:24
- ;;7.0;OUTPATIENT PHARMACY;**23,73,222**;DEC 1997;Build 12
+PSOEXDT ;BHAM ISC/SAB - set exp. date and determine rx status ;19-May-2011 11:06;PLS
+ ;;7.0;OUTPATIENT PHARMACY;**23,73,1011**;DEC 1997;Build 17
  ;
  ;External reference ^PS(55 supported by DBIA 2228
  ;External reference ^PSDRUG( supported by DBIA 221
@@ -7,16 +7,21 @@ PSOEXDT ;BHAM ISC/SAB - set exp. date and determine rx status ; 10/24/92 13:24
  ; held in rx0, and the second node is held in rx2.  the variable 'j' is
  ; the internal number in the prescription file (^psrx).
  ;
+ ; Modified - IHS/MSC/PLS - 05/19/2011 - Line A+3
 A S CS=0,RFLS=$P(RX0,"^",9),DYS=$P(RX0,"^",8),X1=$P(RX0,"^",13),X2=DYS*(RFLS+1)\1,PSODEA=$P(^PSDRUG($P(RX0,"^",6),0),"^",3)
  F DEA=1:1 Q:$E(PSODEA,DEA)=""  I $E(+PSODEA,DEA)>1,$E(+PSODEA,DEA)<6 S $P(CS,"^")=1 S:$E(+PSODEA,DEA)=2 $P(CS,"^",2)=1
- S X2=$S($G(CLOZPAT)=2&(RFLS):28,$G(CLOZPAT)=1&(RFLS):14,DYS=X2:X2,CS:184,1:366) I X1']"" S X1=DT,X2=-1
+ S X2=$S($G(CLOZPAT)=1&(RFLS):14,DYS=X2:X2,CS:184,1:366) I X1']"" S X1=DT,X2=-1
+ ;IHS/MSC/PLS - 05/19/2011 - added next three lines
+ N EXTEXP
+ S EXTEXP=$$GET1^DIQ(50,$P(RX0,U,6),9999999.08)
+ S X2=$S(EXTEXP:EXTEXP,1:X2)
  D C^%DTC S EX=$P(X,".") I +$G(PSORXED("RX1")),+$G(PSORXED("RX1"))>EX S EX=+$G(PSORXED("RX1"))
  ;K ^PSRX("AG",$P(^PSRX(J,2),"^",6),J)
  S $P(^PSRX(J,2),"^",6)=EX,RX2=^(2)
  S Y=$S($D(^PSRX(J,2)):^(2),1:""),X="" F ZII=1:1:10 S X=X_$P(Y,"^",ZII)_"^"
  K EX,X1,X2,DYS,RFLS,CS,PSODEA,DEA Q
 STAT ;
- ;this entry point is call from dd(55.03,2,0).  this field is a computed 
+ ;this entry point is call from dd(55.03,2,0).  this field is a computed
  ;field that helps determine the status of rxs found in the pharmacy
  ;patient file.  the status will be returned in the variable st.
  Q:'$D(^PSRX(J,0))!('$P($G(^PSRX(J,0)),"^",2))

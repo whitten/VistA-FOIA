@@ -1,27 +1,18 @@
-DGMTDD ;ALB/RMO,CAW,CJM,LBD,PHH - Annual Means Test file (#408.31) Data Dictionary Calls ; 2/10/2005 9:12am
- ;;5.3;Registration;**33,182,411,456,618,671**;Aug 13, 1993;Build 27
+DGMTDD ;ALB/RMO,CAW,CJM,LBD - Annual Means Test file (#408.31) Data Dictionary Calls ; 8/2/02 3:42pm
+ ;;5.3;Registration;**33,182,411,456**;Aug 13, 1993
  ;
 CUR ;Cross-reference on the Status field (#.03) 
  ;to update the Current Means Test Status field (#.14)
  ;in the Patient file (#2)
- N DFN,DGCS,DGDT,DGIX,DGMTI,DGMTS,DGNAM
+ N DFN,DGCS,DGDT,DGIX,DGMTI,DGMTS
  S DFN=$P($G(^DGMT(408.31,DA,0)),U,2),DGCS=$P($G(^DPT(DFN,0)),U,14),(DGDT,DGMTS)=""
- ;
- S DGNAM=$P($G(^DPT(DFN,0)),"^",1)
- Q:DGNAM=""
- Q:'$D(^DPT("B",DGNAM))
- ;
  S DGMTI=+$$MTIENLT^DGMTU3(1,DFN,"")
  I $D(^DGMT(408.31,DGMTI,0)) S DGMTS=$P(^(0),U,3) G CURQ:DGCS=DGMTS
  I DGCS]"" D
  .N DA,X
  .S DA=DFN,X=DGCS,DGIX=0
  .F  S DGIX=$O(^DD(2,.14,1,DGIX)) Q:'DGIX  X ^(DGIX,2) S X=DGCS
- D
- . N DR,DIE,DA,D0,DI,DIC,DQ,D,DE,DC,DH,FDA,DIERR
- . S FDA(2,DFN_",",.14)=DGMTS
- . D FILE^DIE("K","FDA","DIERR")
- I DGMTS]"" D
+ S $P(^DPT(DFN,0),U,14)=DGMTS I DGMTS]"" D
  .N DA,X
  .S DA=DFN,X=DGMTS,DGIX=0
  .F  S DGIX=$O(^DD(2,.14,1,DGIX)) Q:'DGIX  X ^(DGIX,1) S X=DGMTS

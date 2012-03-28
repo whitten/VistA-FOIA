@@ -1,5 +1,5 @@
-PXCEVFI5 ;ISL/dee - Check to see if the encounter is a standalone and if it needs to be deleted ;3/17/04 12:24pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**14,99,124**;Aug 12, 1996
+PXCEVFI5 ;ISL/dee - Check to see if the encounter is a standalone and if it needs to be deleted ;11/20/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**14,99**;Aug 12, 1996
  ;
  Q
 CHECK ;Check to see if this is a standalone and if it is make sure it has
@@ -22,9 +22,6 @@ CHECK ;Check to see if this is a standalone and if it is make sure it has
  ;Quit if there is an appointment and primary Dx
  I PXCEPDX,PXCEAPPT S PXCEEXIT=1 Q
  ;Quit if there are procedures or stop codes and a primary Dx
- ;DROP PROCEDURE CHECK
- S PXCEEXIT=1 Q
- ;
  I PXCEPDX,$D(^AUPNVCPT("AD",PXCEVIEN))!($D(^AUPNVSIT("AD",PXCEVIEN))) S PXCEEXIT=1 Q
  N DIR,X,Y,PXCECNT
  S DIR("B")="NO"

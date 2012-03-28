@@ -1,9 +1,5 @@
 RAO7PC1A ;HISC/GJC-Procedure Call utilities (cont) ;1/22/03  12:41
- ;;5.0;Radiology/Nuclear Medicine;**1,10,26,31,36,45,56**;Mar 16, 1998;Build 3
- ;Supported IA #10040 ^SC(
- ;Supported IA #10103 DT^XLFDT, FMADD^XLFDT
- ;Supported IA #2056 GET1^DIQ
- ;Supported IA #10104 LOW^XLFSTR, UP^XLFSTR
+ ;;5.0;Radiology/Nuclear Medicine;**1,10,26,31,36**;Mar 16, 1998
 SETDATA ; Called from within the EN1 subroutine of RAO7PC1
  ; Sets the ^TMP($J,"RAE1",patient ien,Exam ID) node.
  ; See EN1^RAO7PC1 for further explanation.
@@ -47,7 +43,8 @@ SETDATA ; Called from within the EN1 subroutine of RAO7PC1
  . S:RABNOR'="Y" RABNOR=""
  . S RABNORMR=$$UP^XLFSTR($P($G(^RA(78.3,RADIAG,0)),U,3))
  . S:RABNORMR'="Y" RABNORMR=""
- . S RARPTST=$$RSTAT(),RARPTST=$$UL(RARPTST)
+ . S RARPTST=$P($G(^RARPT(RARPT,0)),U,5)
+ . S RARPTST=$S(RARPTST="V":"Verified",RARPTST="R":"Released/Not verified",RARPTST="D":"Draft",RARPTST="PD":"Problem Draft",1:"No Report")
  . S ^TMP($J,"RAE1",RADFN,RAXID)=RAPRC_U_RACSE_U_RARPTST_U_RABNOR_U_$S(RARPT=0:"",1:RARPT)_U_$P(RAXSTAT(0),"^",3)_"~"_$P(RAXSTAT(0),"^")_U_RAILOC_U_$P(RAITY(0),"^",3)_"~"_$P(RAITY(0),"^")_U_RABNORMR_U_RACPT_U_$G(RAORDER(7))
  . S ^TMP($J,"RAE1",RADFN,RAXID)=^TMP($J,"RAE1",RADFN,RAXID)_U_$S($O(^RARPT(RARPT,2005,0)):"Y",1:"N")
  . D CPTMOD
@@ -98,23 +95,19 @@ CASE ; Return the case numbers and the total number of case numbers
  I 'RATTL S RATTL="-2^cases cancelled" Q
  S:$P(RAEXAM,"^",25)=2 RATTL=RATTL_"^PRINTSET" ; combined reports
  Q
- ;
-EN2 ; IA: 2012, Return last 7 days of non-cancelled exams
- ; Required: RADFN (valid patient ien) called from EN2^RAO7PC1
+EN2 ; Return last 7 days of non-cancelled exams
+ ; Required: RADFN (valid patient ien)
  ; Output:
  ; ^TMP($J,"RAE7",Patient IEN,Exam ID)=procedure name^case number^
  ;       report status^imaging location IEN^imaging location name^
- ;       contrast medium or media used
- ;       Note: Single characters in parenthesis indicate contrast
- ;       involvement: (I)=Iodinated ionic; (N)=Iodinated non-ionic;
- ;        (L)=Gadolinium; (C)=Oral Cholecystographic; (G)=Gastrografin;
- ;        (B)=Barium; (M)=unspecified contrast media
+ ;       m(edia) OR b(ARIUM) OR c(holecystogram)
  ;
  ; Exam ID: exam date/time (inverse) concatenated with the case IEN
  ;
  Q:'$D(RADFN)  Q:'RADFN  K ^TMP($J,"RAE7")
- N I,RABDT,RACNST,RACSE,RADT,RAEDT,RAIBDT,RAIEDT,RALOC,RACMEDIA,RANO
- N RAPRC,RAREX,RARPT,RARPTST,RAXAM,RAXID,RAXSTAT
+ N RABAR,RABDT,RACGRAM,RACNST,RACNTST,RACSE,RADT,RAEDT,RAIBDT
+ N RAIEDT,RALOC,RAMEDIA,RANO,RAPRC,RAREX,RARPT,RARPTST,RAXAM,RAXID
+ N RAXSTAT
  S RADT=$S($D(DT)#2:DT,1:$$DT^XLFDT()),RACNST=9999999.9999
  S RABDT=$$FMADD^XLFDT(RADT,-7,0,0,0),RAEDT=RADT
  S RAIBDT=RACNST-(RAEDT+.9999),RAIEDT=RACNST-(RABDT-.0001)
@@ -129,10 +122,16 @@ EN2 ; IA: 2012, Return last 7 days of non-cancelled exams
  .. S RAPRC=$G(^RAMIS(71,+$P(RAXAM(0),U,2),0))
  .. S RAPRC=$S($P(RAPRC,U)]"":$P(RAPRC,U),1:"Unknown")
  .. Q:$P($G(^RA(72,+$P(RAXAM(0),"^",3),0)),"^",3)=0  ; cancelled xam
- .. S I=0,RACMEDIA="" F  S I=$O(^RADPT(RADFN,"DT",RAIBDT,"P",RANO,"CM",I)) Q:'I  S RACMEDIA=RACMEDIA_$P(^(I,0),U) ;RA*5*45
+ .. S RABAR=$$UP^XLFSTR($P(RAXAM(0),U,5))
+ .. S RABAR=$S(RABAR="Y":"b",1:"")
+ .. S RACMEDIA=$$UP^XLFSTR($P(RAXAM(0),U,10))
+ .. S RACMEDIA=$S(RACMEDIA="Y":"m",1:"")
+ .. S RACGRAM=$S($D(^RAMIS(71,"AC",11,+$P(RAXAM(0),U,2))):"c",1:"")
+ .. S RACNTST=RABAR_RACGRAM_RACMEDIA
  .. S RARPT=+$P(RAXAM(0),U,17)
- .. S RARPTST=$$RSTAT(),RARPTST=$$UL(RARPTST)
- .. S ^TMP($J,"RAE7",RADFN,RAXID)=RAPRC_U_RACSE_U_RARPTST_U_+RALOC(0)_U_RALOC_U_RACMEDIA
+ .. S RARPTST=$P($G(^RARPT(RARPT,0)),U,5)
+ .. S RARPTST=$S(RARPTST="V":"Verified",RARPTST="R":"Released/Not verified",RARPTST="D":"Draft",RARPTST="PD":"Problem Draft",1:"No Report")
+ .. S ^TMP($J,"RAE7",RADFN,RAXID)=RAPRC_U_RACSE_U_RARPTST_U_+RALOC(0)_U_RALOC_U_RACNTST
  .. Q
  . Q
  Q
@@ -145,19 +144,3 @@ CPTMOD ;extract cpt modifiers if any
  . S RA2=$$BASICMOD^RACPTMSC(RA2,+RAREX(0)) Q:+RA2<0
  . S ^TMP($J,"RAE1",RADFN,RAXID,"CMOD",RA1)=$P(RA2,"^",2)_"^"_$P(RA2,"^",3),RA1=RA1+1
  Q
-RSTAT() ; Get report status name from GET1^DIQ
- ; RARPT is IEN of file 74
- N R,DIERR
- S R=$S($G(RARPT)>0:$$GET1^DIQ(74,+RARPT,5),1:"")
- S:R="" R="NO REPORT"
- Q R
-UL(R) ;Upper and Lower case
- ;First convert all chars to lower case, then
- ;capitalize 1st char AND (char after /  OR  char after blank)
- N L,R2
- S R2=$E(R,1)_$$LOW^XLFSTR($E(R,2,$L(R))) ; 1st char must be in caps
- S L=$F(R2,"/") ; If str has /, cap char after / but not char after blank
- I L S R2=$E(R2,1,L-1)_$$UP^XLFSTR($E(R2,L))_$E(R2,L+1,$L(R2)) G UPQ
- S L=$F(R2," ") ; If str has one blank, then cap the char after the blank
- I L S R2=$E(R2,1,L-1)_$$UP^XLFSTR($E(R2,L))_$E(R2,L+1,$L(R2))
-UPQ Q R2

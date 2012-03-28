@@ -1,5 +1,8 @@
 TIULD ; SLC/JER - Admission related functions ; 1/13/03
  ;;1.0;TEXT INTEGRATION UTILITIES;**7,21,148,156**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/26/2003 set IHS visit variable
+ ;                        called IHS routines for displays
+ ;
 GETTIU(TIUY,TIUDA) ; Gets admission array for existing DCS
  N TIUMVN,TIUPTF,TIUVSTR,TIUDTYP,TIUD0,TIUD12,TIUD14
  S TIUD0=$G(^TIU(8925,+TIUDA,0)),TIUD12=$G(^(12)),TIUD14=$G(^(14))
@@ -7,6 +10,14 @@ GETTIU(TIUY,TIUDA) ; Gets admission array for existing DCS
  S TIUVSTR=$P(TIUD12,U,11)_";"_$P(TIUD0,U,7)_";"_$P(TIUD0,U,13)
  S TIUY("DOCTYP")=TIUDTYP_U_$$PNAME^TIULC1(TIUDTYP)
  I +$G(^TIU(8925,+TIUDA,13)) S TIUY("REFDT")=+$G(^(13))
+ ;
+ ;IHS/ITSC/LJF 02/26/2003 set IHS visit variable from visit attached to patient movement entry
+ NEW BTIUVSIT
+ I TIUMVN S BTIUVSIT=$$GET1^DIQ(405,TIUMVN,.27,"I")
+ I 'TIUMVN,$P(TIUD0,U,3) S BTIUVSIT=$P(TIUD0,U,3)
+ I $G(BTIUVSIT) S $P(TIUVSTR,";",3)=$$GET1^DIQ(9000010,+BTIUVSIT,.07,"I")
+ ;IHS/ITSC/LJF 02/26/2003 end of new code
+ ;
  ; If the Patient Movement Pointer's broken, try to fix
  I +TIUMVN,'$D(^DGPM(+TIUMVN,0)),+$G(TIUVSTR) D FIXMOVE(.TIUY,DFN,TIUVSTR,TIUDA) Q:+$G(TIUY("AD#"))
  D PATVADPT^TIULV(.TIUY,DFN,TIUMVN,TIUVSTR)
@@ -22,6 +33,7 @@ FIXMOVE(TIUY,DFN,TIUVSTR,TIUDA) ; See if Admission has been reinstated, and fix
  . D ^DIE
  Q
 CHEKDS(X) ; Display/validate correct patient/treatment episode
+ Q $$CHEKDS^BTIULD(.X)  ;IHS/ITSC/LJF 02/26/2003 use IHS code for display
  N DIR,Y,TIURC S Y=0
  I X("AD#")'>0!(X("EDT")="") D  G CHEKDSX
  . W !!,"Movement data doesn't exist for admission, can't create "
@@ -48,6 +60,7 @@ CHEKDS(X) ; Display/validate correct patient/treatment episode
  W !
 CHEKDSX Q Y
 CHEKPN(X,TIUBY) ; Display/validate demographic/visit information
+ Q $$CHEKPN^BTIULD(.X,.TIUBY)  ;IHS/ITSC/LJF 02/26/2003 use IHS code for display
  W !!,"Enter/Edit "
  W $S(+$G(TIUCLASS):$S(TIUCLASS=3:"PROGRESS NOTE",TIUCLASS=+$$CLASS^TIUCNSLT:"CONSULT RESULT",1:$$PNAME^TIULC1(+TIUCLASS)),1:"PROGRESS NOTE"),"..."
  W !?10,"Patient Location:  ",$S(+X("LOC"):$P(X("LOC"),U,2),1:"UNKNOWN")

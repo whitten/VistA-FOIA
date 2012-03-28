@@ -1,7 +1,5 @@
-LA7VOBX ;DALOI/JMC - LAB OBX Segment message builder ;Jan 7, 2008
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,68**;Sep 27, 1994;Build 56
- ;
- ; Reference to $$LOSVUID^HDISVAP supported by DBIA #4801
+LA7VOBX ;VA/DALOI/JMC - LAB OBX Segment message builder ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997
  ;
 OBX(LRDFN,LRSS,LRIDT,LRSB,LA7ARRAY,LA7OBXSN,LA7FS,LA7ECH,LA7NVAF) ; Observation/Result segment for Lab Results.
  ; Call with    LRDFN = ien of entry in file #63
@@ -30,13 +28,13 @@ OBX(LRDFN,LRSS,LRIDT,LRSB,LA7ARRAY,LA7OBXSN,LA7FS,LA7ECH,LA7NVAF) ; Observation/
  ; "MI" subscript
  I LRSS="MI" D MI^LA7VOBX3 Q
  ;
- ; "SP" subscript
+ ; "SP" subscrpt
  I LRSS="SP" D AP^LA7VOBX2 Q
  ;
- ; "CY" subscript
+ ; "CY" subscrpt
  I LRSS="CY" D AP^LA7VOBX2 Q
  ;
- ; "EM" subscript
+ ; "EM" subscrpt
  I LRSS="EM" D AP^LA7VOBX2 Q
  ;
  Q
@@ -66,15 +64,14 @@ OBX2(LA7FILE,LA7FIELD) ; Build OBX-2 sequence - Value type
  Q LA7VAL
  ;
  ;
-OBX3(LA7NLT,LA7953,LA7ALT,LA7FS,LA7ECH,LA7INTYP) ; Build OBX-3 sequence - Observation identifier field
+OBX3(LA7NLT,LA7953,LA7ALT,LA7FS,LA7ECH) ; Build OBX-3 sequence - Observation identifier field
  ; Call with  LA7NLT = NLT code.
  ;            LA7953 = LOINC code
- ;            LA7ALT = alternate code - local/non-VA (code^text^system^local code^local text^99VAnn)
+ ;            LA7ALT = alternate code - local/non-VA (code^text^system)
  ;             LA7FS = HL field separator
  ;            LA7ECH = HL encoding characters
- ;          LA7INTYP = type of interface from 62.48
  ;
- N LA764,LA7I,LA7J,LA7LN,LA7X,LA7Y
+ N LA764,LA7J,LA7LN,LA7X,LA7Y
  ;
  D OBX3^LA7VOBXA
  ;
@@ -139,12 +136,11 @@ OBX5R(LA7VAL,LA7OBX2,LA7FS,LA7ECH) ; Build OBX-5 sequence with repetition - Obse
  Q LA7Y
  ;
  ;
-OBX6(LA7VAL,LA764061,LA7FS,LA7ECH,LA7INTYP) ; Build OBX-6 sequence - Units
+OBX6(LA7VAL,LA764061,LA7FS,LA7ECH) ; Build OBX-6 sequence - Units
  ; Call with   LA7VAL = Units if in external format
  ;           LA764061 = ien of units in #64.061
  ;              LA7FS = HL field separator
  ;             LA7ECH = HL encoding characters
- ;           LA7INTYP = type of interface from 62.48
  ; Returns units
  ;
  N LA7Y
@@ -193,7 +189,6 @@ OBX11(LA7FLAG) ; Build OBX-11 sequence - Observation result status
  I LA7FLAG="P" S LA7Y="P"
  I LA7FLAG="A" S LA7Y="C"
  I LA7FLAG="C" S LA7Y="C"
- I LA7FLAG="W" S LA7Y="W"
  ;
  Q LA7Y
  ;
@@ -204,17 +199,15 @@ OBX13(LA7VAL,LA7SRC,LA7FS,LA7ECH) ; Build OBX-13 sequence - User defined access 
  ;            LA7FS = HL field separator
  ;           LA7ECH = HL encoding characters
  ;
- ; Returns     LA7Y = access screen text or VUID
+ ; Returns     LA7Y = access screen text
  ;
  N LA7Y
  S LA7Y=""
  ;
  ; Expanding antibiotic susceptibility display screen
- ; Send VUID instead of text for this code to HDR
- I $E(LA7SRC,1,3)="MIS"  D
- . I LA7SRC="MIS-HDR",$T(LOSVUID^HDISVAP)'="" S LA7Y=$$LOSVUID^HDISVAP(LA7VAL) Q
+ I LA7SRC="MIS" D
  . S LA7Y=$S(LA7VAL="A":"ALWAYS DISPLAY",LA7VAL="N":"NEVER DISPLAY",LA7VAL="R":"RESTRICT DISPLAY",1:"")
- ; 
+ ;
  S LA7Y=$$CHKDATA^LA7VHLU3(LA7Y,LA7FS_LA7ECH)
  ;
  Q LA7Y
@@ -234,16 +227,9 @@ OBX15(LA74,LA7FS,LA7ECH) ; Build OBX-15 sequence - Producer's ID field
  ;            LA7FS = HL field separator
  ;           LA7ECH = HL encoding characters
  ;
- ; Returns facility that performed the testing (ID^text^99VA4^CLIA id^^99VACLIA)
+ ; Returns facility that performed the testing (ID^text^99VA4)
  ;
- N LA7X,LA7Y
- S LA7Y=$$INST^LA7VHLU4(LA74,LA7FS,LA7ECH)
- ;
- ; Include CLIA identifier if found.
- S LA7X=$$ID^XUAF4("CLIA",LA74)
- I LA7X'="" S $P(LA7Y,$E(LA7ECH),4)=LA7X,$P(LA7Y,$E(LA7ECH),6)="99VACLIA"
- ;
- Q LA7Y
+ Q $$INST^LA7VHLU4(LA74,LA7FS,LA7ECH)
  ;
  ;
 OBX16(LA7DUZ,LA7DIV,LA7FS,LA7ECH) ; Build OBX-16 sequence - Responsible observer field
@@ -254,20 +240,26 @@ OBX16(LA7DUZ,LA7DIV,LA7FS,LA7ECH) ; Build OBX-16 sequence - Responsible observer
  ;           
  ; Returns OBX-16 sequence
  ;
- Q $$XCN^LA7VHLU9(LA7DUZ,LA7DIV,LA7FS,LA7ECH,0,1)
+ Q $$XCN^LA7VHLU4(LA7DUZ,LA7DIV,LA7FS,LA7ECH)
  ;
  ;
-OBX17(LA7VAL,LA7NLT,LA7FS,LA7ECH) ; Build OBX-17 sequence - Observation method field
+OBX17(LA7VAL,LA7FS,LA7ECH) ; Build OBX-17 sequence - Observation method field
  ; Call with   LA7VAL = WKLD SUFFIX CODES #64.2 with leading decimal
- ;             LA7NLT = Result NLT code
  ;              LA7FS = HL field separator
  ;             LA7ECH = HL encoding characters
  ;           
  ; Returns       LA7Y = OBX-17 sequence
  ;
- N LA764,LA7X,LA7Y,LA7Z
+ N LA7X,LA7Y
  ;
- D OBX17^LA7VOBXA
+ ; method suffix code maybe stored without leading decimal,
+ ;  add "." back for lookup, also add trailing space for lookup in x-ref.
+ I LA7VAL>1 S LA7VAL="."_LA7VAL
+ S LA7X=$O(^LAB(64.2,"C",LA7VAL_" ",0)),LA7Y=""
+ I LA7X D
+ . S LA7X(.01)=$$GET1^DIQ(64.2,LA7X_",",.01)
+ . S LA7X(.01)=$$CHKDATA^LA7VHLU3(LA7X(.01),LA7FS_LA7ECH)
+ . S LA7Y=LA7VAL_$E(LA7ECH)_LA7X(.01)_$E(LA7ECH)_"99VA64_2"
  ;
  Q LA7Y
  ;
@@ -281,50 +273,10 @@ OBX18(LA7VAL,LA7FS,LA7ECH) ; Build OBX-18 sequence - Equipment entity identifier
  ;
  N LA7I,LA7J,LA7X,LA7Y
  ;
- D OBX18^LA7VOBXA
+ S LA7X="",LA7J=$L(LA7VAL,"!")
+ F LA7I=1:1:LA7J D
+ . S LA7Y=$P(LA7VAL,"!",LA7I)
+ . I LA7Y="" Q
+ . S $P(LA7X,$E(LA7ECH,1),LA7I)=$$CHKDATA^LA7VHLU3(LA7Y,LA7FS_LA7ECH)
  ;
  Q LA7X
- ;
- ;
-OBX19(LA7DT) ; Build OBX-19 sequence - date/time of the analysis
- ; Call with LA7DT = FileMan date/time
- ; Returns OBX-19 sequence
- ;
- S LA7DT=$$CHKDT^LA7VHLU1(LA7DT)
- Q $$FMTHL7^XLFDT(LA7DT)
- ;
- ;
-OBX23(LA7FN,LA7DA,LA7FS,LA7ECH) ; Build OBX-23 sequence - Performing organization name
- ; Call with LA7FN = Source File number
- ;                   Presently #4 (INSTITUTION)
- ;           LA7DA = Entry in source file
- ;           LA7FS = HL field separator
- ;          LA7ECH = HL encoding characters
- ;           
- ; Returns OBX-23 sequence
- ;
- Q $$XON^LA7VHLU4(LA7FN,LA7DA,1,LA7FS,LA7ECH)
- ;
- ;
-OBX24(LA7FN,LA7DA,LA7DT,LA7FS,LA7ECH) ; Build OBX-24 sequence - Performing organization address
- ; Call with LA7FN = Source File number
- ;                   Presently file #2 (PATIENT), #4 (INSTITUTION) or #200 (NEW PERSON)
- ;           LA7DA = Entry in source file
- ;           LA7DT = As of date in FileMan format
- ;           LA7FS = HL field separator
- ;          LA7ECH = HL encoding characters
- ;           
- ; Returns OBX-24 sequence
- ;
- Q $$XAD^LA7VHLU4(LA7FN,LA7DA,LA7DT,LA7FS,LA7ECH)
- ;
- ;
-OBX25(LA7DUZ,LA7DIV,LA7FS,LA7ECH) ; Build OBX-25 sequence - Performing organization medical director
- ; Call with   LA7DUZ = DUZ of medical director
- ;             LA7DIV = Institution of user
- ;              LA7FS = HL field separator
- ;             LA7ECH = HL encoding characters
- ;           
- ; Returns OBX-25 sequence
- ;
- Q $$XCN^LA7VHLU9(LA7DUZ,LA7DIV,LA7FS,LA7ECH)

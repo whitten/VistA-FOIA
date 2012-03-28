@@ -1,4 +1,5 @@
-LRARCAM4 ;DALISC/CKA - ARCHIVED RCS 14-4 REPORT PART 1
+LRARCAM4 ; IHS/DIR/AAB - ARCHIVED RCS 14-4 REPORT PART 1 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**59**;August 31,1995
  ;same as LRCAPAM5 except for archived wkld file reference
 EN ;

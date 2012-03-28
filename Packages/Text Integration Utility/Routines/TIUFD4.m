@@ -1,5 +1,6 @@
 TIUFD4 ; SLC/MAM - LM Template D Actions Edit Technical Fields, Edit Upload. LM Subtemplate DJ Action DELOBJ ;4/17/97  11:02
- ;;1.0;TEXT INTEGRATION UTILITIES;**14**;Jun 20, 1997
+ ;;1.0;TEXT INTEGRATION UTILITIES;**14,1001**;Jun 20, 1997
+ ;IHS/ITSC/LJF 01/07/2005 PATCH 1001 added code to allow App Coordinators to edit Object Method
  ;
 DELOBJ ; Template DJ Action Delete (Object).
  N FILEDA,MSG,USED,ASKOK,DA,DIK,LINENO
@@ -40,7 +41,16 @@ EDTECH ;LM Template D Action Edit Technical Fields.
  ;If FILEDA is Clinical Documents, want to edit 6.14 but not 6.1, 6.12, 6.13:Type=CL so will edit 6.14; PCUSTOM undefined, so skip others:
  D INHERIT^TIUFLD(PFILEDA,0,6.14,"","","",.ICUSTOM)
  I TYPE="CL"!(TYPE="DC")!(TYPE="DOC") S PNODE61=$G(^TIU(8925.1,PFILEDA,6.1)),PCUSTOM=$P(PNODE61,U,4) I PCUSTOM="" S PCUSTOM=ICUSTOM
-DR S DR=$S(TYPE="O":9,1:"4.1:4.45;4.6;4.7;4.9;5;6;I '$G(PCUSTOM) S Y=7;6.1;6.12;6.13;7;8;S:TYPE=""DOC"" Y=0 I ICUSTOM=0 S Y=0;6.14") D ^DIE
+DR ;
+ ;IHS/ITSC/LJF 01/07/2005 PATCH 1001 allow non-programmers to edit object method
+ ;S DR=$S(TYPE="O":9,1:"4.1:4.45;4.6;4.7;4.9;5;6;I '$G(PCUSTOM) S Y=7;6.1;6.12;6.13;7;8;S:TYPE=""DOC"" Y=0 I ICUSTOM=0 S Y=0;6.14") D ^DIE
+ I TYPE="O" NEW BTIUOM D  I $D(BTIUOM) S ^TIU(8925.1,FILEDA,9)=BTIUOM
+ . NEW DIR S DIR(0)="FAU^3:245",DIR("A")="OBJECT METHOD:  ",DIR("B")=$G(^TIU(8925.1,FILEDA,9))
+ . D ^DIR Q:Y=U  Q:Y=""
+ . S BTIUOM=Y,X=Y D ^DIM I '$D(X) K BTIUOM W !!?15,"Not Valid MUMPS Code; Try again." H 2
+ I TYPE'="O" S DR=$S(TYPE="O":9,1:"4.1:4.45;4.6;4.7;4.9;5;6;I '$G(PCUSTOM) S Y=7;6.1;6.12;6.13;7;8;S:TYPE=""DOC"" Y=0 I ICUSTOM=0 S Y=0;6.14") D ^DIE
+ ;IHS/ITSC/LJF 01/07/2005 end of PATCH 1001 changes
+ ;
  G:$D(DTOUT) EDTEX
  S LINENO=TIUFTLIN
  D DSTECH^TIUFD(.LINENO) S VALMCNT=LINENO

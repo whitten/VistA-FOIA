@@ -1,5 +1,5 @@
-LA7SRR ;DALOI/JMC - Select Accessions for Resending LEDI Results ; 11/21/01
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64**;Sep 27, 1994
+LA7SRR ;VA/DALOI/JMC - Select Accessions for Resending LEDI Results ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997
  ;
 EN ; Select Accessions to resend.
  ;

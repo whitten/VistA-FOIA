@@ -1,5 +1,5 @@
 XUBA ; BT/BP - LIST USERS HAVE INACTIVE PERSON CLASSES; 4/27/2010
- ;;8.0;KERNEL;**541**; July 10, 1995;Build 6
+ ;;8.0;KERNEL;**541**; July 10, 1995;Build 8
  ;;Per VHA Directive 2004-038, this routine should not be modified.
  Q
  ;

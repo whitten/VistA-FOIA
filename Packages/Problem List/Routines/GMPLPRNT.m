@@ -1,5 +1,5 @@
 GMPLPRNT ; SLC/MKB,KER -- Problem List prints/displays; 04/15/2002
- ;;2.0;Problem List;**1,13,26,41**;Aug 25, 1994;Build 1
+ ;;2.0;Problem List;**1,13,26**;Aug 25, 1994
  ;
  ; External References
  ;   DBIA 10090  ^DIC(4
@@ -14,7 +14,6 @@ GMPLPRNT ; SLC/MKB,KER -- Problem List prints/displays; 04/15/2002
  ;   DBIA 10103  $$FMTE^XLFDT
  ;   DBIA 10103  $$NOW^XLFDT
  ;   DBIA 10104  $$REPEAT^XLFSTR
- ;   DBIA 10112  $$SITE^VASITE
  ;                   
 EN ; Print/Display (Main)
  N DIR,X,Y S VALMBCK=$S(VALMCC:"",1:"R") W !
@@ -78,7 +77,7 @@ HDR ; Header Code
 FTR ; Footer Code
  N I,SITE,DFN,VA,VADM,LOC,DATE,FORM
  F I=1:1:(IOSL-$Y-6) W !
- S SITE=$$SITE^VASITE,SITE=$P(SITE,"^",2)
+ S SITE=$O(^DIC(4,"D",+GMPVAMC,0)),SITE=$P($G(^DIC(4,+SITE,0)),U)
  S:SITE'["VAMC" SITE=SITE_" VAMC"
  S DFN=+GMPDFN D OERR^VADPT
  S LOC="Pt Loc: "_$S(VAIN(4)]"":$P(VAIN(4),U,2)_"  "_VAIN(5),1:"OUTPATIENT") K VAIN

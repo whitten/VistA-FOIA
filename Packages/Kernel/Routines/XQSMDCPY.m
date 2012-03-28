@@ -1,4 +1,5 @@
-XQSMDCPY ;ISC-SF/JLI - COPY ONE USER (PRIM & SEC MENUS, KEYS, FILES) TO ANOTHER USER ;01/23/96  11:18
+XQSMDCPY ;ISC-SF/JLI - COPY ONE USER (PRIM & SEC MENUS, KEYS, FILES) TO ANOTHER USER ;01/23/96  11:18 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**19**;Jul 10, 1995
  S XQBOSS=0 I $D(^XUSEC("XUMGR",DUZ)) S XQBOSS=1
  I 'XQBOSS W !!,?5,"Note: You must have been delegated these options and",!,?11,"keys to transfer them from user to user.",!

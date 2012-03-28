@@ -1,5 +1,5 @@
-RASTEXT ;HISC/CAH,FPT,GJC AISC/TMP,TAC,RMO-Called by Status Tracking display,edit. Allow selection/edit of case if called from edit option ;7/16/04  07:50
- ;;5.0;Radiology/Nuclear Medicine;**48,47**;Mar 16, 1998;Build 21
+RASTEXT ;HISC/CAH,FPT,GJC AISC/TMP,TAC,RMO-Called by Status Tracking display,edit. Allow selection/edit of case if called from edit option ;9/4/97  15:09
+ ;;5.0;Radiology/Nuclear Medicine;**1001**;Mar 16, 1998
  S RAED=1 ;If called from beginning of routine, allow case edit
  ;If called at EN1, display exams by status but don't allow editing
 EN1 D SET^RAPSET1 I $D(XQUIT) K RAED,XQUIT Q
@@ -56,8 +56,8 @@ EXT F RAI=1:1 Q:'$D(^TMP($J,"RASTEXT",+Y,RAI))
  S:$D(^XUSEC("RA MGR",DUZ))!(RAMDIV=+$P(Y,"^",3)) ^TMP($J,"RASTEXT",+Y,RAI)=RADFN_"^"_+Y(0)_"^"_$P(Y(0),"^",2)_"^"_$P(Y(0),"^",18),RACTR=1
  Q
  ;
-SCRN D HD F RADTI=0:0 Q:RAQ!(RADTI="")!(RAXIT)  S RADTI=$O(^TMP($J,"RASTEXT",RADTI)) Q:RADTI'>0  F I1=0:0 S I1=$O(^TMP($J,"RASTEXT",RADTI,I1)) Q:I1'>0!(RAXIT)  D:$$LMAX HD D WRT D:$$LMAX SELECT^RASTEXT1 Q:RAQ!(RADTI'>0)!(RAXIT)
- Q:RAQ!(RAXIT)  D:$$LMAX HD
+SCRN F RADTI=0:0 Q:RAQ!(RADTI="")!(RAXIT)  S RADTI=$O(^TMP($J,"RASTEXT",RADTI)) Q:RADTI'>0  F I1=0:0 S I1=$O(^TMP($J,"RASTEXT",RADTI,I1)) Q:I1'>0!(RAXIT)  D:'(RACTR#14) HD D WRT D:'(RACTR#14) SELECT^RASTEXT1 Q:RAQ!(RADTI'>0)!(RAXIT)
+ Q:RAQ!(RAXIT)  D:'(RACTR#14) HD
  D SELECT^RASTEXT1 Q:RAQ!(RAXIT)
  G SCRN:RADTI=0
  Q
@@ -65,15 +65,10 @@ SCRN D HD F RADTI=0:0 Q:RAQ!(RADTI="")!(RAXIT)  S RADTI=$O(^TMP($J,"RASTEXT",RAD
 WRT I $P(RADTI,".")=DT S X=RADTI D TIME^RAUTL1 S RATI=X
  I $P(RADTI,".")'=DT S RATI=$E(RADTI,4,5)_"/"_$E(RADTI,6,7)_"/"_$E(RADTI,2,3)
  S RACTR=RACTR+1
- N RASSAN,RACNDSP,RADFNXX,RADTIXX,RACNIXX
- S RADFNXX=+^TMP($J,"RASTEXT",RADTI,I1),RADTIXX=9999999.9999-RADTI
- S RACNIXX=I1,RASSAN=$$SSANVAL^RAHLRU1(RADFNXX,RADTIXX,RACNIXX)
- S RACNDSP=$S((RASSAN'=""):RASSAN,1:$P(^TMP($J,"RASTEXT",RADTI,I1),"^",2))
- I $$USESSAN^RAHLRU1() D
- .W !,?1,RACNDSP,?18,$J(RATI,8),?27,$E($S($D(^DPT(+^TMP($J,"RASTEXT",RADTI,I1),0)):$P(^(0),"^"),1:"Unknown"),1,18),?46,$S($D(^RAMIS(71,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",3),0)):$E($P(^(0),"^"),1,25),1:"Unknown")
- I '$$USESSAN^RAHLRU1() D
- .W !,?1,$P(^TMP($J,"RASTEXT",RADTI,I1),"^",2),?10,$J(RATI,8),?20,$E($S($D(^DPT(+^TMP($J,"RASTEXT",RADTI,I1),0)):$P(^(0),"^"),1:"Unknown"),1,20),?42,$S($D(^RAMIS(71,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",3),0)):$E($P(^(0),"^"),1,25),1:"Unknown")
- W:$D(^RA(78.6,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",4),0)) ?72,$E($P(^(0),"^"),1,8)
+ ;W !,?1,$P(^TMP($J,"RASTEXT",RADTI,I1),"^",2),?10,$J(RATI,8),?20,$E($S($D(^DPT(+^TMP($J,"RASTEXT",RADTI,I1),0)):$P(^(0),"^"),1:"Unknown"),1,20),?42,$S($D(^RAMIS(71,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",3),0)):$E($P(^(0),"^"),1,25),1:"Unknown")
+ W !,?1,$P(^TMP($J,"RASTEXT",RADTI,I1),"^",2),?8,$J(RATI,8),?18,$$HRCN^BDGF2($P(^TMP($J,"RASTEXT",RADTI,I1),"^"),+$G(DUZ(2))),?26,$E($S($D(^DPT(+^TMP($J,"RASTEXT",RADTI,I1),0)):$P(^(0),"^"),1:"Unknown"),1,20),?49,$S($D(^RAMIS(71,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",3),0)):$E($P(^(0),"^"),1,25),1:"Unknown")  ;IHS/ITSC/CLS 10/25/2004
+ ;W:$D(^RA(78.6,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",4),0)) ?72,$E($P(^(0),"^"),1,8)
+ W:$D(^RA(78.6,+$P(^TMP($J,"RASTEXT",RADTI,I1),"^",4),0)) ?76,$E($P(^(0),"^"),1,8)  ;IHS/ITSC/CLS 10/25/2004
  Q
  ;
 HD N RADIVHD,RAGENTXT
@@ -83,14 +78,12 @@ HD N RADIVHD,RAGENTXT
  S RADIVHD="Division: "_RADIV
  S RAGENTXT="Exam Status Tracking Module"
  W @IOF,!?1,RAGENTXT,?39,RADIVHD
- W !?1,"Date    : ",$E(DT,4,5),"/",$E(DT,6,7),"/",$E(DT,2,3),"  ",RATIME,?39,"Status  : ",RASTOUT
- W !?1,"Locations: " S X="" F  S X=$O(RADLOCS(X)) Q:X']""  W:($X+$L(X))>IOM !?($X+5) W X W:$O(RADLOCS(X))'="" ?($X+5)
- I $$USESSAN^RAHLRU1() D
- .W !!?1,"Case #",?18,"Date",?27,"Patient",?46,"Procedure",?72,"Equip/Rm",!
- .W ?1,"----------------",?18,"----",?27,"-------",?46,"---------",?72,"--------"
- I '$$USESSAN^RAHLRU1() D
- .W !!?1,"Case #",?10,"Date",?20,"Patient",?42,"Procedure",?72,"Equip/Rm",!
- .W ?1,"------",?10,"----",?20,"-------",?42,"---------",?72,"--------"
+ W !,?1,"Date    : ",$E(DT,4,5),"/",$E(DT,6,7),"/",$E(DT,2,3),"  ",RATIME,?39,"Status  : ",RASTOUT
+ W !?1,"Locations: " S X="" F  S X=$O(RADLOCS(X)) Q:X']""  W X W:$X>(IOM-30) ! W ?($X+5)
+ ;W !!?1,"Case #",?10,"Date",?20,"Patient",?42,"Procedure",?72,"Equip/Rm",!
+ W !!?1,"Case#",?8,"Date",?18,"Pt. ID",?26,"Patient",?49,"Procedure",?76,"Room",!  ;IHS/ITSC/CLS 10/25/2004
+ ;W ?1,"------",?10,"----",?20,"-------",?42,"---------",?72,"--------",!
+ W ?1,"-----",?8,"----",?18,"------",?26,"-------",?49,"---------",?76,"----",!  ;IHS/ITSC/CLS 10/25/2004
  Q
 Q ; Kill and quit
  K %,%H,%W,%Y,%Y1,A,C,DIC,I,I1,ORX,POP,RACNI,RACNT,RACONTIN,RACS,RACTR,RADA,RADATE,RADFN,RADIV,RADTI,RAED,RAJ1,RAI,RAIMAGE,RALOC,RAMIS,RANODE,RAORD,RAPRIT,RAQ,RASTAT,RASTOUT,RATI,RATICTR,RATIME,RATXTLP,RAX,RAXIT,SDCLST,X,XQUIT,Y
@@ -99,6 +92,3 @@ Q ; Kill and quit
  D KILLVAR^RAUTL2,KMV^RAUTL15
  K DIOV,RAOR,X1
  Q
-LMAX() ;
- Q:($Y+4)>IOSL 1
- Q 0

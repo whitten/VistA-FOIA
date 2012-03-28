@@ -1,5 +1,7 @@
-SCRPITP ;ALB/CMM - Individual Team Profile ; 29 Jun 99  04:11PM
- ;;5.3;Scheduling;**41,52,177,520**;AUG 13, 1993;Build 26
+SCRPITP ;ALB/CMM - Individual Team Profile ; 29 Jun 99  04:11PM [ 11/02/2000  7:16 AM ]
+ ;;5.3;Scheduling;**41,52,177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 10/26/2000 added call to list template
+ ;                        changed 132 column message
  ;
  ;Individual Team Profile
  ;
@@ -11,7 +13,8 @@ PROMPTS ;
  S QTIME=""
  W ! D INST^SCRPU1 I Y=-1 G ERR
  W ! K Y D PRMTT^SCRPU1 I '$D(VAUTT) G ERR
- W !!,"This report requires 132 column output!"
+ ;W !!,"This report requires 132 column output!"  ;IHS/ANMC/LJF 10/26/2000
+ W !!,"This report, when printed on paper, requires wide paper or condensed print!"  ;IHS/ANMC/LJF 10/26/2000
  D QUE(.VAUTD,.VAUTT) Q
  ;
 QUE(INST,TEAM) ;queue report
@@ -50,6 +53,8 @@ RET S NUMBER=0
  Q NUMBER
  ;
 QENTRY ;
+ I $E(IOST,1,2)="C-" D EN^BSDSCITP Q  ;IHS/ANMC/LJF 10/26/2000
+IHS ;EP;  entry from list template       ;IHS/ANMC/LJF 10/26/2000
  ;driver entry point
  S TITL="Individual Team Profile"
  S STORE="^TMP("_$J_",""SCRPITP"")"
@@ -104,7 +109,7 @@ FIND ;
  Q
  ;
 PRINTIT(STORE,TITL) ;
- N INST,EINST,ETEAM,TEM,NEW,PAGE,TNAME,TIEN,EN,SUB,POS,CIEN,INF,ACL
+ N INST,EINST,ETEAM,TEM,NEW,PAGE,TNAME,TIEN,EN,SUB,POS,CIEN,INF
  S (INST,EINST)="",STOP=0,(PAGE,NEW)=1 W:$E(IOST)="C" @IOF
  D FORHEAD^SCRPITP2
  F  S EINST=$O(@STORE@("I",EINST)) Q:EINST=""!(STOP)  D
@@ -135,15 +140,10 @@ PRINTIT(STORE,TITL) ;
  ..S POS=""
  ..I $Y<IOSL-10 D COLUMN^SCRPITP2
  ..F  S POS=$O(@STORE@(INST,TIEN,"P",POS)) Q:POS=""!(STOP)  D
+ ...I IOST'?1"C-".E,$Y>(IOSL-5) D NEWP1^SCRPU3(.PAGE,TITL,132) Q:STOP  D CONT^SCRPITP2
+ ...I IOST?1"C-".E,$Y>(IOSL-5) D HOLD^SCRPU3(.PAGE,TITL,132) Q:STOP  D CONT^SCRPITP2
+ ...I STOP Q
  ...W !,$G(@STORE@(INST,TIEN,"P",POS))
- ...S ACL=""
- ...F  S ACL=$O(@STORE@(INST,TIEN,"P",POS,ACL)) Q:ACL=""!(STOP)  D
- ....W !,$G(@STORE@(INST,TIEN,"P",POS,ACL))
- ....I IOST'?1"C-".E,$Y>(IOSL-5) D NEWP1^SCRPU3(.PAGE,TITL,132) Q:STOP  D CONT^SCRPITP2
- ....I IOST?1"C-".E,$Y>(IOSL-5) D HOLD^SCRPU3(.PAGE,TITL,132) Q:STOP  D CONT^SCRPITP2
- ....I STOP Q
- ...;W !,$G(@STORE@(INST,TIEN,"P",POS))
- ...;W !,$G(@STORE@(INST,TIEN,"P",POS,ACL))
- ...W !
+ ..W !
  I 'STOP,$E(IOST)="C" N DIR S DIR(0)="E" W ! D ^DIR
  Q

@@ -1,7 +1,5 @@
-RAO7NEW ;HISC/FPT - Create entry in OE/RR Order file (100) ;11/16/98  15:10
- ;;5.0;Radiology/Nuclear Medicine;**5,10,18,41,75**;Mar 16, 1998 ;Build 4
- ;
- ; This routine invokes IA #1300-A, #2083, #10082
+RAO7NEW ;HISC/FPT,GJC,SS-Create entry in OE/RR Order file (100) ;11/16/98  15:10
+ ;;5.0;Radiology/Nuclear Medicine;**5,10,18**;Mar 16, 1998 
  ;last modification for P18 by SS July 5,2000
 EN1(RAOIFN) ; 'RAOIFN' is the ien in file 75.1  
  ; In RA*5.0*18 this call is used when procedure CHANGED during registration, adding to visit and editing 
@@ -9,7 +7,6 @@ EN1(RAOIFN) ; 'RAOIFN' is the ien in file 75.1
  N A,B,DFN,RA,RA0,RACNT,RACPT,RADFN,RAECH,RAHL7DT,RAHLFS,RALOC,RANATURE
  N RAPRIOR,RAPROC,RAR,RARMBED,RATAB,RAVAR,RAWARD,RAXIT
  N RAORORDN,RAD70SB,RAORDCTR ;P18, OR Order No, "DT" of #70, Orderctrl,subscr of 70
- N RABWDX,RABWDX1 ; Billing Awareness Project.
  S RAORORDN="",RAD70SB=0,RAORDCTR="SN" ;P18, these sets mean that it's request mode (not the case, when procedure changed during registering or editing) 
  I $D(RAREGMOD) S RAORORDN=$P(^RAO(75.1,RAOIFN,0),"^",7)_"^OR",RAORDCTR="XX" ;P18,if register mode (see RAREG2 for EN1^RAO7XX)
  S RATAB=1 D EN1^RAO7UTL
@@ -17,11 +14,6 @@ EN1(RAOIFN) ; 'RAOIFN' is the ien in file 75.1
 SS2 I RAORDCTR="XX" D UPDTRA0^RAO7XX ;P18, update RA0 with #70 inf, sets RAD70SB, that provide D2^D3 of #70
  S RADFN=+RA0,RAR=$G(^RAO(75.1,RAOIFN,"R"))
 SS3 I RAORDCTR="XX",RAD70SB'=0 S RAR=$G(^RADPT(+RA0,"DT",$P(RAD70SB,"^",1),"P",$P(RAD70SB,"^",2),"R")) ;P18
- ;
- ;*Billing Awarenes Project:
- ;   Retrieve Ordering ICD Dx data to Send to CPRS.
- D SENDCPRS^RABWORD1(RAOIFN)
- ;*
  S RAVAR="RATMP(",RAVARBLE="RATMP"
  ; msh
  S @(RAVAR_RATAB_")")=$$MSH^RAO7UTL("ORM^O01") ;P18
@@ -29,7 +21,7 @@ SS3 I RAORDCTR="XX",RAD70SB'=0 S RAR=$G(^RADPT(+RA0,"DT",$P(RAD70SB,"^",1),"P",$
  S RATAB=RATAB+1,@(RAVAR_RATAB_")")=$$PID^RAO7UTL(RA0)
  ; pv1
  S RATAB=RATAB+1,@(RAVAR_RATAB_")")=$$PV1^RAO7UTL(RA0)
- K RA("PV1"),VAIP,RABWVSIT
+ K RA("PV1"),VAIP
  ; orc
  S RAHL7DT=$$HLDATE^HLFNC($P(RA0,U,21),"TS"),RAPRIOR=$P(RA0,U,6)
  S RAPRIOR=$S(RAPRIOR=1:"S",RAPRIOR=2:"A",RAPRIOR=9:"R",1:"")
@@ -39,7 +31,7 @@ SS3 I RAORDCTR="XX",RAD70SB'=0 S RAR=$G(^RADPT(+RA0,"DT",$P(RAD70SB,"^",1),"P",$
  S RA("ORC",15)=$$HLDATE^HLFNC($P(RA0,"^",16),"TS")
  S RANATURE="" I $L($P(RA0,"^",26)) S RANATURE=$$UP^XLFSTR($P(RA0,"^",26))_RAECH(1)_$$EXTERNAL^DILFD(75.1,26,"",$P(RA0,"^",26))
  F I=1,2 I '$L($P(RANATURE,"^",I)) S RANATURE="S"_RAECH(1)_"SERVICE CORRECTION"
- K I S RA("ORC",16)=RANATURE_RAECH(1)_"99ORN"_RAECH(1)_RAECH(1)_RAECH(1)
+ S RA("ORC",16)=RANATURE_RAECH(1)_"99ORN"_RAECH(1)_RAECH(1)_RAECH(1)
  S RATAB=RATAB+1
  ;P18, next line was modified
 SS4 S @(RAVAR_RATAB_")")="ORC"_RAHLFS_RAORDCTR_RAHLFS_RAORORDN_RAHLFS_RAOIFN_RAECH(1)_"RA"_$$STR^RAO7UTL(4)_RA("ORC",7)_$$STR^RAO7UTL(3)_RA("ORC",10)_RAHLFS_RA("ORC",11)_RAHLFS_RA("ORC",12)_$$STR^RAO7UTL(3)_RA("ORC",15)_RAHLFS_RA("ORC",16)
@@ -66,12 +58,7 @@ CONTIN S RALOC(0)=$G(^RA(79.1,+$P(RA0,U,20),0))
  S RA("OBR",19)=+$P(RA0,U,20)_U_$P($G(^SC(+RALOC(0),0)),U)
  S:+RA("OBR",19)'>0 RA("OBR",19)=""
  S RA("OBR",30)=$S($P(RA0,U,19)="":"","Aa"[$P(RA0,U,19):"WALK","Pp"[$P(RA0,U,19):"PORT","Ss"[$P(RA0,U,19):"CART","Ww"[$P(RA0,U,19):"WHLC",1:"")
- ;----- P75 REASON FOR STUDY OBR-31.2 -----
- S (RAREASDY,RA("OBR",31))=RAECH(1)_$P($G(^RAO(75.1,RAOIFN,.1)),U)
- S RA("OBRZ")="OBR"_$$STR^RAO7UTL(4)_RA("OBR",4)_$$STR^RAO7UTL(8)_RA("OBR",12)_$$STR^RAO7UTL(6)
- S RA("OBRZ")=RA("OBRZ")_RA("OBR",18)_RAHLFS_RA("OBR",19)_$$STR^RAO7UTL(11)_RA("OBR",30)_RAHLFS_RA("OBR",31)
- S RATAB=RATAB+1,@(RAVAR_RATAB_")")=RA("OBRZ")
- K RA("OBR"),RA("OBRZ")
+ S RATAB=RATAB+1,@(RAVAR_RATAB_")")="OBR"_$$STR^RAO7UTL(4)_RA("OBR",4)_$$STR^RAO7UTL(8)_RA("OBR",12)_$$STR^RAO7UTL(6)_RA("OBR",18)_RAHLFS_RA("OBR",19)_$$STR^RAO7UTL(11)_RA("OBR",30) K RA("OBR")
  ; nte
 SS1 I RAORDCTR="XX",RAD70SB'=0 D  ;P18 nte segment
  . N RA18Z S RA18Z=$$GETTCOM^RAUTL11(+RA0,$P(RAD70SB,"^",1),$P(RAD70SB,"^",2))
@@ -79,18 +66,8 @@ SS1 I RAORDCTR="XX",RAD70SB'=0 D  ;P18 nte segment
  . S RATAB=RATAB+1,@(RAVAR_RATAB_")")="NTE"_RAHLFS_"16"_RAHLFS_"L"_RAHLFS_$E(RA18Z,1,245)
  . K RA18Z Q
  ; obx
- ;P18 next line was modified - Clinical History capture
- ;----- P75 modifications -----
- I '$$PATCH^XPDUTL("OR*3.0*243") D  ;Reason for Study captured & passed as Clinical History
- . S RACNT=1,RATAB=RATAB+1 ;set Set ID (RACNT) value at one (denotes Reason for Study)
- . S @(RAVAR_RATAB_")")="OBX"_RAHLFS_RACNT_RAHLFS_"TX"_RAHLFS_"2000.02^Clinical History^AS4"_RAHLFS_"1"_RAHLFS_"REASON FOR STUDY: "_RAREASDY
- . S RACNT=RACNT+1,RATAB=RATAB+1,$P(RABREAK,"-",($L("REASON FOR STUDY: "_RAREASDY)+1))=""
- . S @(RAVAR_RATAB_")")="OBX"_RAHLFS_RACNT_RAHLFS_"TX"_RAHLFS_"2000.02^Clinical History^AS4"_RAHLFS_"1"_RAHLFS_RABREAK
- . K RABREAK
- . Q
- E  S RACNT=0 ;OR*3.0*243 is installed, Reason for Study captured in OBR-31.2
- ;capture only clinical history data. Set ID starts at zero
-SS6 S A=0 F  S A=$S(RAORDCTR="XX"&(RAD70SB'=0):$O(^RADPT(+RA0,"DT",$P(RAD70SB,"^",1),"P",$P(RAD70SB,"^",2),"H",A)),1:$O(^RAO(75.1,RAOIFN,"H",A))) Q:A'>0  D
+ ;P18 next line was modified
+SS6 S (A,RACNT)=0 F  S A=$S(RAORDCTR="XX"&(RAD70SB'=0):$O(^RADPT(+RA0,"DT",$P(RAD70SB,"^",1),"P",$P(RAD70SB,"^",2),"H",A)),1:$O(^RAO(75.1,RAOIFN,"H",A))) Q:A'>0  D
 SS7 . S RACNT=RACNT+1,RATAB=RATAB+1
  . ;P18 next line was modified
  . S @(RAVAR_RATAB_")")="OBX"_RAHLFS_RACNT_RAHLFS_"TX"_RAHLFS_"2000.02^Clinical History^AS4"_RAHLFS_"1"_RAHLFS_$S(RAORDCTR="XX"&(RAD70SB'=0):$G(^RADPT(+RA0,"DT",$P(RAD70SB,"^",1),"P",$P(RAD70SB,"^",2),"H",A,0)),1:$G(^RAO(75.1,RAOIFN,"H",A,0)))
@@ -112,15 +89,5 @@ SS7 . S RACNT=RACNT+1,RATAB=RATAB+1
  . S RATAB=RATAB+1,RACNT=RACNT+1
  . S @(RAVAR_RATAB_")")="OBX"_RAHLFS_RACNT_RAHLFS_"TS"_RAHLFS_"^Pre Op Scheduled Date/Time^"_$$STR^RAO7UTL(2)_$$HLDATE^HLFNC($P(RA0,U,12),"TS")
  . Q
- ; DG1 Segment
- ;*Billing Awareness Project:
- ;   Send Ordering ICD Dx data to CPRS: DG1 and related ZCL segments.
- I $D(RABWDX1) D
- . N RA1 S RA1=""
- . F  S RA1=$O(RABWDX1(RA1)) Q:RA1=""  D
- .. S RATAB=RATAB+1,RACNT=RACNT+1
- .. S @(RAVAR_RATAB_")")=RABWDX1(RA1)
- . Q
- ;*
- K RAREASDY,VA,VADM,VAERR D MSG^RAO7UTL("RA EVSEND OR",.@RAVARBLE)
+ K VA,VADM,VAERR D MSG^RAO7UTL("RA EVSEND OR",.@RAVARBLE)
  Q

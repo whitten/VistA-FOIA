@@ -1,5 +1,5 @@
 PSABRKU3 ;BIR/JMB/PDW-Upload and Process Prime Vendor Invoice Data - CONT'D ;8/13/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**26,41,47,67**; 10/24/97;Build 15
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**26,41,47**; 10/24/97
  ;Checking the X12 invoice data.
  S (PSASTCNT,PSAITCNT,PSACTRL(1))=0
  K ^TMP($J,"PSAPV SET"),PSAERR
@@ -72,12 +72,6 @@ DTM .;date time reference
  .;
 IT1 .;invoice line item
  .I PSALAST="IT1" S PSASTCNT=PSASTCNT+1,PSAITCNT=PSAITCNT+1 D ITEM Q
- .;BGN PSA*3*67
-PID .;generic vendor item name
- .I PSALAST="PID" S PSASTCNT=PSASTCNT+1,$P(^TMP($J,"PSAPV SET",PSACTRL,"IT",PSAITEM),"^",29)=$S($P(PSADATA,"^",6)=$P(^TMP($J,"PSAPV SET",PSACTRL,"IT",PSAITEM),"^",28):"Unknown",1:$P(PSADATA,"^",6)) Q
-PO4 .;DESCRIPTION OF ITEM
- .I PSALAST="PO4" S PSASTCNT=PSASTCNT+1,$P(^TMP($J,"PSAPV SET",PSACTRL,"IT",PSAITEM),"^",30)=$P(PSADATA,"^",3)_"^"_$P(PSADATA,"^",9) D  Q
- .;END PSA*3*67
 CTT .;item count
  .I PSALAST="CTT" S PSASTCNT=PSASTCNT+1 D  Q
  ..I PSAITCNT'=$P(PSADATA,"^",2) S PSASEG="CTT" D MSG^PSABRKU8
@@ -98,9 +92,6 @@ ITEM ;check line item
  ;"IT1" Seg=Qty Invoiced ^ Unit of Measure ^ Unit Price ^ Basic Unit Code "DS" ^ NDC ^ VSN
  S PSAITEM=+$P(PSADATA,"^",2),^TMP($J,"PSAPV SET",PSACTRL,"IT",PSAITEM)=+$P(PSADATA,"^",3)_"^"_$P(PSADATA,"^",4)_"^"_$P(PSADATA,"^",5)_"^"_$P(PSADATA,"^",8)_"^"_$P(PSADATA,"^",10)
  I $P(PSADATA,"^",12)'="",$P(PSADATA,"^",11)="UP" S $P(^TMP($J,"PSAPV SET",PSACTRL,"IT",PSAITEM),"^",26)=$P(PSADATA,"^",12)
- ;Next line to add vendor Generic Description
- I $P(PSADATA,"^",14)'="" S $P(^TMP($J,"PSAPV SET",PSACTRL,"IT",PSAITEM),"^",28)=$P(PSADATA,"^",14)
- ;Eop67
  Q
 RESETST ;Reset PSACTRL
  S PSACTRL(1)=+PSACTRL+1,X1=PSACTRL(1)

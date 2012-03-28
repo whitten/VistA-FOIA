@@ -1,4 +1,5 @@
 LRAPMV ;AVAMC/REG/CYM - MOVE AP ACCESSION ;4/1/98  11:53 ;
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**72,231,259**;Sep 27, 1994
  W !!?17,"Move an accession from one patient to another"
  ;Add Quit to ensure this option does not execute

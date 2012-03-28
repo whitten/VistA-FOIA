@@ -1,4 +1,5 @@
-XUTMKE1 ;SEA/RDS - Taskman: Option, XUTME SCREEN*, Part 1 ;04/17/98  13:18
+XUTMKE1 ;SEA/RDS - Taskman: Option, XUTME SCREEN*, Part 1 ;04/17/98  13:18 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**63,79**;Jul 10, 1995
  ;
 SCLIST ;List Current Error Screens

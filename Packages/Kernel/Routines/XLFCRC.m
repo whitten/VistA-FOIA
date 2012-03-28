@@ -1,4 +1,5 @@
-XLFCRC ;ISF/RWF - Library Functions to do CRC ;08/04/2000  09:42
+XLFCRC ;ISF/RWF - Library Functions to do CRC ;08/04/2000  09:42 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**166**;Jul 10, 1995
  ; The code below was approved in document X11/1998-32
  ;From the book "M[UMPS] by example" by Ed de Mole.

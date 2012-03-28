@@ -1,12 +1,18 @@
-SDAM5 ;MJK/ALB - Appt Mgt (HELP) ; 12/1/91
+SDAM5 ;MJK/ALB - Appt Mgt (HELP) ; 12/1/91 [ 10/10/2001  2:33 PM ]
  ;;5.3;Scheduling;;Aug 13, 1993
+ ;IHS/ANMC/LJF 10/10/2001 removed list of regular actions
  ;
 HLP ; -- help for list
  I $D(X),X'["??" D HLPS,PAUSE^VALM1 G HLPQ
  D CLEAR^VALM1
  F I=1:1 S SDX=$P($T(HELPTXT+I),";",3,99) Q:SDX="$END"  D PAUSE^VALM1:SDX="$PAUSE" Q:'Y  W !,$S(SDX["$PAUSE":"",1:SDX)
- W !,"Possible actions are the following:"
- D HLPS,PAUSE^VALM1 S VALMBCK="R"
+ ;
+ ;IHS/ANMC/LJF 10/10/2001 modified lines below
+ ;W !,"Possible actions are the following:"
+ ;D HLPS,PAUSE^VALM1 S VALMBCK="R"
+ D CLEAR^VALM1           ;new line
+ ;IHS/ANMC/LJF 10/10/2001 end of mods
+ ;
 HLPQ K SDX,Y Q
  ;
 HLPS ; -- short help

@@ -1,5 +1,5 @@
 PSAUTL1 ;BIR/JMB-Prime Vendor Invoice Data Utility ;9/19/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,15,21,48,49,54,67**; 10/24/97;Build 15
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,15,21,48,49**; 10/24/97
  ;This routine contains utilities to get the location name, display an
  ;error-free item, display an item with errors, and display a line ready
  ;for verification.
@@ -10,7 +10,7 @@ PSAUTL1 ;BIR/JMB-Prime Vendor Invoice Data Utility ;9/19/97
  ;
 SITES ;Gets the combined IP/OP's IP & OP site names
  ;PSA*3*22 (DAVE B) no location defined
- I $G(PSALOC)'>0 S (PSAISITN,PSAOSITN)="Unknown",PSACOMB=" No location identified" Q
+ I $G(PSALOC)'>0 S (PSAISITN,PSAOSITN)="Unknown",PSACOMB=" No location identifed" Q
  ;End PSA*3*22
  S PSAISIT=+$P($G(^PSD(58.8,PSALOC,0)),"^",3) D OPSITE
  I $G(PSAOSIT)="" S PSAOSIT=0
@@ -50,14 +50,8 @@ DISPLAY ;Displays an error-free line item
  W:$E(PSANDC)'="S" ?38,"NDC: " D PSANDC1^PSAHELP W PSANDCX K PSANDCX
  W !,"Unit Price  : $"_$P(PSADATA,"^",3),?38,"VSN: "_$S(PSAVSN'="":PSAVSN,1:"Blank"),!
  I $P(PSADATA,U,13)=.5 D  ;*48 AUTO OU UPDATE FOR MCKESSON
- .W !,"*****>",!,"Note: The order unit was changed from EACH to ",$P($G(^DIC(51.5,+PSAOU,0)),"^")," by Drug Accountability"
- .W !,"      during the upload of the invoiced data. Adjustments may be necessary.",!,"*****<"
- ;bgn *67
- W !,"PV-Drug-Description  : ",$S($P(PSADATA,"^",28)'="":$P(PSADATA,"^",28),1:"Unknown")
- W ?55,"PV-DUOU  : ",$S($P(PSADATA,"^",31)'="":$P(PSADATA,"^",31),1:"Unknown")
- W !,"PV-Drug-Generic Name : ",$S($P(PSADATA,"^",29)'="":$P(PSADATA,"^",29),1:"Unknown")
- W ?55,"PV-UNITS : ",$S($P(PSADATA,"^",30)'="":$P(PSADATA,"^",30),1:"Unknown"),!
- ;end *67
+ . W !,"*****>",!,"Note: The order unit was changed from EACH to ",$P($G(^DIC(51.5,+PSAOU,0)),"^")," by Drug Accountability"
+ . W !,"      during the upload of the invoiced data. Adjustments may be necessary.",!,"*****<"
  W !,"Dispense Units: "_$S(+PSAIEN&($P($G(^PSDRUG(+PSAIEN,660)),"^",8)'=""):$P($G(^PSDRUG(+PSAIEN,660)),"^",8),1:"Blank")
  W !,"Dispense Units Per Order Unit: "_$S($P(PSADATA,"^",20):+$P(PSADATA,"^",20),+PSASUB&(+$P($G(^PSDRUG(+PSAIEN,1,PSASUB,0)),"^",7)):+$P($G(^PSDRUG(+PSAIEN,1,PSASUB,0)),"^",7),1:"Blank")
  S PSALOC=$S($P(PSADATA,"^",19)="":+$P(PSAIN,"^",7),1:+$P(PSAIN,"^",12))
@@ -71,9 +65,6 @@ DISPLAY ;Displays an error-free line item
 EDITDISP ;Displays a line item with errors.
  W @IOF,!?23,"<<< PROCESS LINE ITEM SCREEN >>>",!,"Order#: "_$P(PSAIN,"^",4)_"  Invoice#: "_$P(PSAIN,"^",2)_"  Invoice Date: "_$$FMTE^XLFDT(+PSAIN),!,PSASLN
 EDIT1 S PSADATA=$G(^XTMP("PSAPV",PSACTRL,"IT",PSALINE))
- S PSASUB=+$P(PSADATA,"^",7) ;*54
- S PSAIEN=+$P(PSADATA,"^",15) I PSAIEN ;*54
- E  S PSAIEN=+$P(PSADATA,"^",6) ;*54
  S PSALOC=$S($P(PSADATA,"^",19)="":+$P(PSAIN,"^",7),1:+$P(PSAIN,"^",12))
  W !,PSALINE_"  "_$S($D(^XTMP("PSAPV",PSACTRL,"IT",PSALINE,"SUP")):$P(^XTMP("PSAPV",PSACTRL,"IT",PSALINE,"SUP"),"^",3),PSAIEN&($P($G(^PSDRUG(PSAIEN,0)),"^")'=""):$P(^PSDRUG(PSAIEN,0),"^"),1:"UNKNOWN ITEM")
  I PSAIEN D
@@ -97,15 +88,9 @@ EDIT1 S PSADATA=$G(^XTMP("PSAPV",PSACTRL,"IT",PSALINE))
  I +PSAPRICE,$L($P(PSAPRICE,".",2))<2 S PSAPRICE=$P(PSAPRICE,".")_"."_$P(PSAPRICE,".",2)_$E("00",1,(2-$L($P(PSAPRICE,".",2))))
  W !,"Unit Price  : $"_$S($G(PSAPRICE):PSAPRICE,PSAPRICE=0:0,1:"Blank"),?38,"VSN: "_$S(PSAVSN'="":PSAVSN,1:"Blank"),!
  I $P(PSADATA,U,13)=.5 D  ;*48 AUTO OU UPDATE FOR MCKESSON
- .N PSAOU S PSAOU=$P(PSADATA,U,12)
- .W !,"*****>",!,"Note: The order unit was changed from EACH to ",$P($G(^DIC(51.5,+PSAOU,0)),"^")," by Drug Accountability"
- .W !,"      during the upload of the invoiced data. Adjustments may be necessary.",!,"*****<"
- ;bgn *67
- W !,"PV-Drug-Description  : ",$S($P(PSADATA,"^",28)'="":$P(PSADATA,"^",28),1:"Unknown")
- W ?55,"PV-DUOU  : ",$S($P(PSADATA,"^",31)'="":$P(PSADATA,"^",31),1:"Unknown")
- W !,"PV-Drug-Generic Name : ",$S($P(PSADATA,"^",29)'="":$P(PSADATA,"^",29),1:"Unknown")
- W ?55,"PV-UNITS : ",$S($P(PSADATA,"^",30)'="":$P(PSADATA,"^",30),1:"Unknown"),!
- ;end *67
+ . N PSAOU S PSAOU=$P(PSADATA,U,12)
+ . W !,"*****>",!,"Note: The order unit was changed from EACH to ",$P($G(^DIC(51.5,+PSAOU,0)),"^")," by Drug Accountability"
+ . W !,"      during the upload of the invoiced data. Adjustments may be necessary.",!,"*****<"
  S PSAIN=^XTMP("PSAPV",PSACTRL,"IN"),PSALOC=$S($P(PSADATA,"^",19)="CS":+$P(PSAIN,"^",12),1:+$P(PSAIN,"^",7))
 DU W !,"Dispense Units: "_$S(+PSAIEN&($P($G(^PSDRUG(+PSAIEN,660)),"^",8)'=""):$P($G(^PSDRUG(+PSAIEN,660)),"^",8),1:"Blank")
 DUOU W !,"Dispense Units Per Order Unit: "_$S($P(PSADATA,"^",20):+$P(PSADATA,"^",20),+PSASUB&(+$P($G(^PSDRUG(+PSAIEN,1,PSASUB,0)),"^",7)):+$P($G(^PSDRUG(+PSAIEN,1,PSASUB,0)),"^",7),1:"Blank"),!

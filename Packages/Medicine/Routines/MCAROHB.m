@@ -1,4 +1,4 @@
-MCAROHB ; GENERATED FROM 'MCARHEMB' PRINT TEMPLATE (#986) ; 06/25/01 ; (FILE 694, MARGIN=80)
+MCAROHB ; GENERATED FROM 'MCARHEMB' PRINT TEMPLATE (#3710) ; 11/29/04 ; (FILE 694, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,19 +11,19 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 M DXS=^DIPT(986,"DXS")
+ I $D(DXS)<9 M DXS=^DIPT(3710,"DXS")
  S I(0)="^MCAR(694,",J(0)=694
  D N:$X>4 Q:'DN  W ?4 W "WARD/CLINIC: "
- S X=$G(^MCAR(694,D0,0)) D N:$X>17 Q:'DN  W ?17 S Y=$P(X,U,4) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(694,D0,0)) D N:$X>17 Q:'DN  W ?17 S Y=$P(X,U,4) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>4 Q:'DN  W ?4 W "PROCEDURE:  "
  X DXS(1,9.4) S X=$S(DIP(2):DIP(3),DIP(4):DIP(5),DIP(6):DIP(7),DIP(8):X) K DIP K:DN Y W X
  X DXS(2,9.2) S DIP(3)=X S X=1,DIP(4)=X S X="",X=$S(DIP(2):DIP(3),DIP(4):X) K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "PERFORMED BY:"
- S X=$G(^MCAR(694,D0,1)) D N:$X>18 Q:'DN  W ?18 S Y=$P(X,U,11) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(694,D0,1)) D N:$X>18 Q:'DN  W ?18 S Y=$P(X,U,11) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>49 Q:'DN  W ?49 W "DATE PERFORMED:"
  D N:$X>65 Q:'DN  W ?65 S DIP(1)=$S($D(^MCAR(694,D0,0)):^(0),1:"") S X=$P(DIP(1),U,8) S:X X=$E(X,4,5)_"/"_$E(X,6,7)_"/"_$E(X,2,3) K DIP K:DN Y W X
  D N:$X>4 Q:'DN  W ?4 W "APPROVED BY:"
- S X=$G(^MCAR(694,D0,1)) D N:$X>18 Q:'DN  W ?18 S Y=$P(X,U,9) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(694,D0,1)) D N:$X>18 Q:'DN  W ?18 S Y=$P(X,U,9) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>49 Q:'DN  W ?49 W "DATE APPROVED:"
  D N:$X>65 Q:'DN  W ?65 S DIP(1)=$S($D(^MCAR(694,D0,1)):^(1),1:"") S X=$P(DIP(1),U,10) S:X X=$E(X,4,5)_"/"_$E(X,6,7)_"/"_$E(X,2,3) K DIP K:DN Y W X
  D N:$X>39 Q:'DN  W ?39 W "DATE OF ORIGINAL CONSULT:"
@@ -32,7 +32,7 @@ BEGIN ;
  S I(1)=12,J(1)=694.057 F D1=0:0 Q:$O(^MCAR(694,D0,12,D1))'>0  X:$D(DSC(694.057)) DSC(694.057) S D1=$O(^(D1)) Q:D1'>0  D:$X>37 T Q:'DN  D A1
  G A1R
 A1 ;
- S X=$G(^MCAR(694,D0,12,D1,0)) D T Q:'DN  W ?9 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(694.1,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,100)
+ S X=$G(^MCAR(694,D0,12,D1,0)) D T Q:'DN  W ?9 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(694.1,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,100)
  Q
 A1R ;
  S I(1)=13,J(1)=694.058 F D1=0:0 Q:$O(^MCAR(694,D0,13,D1))'>0  S D1=$O(^(D1)) D:$X>111 T Q:'DN  D B1
@@ -41,22 +41,25 @@ B1 ;
  S X=$G(^MCAR(694,D0,13,D1,0)) S DIWL=7,DIWR=76 D ^DIWP
  Q
 B1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  W ?2 X DXS(3,9) K DIP K:DN Y
  S I(1)=10,J(1)=694.038 F D1=0:0 Q:$O(^MCAR(694,D0,10,D1))'>0  X:$D(DSC(694.038)) DSC(694.038) S D1=$O(^(D1)) Q:D1'>0  D:$X>13 T Q:'DN  D C1
  G C1R
 C1 ;
- S X=$G(^MCAR(694,D0,10,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(697.5,Y,0))#2:$P(^(0),U,1),1:Y) S X=Y D ^DIWP
- D A^DIWW
+ S X=$G(^MCAR(694,D0,10,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(697.5,Y,0))#2:$P(^(0),U),1:Y) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
  Q
 C1R ;
  S X=$G(^MCAR(694,D0,1)) D N:$X>6 Q:'DN  S DIWL=7,DIWR=76 S Y=$P(X,U,2) S X=Y D ^DIWP
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 W " "
  W ?3 D BMB^MCARHP:$P(^MCAR(697.2,$P(^MCAR(694,D0,0),U,3),0),U)="BMB" K DIP K:DN Y
  D N:$X>4 Q:'DN  W ?4 W "PERIPHERAL BLOOD SMEAR:"
- S X=$G(^MCAR(694,D0,11)) D N:$X>29 Q:'DN  S DIWL=30,DIWR=80 S Y=$P(X,U,1) S X=Y D ^DIWP
- D 0^DIWW K DIP K:DN Y
+ S X=$G(^MCAR(694,D0,11)) D T Q:'DN  S DIWL=30,DIWR=80 S Y=$P(X,U,1) S X=Y D ^DIWP
+ D 0^DIWW
  D ^DIWW K Y K DIWF
  Q
 HEAD ;

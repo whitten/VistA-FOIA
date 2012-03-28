@@ -1,5 +1,5 @@
 IBDF1B3 ;ALB/CJM - ENCOUNTER FORM - (lists data that did not fit on the encounter form);4/28/93
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**39**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
 OVERFLOW ;
  ;loops through @IBARRAY("OVERFLOW"), printing in list form all the data that did not fit
  ;
@@ -81,8 +81,8 @@ LIST ;displays the list
  .S CNT=0
  .I $Y>(IOSL-5) W @IOF D HDR
  .S ITEM=1 W !,?5,"**** LIST OF ",$E(RTN("NAME"),$F(RTN("NAME")," "),40)," ****" F  D LISTVAL D  Q:'ITEM
- ..; -- file overflow data if not re-printing & there is a form ID
- ..I '$G(REPRINT),($G(LIST("INPUT_RTN"))]""),$G(IBPFID) D
+ ..; -- file overflow data if not re-printing
+ ..I '$G(REPRINT),($G(LIST("INPUT_RTN"))]"") D
  ...S CNT=CNT+1
  ...S DIC="^IBD(357.96,IBPFID,2,",DIC(0)="L",DIC("P")=$P(^DD(357.96,2,0),"^",2),DA(1)=IBPFID,X=CNT,DLAYGO=357.96
  ...S DIC("DR")=".03////^S X=LIST(""INPUT_RTN"");.04////^S X=$P(VALUE,""^"");.06////^S X=""S""_LIST_""("";.08////^S X=$P(VALUE,""^"",2)"

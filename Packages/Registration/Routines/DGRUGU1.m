@@ -1,5 +1,5 @@
 DGRUGU1 ;ALB/CMM - UTILITIES FOR CNH PAI ;04/17/96
- ;;5.3;Registration;**89,111,573**;Aug 13, 1993
+ ;;5.3;Registration;**89,111**;Aug 13, 1993
  ;
  ;
 SCREEN() ;This is the screen for LOCATION field in PAF file to allow only
@@ -22,7 +22,6 @@ KSCREEN(Y) ;This is the screen to allow selected PAI to be deleted
  .S FLAG=0
  .I ($D(^XUSEC("DG RUG SUPERVISOR",DUZ))) S FLAG=1 Q
  .I $D(DGCNH),$P(^DG(45.9,+Y,0),"^",6)=3 S FLAG=1 Q
- .I '$D(DGCNH),$P(^DG(45.9,+Y,0),"^",6)'=3 S FLAG=1 Q
  Q FLAG
  ;
 OSCREEN() ;This is the screen to allow selected PAI to be re-opened
@@ -34,7 +33,6 @@ OSCREEN() ;This is the screen to allow selected PAI to be re-opened
  .S FLAG=0
  .I ($D(^XUSEC("DG RUG SUPERVISOR",DUZ))) S FLAG=1 Q
  .I $D(DGCNH),$P(^DG(45.9,+Y,0),"^",6)=3 S FLAG=1 Q
- .I '$D(DGCNH),$P(^DG(45.9,+Y,0),"^",6)'=3 S FLAG=1 Q
  Q FLAG
  ;
 CSCREEN() ;This is the screen to allow selected PAI to be closed
@@ -46,7 +44,6 @@ CSCREEN() ;This is the screen to allow selected PAI to be closed
  .S FLAG=0
  .I ($D(^XUSEC("DG RUG SUPERVISOR",DUZ))) S FLAG=1 Q
  .I $D(DGCNH),$P(^DG(45.9,+Y,0),"^",6)=3 S FLAG=1 Q
- .I '$D(DGCNH),$P(^DG(45.9,+Y,0),"^",6)'=3 S FLAG=1 Q
  Q FLAG
  ;
 CHOSE() ;pick both CNH and Regular PAIs or one

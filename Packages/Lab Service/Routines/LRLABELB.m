@@ -1,4 +1,5 @@
 LRLABELB ;DALOI/JMC - 10 PART LABELS FOR THE INTERMEC 3000/4000 PRINTER ;8/29/94 12:36
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**161,218**;Sep 27, 1994
  ;This routine is used in conjunction with the Intermec program routine
  ;LRBARB to print a ten part 2.5X4.0 inch label.

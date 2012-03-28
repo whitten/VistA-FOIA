@@ -1,8 +1,11 @@
 TIUPUTC1 ; SLC/JER - Document filer Cont'd - captioned header ;27-SEP-1999 12:28:28
  ;;1.0;TEXT INTEGRATION UTILITIES;**81**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/26/2003 added code setting TITLE variable
+ ;                        added code to skip fields if blank and not required
  ;
 GETREC(HEADER,RECORD,TIUHDR) ; ---- Look-up/create record (if LAYGO allowed)
  N DIC,DLAYGO,TIUD1,TIUD4,TIUKEY,X,Y
+ K TIUTITLE                       ;IHS/ITSC/LJF 02/26/2003 added kill
  I '$D(ZTQUEUED) W !!,">>> HEADER IDENTIFIED:",!,HEADER
  S X=$$STRIP^TIULS($P(HEADER,":",2)),Y=$$WHATYPE^TIUPUTU(X)
  I +Y'>0 D MAIN^TIUPEVNT(DA,1,3,X) D  Q
@@ -31,6 +34,10 @@ GETREC(HEADER,RECORD,TIUHDR) ; ---- Look-up/create record (if LAYGO allowed)
  . ; ---- Check for field number, required missing fields:
  . S TIUCAP=$P(TIULINE,":") Q:TIUCAP']""
  . S TIUNOD=$O(^TIU(8925.1,+RECORD("TYPE"),"HEAD","B",TIUCAP,0)) Q:+TIUNOD'>0
+ . ;
+ . ;IHS/ITSC/LJF 02/26/2003 if item blank and not required, skip
+ . I $$STRIP^XLFSTR($P(TIULINE,":",2,99)," ")="",$P(^TIU(8925.1,+RECORD("TYPE"),"HEAD",+TIUNOD,0),U,7)'=1 Q
+ . ;
  . S TIUFIELD=$P(^TIU(8925.1,+RECORD("TYPE"),"HEAD",+TIUNOD,0),U,3)
  . I TIUFIELD']"" W:'$D(ZTQUEUED) !,"Field Number NOT SPECIFIED for ",TIUCAP Q
  . S TIUREQ=$P(^TIU(8925.1,+RECORD("TYPE"),"HEAD",+TIUNOD,0),U,7)
@@ -48,6 +55,7 @@ GETREC(HEADER,RECORD,TIUHDR) ; ---- Look-up/create record (if LAYGO allowed)
  . F  S TIUVAR=$O(TIUHDR(TIUVAR)) Q:TIUVAR=""  D
  . . S TIUJ=+$G(TIUJ)+1,TIUVAR(TIUJ)=TIUVAR
  . . S @TIUVAR=TIUHDR(TIUVAR)
+ . I '$D(TIUTITLE) S TIUTITLE=$$STRIP^TIULS($P(HEADER,":",2)) ;IHS/ITSC/LJF 02/26/2003 added
  . X TIUD4 S RECORD("#")=+Y
  . I +Y'>0 D
  . . ; ---- If lookup fails, log 8925.4 error w/ hdr info.  Create new

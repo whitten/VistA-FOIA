@@ -1,5 +1,5 @@
-LA7VIN3 ;DALOI/JMC - Process Incoming UI Msgs, continued ; 01/14/99
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64**;Sep 27, 1994
+LA7VIN3 ;VA/DALOI/JMC - Process Incoming UI Msgs, continued ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997
  ;This routine is a continuation of LA7VIN1 and is only called from there.
  Q
  ;

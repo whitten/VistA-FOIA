@@ -1,5 +1,5 @@
-PXBHLP2 ;ISL/JVS - FIRST HELP ROUITINE FOR PROVIDERS ;6/17/03  10:29
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**124**;Aug 12, 1996
+PXBHLP2 ;ISL/JVS - FIRST HELP ROUITINE FOR PROVIDERS ;5/21/96  11:48
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
  ;
  ;
  ;
@@ -11,15 +11,6 @@ PXBHLP2 ;ISL/JVS - FIRST HELP ROUITINE FOR PROVIDERS ;6/17/03  10:29
  W !,"THIS IS NOT AN ENTRY POINT " Q
 INTRO ;;6
  W !,"Enter a PROVIDER associated with this patient ENCOUNTER."
- W !,"You can enter partial names to receive a short list."
- W !,"Above is a list of PROVIDERS already entered. If there are any"
- W !,"additional ones, they should be entered at this time."
- W !," * indicates that the entry has been visited during this session."
- I $G(WHAT)="INTV" W !,"a '^^' (double up arrow) will take you out of the interview"
- W !,"For more detailed ",IOINHI,"HELP",IOINLOW," and selection lists enter ",IOINHI,"??",IOINLOW,!
- Q
-INTRO2 ;;6
- W !,"Enter an ORDERING PROVIDER associated with this PROCEDURE."
  W !,"You can enter partial names to receive a short list."
  W !,"Above is a list of PROVIDERS already entered. If there are any"
  W !,"additional ones, they should be entered at this time."

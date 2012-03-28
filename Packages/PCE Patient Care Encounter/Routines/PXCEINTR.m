@@ -1,5 +1,5 @@
 PXCEINTR ;ISL/dee - PCE List Manager call to do interview questions ;7/9/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**172**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
  ;
  Q
  ;
@@ -32,14 +32,11 @@ INTRVIEW ;Do Interview form Encounter List.
  S PXCEWHAT="ADDEDIT"
  I '$D(PXCEPAT) N PXCEPAT S PXCEPAT=""
  I '$D(PXCEHLOC) N PXCEHLOC S PXCEHLOC=""
- N PXREC S PXREC=0  ; PX*1.0*172 new logic added to dot structure below
- I PXCEVIEN>0 D  G:PXREC INTRVQ
+ I PXCEVIEN>0 D
  . S PXCEPAT=$P(^AUPNVSIT(PXCEVIEN,0),"^",5)
- . N PXDUZ,PXPTSSN S PXDUZ=DUZ,PXPTSSN=$P($G(^DPT(PXCEPAT,0)),U,9)
- . D SEC^PXCEEXP(.PXREC,PXDUZ,PXPTSSN)
- . I PXREC W !!,"Security regulations prohibit computer access to your own medical record." H 3 Q
  . S PXCEHLOC=$P(^AUPNVSIT(PXCEVIEN,0),"^",22)
  . I $$VSTAPPT^PXUTL1(PXCEPAT,+^AUPNVSIT(PXCEVIEN,0),$P(^(0),"^",22),PXCEVIEN) S PXCEAPPM=+^AUPNVSIT(PXCEVIEN,0),PXCEWHAT="INTV"
+ ;
  S PXCERET=$$INTV^PXAPI(PXCEWHAT,"PX","PXCE DATA ENTRY",.PXCEVIEN,.PXCEHLOC,.PXCEPAT,$G(PXCEAPPM))
 INTRVQ Q
  ;
@@ -50,10 +47,6 @@ SDINTRVW(PXCEWHAT) ;Do Interview form Appointment List.
  I '$D(PXCEHLOC) N PXCEHLOC S PXCEHLOC=""
  S PXCEVIEN=$$SELAPPM^PXCESDAM
  Q:PXCEVIEN=-1
- ; next 3 lines added per PX*1.0*172
- N PXREC,PXDUZ,PXPTSSN S PXDUZ=DUZ,PXPTSSN=$TR($G(PXCEPAT("SSN")),"-")
- D SEC^PXCEEXP(.PXREC,PXDUZ,PXPTSSN)
- I PXREC W !!,"Security regulations prohibit computer access to your own medical record." H 3 G SDINTRVQ
  I 'PXCEVIEN D
  . I PXCEWHAT'="INTV",PXCEWHAT'="ADQ" D
  .. W $C(7),!,"There is no Encounter for this Appointment."

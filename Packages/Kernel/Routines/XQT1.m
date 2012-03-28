@@ -1,4 +1,5 @@
-XQT1 ;SEA/MJM - Menu Template Processor ;04/07/99  12:13
+XQT1 ;SEA/MJM - Menu Template Processor ;04/07/99  12:13 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**59,37**;Jul 10, 1995
  ;This routine should be a mirror image of XQ1
  ;

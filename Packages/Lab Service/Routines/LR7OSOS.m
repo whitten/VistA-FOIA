@@ -1,4 +1,5 @@
 LR7OSOS ;slc/dcm - Lab order status for OE/RR ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,201,187,230**;Sep 27, 1994
 EN(OMEGA,ALPHA) ;'...the last shall be first...the first shall be last'
  N LRODT,LRSN,LREND

@@ -1,4 +1,5 @@
-LRAPWR ;AVAMC/REG - DATE/TIME SLIDES READ ;8/15/95  11:10
+LRAPWR ; IHS/DIR/AAB - DATE/TIME SLIDES READ 11:10 ; [ 8/15/95 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  S LRDICS="CY" D ^LRAP G:'$D(Y) END D CY^LRAPWR1 G:Y=-1 END D S^LRAPST K Y
 ASK S %DT="",X="T" D ^%DT S LRY=$E(Y,1,3)+1700 W !,"Enter year: ",LRY,"// " R X:DTIME G:'$T!(X[U) END S:X="" X=LRY
@@ -30,6 +31,7 @@ CK W $C(7),!?3,"Date/time slides examined (" D DD^%DT W Y,") cannot be before",!
  ;
  ;
 M R !,"'^' TO STOP: ",LRM:DTIME S:'$T LRM=U D:LRM'[U H Q
-H W @IOF,LRP," ",SSN(1)," Acc #: ",LRAC," Date: ",LRE,!?47,"Slide/Ctrl",?60,"Date Slides Examined" Q
+H ;W @IOF,LRP," ",SSN(1)," Acc #: ",LRAC," Date: ",LRE,!?47,"Slide/Ctrl",?60,"Date Slides Examined" Q
+ W @IOF,LRP," ",HRCN," Acc #: ",LRAC," Date: ",LRE,!?47,"Slide/Ctrl",?60,"Date Slides Examined" Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q

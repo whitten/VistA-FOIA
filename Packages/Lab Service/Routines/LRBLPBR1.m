@@ -1,6 +1,7 @@
-LRBLPBR1 ;AVAMC/REG/CYM - BB TESTS REPORT ;2/23/98  12:02 ;
- ;;5.2;LAB SERVICE;**203,247,267**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPBR1 ; IHS/DIR/AAB - BB TESTS REPORT 2/23/98 12:02 ; [ 07/07/1998 1:34 PM ]
+ ;;5.2;LR;**1006**;SEP 01, 1998
+ ;
+ ;;5.2;LAB SERVICE;**203**;Sep 27, 1994
  ;from LRBLPBR, LRBLSUM
  S LR(2)=0,LRMD=$P(LR,"^",5) D H S LR("F")=1
  I $D(^LR(LRDFN,1.7)) W !?4,"Antibodies identified: " F LR(9)=0:0 S LR(9)=$O(^LR(LRDFN,1.7,LR(9))) Q:'LR(9)!(LR("Q"))  D:$Y>(IOSL-9) FT,H1 Q:LR("Q")  W:$X>(IOM-15) !?4 W $P(^LAB(61.3,LR(9),0),"^"),"; "
@@ -25,22 +26,23 @@ C S A=0 F B=1:1 S A=$O(^LRD(65,"AP",LRDFN,A)) Q:'A!(LR("Q"))  D N
  W ! S A=0 F B=0:1 S A=$O(^LR(LRDFN,1.8,A)) Q:'A!(LR("Q"))  S F=^(A,0) D:'B R D L
  Q:LR("Q")  I 'B W "No component requests",!
  Q
-N W:B=1 !!?6,"Unit assigned/xmatched:",?47,"Exp date",?68,"Loc"
+N W:B=1 !!?6,"Unit assigned/xmatched:",?46,"Exp date",?64,"Loc"
  I '$D(^LRD(65,A,0)) K ^LRD(65,"AP",LRDFN,A) Q
  S F=^LRD(65,A,0),L=$O(^(3,0)) S:'L L="Blood Bank" I L S L=$P(^(L,0),"^",4)
- S M=^LAB(66,$P(F,"^",4),0) D:$Y>(IOSL-9) H3 Q:LR("Q")  W !,$J(B,2),")",?4,$P(F,"^"),?19,$E($P(M,"^"),1,19),?40,$P(F,"^",7)_" "_$P(F,"^",8),?47 S Y=$P(F,"^",6) D D^LRU S:L<0 L="Blood bank" W Y,?68,$E(L,1,12) Q
+ S M=^LAB(66,$P(F,"^",4),0) D:$Y>(IOSL-9) H3 Q:LR("Q")  W !,$J(B,2),")",?4,$P(F,"^"),?15,$E($P(M,"^"),1,19),?36,$P(F,"^",7)_" "_$P(F,"^",8),?43 S Y=$P(F,"^",6) D D^LRU S:L<0 L="Blood bank" W Y,?64,L Q
  ;
 L I '$D(^LAB(66,+F,0)) L +^LR(LRDFN,1.8) K ^LR(LRDFN,1.8,+F) S X=^LR(LRDFN,1.8,0),X(1)=$O(^LR(LRDFN,1.8,0)),^LR(LRDFN,1.8,0)=$P(X,"^",1,2)_"^"_X(1)_"^"_$S(X(1)="":"",1:($P(X,"^",4)-1)) L -^LR(LRDFN,1.8) Q
  W !,$E($P(^LAB(66,+F,0),"^"),1,26),?26,$J($P(F,"^",4),2),?31 S T=$P(F,"^",3) D T W T,?48 S T=$P(F,"^",5) D T W T,?65,$E($P(F,"^",9),1,12),?77,$S($P(F,"^",8)="":"",$D(^VA(200,$P(F,"^",8),0)):$P(^(0),"^",2),1:$P(F,"^",8)) Q
  ;
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !?20,"BLOOD BANK TEST REPORT",!,LR("%")
- W !?10,"Patient",?34,"SSN",?43,"Birth Date",?55,"ABO",?59,"Rh",!,?10,"-------",?34,"---",?43,"----------",?55,"---",?59,"--"
+ ;W !?10,"Patient",?34,"SSN",?43,"Birth Date",?55,"ABO",?59,"Rh",!,?10,"-------",?34,"---",?43,"----------",?55,"---",?59,"--"
+ W !?10,"Patient",?34,"HRCN",?43,"Birth Date",?55,"ABO",?59,"Rh",!,?10,"-------",?34,"---",?43,"----------",?55,"---",?59,"--"  ;IHS/ANMC/CLS 11/1/95
  S T=+LR D T S DOB=T W !,N,?31,$P(LR,"^",2),?44,T,?56,$J($P(LR,"^",3),2),?59,$P(LR,"^",4),!!
  Q
 H1 D H Q:LR("Q")  W !!?4,"Antibodies identified (cond't from pg ",LR(2)-1,")" Q
 H2 D FT,H Q:LR("Q")  D DT Q
 DT W !!,?30,"|---",?39,"AHG(direct)",?55,"---|",?62,"|-AHG(indirect)-|",!?4,"Date/time",?20,"ABO",?24,"Rh",?30,"POLY",?35,"IgG",?40,"C3",?45,"Interpretation",?62,"(Antibody screen)"
  W !?4,"---------",?20,"---",?24,"--",?30,"----",?35,"---",?40,"---",?45,"--------------",?62,"-----------------" Q
-H3 D H Q:LR("Q")  W !!?6,"Unit assigned/xmatched:",?47,"Exp date",?68,"Loc" Q
+H3 D H Q:LR("Q")  W !!?6,"Unit assigned/xmatched:",?46,"Exp date",?64,"Loc" Q
 R W !,"Component requests",?25,"Units",?32,"Request date",?48,"Date wanted",?65,"Requestor",?77,"By" Q

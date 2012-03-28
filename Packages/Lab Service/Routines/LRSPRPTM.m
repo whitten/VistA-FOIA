@@ -1,4 +1,5 @@
 LRSPRPTM ;AVAMC/REG/WTY - MODIFIED PATH REPORT ;9/22/00
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**1,248**;Sep 27, 1994
  ;
  ;Reference to ^VA(200 supported by IA #10060

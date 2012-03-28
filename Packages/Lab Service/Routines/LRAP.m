@@ -1,4 +1,5 @@
 LRAP ;AVAMC/REG/WTY - ANATOMIC PATH UTILITY ;10/23/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**72,248,259**;Sep 27, 1994
  ;
  ;called by many routines in AP package

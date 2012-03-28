@@ -1,4 +1,4 @@
-NURSPA2 ; GENERATED FROM 'NURS-P-STF' PRINT TEMPLATE (#574) ; 04/03/98 ; (continued)
+NURSPA2 ; GENERATED FROM 'NURS-P-STF' PRINT TEMPLATE (#3774) ; 11/29/04 ; (continued)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -15,29 +15,29 @@ BEGIN ;
  G E1R
 E1 ;
  D T Q:'DN  D N D N:$X>18 Q:'DN  W ?18 W "STATE: "
- S X=$G(^NURSF(210,D0,4,D1,0)) D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^DIC(5,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^NURSF(210,D0,4,D1,0)) D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^DIC(5,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>9 Q:'DN  W ?9 W "LICENSE NUMBER: "
  D N:$X>25 Q:'DN  W ?25,$E($P(X,U,2),1,40)
  D N:$X>8 Q:'DN  W ?8 W "EXPIRATION DATE: "
  D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,3) D DT
  D N:$X>12 Q:'DN  W ?12 W "VERIFIED BY: "
- D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  Q
 E1R ;
  W ?62 W !,NURSX K DIP K:DN Y
  D N:$X>27 Q:'DN  W ?27 W "PROFESSIONAL EDUCATION"
  D N:$X>27 Q:'DN  W ?27 W "----------------------"
  D T Q:'DN  D N D N:$X>1 Q:'DN  W ?1 W "HIGHEST NURSING DEGREE: "
- S X=$G(^NURSF(210,D0,17)) D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^NURSF(212.1,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^NURSF(210,D0,17)) D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^NURSF(212.1,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>0 Q:'DN  W ?0 W "HIGHEST ACADEMIC DEGREE: "
- D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^NURSF(212.1,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^NURSF(212.1,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  S I(1)=6,J(1)=210.04 F D1=0:0 Q:$O(^NURSF(210,D0,6,D1))'>0  X:$D(DSC(210.04)) DSC(210.04) S D1=$O(^(D1)) Q:D1'>0  D:$X>57 T Q:'DN  D F1
  G F1R
 F1 ;
  D T Q:'DN  D N D N:$X>17 Q:'DN  W ?17 W "DEGREE: "
- S X=$G(^NURSF(210,D0,6,D1,0)) D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^NURSF(212.1,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^NURSF(210,D0,6,D1,0)) D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^NURSF(212.1,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>18 Q:'DN  W ?18 W "MAJOR: "
- D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^NURSF(212.3,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,50)
+ D N:$X>25 Q:'DN  W ?25 S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^NURSF(212.3,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,50)
  D N:$X>5 Q:'DN  W ?5 W "COLLEGE/UNIVERSITY: "
  D N:$X>25 Q:'DN  W ?25,$E($P(X,U,3),1,50)
  D N:$X>9 Q:'DN  W ?9 W "YEAR COMPLETED: "
@@ -79,4 +79,5 @@ H1R ;
  G I1R^NURSPA3
 I1 ;
  D T Q:'DN  D N D N:$X>24 Q:'DN  W ?24 W "LOCATION: "
+ S X=$G(^NURSF(210,D0,20,D1,0)) D N:$X>34 Q:'DN  W ?34,$E($P(X,U,4),1,30)
  G ^NURSPA3

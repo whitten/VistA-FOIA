@@ -1,4 +1,5 @@
-ZUA ;SF/LJP - AUDIT ACCESS ;11/17/94  15:07
+ZUA ;SF/LJP - AUDIT ACCESS ;11/17/94  15:07 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 FAA ;Return failed access attempts
  K X S X(0)=0 F I=1:1 S X(I)=$O(^%ZUA(3.05,"U",XUF,X(I-1))) Q:X(I)'>0  S %H=$P($H,",",2),$P(^%ZUA(3.05,X(I),0),U,7)=DT_(%H\60#60/100+(%H\3600)+(%H#60/10000)/100)

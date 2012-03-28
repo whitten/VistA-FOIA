@@ -1,4 +1,5 @@
-XQORM5 ; SLC/KCM - Menu Help ;10/10/89  14:02 ;
+XQORM5 ; SLC/KCM - Menu Help ;10/10/89  14:02 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 HELP1 ;From: XQORM4
  I $D(XQORM("?"))'[0 X XQORM("?") Q:X="?"

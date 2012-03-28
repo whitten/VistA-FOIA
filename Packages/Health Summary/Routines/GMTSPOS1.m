@@ -1,5 +1,8 @@
 GMTSPOS1 ;SLC/SBW - Smart routine installer and Comp. Disabler ;22/MAR/95
  ;;2.7;Health Summary;;Oct 20, 1995
+ ;IHS/ITSC/LJF 08/08/2003 changed code to handle patches released since postinit was written
+ ;             08/14/2003 bypassed subroutines that no longer work
+ ;
 PSO ; Controls Outpatient Pharmacy install
  N GMPSOVER
  ;If Health Summary is absent, then quit
@@ -41,18 +44,25 @@ MED ; Controls Medicine 2.0 install and disable 2.2 components
  ;Checks conditions for auto-disable of Medicine 2.2 components
  I $$VERSION^XPDUTL("MC")<2.2 D
  . S GMMSG="Medicine 2.2 Package not yet installed or available"
- . F X="MEDICINE ABNORMAL BRIEF","MEDICINE BRIEF REPORT","MEDICINE FULL CAPTIONED","MEDICINE FULL REPORT" D DISABLE^GMTSPOST
+ . ;
+ . ;IHS/ITSC/LJF 8/8/2003 new components have been released in patches since postinit was written
+ . ;F X="MEDICINE ABNORMAL BRIEF","MEDICINE BRIEF REPORT","MEDICINE FULL CAPTIONED","MEDICINE FULL REPORT" D DISABLE^GMTSPOST
+ . F X="MEDICINE ABNORMAL BRIEF","MEDICINE BRIEF REPORT","MEDICINE FULL CAPTIONED","MEDICINE FULL REPORT","MEDICINE SUMMARY" D DISABLE^GMTSPOST
+ . ;IHS/ITSC/LJF 8/8/2003 end of mods
+ . ;
  . ;If Medicine 2.2 not installed, restore 2.0 medicine routines
  . W !,"** Installing GMTSMCPS routine for Medicine 2.0 component. **"
  . D MED2INST
  I $$VERSION^XPDUTL("MC")>2.19 D M22INST
  Q
 MED2INST ; Install GMTSMCPS routine for med 2.0
+ Q   ;IHS/ITSC/LJF 8/14/2003 no longer works
  N DIE,DIF,GMMSG,X,XCN,XCNP
  S X="GMTSMCPZ",XCNP=0,DIF="^UTILITY(""GMTSMCPZ""," X ^%ZOSF("LOAD") W !,"Renaming GMTSMCPZ as GMTSMCPS."
  S X="GMTSMCPS",XCN=2,DIE="^UTILITY(""GMTSMCPZ""," X ^%ZOSF("SAVE") K ^UTILITY("GMTSMCPZ") W "  Done.",!
  Q
 M22INST ; Install GMTSMCPS routine for med 2.2
+ Q   ;IHS/ITSC/LJF 8/14/2003 no longer works
  W !,"** Installing GMTSMCPS routine for Medicine 2.2 components. **"
  N DIE,DIF,GMMSG,X,XCN,XCNP
  S X="GMTSMCZZ",XCNP=0,DIF="^UTILITY(""GMTSMCZZ""," X ^%ZOSF("LOAD") W !,"Renaming GMTSMCZZ as GMTSMCPS."
@@ -74,4 +84,31 @@ PLINST ; Install GMPLHS routine
  W !,"Renaming GMTSPLSZ as GMPLHS."
  S X="GMTSPLSZ",XCNP=0,DIF="^UTILITY(""GMTSPLSZ""," X ^%ZOSF("LOAD") W "."
  S X="GMPLHS",XCN=2,DIE="^UTILITY(""GMTSPLSZ""," X ^%ZOSF("SAVE") K ^UTILITY("GMTSPLSZ") W "  Done."
+ Q
+CRIHS ;EP; Checks conditions auto-disable of Clinical Reminders
+ ;IHS/ITSC/LJF 8/8/2003 added subroutine as clinical reminder components were released in patch #23
+ N GMMSG,X
+ S X="PXRM" X ^%ZOSF("TEST") Q:$T
+ F X="CLINICAL REMINDERS BRIEF","CLINICAL REMINDERS DUE","CLINICAL REMINDERS MAINTENANCE","CLINICAL REMINDERS SUMMARY" S GMMSG="Clinical Reminders not yet available" D DISABLE^GMTSPOST
+ Q
+ ;
+GAFIHS ;EP; Checks conditions for auto-dsable of GAF components
+ ;IHS/ITSC/LJF 8/8/2003 added subroutine as clinical reminder components were released in patch #23
+ N GMMSG,X
+ S X="YSGAFAPI" X ^%ZOSF("TEST") Q:$T
+ F X="GLOBAL ASSESSMENT FUNCTIONING" S GMMSG="GAF not yet available" D DISABLE^GMTSPOST
+ Q
+SCDIHS ;EP; Checks conditions for auto-dsable of Spinal Cord Dysfunction components
+ ;IHS/ITSC/LJF 8/8/2003 added subroutine as clinical reminder components were released in patch #23
+ N GMMSG,X
+ S X="SPNHSO" X ^%ZOSF("TEST") Q:$T
+ F X="SPINAL CORD DYSFUNCTION" S GMMSG="Spinal Cord Dysfunction not yet available" D DISABLE^GMTSPOST
+ Q
+ ;
+MAS ;EP; checks if site has PIMS installed so MAS components can stay active
+ ;IHS/ITSC/LJF 3/24/2004 added subroutine to disable MAS components
+ N GMMSG,X,GMN
+ S X="SDAM" X ^%ZOSF("TEST") Q:$T
+ S GMN="MAS" F  S GMN=$O(^GMT(142.1,"B",GMN)) Q:GMN'["MAS"  Q:GMN=""  D
+ . S X=GMN S GMMSG="PIMS V5.3 not yet installed" D DISABLE^GMTSPOST
  Q

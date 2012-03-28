@@ -1,5 +1,5 @@
-PSODIR2 ;IHS/DSD/JCM - rx order entry contd ;01/27/93 7:12
- ;;7.0;OUTPATIENT PHARMACY;**3,9,26,46,124,146,139,152,166**;DEC 1997
+PSODIR2 ;IHS/DSD/JCM - rx order entry contd ;30-Dec-2008 16:36;PLS
+ ;;7.0;OUTPATIENT PHARMACY;**3,9,26,46,124,146,139,152,166,1005,1008**;DEC 1997
  ;External reference to ^DD(52 supported by DBIA 999
  ;External reference to ^VA(200 supported by DBIA 10060
  ;External reference to ^%DTC supported by DBIA 10000
@@ -7,7 +7,8 @@ PSODIR2 ;IHS/DSD/JCM - rx order entry contd ;01/27/93 7:12
  ;External reference to ^DIR supported by DBIA 10026
  ;
  ;---------------------------------------------------------------------
- ;
+ ; Modified - IHS/CIA/PLS - 12/29/03 - Line DIR+4 and CLERK+6
+ ;            IHS/MSC/PLS - 12/30/2008 - Line FILLDT+11
 EXP(PSODIR) ;
  K DIR,DIC
  I $G(PSODRUG("EXPIRATION DATE"))]"" S Y=PSODRUG("EXPIRATION DATE") X ^DD("DD") S PSORX("EXPIRATION DATE")=Y
@@ -78,7 +79,9 @@ FILLDT(PSODIR) ;
  . N % S %=$P($G(PSORX("PATIENT STATUS")),"^"),X2=30
  . S:%?.N %=$P($G(^PS(53,+%,0)),"^") I %["AUTH ABS" S X2=5
  D C^%DTC S PSOFDMX=$P(X,".") I DT>X S Y=$S($G(PSOID):PSOID,1:PSORX("ISSUE DATE")) X ^DD("DD") S DIR("B")=Y
- S DIR(0)="D^"_$S($G(PSOID):PSOID,+$G(PSODIR("ISSUE DATE")):PSODIR("ISSUE DATE"),1:DT)_$S($G(DUZ("AG"))="I":":"_DT_":EX",1:":"_PSOFDMX_":EX")
+ ;IHS/MSC/PLS - 12/30/2008 - Check for Suspense
+ ;S DIR(0)="D^"_$S($G(PSOID):PSOID,+$G(PSODIR("ISSUE DATE")):PSODIR("ISSUE DATE"),1:DT)_$S($G(DUZ("AG"))="I":":"_DT_":EX",1:":"_PSOFDMX_":EX")
+ S DIR(0)="D^"_$S($G(PSOID):PSOID,+$G(PSODIR("ISSUE DATE")):PSODIR("ISSUE DATE"),1:DT)_$S($G(DUZ("AG"))="I"&('$P(PSOPAR,U,24)):":"_DT_":EX",1:":"_PSOFDMX_":EX")
  S Y=PSOFDMX X ^DD("DD")
  S DIR("?",1)="The earliest fill date allowed is determined by the ISSUE DATE,"
  S DIR("?",2)="the FILL DATE cannot be before the ISSUE DATE or AFTER the Expiration Date "
@@ -95,13 +98,16 @@ CLERK(PSODIR) ;
  K DIR,DIC
  S DIR("A")="CLERK",DIR("B")=$S($G(PSORX("CLERK CODE"))]"":PSORX("CLERK CODE"),1:$P($G(^VA(200,DUZ,0)),"^",2)),DIR(0)="52,16"
  D DIR G:PSODIR("DFLG")!PSODIR("FIELD") CLERKX
- S PSODIR("CLERK CODE")=+Y,PSORX("CLERK CODE")=$P(Y,"^")
+ ; IHS/CIA/PLS - 01/25/04 - Next line commented out
+ ;S PSODIR("CLERK CODE")=+Y,PSORX("CLERK CODE")=$P(Y,"^")
+ S PSODIR("CLERK CODE")=+Y,PSORX("CLERK CODE")=$P(Y,"^",2)  ; IHS/CIA/PLS - 01/25/04 - Changed to Name from initials
 CLERKX Q
  ;
 DIR ;
  S PSODIR("FIELD")=0
  G:$G(DIR(0))']"" DIRX
  D ^DIR K DIR,DIE,DIC,DA I X="^^" S (PSODIR("QFLG"),PSODIR("DFLG"))=1 G DIRX
+DIRS ; EP - IHS/CIA/PLS - 12/23/03 - New entry point DIRS added.
  I $D(DUOUT)!($D(DTOUT))!($D(DIROUT)),$L($G(X))'>1!(Y="") S PSODIR("DFLG")=1 S:$G(SPEED) PSODIR("QFLG")=1 G DIRX
  I $D(DUOUT)!($D(DTOUT)),$G(SPEED) S PSODIR("DFLG")=1 G DIRX
  I X[U,$L(X)>1 D JUMP

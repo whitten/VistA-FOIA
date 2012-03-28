@@ -1,4 +1,6 @@
-LRO2 ;SLC/DCM - Being replaced ;1/10/91  16:01 ;
+LRO2 ; IHS/DIR/FJE - Being replaced 1/10/91 16:01 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 EN2 ;;Entry point for OTHER LAB TESTS *THIS ROUTINE IS BEING PHASED OUT*
  G ONE^LRXO1

@@ -1,7 +1,12 @@
-SDM3 ;SF/GFT - MAKE APPOINTMENT ; 14 SEP 84  11:33 am
+SDM3 ;SF/GFT - MAKE APPOINTMENT ; [ 09/13/2001  2:32 PM ]
  ;;5.3;Scheduling;**32**;Aug 13, 1993
- S I=$P(SD,".",1),(S,ST)=$P(SL,U,7) I ST F D=I-.01:0 S D=$N(^SC(SC,"S",D)) Q:$P(D,".",1)-I  F %=0:0 S %=$N(^SC(SC,"S",D,1,%)) Q:%'>0  I $P(^(%,0),"^",9)'["C",$D(^("OB")) S ST=ST-1
- I ST<1,'$D(^XUSEC("SDMOB",DUZ)) W !,*7,"ONLY "_S_" OVERBOOK"_$E("S",S>1)_" ALLOWED PER DAY!!",! G ^SDM1
+ ;IHS/ANMC/LJF 11/30/2000 changed $N to $O
+ ;             12/13/2000 added master overbook access by clinic check
+ ;
+ ;S I=$P(SD,".",1),(S,ST)=$P(SL,U,7) I ST F D=I-.01:0 S D=$N(^SC(SC,"S",D)) Q:$P(D,".",1)-I  F %=0:0 S %=$N(^SC(SC,"S",D,1,%)) Q:%'>0  I $P(^(%,0),"^",9)'["C",$D(^("OB")) S ST=ST-1  ;IHS/ANMC/LJF 11/30/2000
+ S I=$P(SD,".",1),(S,ST)=$P(SL,U,7) I ST F D=I-.01:0 S D=$O(^SC(SC,"S",D)) Q:$P(D,".",1)-I  F %=0:0 S %=$O(^SC(SC,"S",D,1,%)) Q:%'>0  I $P(^(%,0),"^",9)'["C",$D(^("OB")) S ST=ST-1  ;IHS/ANMC/LJF 11/30/2000 $N->$O
+ ;I ST<1,'$D(^XUSEC("SDMOB",DUZ)) W !,*7,"ONLY "_S_" OVERBOOK"_$E("S",S>1)_" ALLOWED PER DAY!!",! G ^SDM1  ;IHS/ANMC/LJF 12/13/2000
+ I ST<1,'$$MOVBKUSR^BSDU(DUZ,+SC) W !,*7,"ONLY "_S_" OVERBOOK"_$E("S",S>1)_" ALLOWED PER DAY!!",! G ^SDM1  ;IHS/ANMC/LJF 12/13/2000
  I ST<1 R !,"WILL EXCEED MAXIMUM ALLOWABLE OVERBOOKS, OK? YES// ",MXO:DTIME S:MXO="" MXO="Y" S MXO=$$UP^XLFSTR(MXO) G:MXO'["Y" ^SDM1 S S=^SC(SC,"ST",I,1),SM=9,MXOK="" G SC^SDM1
  S S=^SC(SC,"ST",I,1) G E^SDM1
 ORDY S Y=SD D DTS^SDUTL S SODT=Y,(LAB,XRAY,EKG)="",SDWR=0

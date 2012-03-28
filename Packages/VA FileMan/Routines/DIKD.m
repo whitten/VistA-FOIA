@@ -1,5 +1,5 @@
-DIKD ;SFISC/MKO-DELETE A CROSS REFERENCE ;9:14 AM  19 Dec 2001
- ;;22.0;VA FileMan;**12,68,95**;Mar 30, 1999
+DIKD ;SFISC/MKO-DELETE A CROSS REFERENCE ;9:14 AM  19 Dec 2001 [ 12/09/2003  4:44 PM ]
+ ;;22.0;VA FileMan;**12,68,95,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;
 DELIX(DIFIL,DIFLD,DIXR,DIFLG,DIKDOUT,DIKDMSG) ;Delete traditional xref

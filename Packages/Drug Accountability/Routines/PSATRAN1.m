@@ -1,5 +1,5 @@
 PSATRAN1 ;BIR/JMB-Transfer Drugs between Pharmacies - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  ;This routine updates the dispensing and receiving locations. The drug
  ;balance & monthly activity are updated. It creates an activity in 58.8,
  ;a transaction in 58.81, sends a mail message if the drug is new to the
@@ -12,10 +12,10 @@ UPDATE ;update location balances
  F PSALCNT=1:1:2 D CALC
  I PSATODA,PSAFRDA D
  .S DIE="^PSD(58.81,",DA=PSATODA,DR="16///^S X=PSAFRDA"
- .F  L +^PSD(58.81,DA,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ .F  L +^PSD(58.81,DA,0):0 I  Q
  .D ^DIE L -^PSD(58.81,DA,0) K DA
  .S DA=PSAFRDA,DR="16///^S X=PSATODA"
- .F  L +^PSD(58.81,DA,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ .F  L +^PSD(58.81,DA,0):0 I  Q
  .D ^DIE L -^PSD(58.81,DA,0) K DA,DIE
  W !,"Done!" H 1 S ^TMP("PSASIG",$J,+PSAFROM,+PSATO,PSAFRDA)=""
  D:PSADD MSG I 'PSADD H 1
@@ -23,12 +23,12 @@ UPDATE ;update location balances
  Q
 CALC ;sub/add qty from dsp sites
  W "." S PSATEMP=+$S(PSALCNT=1:PSAFROM,1:PSATO),PSATQTY=-PSATQTY
- F  L +^PSD(58.8,PSATEMP,1,PSADRG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,PSATEMP,1,PSADRG,0):0 I  Q
  D NOW^%DTC S PSADT=+%
  S PSABAL(PSALCNT)=$P(^PSD(58.8,PSATEMP,1,PSADRG,0),"^",4),$P(^(0),"^",4)=$P(^(0),"^",4)+PSATQTY,$P(PSABAL(PSALCNT),"^",2)=(+PSABAL(PSALCNT)+PSATQTY)
  L -^PSD(58.8,PSATEMP,1,PSADRG,0)
 ADD ;find entry number
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.81,0):0 I  Q
 FIND S PSAREC=$P(^PSD(58.81,0),"^",3)+1 I $D(^PSD(58.81,PSAREC)) S $P(^PSD(58.81,0),"^",3)=PSAREC G FIND
  K DIC,DLAYGO S DIC(0)="L",DIC="^PSD(58.81,",DLAYGO=58.81,(X,DINUM)=PSAREC D ^DIC K DIC,DINUM,DLAYGO
  L -^PSD(58.81,0) W "."

@@ -1,4 +1,4 @@
-XQTOC ;SEA/MJM - Time Out/Continue/Jump Start ;05/31/2001  10:57
+XQTOC ;SEA/MJM - Time Out/Continue/Jump Start ;05/31/2001  10:57 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**20,157**;Jul 10, 1995
  ;
  S ^XUTL("XQ",$J,1)=XQY_XQPSM_U_XQY0,^("T")=1

@@ -1,5 +1,110 @@
 DPTNAME ;BPOIFO/KEITH - NAME STANDARDIZATION ; 27 Jan 2002 11:05 PM
- ;;5.3;Registration;**244,620**;Aug 13, 1993
+ ;;5.3;Registration;**244**;Aug 13, 1993
+ ;
+FORMAT(DGNAME,DGMINL,DGMAXL,DGNOP,DGCOMA,DGAUDIT,DGFAM,DGDNC) ;Format name value
+ ;Input: DGNAME=text value representing person name to transform
+ ;       DGMINL=minimum length (optional), default 3
+ ;       DGMAXL=maximum length (optional), default 30
+ ;        DGNOP=1 to standardize last name for 'NOP' x-ref. (optional)
+ ;       DGCOMA=0 to not require a comma
+ ;              1 to require a comma in the input value
+ ;              2 to add a comma if none
+ ;              3 to prohibit (remove) commas
+ ;              (optional) default if not specified is 1
+ ;
+ ;      DGAUDIT=variable to return audit, pass by reference (optional),
+ ;              returned values:  
+ ;              DGAUDIT=0 if no change was made
+ ;                      1 if name is changed
+ ;                      2 if name could not be converted
+ ;             DGAUDIT(1) defined if name contains no comma
+ ;             DGAUDIT(2) defined if parenthetical text is removed
+ ;             DGAUDIT(3) defined if value is unconvertible
+ ;             DGAUDIT(4) defined if characters are removed or changed
+ ;        DGFAM='1' if just the family name, '0' otherwise (optional)
+ ;        DGDNC='1' to prevent componentization (optional)
+ ;
+ ;Output: DGNAME in specified format or null if length of transformed value is less than DGMINL
+ ;
+ N DGX,DGOX,DGOLDN,DGAX,DGI,DGNEWN
+ ;Initialize variables
+ K DGAUDIT
+ S DGOLDN=DGNAME M DGX=DGNAME
+ S DGDNC=$G(DGDNC) D COMP^DPTNAME1(.DGX,.DGDNC)
+ S DGMINL=+$G(DGMINL) S:DGMINL<1 DGMINL=3
+ S DGMAXL=+$G(DGMAXL) S:DGMAXL<DGMINL DGMAXL=30
+ S DGNOP=$S($G(DGNOP)=1:"S",1:"")
+ S:'$L($G(DGCOMA)) DGCOMA=1 S DGCOMA=+DGCOMA
+ S DGFAM=$S($G(DGFAM)=1:"F",1:"")
+ ;
+ ;Check for comma
+ I DGX'["," S DGAUDIT(1)=""
+ I DGCOMA=1,DGX'["," S DGAUDIT=2,DGAUDIT(3)=""  Q ""
+ ;Clean input value
+ F  Q:'$$F1^DPTNAME1(.DGX,DGCOMA)
+ I DGX'=DGOLDN S DGAUDIT(4)=""
+ ;Add comma if necessary
+ I DGCOMA=2,DGX'[" ",DGX'["," S DGX=DGX_","
+ I DGX=DGOLDN K DGAUDIT(4)
+ ;Quit if result is too short
+ I $L(DGX)<DGMINL S DGAUDIT=2,DGAUDIT(3)="" K DGNAME Q ""
+ S DGNAME=DGX I 'DGDNC D
+ .;Parse the name
+ .D STDNAME^XLFNAME(.DGX,DGFAM_"CP",.DGAX)
+ .I $D(DGAX("STRIP")) S DGAUDIT(2)=""
+ .I $D(DGAX("NM"))!$D(DGAX("PERIOD")) S DGAUDIT(4)=""
+ .I $D(DGAX("PUNC"))!($D(DGAX("SPACE"))&'$L(DGFAM)) S DGAUDIT(4)=""
+ .I $D(DGAX("SPACE")),$L(DGFAM),DGNAME'=$G(DGX("FAMILY")) S DGAUDIT(4)=""
+ .;Standardize the suffix
+ .S DGX("SUFFIX")=$$CLEANC^XLFNAME(DGX("SUFFIX"))
+ .;Post-clean components
+ .S DGI="" F  S DGI=$O(DGX(DGI)) Q:DGI=""  S DGX(DGI)=$$POSTC(DGX(DGI))
+ .;Reconstruct name from components
+ .S DGNAME=$$NAMEFMT^XLFNAME(.DGX,"F","CL"_DGMAXL_DGNOP)
+ .;Adjust name for 'do not componentize'
+ .;I DGDNC S DGNAME=DGX("FAMILY")
+ ;Return comma for single value names
+ I DGCOMA,DGCOMA'=3,DGNAME'["," S DGNAME=DGNAME_","
+ ;Check length again
+ I $L(DGNAME)<DGMINL S DGAUDIT=2,DGAUDIT(3)="" K DGNAME Q ""
+ ;Enforce minimum 2 character last name rule
+ ;I '$L(DGFAM),$L($P(DGNAME,","))<3,$P(DGNAME,",")'?2U D  Q ""
+ ;.S DGAUDIT=2,DGAUDIT(3)="" K DGNAME
+ ;.Q
+ ;Remove hyphens and apostrophes for 'NOP' x-ref
+ S DGX=DGNAME I DGNOP="S" S DGNAME=$TR(DGNAME,"'-")
+ I DGNAME'=DGX S DGAUDIT(4)=""
+ I DGNAME=DGOLDN K DGAUDIT
+ S DGAUDIT=DGNAME'=DGOLDN I DGAUDIT,$D(DGAUDIT)<10 S DGAUDIT(4)=""
+ S DGNEWN=DGNAME M DGNAME=DGX S DGNAME=DGNEWN
+ Q DGNAME
+ ;
+POSTC(DGX) ;Post-clean components
+ ;Remove parenthesis if not removed by Kernel
+ N DGI,DGXOLD
+ S DGXOLD=DGX,DGX=$TR(DGX,"()[]{}")
+ ;Check for numbers left behind by Kernel
+ F DGI=0:1:9 S DGX=$TR(DGX,DGI)
+ I DGX'=DGXOLD S DGAUDIT(4)=""
+ Q DGX
+ ;
+NOP(DGX) ;Produce 'NOP' x-ref value
+ ;Input: DGX=name value to evaluate
+ ;Output : Standardized name or null if the same as input value
+ N DGNEWX
+ S DGNEWX=$$FORMAT(DGX,3,30,1)
+ Q $S(DGX=DGNEWX:"",1:DGNEWX)
+ ;
+NARY(DG20NAME) ;Set up name array
+ ;Input: DG20NAME=full name value
+ ;       DG20NAME(component_names)=corresponding value--if undefined,
+ ;                these will get set up
+ ;
+ N DGX M DGX=DG20NAME
+ D STDNAME^XLFNAME(.DG20NAME,"FC")
+ M DG20NAME=DGX
+ S DG20NAME("NOTES")=$$NOTES^DPTNAME1()
+ Q
  ;
 NCEDIT(DFN,DGHDR,DG20NAME) ;Edit name components
  ;Input: DFN=patient ifn
@@ -51,7 +156,7 @@ ASK .D ^DIR I $D(DTOUT)!(X=U) S:(X=U) DGCOUT=1 S DGOUT=1 Q
  .Q:'$L(X)
  .S DG20NAME=X
  .I DGCOMP="SUFFIX" S DG20NAME=$$CLEANC^XLFNAME(DG20NAME)
- .S DG20NAME=$$FORMAT^XLFNAME7(DG20NAME,1,35,,3,,1,1)
+ .S DG20NAME=$$FORMAT(DG20NAME,1,35,,3,,1,1)
  .I '$L(DG20NAME) W "  ??",$C(7) G ASK
  .W:DG20NAME'=X "   (",DG20NAME,")" S DG20NAME(DGCOMP)=DG20NAME
  .S:DG20NAME(DGCOMP)'=$G(DGX(DGCOMP)) DGEDIT=1
@@ -62,7 +167,7 @@ ASK .D ^DIR I $D(DTOUT)!(X=U) S:(X=U) DGCOUT=1 S DGOUT=1 Q
  S DG20NAME=$$NAMEFMT^XLFNAME(.DG20NAME,"F","CFL30")
  ;Format the .01 value
  M DGY=DG20NAME
- S DG20NAME=$$FORMAT^XLFNAME7(.DGY,3,30,,2)
+ S DG20NAME=$$FORMAT(.DGY,3,30,,2)
  ;Check the length
  I $L(DG20NAME)<3 D  G START
  .W !,"Invalid values to file, full name must be at least 3 characters!",$C(7)

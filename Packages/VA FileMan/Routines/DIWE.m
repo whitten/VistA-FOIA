@@ -1,4 +1,5 @@
-DIWE ;SFISC/GFT,XAK-START OF WP ;11:35 AM  25 Aug 2000
+DIWE ;SFISC/GFT,XAK-START OF WP ;11:35 AM  25 Aug 2000 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**8,18**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 EN K DTOUT,DUOUT,DIRUT ;G Q:'$D(@(DIC_"0)")) D A

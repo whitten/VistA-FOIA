@@ -1,4 +1,5 @@
-XQT ;SEA/MJM - Menu template loader ;01/09/2001  13:32
+XQT ;SEA/MJM - Menu template loader ;01/09/2001  13:32 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**20,47,46,37,155**;Jul 10, 1995
  ;
  ;Entry from XQ

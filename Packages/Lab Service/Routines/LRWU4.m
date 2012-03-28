@@ -1,5 +1,6 @@
 LRWU4 ;DALOI/RWF - READ ACCESSION ;2/7/91  14:49
- ;;5.2;LAB SERVICE;**128,153,201,271,402**;Sep 27, 1994;Build 1
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
+ ;;5.2;LAB SERVICE;**128,153,201,271**;Sep 27, 1994
  ;
  ; Reference to ^DISV("LRACC") global supported by DBIA #510
  ;
@@ -38,7 +39,6 @@ AA ;
  S LRAA=$O(^LRO(68,"B",X1,0))
  I LRAA<1 D WLQUES Q:LRAA<1
  S %=$P(^LRO(68,LRAA,0),U,14)
- S %=$$LKUP^XPDKEY(%)
  I $L(%),'$D(^XUSEC(%,DUZ)) D WLQUES Q:LRAA<1
  ;
  S LRX=$G(^LRO(68,LRAA,0)),LRIDIV=$S($L($P(LRX,U,19)):$P(LRX,U,19),1:"CP")
@@ -122,7 +122,7 @@ QUES ;
 WLQUES ; Ask user if acession area enter does not match any existing entries
  N DIC,X
  S X=X1,DIC="^LRO(68,",DIC(0)="EMOQ"
- S DIC("S")="Q:$D(LREXMPT)  S %=$P(^(0),U,14) X ""I '$L(%)"" Q:$T  S %=$$LKUP^XPDKEY(%) I $D(^XUSEC(%,DUZ))"
+ S DIC("S")="Q:$D(LREXMPT)  S %=$P(^(0),U,14) X ""I '$L(%)"" Q:$T  S %=$P(^DIC(19.1,%,0),U,1) I $D(^XUSEC(%,DUZ))"
  W !,X
  D ^DIC S LRAA=+Y
  Q

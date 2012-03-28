@@ -1,4 +1,6 @@
-LRAPAP ;AVAMC/REG - ANATOMIC SORT BY PARENT FILE ; 10/25/88  20:15 ;
+LRAPAP ; IHS/DIR/FJE - ANATOMIC SORT BY PARENT FILE 10/25/88 20:15 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!?15,LRAA(1)," Entries Alphabetically by Patient",!!
 A R !!,"Start with letter: ",X:DTIME G:X=""!(X[U) END D CK G:'$D(X) A S A(1)=X

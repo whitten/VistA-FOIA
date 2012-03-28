@@ -1,5 +1,5 @@
 DGJTHLP ;MJK/MAF/ESD/ALB - Help for IRT module using list processor ; 20-OCT-92
- ;;1.0;Incomplete Records Tracking;;Jun 25, 2001
+ ;;5.3;Registration;**9**;Aug 13, 1993
  ;
  ;
 HLP ; -- IRT ListMan menu help

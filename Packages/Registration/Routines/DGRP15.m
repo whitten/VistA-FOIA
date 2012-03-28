@@ -1,5 +1,5 @@
-DGRP15 ;ALB/MTC - TRICARE DEMOGRAPHIC DATA ;03/05/2004
- ;;5.3;Registration;**114,239,568**;Aug 13, 1993
+DGRP15 ;ALB/MTC - TRICARE DEMOGRAPHIC DATA ;7/25/99  18:55
+ ;;5.3;Registration;**114,239**;Aug 13, 1993
  ;
 EN ;
  N X,Y,DGSA
@@ -20,7 +20,7 @@ EN ;
  ;-- get primary care data
  D
  .N CT,GBL S GBL="GBL"
- .D TDATA^DGSDUTL(DFN,.CT,DT)
+ .D TDATA^SDPPTEM(DFN,.CT,DT)
  .I CT>12 S GBL(11,0)="" D
  ..S GBL(12,0)="      *** Additional assignment information exists ***"
  .S CT=0 F  S CT=$O(GBL(CT)) Q:'CT!(CT>12)  W !,GBL(CT,0)

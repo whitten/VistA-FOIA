@@ -1,6 +1,9 @@
 TIUVSITH ; SLC/JER - Help for Interactive Visit look-up ;2/11/99@10:18:21
  ;;1.0;TEXT INTEGRATION UTILITIES;**39**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/27/2003 added call to IHS help subroutine
+ ;
 HELP(X) ; Offer help
+ D HELP^BTIUVSIT(X) S TIUI=0 Q   ;IHS/ITSC/LJF 02/27/2003 use IHS help code
  W !!?3,"Indicate the visit with which the document is associated by choosing"
  W !?3,"the corresponding number."
  W !!?3,"To add a new visit (e.g., for unscheduled or telephone contacts), enter ""N""."

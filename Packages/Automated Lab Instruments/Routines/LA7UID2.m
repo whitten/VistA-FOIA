@@ -1,5 +1,6 @@
-LA7UID2 ;DALOI/JRR - Process Download Message for an entry in 62.48 ; 12/3/1997
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**17,27,57**;Sep 27, 1994
+LA7UID2 ;IHS/OIT/MKK - Process Download Message for an entry in 62.48 ; O3/16/2005
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**17,27,57,1019**;MAR 25, 2005
+ ; Original Line 1: DALOI/JRR - Process Download Message for an entry in 62.48 ; 12/3/1997
  Q
  ;
 BUILD ; Build one accession into an HL7 message
@@ -51,7 +52,10 @@ ORC ;
 PID K LA7PID
  S LRDFN=+LA7ACC0 K LRDPF
  D DEM^LRX
- S LA7PID(3)=$$M11^HLFNC(LRDFN)
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1019 IHS/OIT/MKK -- Use HRCN, not LRDFN
+ ; S LA7PID(3)=$$M11^HLFNC(LRDFN)
+ S LA7PID(3)=$G(HRCN)
+ ;----- END IHS MODIFICATIONS LR*5.2*1019 IHS/OIT/MKK -- Use HRCN, not LRDFN
  S LA7PID(5)=$$HLNAME^HLFNC(PNM)
  I $L(SEX) S LA7PID(8)=$S("FM"[SEX:SEX,1:"U")
  I $L(SSN) S LA7PID(19)=SSN

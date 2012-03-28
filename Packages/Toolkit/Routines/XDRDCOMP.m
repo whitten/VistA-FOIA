@@ -1,5 +1,5 @@
 XDRDCOMP ;SF-IRMFO/IHS/OHPRD/JCM - COMPARE TWO PATIENTS VIA DUP CHECKER ;8/28/08  17:58
- ;;7.3;TOOLKIT;**23,113**;Apr 25, 1995;Build 5
+ ;;7.3;TOOLKIT;**23,113**;Apr 25, 1995;Build 9
  ;;Per VHA Directive 2004-038, this routine should not be modified.
  ;;
  ; This routine will compare two records (patients), and will result with

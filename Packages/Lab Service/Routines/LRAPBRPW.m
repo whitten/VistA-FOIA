@@ -1,4 +1,5 @@
-LRAPBRPW ;DALOI/WTY - POW Patient Browser Print;04/03/01
+LRAPBRPW ;VA/DALOI/WTY - POW Patient Browser Print;04/03/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**259**;Sep 27, 1994
  ;
 MAIN ;Main subroutine

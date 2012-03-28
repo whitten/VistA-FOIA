@@ -1,5 +1,5 @@
-MXMLTEST ;SAIC/DKM - Test XML SAX interface ;01/31/2002  17:11
- ;;7.3;TOOLKIT;**58**;Apr 25, 1995
+MXMLTEST ;SAIC/DKM - Test XML SAX interface ;01/31/2002  17:11 [ 12/18/2003  4:53 PM ]
+ ;;7.3;TOOLKIT;**58,1002**;Apr 25, 1995
  ;=================================================================
  ; This application acts as a client to the XML parser.  It displays
  ; parsing events as they occur and generates a summary at the end.

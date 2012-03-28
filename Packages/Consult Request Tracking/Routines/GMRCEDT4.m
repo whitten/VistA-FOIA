@@ -1,10 +1,5 @@
-GMRCEDT4 ;SLC/DCM,JFR - UTILITIES FOR EDITING FIELDS ;04/23/09  12:48
- ;;3.0;CONSULT/REQUEST TRACKING;**1,5,12,15,22,33,66**;DEC 27, 1997;Build 30
- ;
- ; This routine invokes IA #3991 (ICDAPIU), #872 (ORD(101)), #10142 (DDIOL), #10006 (DIC)
- ;                         #2051 (FIND1^DIC), #2056 (GET1^DIQ), #10026 (DIR), #10028 (DIWE)
- ;                         #1609 (CONFIG^LEXSET), #10103 (XLFDT), #10104 (XLFSTR), #10140 (XQORM)
- ;
+GMRCEDT4 ;SLC/DCM,JFR - UTILITIES FOR EDITING FIELDS ;10/24/01 10:42
+ ;;3.0;CONSULT/REQUEST TRACKING;**1,5,12,15,22**;DEC 27, 1997
  Q
 EDITFLD(GMRCO)    ;edit field in file 123.
  ;GMRCO=IEN of consult record in file 123
@@ -14,12 +9,11 @@ EDITFLD(GMRCO)    ;edit field in file 123.
  .S GMRCMSG="This consult is no longer editable." D EXAC^GMRCADC(GMRCMSG)
  S GMRCMSG=$$EDRESOK^GMRCEDT2(GMRCO)
  I '+GMRCMSG D EXAC^GMRCADC($P(GMRCMSG,U,2)) Q
- I $$PDOK(GMRCO)
- S DIR(0)="LAO^1:9",DIR("A")="Select the fields to edit: "
+ S DIR(0)="LAO^1:8",DIR("A")="Select the fields to edit: "
  D ^DIR I $D(DIRUT) Q
  I $P(Y,",")<1 Q
  S GMRCY=Y
- F GMRCX=1:1:9 S GMRCTAG=$P(GMRCY,",",GMRCX) Q:'GMRCTAG  D
+ F GMRCX=1:1:8 S GMRCTAG=$P(GMRCY,",",GMRCX) Q:'GMRCTAG  D
  . D SETUP
  . D @GMRCTAG
  . K DIROUT,DIRUT,DTOUT,DUOUT
@@ -49,7 +43,7 @@ SETUP   ;get info needed for edit (save global reads)
  . S DIR("B")=$$GET1^DIQ(123.5,$O(PROCSERV(0)),.01)
  I '$D(DIR("B")) S DIR("B")=$P(GMRCSS,U,2)
  S DIR("A")="Select the Service to perform this request: "
- S DIR("S")="I $P(^(0),U,2)<1" ;naked reference for ^GMR(123.5
+ S DIR("S")="I $P(^(0),U,2)<1"
  I +$G(GMRCPROC) S DIR("S")=DIR("S")_",$D(PROCSERV(+Y))"
  S DIR("??")="^D LISTALL^GMRCASV"
  D ^DIR I $D(DUOUT)!($D(DTOUT)) Q
@@ -59,7 +53,30 @@ SETUP   ;get info needed for edit (save global reads)
 1 ;edit Procedure
  W !,$C(7),"The procedure associated with a request may not be changed."
  W !,"Place a new request if a different procedure is desired"
- H 2
+ H 2 Q
+ I +$P(^GMR(123,+GMRCO,0),U,17)'="P" D  Q
+ . W !,"Procedures may only be selected for Procedure requests.",!
+ . H 2
+ N DIC,PROCED,X,Y,D
+ S DIC=101.43,DIC(0)="AEQZ",D="S.PROC",DIC("B")=$P(GMRCPROC,U,2)
+ S DIC("A")="Select Procedure: "
+ S DIC("S")="I $D(^GMR(123.3,+$P(^(0),U,2),2,""B"",+GMRCSS))"
+ D IX^DIC
+ I $D(DUOUT)!($D(DTOUT)) Q
+ I Y<1!(+$P(Y(0),U,3)=$P(GMRCPROC,U,2)) W !,$$NOCHG,! Q
+ S PROCED=+$P(Y(0),U,2)_U_$$UP^XLFSTR($P(Y(0),U))
+ I '$D(^GMR(123.5,"APR",+PROCED,+GMRCSS)) D
+ . ;never executed; service non-editable
+ . N GMRCEDD1,GMRCSSV,GMRCPROC
+ . W !,"The service is no longer appropriate for this procedure.",!
+ . S GMRCSSV=GMRCSS,GMRCPROC=PROCED
+ . S:$D(GMRCEDT(1)) GMRCEDD1=GMRCEDT(1)
+ . D 01
+ . I '$D(^GMR(123.3,+PROCED,2,"B",+GMRCSS)) D
+ .. W !,$C(7),"Unable to change procedure.",!
+ .. K PROCED,GMRCEDT(1) S GMRCSS=GMRCSSV
+ .. I $D(GMRCEDD1) S GMRCEDT(1)=GMRCEDD1
+ I $D(PROCED) S (GMRCPROC,GMRCED(1))=PROCED
  Q
 2       ;edit service rendered
  N DIR,X,Y,GMRCURSV,GMRCPLSV,GMRCED4,GMRCED5,RENDED
@@ -113,71 +130,43 @@ SETUP   ;get info needed for edit (save global reads)
  I $P(Y(1),U,2)'=+GMRCPL D
  . S GMRCED(4)=$P(Y(1),U,2)_U_$P(Y(1),U,3),GMRCPL=GMRCED(4)
  Q
-5 ;edit Earliest Appr. Date wat/66
- N X,Y,DIR
- S DIR(0)="D^^K:Y<DT X",DIR("A")="Earliest Appropriate Date: " ;S DIR(0)="D^DT:GMRCFTDT:EX"
- S DIR("?")="Enter a date greater than or equal to TODAY"
- S DIR("B")=$$FMTE^XLFDT(DT)
- D ^DIR I $D(DTOUT)!($D(DUOUT)) Q
- S GMRCED(5)=Y_U_Y(0)
- Q
-6 ;edit ATTN person
+5 ;edit ATTN person
  N X,Y,DIR
  S DIR(0)="PAO^200:EQM",DIR("A")="Select ATTENTION person: "
  S DIR("B")=$$GET1^DIQ(200,+$P(^GMR(123,+GMRCO,0),U,11),.01)
- S:$D(GMRCED(6)) DIR("B")=$P($G(GMRCED(6)),U,2)
+ S:$D(GMRCED(5)) DIR("B")=$P($G(GMRCED(5)),U,2)
  K:'$L(DIR("B")) DIR("B")
  D ^DIR I $D(DTOUT)!($D(DUOUT)) Q
  I $G(DIR("B"))=$P(Y,U,2) Q
- S GMRCED(6)=$S(Y=-1:"",1:Y)
- I GMRCED(6)="" W !,?5,"<DELETED>",!
+ S GMRCED(5)=$S(Y=-1:"",1:Y)
+ I GMRCED(5)="" W !,?5,"<DELETED>",!
  Q
-7 ;edit prov. DX
+6 ;edit prov. DX
  N X,Y,DIC,DIR,PRMPT
  S PRMPT=$$PROVDX^GMRCUTL1(+$P(^GMR(123,+GMRCO,0),U,5))
  I $P(PRMPT,U,2)="F" D
  . S DIR(0)="FA^2:180",DIR("A")="Provisional Diagnosis: "
  . I $P(PRMPT,U)'="R" S $P(DIR(0),U)="FAO"
- . S:$D(GMRCED(7)) DIR("B")=$P(GMRCED(7),U)
+ . S:$D(GMRCED(6)) DIR("B")=$P(GMRCED(6),U)
  . I '$D(DIR("B")) S DIR("B")=$G(^GMR(123,+GMRCO,30))
  . K:'$L(DIR("B")) DIR("B")
  . D ^DIR Q:$D(DTOUT)!($D(DUOUT))  Q:Y=$G(DIR("B"))
  . I '$L(Y) W !,?5,"<DELETED>",!
- . S GMRCED(7)=Y
+ . S GMRCED(6)=Y
  I $P(PRMPT,U,2)="L" D
- . N DIR,X,Y,DTOUT,DUOUT,VAL
- . I $D(GMRCED(7)) D
- .. I '$L($P(GMRCED(7),U,2)) S DIR("B")=$P(GMRCED(7),U) Q
- .. S DIR("B")=$P(GMRCED(7),U)_" ("_$P(GMRCED(7),U,2)_")"
- . I '$D(DIR("B")) S DIR("B")=$G(^GMR(123,GMRCO,30))
- . K:'$L(DIR("B")) DIR("B")
- . S DIR("?")="Enter a code or term for the provisional diagnosis."
+ . D CONFIG^LEXSET("ICD","ICD")
+ . S DIR(0)="PA"_$S($P(PRMPT,U)'="R":"O",1:"")_"^757.01:EQM"
  . S DIR("A")="Provisional Diagnosis: "
- . S DIR(0)="FA"_$S($P(PRMPT,U)'="R":"O",1:"")_"^1:180"
- . D ^DIR
- . I $D(DTOUT)!($D(DUOUT)) Q
- . I '$L(Y) W !,?5,"<DELETED>",! S GMRCED(7)="" Q
- . I Y=$G(DIR("B")) Q
- . I $E(Y,1)=" " W !,"Leading space not allowed, no change." Q
- . S VAL=$$LEXLKUP(Y)
- . I '$L(VAL),$P(PRMPT,U)="R" W !,"Prov. DX required. No change." Q
- . I VAL=$G(^GMR(123,GMRCO,30)) W !,"No change." Q
- . I ($P(VAL,U)_" ("_$P(VAL,U,2)_")")=$G(^GMR(123,GMRCO,30)) D  Q
- .. W !,"No change."
- . I '$L(VAL) W !,?5,"<DELETED>",!
- . S GMRCED(7)=VAL
+ . I $D(GMRCED(6)) S DIR("B")=$P(GMRCED(6),U)
+ . I '$D(DIR("B")),$D(^GMR(123,+GMRCO,30.1)) D
+ .. S DIR("B")=$P(^GMR(123,GMRCO,30),(" ("_^(30.1)_")"))
+ . D ^DIR Q:$D(DTOUT)!($D(DUOUT))
+ . I $G(^GMR(123,GMRCO,30.1)),$D(Y(1)),^(30.1)=Y(1) Q
+ . S GMRCED(6)=$S(Y=-1:"",1:$P(Y,U,2)_U_$G(Y(1)))
+ . ;I $D(GMRCED(6)) S $P(GMRCED(6),U,2)=$G(Y(1))
+ . Q
  Q
- ;
-LEXLKUP(GMRCX)  ; run input through the Lexicon
- ;
- N DIC,X,Y,DUOUT,DTOUT
- D CONFIG^LEXSET("ICD","ICD",DT)
- S DIC="^LEX(757.01,",DIC(0)="EQM",DIC("B")=GMRCX,X=GMRCX
- D ^DIC
- I $D(DTOUT)!($D(DUOUT))!($G(Y)<1) Q ""
- Q $P(Y,U,2)_U_Y(1)
- ;
-8 ;edit Reason for Request
+7 ;edit Reason for Request
  N DIC,DIWESUB,DWLW,DWPK
  I $D(^TMP("GMRCED",$J,20)) M ^TMP("GMRCEDSV",$J,20)=^TMP("GMRCED",$J,20)
  I '$D(^TMP("GMRCED",$J,20)) M ^TMP("GMRCED",$J,20)=^GMR(123,+GMRCO,20)
@@ -194,7 +183,7 @@ LEXLKUP(GMRCX)  ; run input through the Lexicon
  . D EXAC^GMRCADC(GMRCMSG)
  . K ^TMP("GMRCED",$J,20)
  Q
-9 ;add comment
+8 ;add comment
  N DIC,DIWEPSE,DIWESUB,DWLW,DWPK
  I $D(^TMP("GMRCED",$J,40)) D
  . W !,"An unsaved comment exists. You may edit this comment.",!
@@ -233,11 +222,3 @@ VALIDUR(URG,REND,PROC) ;urgency still valid?
  Q
 NOCHG() ;no changes made
  Q "No Changes made!"
-PDOK(GMRCDA) ;check validity of Prov. DX code for active status
- N MSG
- I '$L($G(^GMR(123,GMRCDA,30.1))) Q 1
- I +$$STATCHK^ICDAPIU(^GMR(123,GMRCDA,30.1),DT) Q 1 ;code still active
- S MSG="The provisional DX code must be edited before this request"
- S MSG=MSG_" may be resubmitted."
- D EN^DDIOL(MSG,,"!!")
- Q 0

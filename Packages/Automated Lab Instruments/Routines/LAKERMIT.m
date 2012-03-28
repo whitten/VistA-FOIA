@@ -1,4 +1,5 @@
-LAKERMIT ;SLC/RWF/DLG - KERMIT PROTOCALL CONTROLLER THRU LSI ;7/20/90  09:24 ;
+LAKERMIT ; IHS/DIR/FJE - KERMIT PROTOCALL CONTROLLER THRU LSI 7/20/90 09:24 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;;
  ;Call with T set to Instrument data is to/from
@@ -44,5 +45,6 @@ NEXT S O=^LA(T,"O",0)+1 I '$D(^(O)) L ^LA(T) K:'$D(^LA("LOCK",T)) ^LA(T) L  Q
 DEBUG L ^LA("KR") S (OUT1,^(0))=^LA("KR",0)+1,^(OUT1)=$E(T_"^Sent:"_OUT_"%^%"_$H,1,200)
  K OUT1 L  Q
 KICK ;Start a download after an upload. (done async)
- Q:'$D(^LA(T,"O",0))  Q:^LA(T,"O")'>^LA(T,"O",0)  S:$D(^LA(T,"P3")) ^LA(T,"O",0)=^LA(T,"P3") S ^LA(T,"P3")=^LA(T,"O",0)
+ ;Q:'$D(^LA(T,"O",0))  Q:^LA(T,"O")'>^LA(T,"O",0)  S:$D(^LA(T,"P3")) ^LA(T,"O",0)=^LA(T,"P3") S ^LA(T,"P3")=^LA(T,"O",0)
+ Q:'$D(^LA(T,"O"))#2  Q:'$D(^LA(T,"O",0))  Q:^LA(T,"O")'>^LA(T,"O",0)  S:$D(^LA(T,"P3")) ^LA(T,"O",0)=^LA(T,"P3") S ^LA(T,"P3")=^LA(T,"O",0)  ;IHS/ANMC/CLS 11/1/95 patch for bidir
  L ^LA("Q") S Q=^LA("Q")+1,^("Q")=Q,^("Q",Q)=T L  Q

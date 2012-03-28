@@ -1,5 +1,5 @@
 GMV6PST ;HIOFO/FT-Create Clinical Reminders Index ;10/14/04  11:35
- ;;5.0;GEN. MED. REC. - VITALS;**6**;Oct 31, 2002
+ ;;5.0;GEN. MED. REC. - VITALS;**6**;Oct 31, 2002;Build 1
  ;
  ; This routine uses the following IAs:
  ;  #3736 - ^PXRMP12I calls    (private)

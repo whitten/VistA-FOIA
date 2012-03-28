@@ -1,5 +1,7 @@
 TIURA1 ; SLC/JER - Review screen actions ;3/5/01
  ;;1.0;TEXT INTEGRATION UTILITIES;**20,88,58,100**;Jun 20, 1997
+ ;IHS/ITSC/LJF 08/22/2003 bypass VA rebuild if called by BTIURPT
+ ;
 ADDEND ; Make addenda
  N TIUDA,TIUDATA,TIUCHNG,TIUI,DIROUT,TIULST,TIUDAARY
  S TIUI=0
@@ -22,7 +24,8 @@ ADDEND ; Make addenda
  ; -- Update or Rebuild list, restore video:
  I $G(TIUCHNG("ADDM"))!$G(TIUCHNG("DELETE")) S TIUCHNG("RBLD")=1
  E  S TIUCHNG("UPDATE")=1 ; user may have edited existing addm
- D UPRBLD^TIURL(.TIUCHNG,.VALMY) K VALMY
+ ;D UPRBLD^TIURL(.TIUCHNG,.VALMY) K VALMY                ;IHS/ITSC/LJF 08/22/2003
+ D:'$G(BTIURPT) UPRBLD^TIURL(.TIUCHNG,.VALMY) K VALMY    ;IHS/ITSC/LJF 08/22/2003 don't rebuild if called by BTIURPT
  S VALMBCK="R"
  D VMSG^TIURS1($G(TIULST),.TIUDAARY,"addended")
  Q

@@ -1,5 +1,5 @@
-LR7OR1 ;slc/dcm - Get Lab results ;8/11/97
- ;;5.2;LAB SERVICE;**121,187,219,230,256,310,340,348**;Sep 27, 1994
+LR7OR1 ;VA/slc/dcm - Get Lab results ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**121,187,219,230,256,310,340,348,1027**;NOV 01, 1997
 RR(DFN,ORD,SDATE,EDATE,SUB,TEST,FLAG,COUNT,SPEC,UNVER) ;Get LAB results for patient
  ;DFN = Patient DFN, ptr to file 2 (Required)
  ;ORD = Lab Link from OE/RR (ORPK node) (Optional)

@@ -1,6 +1,5 @@
 RAREG ;HISC/GJC AISC/MJK,RMO-Register Rad/NM Patient ;8/15/97  11:04
- ;;5.0;Radiology/Nuclear Medicine;**23,85,47**;Mar 16, 1998;Build 21
- ; 06/07/2007 KAM/BAY RA*5*85 Remedy Call 185568 Exam Backdating
+ ;;5.0;Radiology/Nuclear Medicine;**23**;Mar 16, 1998
  K RADTE
 PAT D SET^RAPSET1 I $D(XQUIT) K XQUIT Q
  ; Is our sign-on location inactive?
@@ -26,10 +25,6 @@ DT K RADTEBAD N RAHRS S RAHRS=+$P($G(^RA(79,+RAMDIV,.1)),"^",24) ;How many hrs i
  S:X="" RANOW="",X="NOW"
  S %DT(0)=-$$FMADD^XLFDT($$NOW^XLFDT,0,RAHRS,0,0),%DT="ETXR"
  D ^%DT K %DT G DT:Y<0
- ;
- ; 06/06/2007 KAM/BAY Remedy Call 185568 Added next line
- I '$$BACKDATE(Y) G DT
- ;
 DT1 S RADTE=Y,RADTI=9999999.9999-RADTE
  I '$D(RAVSTFLG),$D(^RADPT(RADFN,"DT",RADTI,0)) D  G DT
  . W !,*7,"Patient already has exams (which may have been cancelled) for this date/time."
@@ -58,8 +53,7 @@ ADD1 S YY=^RADPT(RADFN,"DT",J,0)
  . W !?3,"to add exams to the last visit.",$C(7)
  . K DIR S DIR(0)="E" D ^DIR K DIR Q
  S X1=DT,X2=-1 D C^%DTC I X>+YY,'$D(^XUSEC("RA MGR",DUZ)) W !!?3,*7,"Last visit was before yesterday. No adding exams allowed!" G Q
- I $$USESSAN^RAHLRU1() W !!,"Last Visit Date/Time: " S Y=$P(YY,"^") D D^RAUTL W Y,!!?1,"Case No.",?18,"Procedure",?50,"Status",!?1,"----------------",?18,"---------",?50,"------"
- I '$$USESSAN^RAHLRU1() W !!,"Last Visit Date/Time: " S Y=$P(YY,"^") D D^RAUTL W Y,!!?1,"Case No.",?10,"Procedure",?42,"Status",!?1,"--------",?10,"---------",?42,"------"
+ W !!,"Last Visit Date/Time: " S Y=$P(YY,"^") D D^RAUTL W Y,!!?1,"Case No.",?10,"Procedure",?42,"Status",!?1,"--------",?10,"---------",?42,"------"
  N RA0,RA17,RA1 S RA1=0 ;1=valid rpt, 0=stub/no rpt
  F I=0:0 S I=$O(^RADPT(RADFN,"DT",J,"P",I)) Q:I'>0  I $D(^(I,0)) S Y=^(0) D ADD2
  I $P(YY,U,5),RA1 S Y=1 D  Q
@@ -72,11 +66,7 @@ ADD1 S YY=^RADPT(RADFN,"DT",J,0)
  . Q
  S RARD("A")="Do you wish to add exams to this visit? ",RARD(1)="Yes^add exams to this visit",RARD(2)="No^stop",RARD("B")=2,RARD(0)="S" D SET^RARD K RARD G Q:$E(X)'="Y"
  S RAREC="",Y=$P(YY,"^") G DT1
-ADD2 ;
- N RASSAN,RACNDSP S RASSAN=$P(Y,"^",31)
- S RACNDSP=$S((RASSAN'=""):RASSAN,1:$P(Y,"^"))
- I $$USESSAN^RAHLRU1() W !?1,RACNDSP,?18,$E($S($D(^RAMIS(71,+$P(Y,"^",2),0)):$P(^(0),"^"),1:"Unknown"),1,30),?50,$S($D(^RA(72,+$P(Y,"^",3),0)):$P(^(0),"^"),1:"Unknown")
- I '$$USESSAN^RAHLRU1() W !?3,$P(Y,"^"),?10,$E($S($D(^RAMIS(71,+$P(Y,"^",2),0)):$P(^(0),"^"),1:"Unknown"),1,30),?42,$S($D(^RA(72,+$P(Y,"^",3),0)):$P(^(0),"^"),1:"Unknown")
+ADD2 W !?3,$P(Y,"^"),?10,$E($S($D(^RAMIS(71,+$P(Y,"^",2),0)):$P(^(0),"^"),1:"Unknown"),1,30),?42,$S($D(^RA(72,+$P(Y,"^",3),0)):$P(^(0),"^"),1:"Unknown")
  K RAVLEDTI,RAVLECNI,RASHA,RARSH,RAPIFN,RARDTE,RALIFN S RAVLEDTI=J,RAVLECNI=I,RADIV=$P(YY,"^",3),RACAT=$S('$D(RAWARD):$P($P(^DD(75.1,4,0),$P(Y,"^",4)_":",2),";"),1:RACAT)
  S:"CS"[$E(RACAT)&($D(^DIC(34,+$P(Y,"^",9),0))) RASHA=$P(^(0),"^") S:"R"[$E(RACAT)&($D(^RADPT(RADFN,"DT",J,"P",I,"R"))) RARSH=^("R")
  S:$D(^VA(200,+$P(Y,"^",14),0)) RAPIFN=+$P(Y,"^",14) S:$P(Y,"^",21) RARDTE=$P(Y,"^",21) S:$D(^SC(+$P(Y,"^",22),0)) RALIFN=+$P(Y,"^",22)
@@ -93,15 +83,3 @@ Q K %,%DT,DA,DIC,GMRAL,POP,RABED,RACAT,RADFN,RADIV,RADTE,RADTI,RALIFN,RANME,RAOI
  K RAN,RAOBR4,RAPARENT,RAPRCNDE,RAPROC,RAPROCI,RAPROCIT,RAPRV,RASKIPIT
  K VA,VADM,VAERR,Z
  Q
- ;06/06/2007 KAM/BAY for Remedy Call 185568 Added next 11 lines
-BACKDATE(RADT) ;
- N RACON,RAEXMDAT,RATODAY,RAANS,Y
- S RACON=1
- S X="NOW" D ^%DT S RATODAY=Y K %DT
- I (RATODAY-RADT)>9999 D
- . W !!,"********************************************************"
- . W !,"The Exam date entered is more than one year in the past."
- . W !,"********************************************************"
- . R !!,"Are you sure you want to continue Y/N?: N// ",RAANS:DTIME
- . I "Y,y,YES,yes,Yes"'[RAANS!(RAANS="") S RACON=0
- Q RACON

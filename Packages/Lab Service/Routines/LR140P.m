@@ -1,4 +1,5 @@
-LR140P ;DAL/HOAK - TEST REVIEWER;060697 0800 ;
+LR140P ; IHS/DIR/AAB - TEST REVIEWER 060697 0800 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**140,171**;Sep 27, 1994
  ;Environment check is done only during the install.
  ;

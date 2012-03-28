@@ -1,5 +1,5 @@
 IBDFRPC4 ;ALB/AAS - AICS Pass data to PCE, Broker Call ; 24-FEB-96
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**38,36,37**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**38,36**;APR 24, 1997
  ;
  ; -- used by AICS Data Entry System, routine IBDFDE1
  ;
@@ -84,9 +84,6 @@ SEND(RESULT,IBDF) ; -- procedure
  D:$D(TEMP("ENCOUNTER")) VSTPXCA^IBDF18E0
  ;
  D SETPXCA^IBDF18E0,PRO^IBDF18E0
- ;
- ;  send misc. data that does not go to PCE
- D ^IBDF18E4
  ;
  S IBDF("PASSFLAG")=+$P($G(^IBD(357.09,1,0)),"^",7)
  S IBD("AICS")=1 ;flag for IBDF PCE EVENT protocal

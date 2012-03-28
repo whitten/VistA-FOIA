@@ -1,5 +1,5 @@
-RAPRINT ;HISC/FPT AISC/DMK-Abnormal Exam Report ; 5/5/09 2:25pm
- ;;5.0;Radiology/Nuclear Medicine;**97**;Mar 16, 1998;Build 6
+RAPRINT ;HISC/FPT AISC/DMK-Abnormal Exam Report ;8/12/97  09:57
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
  ; This report uses the 'AD' cross reference on File 70 to create a
  ; report of exams that use certain diagnostic codes. The Diagnostic
@@ -26,31 +26,11 @@ RAPRINT ;HISC/FPT AISC/DMK-Abnormal Exam Report ; 5/5/09 2:25pm
  I '$D(^TMP($J,"RA DX CODES")) D  D END Q
  . W !!?3,"No Diagnostic Codes selected, try again later."
  . Q
- K DIR,DIROUT,DIRUT,DTOUT,DUOUT
- S DIR("A")="Enter type of reporting"
- S DIR(0)="S^V:VA RADIOLOGIST;E:ELECTRONICALLY FILED;A:ALL"
- S DIR("B")="A"
- S DIR("?",1)="  Select one of the following:"
- S DIR("?",2)="",DIR("?",3)=""
- S DIR("?")="       V     VA Radiologist       to include in-house "
- S DIR("?",4)=DIR("?")_"reports only,"
- S DIR("?")="       E     Electronically Filed to include "
- S DIR("?",5)=DIR("?")_"Electronically Filed reports only,"
- S DIR("?")="       A     ALL                  to include All reports."
- S DIR("B")="ALL"
- D ^DIR
- I $D(DIRUT) D END Q
- Q:$D(DIRUT)
- ;RATRPTG is Type of Reporting
- S RATRPTG=$S(Y="V":"VA Radiologist",Y="E":"Electronically Filed",1:"VA Radiologist and Electronically Filed")_" Reports"
- ;RATYPE is "V", "E", or "A"
- S RATYPE=Y
- ;
  W !
  K DIR,DIROUT,DIRUT,DTOUT,DUOUT
  S DIR(0)="Y",DIR("A")="Print only those exams not yet printed",DIR("B")="Yes",DIR("?")="Enter 'Yes' to print only those exams not yet printed, 'No' to print all." D ^DIR K DIR
  I $D(DIRUT) D END Q
- S RASW=$S(+Y=1:0,1:1),ZTRTN="START^RAPRINT",ZTSAVE("BEGDATE")="",ZTSAVE("ENDDATE")="",ZTSAVE("RASW")="",ZTSAVE("RAT*")="",ZTSAVE("^TMP($J,""RA D-TYPE"",")="",ZTSAVE("^TMP($J,""RA I-TYPE"",")="",ZTSAVE("^TMP($J,""RADLY"",")=""
+ S RASW=$S(+Y=1:0,1:1),ZTRTN="START^RAPRINT",ZTSAVE("BEGDATE")="",ZTSAVE("ENDDATE")="",ZTSAVE("RASW")="",ZTSAVE("^TMP($J,""RA D-TYPE"",")="",ZTSAVE("^TMP($J,""RA I-TYPE"",")="",ZTSAVE("^TMP($J,""RADLY"",")=""
  S ZTSAVE("^TMP($J,""RA DX CODES"",")=""
  D DATE^RAUTL G END:RAPOP S BEGDATE=9999999.9999-BEGDATE,ENDDATE=9999999.9999-ENDDATE
  W ! D ZIS^RAUTL G:RAPOP END
@@ -62,21 +42,12 @@ START ;
  D DIV^RAPRINT1,NEGRPT
 END ;
  K ^TMP($J),BEGDATE,CNT,DIR,DIROUT,DIRUT,DTOUT,DUOUT,ENDDATE,I,I1,J,K,L,PDATE,POP,QQ
- K RACASE,RADIC,RADFN,RADIAG,RADIVNME,RADIVNUM,RADXCODE,RAEND,RAEXAM,RAEXDT,RAITNAME,RAITNUM,RAMD,RAOUT,RAPAT,RAPATNME,RAPOP,RAPROC,RAQUIT,RASDXDTE,RASDXIEN,RASSN,RASW,RATRPTG,RATYPE,RAUTIL,RAWARD,RAXIT,X,Y
+ K RACASE,RADIC,RADFN,RADIAG,RADIVNME,RADIVNUM,RADXCODE,RAEND,RAEXAM,RAEXDT,RAITNAME,RAITNUM,RAMD,RAOUT,RAPAT,RAPATNME,RAPOP,RAPROC,RAQUIT,RASDXDTE,RASDXIEN,RASSN,RASW,RAUTIL,RAWARD,RAXIT,X,Y
  K POP,ZTRTN,ZTSAVE,RAMES,ZTDESC
  K:$D(RAPSTX) RACCESS,RAPSTX
  D CLOSE^RAUTL
  Q
-PAT1 N RATMP
- F L=0:0 S L=$O(^RADPT("AD",I,J,K,L)) Q:L'>0!(RAOUT)  D
- . I '$D(^RADPT(J,"DT",K,"P",L,0)) Q
- . S RATMP=$P(^RADPT(J,"DT",K,"P",L,0),U,17)
- . I RATMP]"" S RATMP=$P($G(^RARPT(RATMP,0)),U,5)
- . I RATMP="" D BTG Q
- . I $G(RATYPE)="V",RATMP="EF" Q
- . I $G(RATYPE)="E",RATMP'="EF" Q
- . D BTG
- . Q
+PAT1 F L=0:0 S L=$O(^RADPT("AD",I,J,K,L)) Q:L'>0!(RAOUT)  I $D(^RADPT(J,"DT",K,"P",L,0)) D BTG
  Q
 BTG ; build tmp global
  I $D(ZTQUEUED) D STOPCHK^RAUTL9 S:$G(ZTSTOP)=1 RAOUT=1 Q:RAOUT

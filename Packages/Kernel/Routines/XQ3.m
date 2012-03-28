@@ -1,5 +1,5 @@
 XQ3 ;LL/THM,SF/GJL,SEA/JLI - CLEANUP DANGLING POINTERS IN OPTION OR HELP FRAME FILES ;12/08/09
- ;;8.0;KERNEL;**80,501,538**;Jul 10, 1995;Build 1
+ ;;8.0;KERNEL;**80,501,538**;Jul 10, 1995;Build 2
  ;;Per VHA Directive 2004-038, this routine should not be modified.
  Q
 ENASK ;Ask to fix up dirty OPTION/HELP FRAME File

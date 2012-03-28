@@ -1,5 +1,5 @@
-PXKFCPT ;ISL/JVS - Fields for v cpt file ;3/22/05 11:48am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,73,117,124,164**;Aug 12, 1996
+PXKFCPT ;ISL/JVS - Fields for v cpt file ;5/21/96  13:15
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,73,117**;Aug 12, 1996
  ;
  ; PX*1*117; added piece ,4, on '0' label as a required one
  ;  Adding or Editing of data in a particular field can be controlled
@@ -12,7 +12,7 @@ PXKFCPT ;ISL/JVS - Fields for v cpt file ;3/22/05 11:48am
  ;    neither added or edited.
  ; 3. IF only the ~A is added then the data can only be added to
  ;    the file for this field but not edited.
- ; 4. If only the ~E is added the data can only be edited in
+ ; 4. If only the ~E is added the the data can only be edited in
  ;    this file for this field. (not a likely possibility)
  ;
  ; The word "OPTION" in front of the line of text below tells the 
@@ -54,18 +54,14 @@ ADD ;Add an entry to the file
  ;;
  ;;.07///^S X=$G(
  ;;
- ;;.09////^S X=$G(
- ;;.1////^S X=$G(
- ;;.11////^S X=$G(
- ;;.12////^S X=$G(
- ;;.13////^S X=$G(
- ;;.14////^S X=$G(
- ;;.15////^S X=$G(
- ;;.16////^S X=$G(
- ;;.17////^S X=$G(
  ;;
- ;;.19////^S X=$G(
- ;;.2////^S X=$G(
+ ;;
+ ;;
+ ;;
+ ;;
+ ;;
+ ;;
+ ;;.16///^S X=$G(
 1 ;;
  ;;.01///^S X=$G(
 12 ;;
@@ -73,6 +69,8 @@ ADD ;Add an entry to the file
  ;;1202////^S X=$G(
  ;;
  ;;1204////^S X=$G(
+ ;;
+ ;;
 801 ;;
  ;;80101///^S X=1;
  ;;80102///^S X=$G(PXKAUDIT);

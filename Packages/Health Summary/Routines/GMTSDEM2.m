@@ -1,5 +1,6 @@
 GMTSDEM2 ; SLC/DLT,KER - Demographics (cont) ; 12/11/2002 [9/16/03 7:29am]
  ;;2.7;Health Summary;**56,58,60,62**;Oct 20, 1995
+ ;IHS/ITSC/LJF 12/05/0223 added check for VA Billing routine prior to calling it
  ;                 
  ; External References
  ;   DBIA 10061  OAD^VADPT
@@ -9,7 +10,9 @@ GMTSDEM2 ; SLC/DLT,KER - Demographics (cont) ; 12/11/2002 [9/16/03 7:29am]
  ;   DBIA  2056  $$GET1^DIQ (file #36, and #355.1)
  ;   DBIA 10145  ALL^IBCNS1  
  ;   DBIA 10104  $$UP^XLFSTR
- ;                     
+ ;
+ ;IHS/ITSC/LJF 12/05/2003 checking for existence of VA billing routine
+ ;
 NOKC ; Next of Kin Component
  N GMTSNOK S GMTSNOK="" D NOK Q
 NOK ; Next of Kin
@@ -41,7 +44,8 @@ DNOK ;   Display Next of Kin
  ;                
 INS ; Insurance Info
  N I,INSURE,GMTSX,IEN,VAL,CLAIM,COMPANY,TYPE,COB,SUBSCRIB,GROUP,HOLDER,EFFECT,EXPIRE
- D ALL^IBCNS1(DFN,"INSURE") Q:$O(INSURE(0))=""
+ ;D ALL^IBCNS1(DFN,"INSURE") Q:$O(INSURE(0))=""                       ;IHS/ITSC/LJF 12/05/2003
+ I $L($T(ALL^IBCNS1)) D ALL^IBCNS1(DFN,"INSURE") Q:$O(INSURE(0))=""   ;IHS/ITSC/LJF 12/05/2003
  S I=0 F  S I=$O(INSURE(I)) Q:'I  D   Q:$D(GMTSQIT)
  . S (COMPANY,TYPE,GROUP,HOLDER,EFFECT,EXPIRE)=""
  . S GMTSX=INSURE(I,0),IEN=+GMTSX

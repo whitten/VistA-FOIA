@@ -27,8 +27,8 @@ INTER ;CHECK FOR NON-PRIMARIES
  I '$D(^TMP($J,"DEL")),'$D(^("RENAM")) D  G ALLER
  .F LINE=1:1 S X=$P($T(TEXT4+LINE),";",3,300) Q:X=""  S ^TMP("PSN",$J,LINE,0)=X
  F LINE=1:1 S X=$P($T(TEXT+LINE),";",3,300) Q:X=""  S ^TMP("PSN",$J,LINE,0)=X
- I '$D(^TMP($J,"RENAM")) S ^TMP("PSN",$J,LINE,0)=" ",^TMP("PSN",$J,LINE+1,0)="none found",LINE=LINE+2
- S NA="" F  S NA=$O(^TMP($J,"RENAM",NA)) Q:NA=""  S ^TMP("PSN",$J,LINE,0)=$P(NA,"^")_" was changed to",^TMP("PSN",$J,LINE+1,0)="   "_$P(NA,"^",2),^TMP("PSN",$J,LINE+2,0)=" ",LINE=LINE+3
+ I '$D(^TMP($J,"RENAM")) S ^TMP("PSN",$J,LINE,0)="",^TMP("PSN",$J,LINE+1,0)="none found",LINE=LINE+2
+ S NA="" F  S NA=$O(^TMP($J,"RENAM",NA)) Q:NA=""  S ^TMP("PSN",$J,LINE,0)=$P(NA,"^")_" was changed to",^TMP("PSN",$J,LINE+1,0)=""_$P(NA,"^",2),^TMP("PSN",$J,LINE+2,0)=" ",LINE=LINE+3
  F J=1:1 S X=$P($T(TEXT2+J),";",3,300) Q:X=""  S ^TMP("PSN",$J,LINE,0)=X,LINE=LINE+1
  I '$D(^TMP($J,"DEL")) S ^TMP("PSN",$J,LINE,0)="none found",LINE=LINE+1
  S NA="" F  S NA=$O(^TMP($J,"DEL",NA)) Q:NA=""  S ^TMP("PSN",$J,LINE,0)=NA,LINE=LINE+1
@@ -44,8 +44,8 @@ ALLER ;now the allergies
  I '$D(^TMP($J,1)) D  G SENDIT
  .F J=1:1 S X=$P($T(TEXT5+J),";",3,300) Q:X=""  S ^TMP("PSN",$J,LINE,0)=X,LINE=LINE+1
  F J=1:1 S X=$P($T(TEXT3+J),";",3,300) Q:X=""  S ^TMP("PSN",$J,LINE,0)=X,LINE=LINE+1
- I '$D(^TMP($J,1)) S ^TMP("PSN",$J,LINE,0)="none found",LINE=LINE+1
- S NA="" F  S NA=$O(^TMP($J,1,NA)) Q:NA=""  S X="" F  S X=$O(^TMP($J,1,NA,X)) Q:X=""  S ^TMP("PSN",$J,LINE,0)="Patient: "_NA,LINE=LINE+1,^TMP("PSN",$J,LINE,0)="Non-primary ingredient "_$P(X,"^"),LINE=LINE+1 D
+ I '$D(^TMP($J,1)) S ^TMP("PSN",$J,LINE,0)="none found",LINE=LINE+1 
+ S NA="" F  S NA=$O(^TMP($J,1,NA)) Q:NA=""  S X="" F  S X=$O(^TMP($J,1,NA,X)) Q:X=""  S ^TMP("PSN",$J,LINE,0)="Patient:"_NA,LINE=LINE+1,^TMP("PSN",$J,LINE,0)="Non-primary ingredient"_$P(X,"^"),LINE=LINE+1 D
  .S ^TMP("PSN",$J,LINE,0)="was replaced with primary ingredient "_$P(X,"^",2),LINE=LINE+1,^TMP("PSN",$J,LINE,0)=" ",LINE=LINE+1
  ;
 SENDIT ;
@@ -56,15 +56,15 @@ PRO  K ^TMP("PSN",$J) M ^TMP("PSN",$J)=@XPDGREF@("CLASS") K ^TMP("PSN",$J,0) I $
  Q
 PROTO S X="PSN NEW CLASS",DIC=101 D EN^XQOR K X,DIC Q
  Q
-TEXT3 ; 
- ;;  
+TEXT3 ;
+ ;; 
  ;;=========================================================================
  ;;Allergy information for the following patients has been changed.
- ;; 
+ ;;
  ;;The allergy for the listed patients was created with a non-primary
  ;;ingredient.  These have been updated to replace the non-primary
  ;;ingredient with the proper primary ingredient.
- ;;  
+ ;; 
  ;
 TEXT ;
  ;; 
@@ -72,12 +72,12 @@ TEXT ;
  ;;involved ingredients that are not primary ingredients.
  ;; 
  ;
-TEXT2 ; 
+TEXT2 ;
  ;; 
  ;;The following interactions have been deleted because
  ;;Primary Ingredient/Other Ingredient combination already
  ;;exists in the DRUG INGREDIENTS file involved ingredients
- ;;that are not primary ingredients. 
+ ;;that are not primary ingredients.
  ;; 
  ;
 TEXT4 ;

@@ -1,5 +1,5 @@
-ORMGMRC ; SLC/MKB - Process Consult ORM msgs ;03/17/09  10:58
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**3,26,68,92,153,174,195,255,243,280**;Dec 17, 1997;Build 85
+ORMGMRC ; SLC/MKB - Process Consult ORM msgs ;12:03 PM  26 Jul 2000
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**3,26,68,92,153,174**;Dec 17, 1997
 EN ; -- entry point for GMRC messges
  I '$L($T(@ORDCNTRL)) Q  ;S ORERR="Invalid order control code" Q
  I ORDCNTRL'="SN",ORDCNTRL'="ZP",'ORIFN!('$D(^OR(100,+ORIFN,0))) S ORERR="Invalid OE/RR order number" Q
@@ -39,7 +39,6 @@ XX ; -- Change order
  S ORX=+$P($G(^OR(100,ORIFN,3)),U,7) S:ORX'>0 ORX=+$O(^(8,ORDA),-1)
  I $D(^OR(100,ORIFN,8,ORX,0)),$P(^(0),U,15)="" S $P(^(0),U,15)=12
  S $P(^OR(100,ORIFN,3),U,7)=ORDA D:$G(ORSTS) STATUS^ORCSAVE2(ORIFN,ORSTS)
- D PXRMKILL^ORDD100(ORIFN,ORVP,ORLOG) ; JEH 255
  D RELEASE^ORCSAVE2(ORIFN,ORDA,ORLOG,ORDUZ,ORNATR)
  ; -If unsigned edit, leave XX unsigned & mark ORX as Sig Not Req'd
  S ORSIG=$S($P($G(^OR(100,ORIFN,8,ORX,0)),U,4)'=2:1,1:0)
@@ -48,7 +47,6 @@ XX ; -- Change order
  K ^OR(100,ORIFN,4.5) D RESPONSE^ORCSAVE,ORDTEXT^ORCSAVE1(ORIFN_";"_ORDA)
  S $P(^OR(100,ORIFN,8,ORDA,0),U,14)=ORDA
  K:OREASON="RESUBMIT" ^OR(100,ORIFN,6) ;clear previous DC data
- D PXRMADD^ORDD100(ORIFN,ORVP,ORLOG) ; JEH 255
  I $G(ORL) S ORP(1)=+ORIFN_";"_ORDA_"^1" D PRINTS^ORWD1(.ORP,+ORL)
  Q
  ;
@@ -60,8 +58,6 @@ SN ; -- New backdoor order: return NA msg w/ORIFN, or DE msg
  D DLG Q:$D(ORERR)  Q:'$D(ORDIALOG)
 SN1 D EN^ORCSAVE K ^TMP("ORWORD",$J) ; setting status, xrefs
  I '$G(ORIFN) S ORERR="Cannot create new order" Q
- ;Save DG1 and ZCL segments of HL7 message from backdoor orders
- D BDOSTR^ORWDBA3
  D RELEASE^ORCSAVE2(ORIFN,1,ORLOG,ORDUZ,ORNATR),SIGSTS^ORCSAVE2(ORIFN,1)
  S:'ORSTRT ORSTRT=$$NOW^XLFDT D DATES^ORCSAVE2(+ORIFN,ORSTRT)
  D:$G(ORSTS) STATUS^ORCSAVE2(ORIFN,ORSTS)
@@ -76,8 +72,6 @@ DLG ; -- Build ORDIALOG(),ORDG from msg
  S ORDIALOG=$O(^ORD(101.41,"AB","GMRCOR "_TYPE,0))
  D GETDLG1^ORCD(ORDIALOG)
  S ORDIALOG($$PTR("URGENCY"),1)=ORURG
- ;ORSTRT defined in routine ORM before coming here ;WAT/280
- S ORDIALOG($$PTR("EARLIEST DATE"),1)=ORSTRT ;WAT/280
  S OI=$$ORDITEM^ORM(USID) I 'OI S ORERR="Invalid consult or procedure" Q
  S ORDIALOG($$PTR("ORDERABLE ITEM"),1)=OI
  S ZSV=$O(@ORMSG@(OBR)) I ZSV,$E(@ORMSG@(ZSV),1,3)="ZSV" D
@@ -118,7 +112,6 @@ RE ; -- Completed, w/results
  S I=+ORC,X="" F  S I=$O(@ORMSG@(I)) Q:I<1  S SEG=$G(@ORMSG@(I)) Q:$E(SEG,1,3)="ORC"  I $E(SEG,1,3)="OBX",$P(SEG,"|",4)["SIG FINDINGS" S X=$P(SEG,"|",6) Q
  S $P(^OR(100,DA,7),U,2)=$S(X="Y":1,1:"")
  S:'$G(ORNP) ORNP=+$P($G(^OR(100,+ORIFN,0)),U,4)
- I $P(ORC,"|",17)["MAINTENANCE" Q  ;group update - no CM ack needed
  I $L($T(ADD^ORRCACK)) D ADD^ORRCACK(+ORIFN,ORNP) ;Ack stub for prov
  Q
  ;

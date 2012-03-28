@@ -1,9 +1,11 @@
-DGPMDDCN ;ALB/MRL - DETERMINE INPATIENT X-REF'S ;3/04/08 8:54am
- ;;5.3;Registration;**54,498,671**;Aug 13, 1993;Build 27
+DGPMDDCN ;ALB/MRL - DETERMINE INPATIENT X-REF'S; 9 FEB 89 [ 01/14/2004  11:21 AM ]
+ ;;5.3;Registration;**54,498**;Aug 13, 1993
  ;
 1 ; 
  I $S($D(DGPMT):1,('$D(DA)#2):1,'$D(DGPMDDF):1,'$D(DGPMDDT):1,1:0) G KX
- N DFN S DFN=+$P(^DGPM(+DA,0),"^",3) I '$D(^DPT(DFN,0)) G KX
+ ;IHS/ITSC/WAR 11/05/03 no record (+DA) in ^DGPM causes a failure.
+ ;N DFN S DFN=+$P(^DGPM(+DA,0),"^",3) I '$D(^DPT(DFN,0)) G KX
+ N DFN S DFN=+$P($G(^DGPM(+DA,0)),"^",3) I 'DFN!('$D(^DPT(DFN,0))) G KX
  I 'DGPMDDT D @("K"_+DGPMDDF) G Q
  D INPTCK
  I $S('VAWD:1,1:$P(VAWD,"^",2)="") D  G Q
@@ -51,10 +53,8 @@ CHK ;
  Q
  ;
 S8 ; -- doc x-ref
- I $D(^DPT(DFN,.104)) S DGPMX=+^(.104) D KILL
- S DGPMX=+VAPP I DGPMX D
- . N DA,DR,DIE,DIC,D,%H,%T,D0,DIK,DK,DL,X,DQ,Y
- . S DIE="^DPT(",DA=DFN,DR=".104////"_DGPMX D ^DIE
+ S DGFLD=.104 I $D(^DPT(DFN,.104)) S DGPMX=+^(.104) D KILL
+ S DGPMX=+VAPP D SET:DGPMX
  Q
  ;
 K8 ;

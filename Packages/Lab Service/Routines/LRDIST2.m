@@ -1,7 +1,11 @@
-LRDIST2 ;SLC/DM - WRITE SUMMARY OF LEVY-JENNINGS LRQC CHART ;2/5/91  13:06 ;
+LRDIST2 ;SLC/DM - WRITE SUMMARY OF LEVY-JENNINGS LRQC CHART ;2/5/91  13:06 ; [ 04/14/2003  7:41 AM ]
+ ;;5.2T9;LR;**1001,1004,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**108,160,153**;Sep 27, 1994
  ;  REGION 5 ISC/SLC ;  DCM
-EN W PNM,?35,"  ",SSN,?69,"  ",LRDT0,!!?18,"ACTUAL:",?39,"TARGET:",?65,"VALUE OUTSIDE:"
+EN ;W PNM,?35,"  ",SSN,?69,"  ",LRDT0,!!?18,"ACTUAL:",?39,"TARGET:",?65,"VALUE OUTSIDE:"
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ W PNM,?35,"  ",HRCN,?69,"  ",LRDT0,!!?18,"ACTUAL:",?39,"TARGET:",?65,"VALUE OUTSIDE:"  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  W !?10,"+--------------------+",?35,"+------------+"
  W !?2,"TEST",?11,"MEAN",?19,"SD",?25,"CV",?30,"N",?36,"MEAN",?44,"SD",?50,"FL",?53,"ACCESSION",?69,"2SD",?75,"3SD"
  W !,"---------",?10,"------",?17,"------",?24,"----",?29,"---",?35,"------",?42,"-------",?50,"--",?53,"-------------",?68,"----",?74,"----",!

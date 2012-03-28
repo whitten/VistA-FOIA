@@ -1,6 +1,5 @@
-HLOFILER ;ALB/CJM- Passes messages on the incoming queue to the applications - 10/4/94 1pm ;05/26/2011
- ;;1.6;HEALTH LEVEL SEVEN;**126,131,134,137,152**;Oct 13, 1995;Build 3
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOFILER ;ALB/CJM- Passes messages on the incoming queue to the applications - 10/4/94 1pm
+ ;;1.6;HEALTH LEVEL SEVEN;**126,131**;Oct 13, 1995;Build 10
  ;
  ;GET WORK function for the process running under the Process Manager
 GETWORK(QUE) ;
@@ -32,16 +31,16 @@ GETWORK(QUE) ;
  Q:(QUEUE]"") 1
  Q 0
  ;
-DOWORK(QUEUE) ;passes the messages on the queue to the application
+DOWORK(QUEUE) ;sends the messages on the queue
  N $ETRAP,$ESTACK S $ETRAP="G ERROR^HLOFILER"
  ;
- N MSGIEN,DEQUE,QUE,COUNT
+ N MSGIEN,DEQUE,QUE
  M QUE=QUEUE
- S (DEQUE,COUNT)=0
+ S DEQUE=0
  S MSGIEN=0
  ;
- F  S MSGIEN=$O(^HLB("QUEUE","IN",QUEUE("FROM"),QUEUE("QUEUE"),MSGIEN)) Q:'MSGIEN  S COUNT=COUNT+1 Q:COUNT>1000  D  M QUEUE=QUE
- .N MCODE,ACTION,QUE,PURGE,ACKTOIEN,NODE,COUNT
+ F  S MSGIEN=$O(^HLB("QUEUE","IN",QUEUE("FROM"),QUEUE("QUEUE"),MSGIEN)) Q:'MSGIEN  D  M QUEUE=QUE
+ .N MCODE,ACTION,QUE,PURGE,ACKTOIEN,NODE
  .N $ETRAP,$ESTACK S $ETRAP="G ERROR2^HLOFILER"
  .S NODE=$G(^HLB("QUEUE","IN",QUEUE("FROM"),QUEUE("QUEUE"),MSGIEN))
  .S ACTION=$P(NODE,"^",1,2)
@@ -68,7 +67,7 @@ ENDWORK ;where the execution resumes upon an error
 DEQUE(MSGIEN,PURGE,ACKTOIEN) ;
  ;Dequeues the message.  Also sets up the purge dt/tm and the completion status.
  S:$G(MSGIEN) DEQUE=$G(DEQUE)+1,DEQUE(MSGIEN)=PURGE_"^"_ACKTOIEN
- I '$G(MSGIEN)!($G(DEQUE)>25) S MSGIEN=0 D
+ I '$G(MSGIEN)!(DEQUE>25) S MSGIEN=0 D
  .F  S MSGIEN=$O(DEQUE(MSGIEN)) Q:'MSGIEN  D
  ..N NODE,PURGE,ACKTOIEN
  ..S NODE=DEQUE(MSGIEN)
@@ -81,7 +80,7 @@ DEQUE(MSGIEN,PURGE,ACKTOIEN) ;
  ...N STATUS
  ...S STATUS=$P(NODE,"^",20)
  ...S:STATUS="" $P(NODE,"^",20)="SU",STATUS="SU"
- ...S $P(NODE,"^",9)=$$FMADD^XLFDT($$NOW^XLFDT,,$S(PURGE=2:24*QUEUE("SYSTEM","ERROR PURGE"),$D(^HLB(MSGIEN,3,1,0)):24*QUEUE("SYSTEM","ERROR PURGE"),1:QUEUE("SYSTEM","NORMAL PURGE")))
+ ...S $P(NODE,"^",9)=$$FMADD^XLFDT($$NOW^XLFDT,,$S(STATUS'="SU":24*QUEUE("SYSTEM","ERROR PURGE"),$D(^HLB(MSGIEN,3,1,0)):24*QUEUE("SYSTEM","ERROR PURGE"),1:QUEUE("SYSTEM","NORMAL PURGE")))
  ...S ^HLB("AD",$S($E($P(NODE,"^",4))="I":"IN",1:"OUT"),$P(NODE,"^",9),MSGIEN)=""
  ...I ACKTOIEN,$D(^HLB(ACKTOIEN,0)) S $P(^HLB(ACKTOIEN,0),"^",9)=$P(NODE,"^",9),^HLB("AD",$S($E($P(NODE,"^",4))="I":"OUT",1:"IN"),$P(NODE,"^",9),ACKTOIEN)=""
  ..S ^HLB(MSGIEN,0)=NODE
@@ -89,56 +88,46 @@ DEQUE(MSGIEN,PURGE,ACKTOIEN) ;
  Q
  ;
 ERROR ;error trap
- S $ETRAP="Q:$QUIT """" Q"
- N HOUR
- S HOUR=$E($$NOW^XLFDT,1,10)
- S ^TMP("HL7 ERRORS",$J,HOUR,$P($ECODE,",",2))=$G(^TMP("HL7 ERRORS",$J,HOUR,$P($ECODE,",",2)))+1
+ S $ETRAP="D UNWIND^%ZTER"
  ;
  D DEQUE()
  ;
- ;a lot of errors of the same type may indicate an endless loop
- ;return to the Process Manager error trap
- I ($G(^TMP("HL7 ERRORS",$J,HOUR,$P($ECODE,",",2)))>30) Q:$QUIT "" Q
+ ;a lot of errors of the same type may indicate an endless loop, so keep  a count
+ S ^TMP("HL7 ERRORS",$J,$ECODE)=$G(^TMP("HL7 ERRORS",$J,$ECODE))+1
+ Q:($G(^TMP("HL7 ERRORS",$J,$ECODE))>100)  ;return to the Process Manager error trap
  ;
  ;while debugging quit on all errors - returns to the Process Manager error trap
- I $G(^HLTMP("LOG ALL ERRORS")) Q:$QUIT "" Q
- I $ECODE["EDITED" Q:$QUIT "" Q
+ I $G(^HLTMP("LOG ALL ERRORS")) QUIT
  ;
  D ^%ZTER
  D UNWIND^%ZTER
- Q:$QUIT ""
  Q
  ;
 ERROR2 ;
- S $ETRAP="Q:$QUIT """" Q"
+ S $ETRAP="D UNWIND^%ZTER"
  ;
  D DEQUE()
  ;
- ;may need to change the status to Error
+ ;may need to change the status to Application Error
  D
- .N NODE,RAPP,SAPP,FS,CS,REP,ESCAPE,SUBCOMP,HDR,DIR,NOW
- .S NOW=$$NOW^XLFDT
+ .N NODE,RAPP,FS,CS,HDR,TIME
  .S NODE=$G(^HLB(MSGIEN,0))
  .Q:NODE=""
- .Q:$P(NODE,"^",20)="ER"
- .S $P(NODE,"^",20)="ER",$P(NODE,"^",21)="APPLICATION ROUTINE ERROR"
- .S DIR=$S($E($P(NODE,"^",4))="I":"IN",1:"OUT")
- .I $P(NODE,"^",9) K ^HLB("AD",DIR,$P(NODE,"^",9),MSGIEN)
- .S $P(NODE,"^",9)=$$FMADD^XLFDT(NOW,,24*QUEUE("SYSTEM","ERROR PURGE"))
+ .Q:$P(NODE,"^",20)="AE"
+ .S $P(NODE,"^",20)="AE",$P(NODE,"^",21)="APPLICATION ROUTINE ERROR"
+ .I $P(NODE,"^",9) K ^HLB("AD",$S($E($P(NODE,"^",4))="I":"IN",1:"OUT"),$P(NODE,"^",9),MSGIEN)
+ .S $P(NODE,"^",9)=$$FMADD^XLFDT($$NOW^XLFDT,,24*QUEUE("SYSTEM","ERROR PURGE"))
  .S ^HLB(MSGIEN,0)=NODE
- .S ^HLB("AD",DIR,$P(NODE,"^",9),MSGIEN)=""
+ .S ^HLB("AD",$S($E($P(NODE,"^",4))="I":"IN",1:"OUT"),$P(NODE,"^",9),MSGIEN)=""
+ .I $P(NODE,"^",2) S TIME=+$G(^HLA($P(NODE,"^",2),0))
+ .Q:'$G(TIME)
  .S HDR=$G(^HLB(MSGIEN,1))
  .S FS=$E(HDR,4)
  .Q:FS=""
  .S CS=$E(HDR,5)
- .S REP=$E(HDR,6)
- .S ESCAPE=$E(HDR,7)
- .S SUBCOMP=$E(HDR,8)
- .S RAPP=$$DESCAPE^HLOPRS1($P($P(HDR,FS,5),CS),FS,CS,SUBCOMP,REP,ESCAPE)
+ .S RAPP=$P($P(HDR,FS,5),CS)
  .I RAPP="" S RAPP="UNKNOWN"
- .S SAPP=$$DESCAPE^HLOPRS1($P($P(HDR,FS,3),CS),FS,CS,SUBCOMP,REP,ESCAPE)
- .S ^HLB("ERRORS",RAPP,NOW,MSGIEN)=""
- .D COUNT^HLOESTAT(DIR,RAPP,SAPP,"UNKNOWN")
+ .S ^HLB("ERRORS","AE",RAPP,TIME,MSGIEN)=""
  ;
  ;kill the apps variables
  D
@@ -153,13 +142,11 @@ ERROR2 ;
  ;return to processing the next message on the queue
  S $ECODE=""
  ;
- Q:$QUIT ""
  Q
 ERROR3 ;error trap for application context
- S $ETRAP="Q:$QUIT """" Q"
+ S $ETRAP="Q $ESTACK"
  D ^%ZTER
  S $ECODE=",UAPPLICATION ERROR,"
  ;
  ;drop to the ERROR2 error handler
- Q:$QUIT ""
  Q

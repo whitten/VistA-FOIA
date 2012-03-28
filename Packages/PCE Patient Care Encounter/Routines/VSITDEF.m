@@ -1,11 +1,12 @@
 VSITDEF ;ISL/dee - Defaulting Logic for the Visit ;4/17/97
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,111,130,164,168**;Aug 12, 1996;Build 14
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,111,1001**;Aug 12, 1996
  ; Patch PX*1*76 changes the 2nd line of all VSIT* routines to reflect
  ; the incorporation of the module into PCE.  For historical reference,
  ; the old (VISIT TRACKING) 2nd line is included below to reference VSIT
  ; patches.
  ;
  ;;2.0;VISIT TRACKING;**1,2**;Aug 12, 1996
+ ;IHS/ITSC/LJF 4/16/2004 added IHS visit date checks
  ;
  Q  ; - not an entry point
  ;
@@ -23,6 +24,15 @@ REQUIRED() ;Check the required variables
  ; - PAT
  S VSIT("PAT")=$$ERRCHK^VSITCK("PAT",VSIT("PAT"))
  I $L(VSIT("PAT"),"^")>1 D ERR^VSITPUT($P(VSIT("PAT"),"^",2,99)) S QUIT=1
+ ;
+ ;IHS/ITSC/LJF 4/16/2004 add IHS checks for visit date (based on AUPNVSIT logic)
+ I QUIT=0 D
+ . NEW X,MSG S MSG="VDT"_U_VSIT("VDT")_U
+ . I VSIT("VDT")>(DT_.24) D ERR^VSITPUT(MSG_"Future dates not allowed [0;1]") S QUIT=1 Q
+ . S X=$$DOD^AUPNPAT(VSIT("PAT")) I (X>0),(X<$P(VSIT("VDT"),U)) D ERR^VSITPUT(MSG_"Patient died before this date [0;1]") S QUIT=1 Q
+ . S X=$$DOB^AUPNPAT(VSIT("PAT")) I (X>0),(X>$P(VSIT("VDT"),U)) D ERR^VSITPUT(MSG_"Patient born after this date [0;1]") S QUIT=1
+ ;IHS/ITSC/LJF 4/16/2004 end of new code
+ ;
  I VSIT("INS")="",VSIT("OUT")="",VSIT("SVC")'="E" D
  . S VSIT("INS")=$$INS4LOC^VSITCK1(+VSIT("LOC"))
  . I VSIT("INS")']"",SITE>0 S VSIT("INS")=SITE
@@ -59,7 +69,7 @@ REQUIRED() ;Check the required variables
  . I VSIT("SVC")="A" S VSIT("SVC")="I"
  . E  I VSIT("SVC")="X" S VSIT("SVC")="D"
  E  D
- . I VSIT("SVC")="I" S VSIT("SVC")="A"
+ . ;I VSIT("SVC")="I" S VSIT("SVC")="A"   ;IHS/ITSC/LJF PATCH 1001 if sent in as "I", don't change it
  . E  I VSIT("SVC")="D" S VSIT("SVC")="X"
  S VSIT("SVC")=$$ERRCHK^VSITCK("SVC",VSIT("SVC"))
  I $L(VSIT("SVC"),"^")>1 D ERR^VSITPUT($P(VSIT("SVC"),"^",2,99)) S QUIT=1
@@ -135,12 +145,6 @@ DEFAULTS ;Default all of the rest of the fields that are NOT need for lookup mat
  ; - HNC - PX*1*111 - Head & Neck
  S VSIT("HNC")=$$ERRCHK^VSITCK("HNC",VSIT("HNC"))
  D:$L(VSIT("HNC"),"^")>1 WRN^VSITPUT($P(VSIT("HNC"),"^",2,99))
- ; - CV - PX*1*130 - Combat Vet
- S VSIT("CV")=$$ERRCHK^VSITCK("CV",VSIT("CV"))
- D:$L(VSIT("CV"),"^")>1 WRN^VSITPUT($P(VSIT("CV"),"^",2,99))
- ; - SHAD - PX*1*168 - Project 112/SHAD
- S VSIT("SHAD")=$$ERRCHK^VSITCK("SHAD",VSIT("SHAD"))
- D:$L(VSIT("SHAD"),"^")>1 WRN^VSITPUT($P(VSIT("SHAD"),"^",2,99))
  ; - COM
  S VSIT("COM")=$$ERRCHK^VSITCK("COM",VSIT("COM"))
  D:$L(VSIT("COM"),"^")>1 WRN^VSITPUT($P(VSIT("COM"),"^",2,99))
@@ -160,8 +164,5 @@ DEFAULTS ;Default all of the rest of the fields that are NOT need for lookup mat
  S VSIT("SOR")=$$ERRCHK^VSITCK("SOR",VSIT("SOR"))
  D:$L(VSIT("SOR"),"^")>1 WRN^VSITPUT($P(VSIT("SOR"),"^",2,99))
  ;
- ;PFSS Patient Reference
- S VSIT("ACT")=$$ERRCHK^VSITCK("ACT",VSIT("ACT"))
- I $$SWSTAT^IBBAPI() D:$L(VSIT("ACT"),"^")>1 WRN^VSITPUT($P(VSIT("ACT"),"^",2,99))
  Q
  ;

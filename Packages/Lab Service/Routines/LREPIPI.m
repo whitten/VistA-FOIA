@@ -1,4 +1,5 @@
-LREPIPI ;DALOI/CKA - Local Pathogens Input;7/2/03
+LREPIPI ;VA/DALOI/CKA - Local Pathogens Input;7/2/03
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**281**;Sep 27, 1994
  ; Reference to $$SITE^VASITE supported by IA #10112
  ; Reference to ^ORD(101 supported by IA #872

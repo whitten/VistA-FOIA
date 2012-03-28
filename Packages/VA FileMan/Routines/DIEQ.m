@@ -1,4 +1,5 @@
-DIEQ ;SFISC/XAK,YJK-HELP DURING INPUT ;09:13 AM  27 Jul 2001
+DIEQ ;SFISC/XAK,YJK-HELP DURING INPUT ;09:13 AM  27 Jul 2001 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**4,3,59**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 BN S D=$P(DQ(DQ),U,4) S:DP+1 D=DIFLD

@@ -1,37 +1,31 @@
 IBDFBKS1 ;ALB/CJM/AAS - ENCOUNTER FORM - create form spec for scanning (Broker Version CONTINUATION) ; 6-JUN-95
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**3,25**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
  ;
 FORM ;;
  ;;'Paper Keyboard FormSpec
  ;;'VERSION = 2.53
- ;;'AICS Version 3.0;**7,3,25**
-SITE ;;'VA SITE NAME
- ;;INT anchorcnt;
+ ;;'AICS Version 3.0
  ;;INT hasprint;
  ;;INT check;
- ;;INT firstanchor;
  ;;INT pfid;
  ;;INT page;
  ;;INT saveunrf;
- ;;INT ddechan;
  ;;ALPHA narrative;
  ;;
  ;;FORM
 NAME ;;  NAME = "ENCOUNTER FORM 71";
- ;;  AREA =  0 0 2770 2150;
- ;;  PAGESIZE = " 2770 2150";
+ ;;  AREA =  0 0 2810 2150;
+ ;;  PAGESIZE = " 2810 2150";
  ;;  ANCHOR1 = NONE;
  ;;  ANCHOR2 = NONE;
  ;;  POINTS = 0 0 0 0;
  ;;  CONFIDENCE = " 9";
- ;;  CLOSEFORMSPEC = {DDETERM(ddechan);
- ;;     LOG(\"AICS #52/DDE channel is closed\"); };
  ;;  DATEFORMAT = "6";
  ;;  TIMEFORMAT = "5";
  ;;  EXFORMAT = "STRIP";
- ;;  EXPORT = "\'SHOW(\"DO NOT EXPORT - NOT SCANNABLE\");";
  ;;  FS = ",";
+ ;;  Recognition = "hasprint=0;";
  ;;  QUOTABLE = "\\n";
  ;;  ImageProcessing = {
  ;;     IMAGEPROC=1
@@ -47,130 +41,83 @@ NAME ;;  NAME = "ENCOUNTER FORM 71";
  ;;     PROC_MIN_HORZ_LINE_LEN=0
  ;;     FATTYPE=0
  ;;     FATTEN=0};
- ;;  POSITION = "60,60";
- ;;  OPENFORMSPEC = {ddechan=DDEINIT(\"IBDSCAN\",\"DdeServerConv\");
- ;;     if (ddechan == 0) LOG(\"AICS #54/Unable to Open Channel to AICS.\");
- ;;     \' if (ddechan == 0) SHOW(\"Unable to Open Channel to AICS to send data.\");
- ;;     anchorcnt = 4;
- ;;     }; 
  ;;FIELD ' 1
- ;;  NAME = "TOP LEFT ANCHOR";
- ;;  ELEMTYPE = ELEM_PAT;
- ;;  METRIC = 17 120 120;
+ ;;  NAME = "ANCHOR 3";
+ ;;  ELEMTYPE = CROSSHAIR;
+ ;;  METRIC = 3 2 20 50 0 0 90 100;
  ;;  DATATYPE =INT;
- ;;  LENGTH = 2;
- ;;  POINTS = 65 70 120 130;
+ ;;  LENGTH = 1;
+ ;;  POINTS = 65 2056;
  ;;  PAGE = 0;
- ;;  CONFIDENCE = " 6";
+ ;;  ANCHOR = "1";
  ;;  HIDDEN = "1";
- ;;  END = {if (anchorcnt == 2){
- ;;     firstanchor = 1; 
- ;;     if (FIELDSTATUS != FIELD_OK) firstanchor = 0;}
- ;;     };
- ;;  Pattern = "PATTERN=C:\\VISTA\\AICS\\FORMSPEC\\AICSLOGO.BMP";
  ;;  REQUIRED = "1";
  ;;FIELD ' 2
- ;;  NAME = "BOTTOM LEFT ANCHOR";
- ;;  ELEMTYPE = ELEM_PAT;
- ;;  METRIC = 17 120 120;
+ ;;  NAME = "ANCHOR 6";
+ ;;  ELEMTYPE = CROSSHAIR;
+ ;;  METRIC = 3 4 20 50 0 0 90 100;
  ;;  DATATYPE =INT;
- ;;  LENGTH = 2;
- ;;  POINTS = 2690 70 2745 130;
+ ;;  LENGTH = 1;
+ ;;  POINTS = 2729 2056;
  ;;  PAGE = 0;
- ;;  CONFIDENCE = " 6";
+ ;;  ANCHOR = "1";
  ;;  HIDDEN = "1";
- ;;  Pattern = "PATTERN=C:\\VISTA\\AICS\\FORMSPEC\\AICSLOGO.BMP";
  ;;  REQUIRED = "1";
- ;;  END = {INT aset;
- ;;    if (anchorcnt == 2){
- ;;       if ((firstanchor == 1) && (FIELDSTATUS == FIELD_OK))
- ;;          aset = ANCHORSET(1,2);
- ;;       else aset = 0;
- ;;       if (aset == 0) {NEXTFIELD = 3;} 
- ;;       else NEXTFIELD = 5;}
- ;;  }; 
  ;;FIELD ' 3
- ;;  NAME = "TOP RIGHT ANCHOR";
- ;;  ELEMTYPE = ELEM_PAT;
- ;;  METRIC = 17 120 120;
+ ;;  NAME = "ANCHOR 1";
+ ;;  ELEMTYPE = CROSSHAIR;
+ ;;  METRIC = 3 1 20 50 0 0 90 100;
  ;;  DATATYPE =INT;
- ;;  LENGTH = 2;
- ;;  POINTS = 65 2015 120 2075;
+ ;;  LENGTH = 1;
+ ;;  POINTS = 65 65;
  ;;  PAGE = 0;
- ;;  CONFIDENCE = " 6";
- ;;  END = {if (anchorcnt == 2) {
- ;;     firstanchor = 1; 
- ;;     if (FIELDSTATUS != FIELD_OK) firstanchor = 0;}
- ;;     };
+ ;;  ANCHOR = "1";
  ;;  HIDDEN = "1";
- ;;  Pattern = "PATTERN=C:\\VISTA\\AICS\\FORMSPEC\\AICSLOGO.BMP";
  ;;  REQUIRED = "1";
  ;;FIELD ' 4
- ;;  NAME = "BOTTOM RIGHT ANCHOR";
- ;;  ELEMTYPE = ELEM_PAT;
- ;;  METRIC = 17 120 120;
+ ;;  NAME = "ANCHOR 4";
+ ;;  ELEMTYPE = CROSSHAIR;
+ ;;  METRIC = 3 3 20 50 0 0 90 80;
  ;;  DATATYPE =INT;
- ;;  LENGTH = 2;
- ;;  POINTS = 2690 2015 2745 2075;
+ ;;  LENGTH = 1;
+ ;;  POINTS = 2729 65;
  ;;  PAGE = 0;
- ;;  CONFIDENCE = " 6";
+ ;;  ANCHOR = "1";
  ;;  HIDDEN = "1";
- ;;  Pattern = "PATTERN=C:\\VISTA\\AICS\\FORMSPEC\\AICSLOGO.BMP";
  ;;  REQUIRED = "1";
- ;;  END={INT aset;
- ;;INT result;
- ;;  if (anchorcnt == 2){
- ;;     if ((firstanchor == 1) && (FIELDSTATUS == FIELD_OK))     
- ;;     aset = ANCHORSET(3,4);
- ;;     else aset =0;
- ;;     if (aset == 0) {
- ;;        if (ddechan == 0) SHOW(\"Anchors not found, recognition stopping!\");
- ;;        if (ddechan != 0) {
- ;;           result = DDEEXEC(ddechan,\"SAVEFORM(0,0,0,U"\);
- ;;           DDEPOKE(ddechan,\"DdeServerItem\",\"Anchors not found\");}
- ;;        CHAIN(\"C:\\\\vista\\\\aics\\\\formspec\\\\AICSMSTR.FS\",1);}}
- ;;  
- ;;  if (anchorcnt == 4){
- ;;     aset = ANCHORSET(1,4);
- ;;     if (aset == 0) {
- ;;        if (ddechan == 0) SHOW(\"Anchors not found, recognition stopping!\");
- ;;        if (ddechan != 0) {
- ;;           result = DDEEXEC(ddechan,\"SAVEFORM(0,0,0,U"\);
- ;;           DDEPOKE(ddechan,\"DdeServerItem\",\"Anchors not found\");}
- ;;        CHAIN(\"C:\\\\vista\\\\aics\\\\formspec\\\\AICSMSTR.FS\",1);}}
- ;;  };
  ;;FIELD ' 5
  ;;NAME = "SCANPAGE?";
- ;;  ELEMTYPE = ELEM_PAT;
- ;;  METRIC = 17 120 120;
- ;;  DATATYPE =INT;
- ;;  LENGTH = 2;
- ;;  POINTS = 2669 1264 2734 1344;
- ;;  PAGE = 0;
- ;;  CONFIDENCE = " 7";
- ;;  HIDDEN = "1";
- ;;  Pattern = "PATTERN=C:\\VISTA\\AICS\\FORMSPEC\\AICSLOGO.BMP";
- ;;  REQUIRED = "1";
+ ;;ELEMTYPE = RECT;
+ ;;METRIC = 30 30 0 0 0 0 90 0 1;
+ ;;DATATYPE =INT;
+ ;;LENGTH = 1;
+ ;;POINTS = 2710 1273;
+ ;;PAGE = 0;
+ ;; HIDDEN = "1";
+ ;;EXFORMAT="NOEXPORT";
+ ;;MAP = "PAGE HAS NO DATA,PAGE HAS DATA";
+ ;;XMAP = "0,1";
  ;;FIELD ' 6
  ;;  NAME = "FORM ID CHECK";
  ;;  ELEMTYPE = ELEM_OCR;
  ;;  DATATYPE =INT;
  ;;  LENGTH = 3;
- ;;  POINTS = 50 1412 150 1545;
+ ;;  POINTS = 60 1422 120 1530;
  ;;  PAGE = 0;
+ ;;  CONFIDENCE = " 10";
  ;;  CHARFORMAT = "NOSPACES";
  ;;  END = {
- ;;  check=GETIVALUE(FIELDNAME);
- ;;  if (check < 1) FIELDSTATUS = FIELD_BAD;
- ;;  if (GETSTATUS(FIELDNAME) == FIELD_BLANK) FIELDSTATUS = FIELD_BAD;};
+ ;;  check=GETIVALUE(FIELDNAME);};
+ ;;  HIDDEN = "1";
  ;;  REQUIRED = "1";
  ;;FIELD ' 7
  ;;  NAME = "FORM ID";
  ;;  ELEMTYPE = ELEM_OCR;
  ;;  DATATYPE =INT;
  ;;  LENGTH = 9;
- ;;  POINTS = 50 635 150 910;
+ ;;  POINTS = 60 652 120 910;
  ;;  PAGE = 0;
+ ;;  CONFIDENCE = " 10";
  ;;  CHARFORMAT = "NOSPACES";
  ;;  END = {
  ;;  INT checksum;
@@ -189,20 +136,19 @@ NAME ;;  NAME = "ENCOUNTER FORM 71";
  ;;  ELEMTYPE = ELEM_OCR;
  ;;  DATATYPE =INT;
  ;;  LENGTH = 3;
- ;;  POINTS = 50 1590 150 1700;
+ ;;  POINTS = 60 1600 120 1700;
  ;;  PAGE = 0;
  ;;  CHARFORMAT = "NOSPACES";
  ;;  END = {
- ;;  check=GETIVALUE(FIELDNAME);
- ;;  if (check < 1) FIELDSTATUS = FIELD_BAD;
- ;;  if (GETSTATUS(FIELDNAME) == FIELD_BLANK) FIELDSTATUS = FIELD_BAD;};
+ ;;  check=GETIVALUE(FIELDNAME);};
+ ;;  HIDDEN = "1";
  ;;  REQUIRED = "1";
  ;;FIELD ' 9
  ;;  NAME = "PAGE";
  ;;  ELEMTYPE = ELEM_OCR;
  ;;  DATATYPE =INT;
  ;;  LENGTH = 1;
- ;;  POINTS = 50 1860 150 1950;
+ ;;  POINTS = 60 1858 120 1934;
  ;;  PAGE = 0;
  ;;  CHARFORMAT = "NOSPACES";
  ;;  END = {INT  checksum;
@@ -250,6 +196,7 @@ NAME2 ;;  NAME = "BOTTOM OF PAGE";
 PAGE2 ;;  PAGE = 1;
  ;;  HIDDEN="1";
  ;;END = {INT result;
+ ;;INT ddechan;
  ;;INT loop;
  ;;ALPHA Data;
  ;;ALPHA str;
@@ -259,10 +206,6 @@ PAGE2 ;;  PAGE = 1;
  ;;ALPHA Add;
  ;;ALPHA End;
  ;;
- ;;if (ddechan == 0) {
- ;;   SHOW(\"AICS is not connected, no data exported!\");
- ;;   CHAIN(\"C:\\\\vista\\\\aics\\\\formspec\\\\AICSMSTR.FS\",1);}
- ;;
  ;;New=\"$$NEW$$("\;
  ;;Add=\"$$ADD$$("\;
  ;;End=\"$$END$$("\;
@@ -270,16 +213,33 @@ PAGE2 ;;  PAGE = 1;
  ;;
  ;;if (BATCH&&(saveunrf>0)){
 SAVE ;;  Save = \"SAVEFORM("\;
- ;;  if (ddechan != 0) result = DDEEXEC(ddechan,Save);
- ;;  if (result==0) SHOW(\"Warning: Saving of Unrecognized form in AICS has Failed!\");
- ;;  else DDEPOKE(ddechan,\"DdeServerItem\",\"Operator Verification Needed\");
- ;;  CHAIN(\"C:\\\\vista\\\\aics\\\\formspec\\\\AICSMSTR.FS\",1);}
+ ;;  ddechan = DDEINIT(\"IBDSCAN\",\"DdeServerConv\");
+ ;;    if (ddechan==0) {
+ ;;       DIALOG(\"\", \"OK\", \"\",\"Unable to Open Channel to AICS to Export Data!\");
+ ;;       CHAIN(\"AICSMSTR.FS\",1);
+ ;;       }
+ ;;  else {
+ ;;    result = DDEEXEC(ddechan,Save);
+ ;;    if (result==0) {
+ ;;       DIALOG(\"\", \"OK\", \"\", \"Warning: Saving of Unrecognized form in AICS has Failed!\");}
+ ;;     else {
+ ;;          DDEPOKE(ddechan,\"DdeServerItem\",\"Operator Verification Needed\");}
+ ;;    DDETERM(ddechan);
+ ;;    }
+ ;;  CHAIN(\"AICSMSTR.FS\",1);}
  ;;
- ;;  if (ddechan != 0) {
+ ;;    ddechan=DDEINIT(\"IBDSCAN\",\"DdeServerConv\");
+ ;;    if (ddechan==0) {
+ ;;       DIALOG(\"\", \"OK\", \"\",\"Unable to Open Channel to AICS to Export Data!\");
+ ;;       CHAIN(\"AICSMSTR.FS\",1);
+ ;;       }
+ ;;  else {
 EXPORT ;;      \'if (STRFIND(Data,RS,STRLEN(Data) - 1) > 0) {;;      \'    Data = SUBSTR(Data,1,STRLEN(Data) - 1); }
+ ;;       result=DDEPOKE(ddechan,\"DdeServerItem\",End);
  ;;
- ;;  result=DDEPOKE(ddechan,\"DdeServerItem\",End);}
- ;;CHAIN(\"c:\\\\vista\\\\aics\\\\formspec\\\\AICSMSTR.FS\",1);
+ ;;  DDETERM(ddechan);
+ ;;  }
+ ;;CHAIN(\"AICSMSTR.FS\",1);
  ;;};
  ;;EXFORMAT="NOEXPORT";
 QUIT2 ;;

@@ -1,4 +1,5 @@
-XUCSXGR ;CLKS/SO Rank Global Access/sec High to Low ;4/11/96  05:57
+XUCSXGR ;CLKS/SO Rank Global Access/sec High to Low ;4/11/96  05:57 [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**1001**;APR 1, 2003
  ;;7.3;Toolkit;**14**;Jan 26, 1996
 ALL ; Entry Point to lump accesses as if a single VG
  D GDATE

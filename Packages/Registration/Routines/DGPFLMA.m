@@ -1,5 +1,5 @@
 DGPFLMA ;ALB/KCL - PRF ASSIGNMENT LISTMAN SCREEN ; 4/24/03 4:34pm
- ;;5.3;Registration;**425**;Aug 13,1993
+ ;;5.3;Registration;**425,1008**;Aug 13,1993
  ;
  ;
 EN ;Main entry point for DGPF RECORD FLAG ASSIGNMENT option.
@@ -16,8 +16,10 @@ EN ;Main entry point for DGPF RECORD FLAG ASSIGNMENT option.
  ;
  ;
 HDR ;Header Code
- S VALMHDR(1)="Patient: No Patient Selected"
- S VALMHDR(2)=""
+ ;cmi/anch/maw 10/18/2007 modified below lines due to reset after selecting patient PATCH 1008
+ I '$D(VALMHDR) D
+ . S VALMHDR(1)="Patient: No Patient Selected"
+ . S VALMHDR(2)=""
  Q
  ;
  ;

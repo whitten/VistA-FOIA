@@ -1,5 +1,5 @@
 IBDFRPC1 ;ALB/AAS - Return list of selections ; 2-JAN-96
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**25**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
  ; -- used by AICS Data Entry Systems, IBDFDE2, IBDFDE3, IBDFDE4
  ;
@@ -105,7 +105,7 @@ HP ; -- returns information on hand print field
  G:$G(HNODE)="" HPQ
  S HTEXT=$P(HNODE,"^",2)
  S HTYPE=$G(^IBE(359.1,+$P(HNODE,"^",10),0))
- S HLEN=$P(HTYPE,"^",2),HPIC=$$FRMT^IBDF2F(HTYPE,$G(IBAPPT)),HMEAS=$P(HTYPE,"^",11),VTYPE=$P(HTYPE,"^",12),VUNIT=$P(HTYPE,"^",13)
+ S HLEN=$P(HTYPE,"^",2),HPIC=$P(HTYPE,"^",5),HMEAS=$P(HTYPE,"^",11),VTYPE=$P(HTYPE,"^",12),VUNIT=$P(HTYPE,"^",13)
  S @ARRY@(1)=HTEXT_"^"_HPIC_"^"_HLEN_"^"_HMEAS_"^"_VTYPE_"^"_VUNIT
  S @ARRY@(0)="1^HP^"_HTEXT_"^0"
  ;
@@ -130,8 +130,8 @@ TESTD ; -- test dynamic list
  ;
 TESTL ; -- test list
  K TEST
- S IBDF("PI")=7
- S IBDF("IEN")=488
+ S IBDF("PI")=69
+ S IBDF("IEN")=1491
  S IBDF("TYPE")="LIST"
  D OBJLST("^TMP($J,""TESTL"")",.IBDF)
  X "ZW TEST"

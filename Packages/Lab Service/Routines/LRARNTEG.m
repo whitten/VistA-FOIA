@@ -1,4 +1,5 @@
-LRARNTEG ;ISC/XTSUMBLD KERNEL - Package checksum checker ;2960927.133408
+LRARNTEG ; IHS/DIR/AAB - KERNEL - Package checksum checker 2960927.133408 ; [ 07/22/2002  1:07 PM ]
+ ;;5.2;LR;**1001,1013**;JUL 15, 2002
  ;;0.0;
  ;;7.3;2960927.133408
  S XT4="I 1",X=$T(+3) W !!,"Checksum routine created on ",$P(X,";",4)," by KERNEL V",$P(X,";",3),!

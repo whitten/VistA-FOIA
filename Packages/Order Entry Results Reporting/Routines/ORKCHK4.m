@@ -1,5 +1,5 @@
-ORKCHK4 ; slc/CLA - Support routine called by ORKCHK to do SELECT mode order checks ;12/13/10  07:18
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**6,32,74,87,94,123,162,190,249,272**;Dec 17, 1997;Build 53
+ORKCHK4 ; slc/CLA - Support routine called by ORKCHK to do SELECT mode order checks ;3/6/97  9:35
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**6,32,74,87,94,123,162,190**;Dec 17, 1997
  Q
  ;
 EN(ORKS,ORKDFN,ORKA,ORENT,ORKTMODE) ;perform order checking for orderable item selection
@@ -24,7 +24,7 @@ PHARM ;process pharmacy order checks:
  D PARAMS("CRITICAL DRUG INTERACTION",.ORCRITN,.ORCRITF,.ORCRITD)
  D PARAMS("SIGNIFICANT DRUG INTERACTION",.ORSIGN,.ORSIGF,.ORSIGD)
  D PARAMS("DUPLICATE DRUG ORDER",.ORDUPN,.ORDUPF,.ORDUPD)
- D PARAMS("DUPLICATE DRUG THERAPY",.ORDUPCN,.ORDUPCF,.ORDUPCD)
+ D PARAMS("DUPLICATE DRUG CLASS ORDER",.ORDUPCN,.ORDUPCF,.ORDUPCD)
  ;
  ;dispense drug selected:
  I $L($G(HL7LPTR)),($G(HL7LCOD)="99PSD") D
@@ -35,10 +35,9 @@ PHARM ;process pharmacy order checks:
  I '$L($G(HL7LPTR)) D
  .S ORPSPKG=$E(ORKDG,3)
  .I ORPSPKG="H" S ORPSPKG="X"  ;change to "X" if "H"erbal/non-VA med
- .I "IOX"[ORPSPKG D OI2DD^ORKPS(.ORPSA,OI,ORPSPKG)
+ .I "IOX"[ORPSPKG D OI2DD(.ORPSA,OI,ORPSPKG)
  .S ORKDD=0 F  S ORKDD=$O(ORPSA(ORKDD)) Q:'ORKDD  D
- ..;S HL7LTXT=ORPSA(ORKDD)
- ..S HL7LTXT=$P($G(^ORD(101.43,OI,0)),U)
+ ..S HL7LTXT=ORPSA(ORKDD)
  ..S HL7NPTR=$P(ORKDD,";",2)
  ..S HL7LPTR=+ORKDD
  ..S HL7LCOD="99PSD",HL7NCOD="99NDF"
@@ -52,46 +51,46 @@ PHARM ;process pharmacy order checks:
 RXOCS ;drug-drug interaction, duplicate drug order, duplicate drug class
  Q:ORCRITF_ORSIGF_ORDUPF_ORDUPCF'["E"  ;quit if none are "E"nabled
  N ORKRX,ORPSNUM
- D CHECK^ORKPS(.ORKRX,ORKDFN,HL7LPTR_U_HL7LTXT,OI,ORKDG)
+ D CHECK^ORKPS(.ORKRX,ORKDFN,HL7LPTR,OI,ORKDG)
  N CHK,XX S CHK=0,XX=""
  F  S CHK=$O(ORKRX(CHK)) Q:'CHK  D
  .S XX=ORKRX(CHK)
  .;
- .;get errors/exceptions/checks not done
- .I $P(XX,U)="ERR" D
- ..S ORKS("ORK",2_$E($P(XX,U,2),1,225))=ORNUM_U_25_U_3_U_$P(XX,U,2)
- .;
  .;critical drug interaction:
- .I $P(XX,U)="DI",$P(XX,U,2)="CRITICAL" D
+ .I $P(XX,U)="DI",$P(XX,U,5)="CRITICAL" D  ;,(ORKTMODE'="ALL") D
  ..Q:ORCRITF="D"
- ..S ORPSNUM=$P(XX,U,3)
- ..S ORKTXT=$P(XX,U,2)_" drug-drug interaction: "_$P(XX,U,5)
- ..S ORKMSG=$P(XX,U,2)_" drug-drug interaction: "_$P(XX,U,6)
- ..S ORKS("ORK",ORCRITD_","_$G(ORNUM)_","_ORPSNUM_","_$E(ORKMSG,1,225))=ORNUM_U_ORCRITN_U_ORCRITD_U_ORKTXT
+ ..S ORPSNUM=$P(XX,U,8)  ;get the associated order number
+ ..I $L(ORPSNUM),$G(^OR(100,+ORPSNUM,0)) S ORKT=$$FULLTEXT^ORQOR1(+ORPSNUM),ORKTXT=$P(ORKT,U)_" ["_$P(ORKT,U,2)_"]"
+ ..E  S ORKTXT=$P(XX,U,3)
+ ..S ORKMSG=$P(XX,U,5)_" drug-drug interaction: "_$P(XX,U,6)_" & "_$P(XX,U,7)
+ ..S ORKS("ORK",ORCRITD_","_$G(ORNUM)_","_ORPSNUM_","_$E(ORKMSG,1,225))=ORNUM_U_ORCRITN_U_ORCRITD_U_ORKMSG_" ("_ORKTXT_")"_U_$G(ORPSNUM)
  .;
  .;significant drug interaction:
- .I $P(XX,U)="DI",$P(XX,U,2)="SIGNIFICANT" D
+ .I $P(XX,U)="DI",$P(XX,U,5)="SIGNIFICANT" D  ;,(ORKTMODE'="ALL") D
  ..Q:ORSIGF="D"
- ..S ORPSNUM=$P(XX,U,3)
- ..S ORKTXT=$P(XX,U,2)_" drug-drug interaction: "_$P(XX,U,5)
- ..S ORKMSG=$P(XX,U,2)_" drug-drug interaction: "_$P(XX,U,6)
- ..S ORKS("ORK",ORSIGD_","_$G(ORNUM)_","_ORPSNUM_","_$E(ORKMSG,1,225))=ORNUM_U_ORSIGN_U_ORSIGD_U_ORKTXT
+ ..S ORPSNUM=$P(XX,U,8)  ;get the associated order number
+ ..I $L(ORPSNUM),$G(^OR(100,+ORPSNUM,0)) S ORKT=$$FULLTEXT^ORQOR1(+ORPSNUM),ORKTXT=$P(ORKT,U)_" ["_$P(ORKT,U,2)_"]"
+ ..E  S ORKTXT=$P(XX,U,3)
+ ..S ORKMSG=$P(XX,U,5)_" drug-drug interaction: "_$P(XX,U,6)_" & "_$P(XX,U,7)
+ ..S ORKS("ORK",ORSIGD_","_$G(ORNUM)_","_ORPSNUM_","_$E(ORKMSG,1,225))=ORNUM_U_ORSIGN_U_ORSIGD_U_ORKMSG_" ("_ORKTXT_")"_U_$G(ORPSNUM)
  .;
  .;duplicate drug:
- .I $P(XX,U)="DD" D
+ .I $P(XX,U)="DD" D  ;,(ORKTMODE'="ALL") D
  ..Q:ORDUPF="D"
  ..S ORPSNUM=$P(XX,U,4)  ;get the associated order number
  ..I $L(ORPSNUM),$G(^OR(100,+ORPSNUM,0)) S ORKT=$$FULLTEXT^ORQOR1(+ORPSNUM),ORKTXT=$P(ORKT,U)_" ["_$P(ORKT,U,2)_"]"
  ..E  S ORKTXT=$P(XX,U,3)
- ..S ORKMSG="Duplicate drug order: "_ORKTXT
- ..S ORKS("ORK",ORDUPD_","_$G(ORNUM)_","_ORPSNUM_",Duplicate drug order: "_$E($P(XX,U,3),1,200))=ORNUM_U_ORDUPN_U_ORDUPD_U_ORKMSG_U_$G(ORPSNUM)
+ ..S ORKMSG="Duplicate order: "_ORKTXT
+ ..S ORKS("ORK",ORDUPD_","_$G(ORNUM)_","_ORPSNUM_",Duplicate order: "_$P(XX,U,3))=ORNUM_U_ORDUPN_U_ORDUPD_U_ORKMSG_U_$G(ORPSNUM)
  .;
- .;duplicate class: NOW DRUG THERAPY
- .I $P(XX,U)="DC" D
+ .;duplicate class:
+ .I $P(XX,U)="DC" D  ;,(ORKTMODE'="ALL") D
  ..Q:ORDUPCF="D"
- ..S ORPSNUM=$P(XX,U,2)  ;get the associated order number
- ..S ORKMSG=$P(XX,U,4)
- ..S ORKS("ORK",ORDUPCD_","_$G(ORNUM)_","_ORPSNUM_","_$E(ORKMSG,1,225))=ORNUM_U_ORDUPCN_U_ORDUPCD_U_ORKMSG
+ ..S ORPSNUM=$P(XX,U,6)  ;get the associated order number
+ ..I $L(ORPSNUM),$G(^OR(100,+ORPSNUM,0)) S ORKT=$$FULLTEXT^ORQOR1(+ORPSNUM),ORKTXT=$P(ORKT,U)_" ["_$P(ORKT,U,2)_"]"
+ ..E  S ORKTXT=$P(XX,U,5)
+ ..S ORKMSG="Duplicate drug class order: "_$P(XX,U,3)
+ ..S ORKS("ORK",ORDUPCD_","_$G(ORNUM)_","_ORPSNUM_","_$E(ORKMSG,1,225))=ORNUM_U_ORDUPCN_U_ORDUPCD_U_ORKMSG_" ("_ORKTXT_")"_U_$G(ORPSNUM)
  Q
  ;
 OI2DD(ORPSA,OROI,ORPSPKG)       ;rtn dispense drugs for a PS OI

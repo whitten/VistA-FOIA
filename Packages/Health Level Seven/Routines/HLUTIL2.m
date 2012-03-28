@@ -1,7 +1,5 @@
-HLUTIL2 ;ALB/MFK/MTC/JC - VARIOUS HL7 UTILITIES ;12/30/2010
- ;;1.6;HEALTH LEVEL SEVEN;**19,43,57,59,120,153**;;Build 11
- ;Per VHA Directive 2004-038, this routine should not be modified.
- ;
+HLUTIL2 ;ALB/MFK/MTC/JC - VARIOUS HL7 UTILITIES ;01/13/2006  16:06
+ ;;1.6;HEALTH LEVEL SEVEN;**19,43,57,59,120**;;Build 12
 ITEM(IEN,ROUTINE) ; Return data from ITEM multiple in protocol file
  ; INPUT : IEN - Internal Entry Number for 101 (Protocol) file.
  ;         ROUTINE - name of a routine to run (either PTR or TYPE)
@@ -120,9 +118,7 @@ APPPRM(IEN) ; RETURN DATA FROM THE APPLICATION PARAMETER FILE
  S:(APPPRM(IEN,"FS")="") APPPRM(IEN,"FS")="^"
  Q
 CLRQUE ; Clear a queue by menu option
- N DIC,DIR,DIRUT,HLDIR,HLERR,HLIEN,HLL,HLLTC,X,Y,TCP
- S TCP=$O(^HLCS(869.1,"B","TCP",0))
- S DIC("S")="I $P(^(0),U,3)'=TCP"
+ N DIC,DIR,DIRUT,HLDIR,HLERR,HLIEN,HLL,HLLTC,X,Y
  S DIC="^HLCS(870,",DIC(0)="AEQMZ"
  D ^DIC Q:Y<0
  K DIC S HLIEN=+Y,HLL=$P(Y(0),U,3)

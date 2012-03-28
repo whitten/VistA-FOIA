@@ -1,6 +1,5 @@
-GMRCIERR ;SLC/JFR - process IFC message error alert ;07/08/03 11:16
- ;;3.0;CONSULT/REQUEST TRACKING;**22,28,30,35,58**;DEC 27, 1997;Build 4
- ;;Per VHA Directive 2004-038, this routine should not be modified.
+GMRCIERR ;SLC/JFR - process IFC message error alert ;10/22/02 14:16
+ ;;3.0;CONSULT/REQUEST TRACKING;**22,28,30**;DEC 27, 1997
  Q
 EN(GMRCLOG,GMRCDA,GMRCACT,GMRCRPT) ;start here
  ;Build ^TMP array for processing alert
@@ -68,6 +67,7 @@ DIALOG(GMRCDATA) ;ask user what to do based on error and activity
  D EN($P(GMRCDATA,"|"),$P(GMRCDATA,"|",2),$P(GMRCDATA,"|",3))
  W @IOF
  S LN=0 F  S LN=$O(^TMP("GMRCIERR",$J,LN)) Q:'LN  W !,^(LN,0)
+ K ^TMP("GMRCIERR",$J)
  W !
  I $O(^TMP("GMRCIERR",$J," "),-1)<2 Q 0 ;some problem so delete alert
  S DIR(0)="E" D ^DIR
@@ -85,16 +85,11 @@ DIALOG(GMRCDATA) ;ask user what to do based on error and activity
  S DIR("A",2)=" "
  S DIR("A")="Do you want to retransmit this? " D ^DIR
  I $G(Y)=1 D  Q 0
- . D TRIGR^GMRCIEVT($P(GMRCDATA,"|",2),$P(GMRCDATA,"|",3)) ; re-transmit
+ . D TRIGR^GMRCIEVT($P(GMRCDATA,"|",2),$P(GMRCDATA,"|",3))
  K DIR
  W !
  S DIR(0)="YA",DIR("B")="N"
- S DIR("A")="Do you want to delete this alert for all recipients? "
- D ^DIR
- I $G(Y)=1 Q 0
- W !
- S DIR(0)="YA",DIR("B")="N"
- S DIR("A")="Do you want to delete this alert for yourself only? "
+ S DIR("A")="Do you want to delete this alert for yourself? "
  D ^DIR
  I $G(Y)=1 Q 1
  Q "@"
@@ -102,7 +97,6 @@ DIALOG(GMRCDATA) ;ask user what to do based on error and activity
 FOLLUP ;action to take from alert
  S XQAKILL=$$DIALOG(XQADATA)
  I XQAKILL="@" K XQAKILL
- K ^TMP("GMRCIERR",$J)
  Q
  ;
 SNDALRT(GMRCLOG,TYPE,XQAMSG) ; send an alert on some errors
@@ -157,26 +151,22 @@ PTERRMSG(GMRCPID,GMRCSTA,GMRCDOM,GMRCOBR) ;send IFC pt err to mail group
  S GMRCMSG(13,0)="            Sex: "_$P(GMRCPID,"|",8)
  S GMRCMSG(14,0)="     Remote ICN: "_GMRCICN
  S GMRCMSG(15,0)=" "
- ;
- S XMSUB="Incoming IFC patient error, "_GMRCNAM
- S XMDUZ="Consult/Request Tracking Package"
- D XMZ^XMA2
  I $L($G(GMRCOBR)) D
  . N GMRCITM
  . S GMRCITM=$P(GMRCOBR,"|",4)
- . I $P(GMRCITM,U,2)["SUICIDE HOTLINE" D
- .. N DIE,DA,DR
- .. S DIE=3.9,DA=XMZ,DR="1.7////P" D ^DIE K DIE,DA,DR
  . I GMRCITM["VA1235" S GMRCITM="Ordered service: "_$P(GMRCITM,U,2)
  . I GMRCITM["VA1233" S GMRCITM="  Ordered proc.: "_$P(GMRCITM,U,2)
  . S GMRCMSG(16,0)=GMRCITM
  S GMRCMSG(17,0)=" "
  S GMRCMSG(18,0)="   The error is: Unknown Patient (201)"
+ ;
  D  ; set XMY to local group or remote group
  . I $D(GMRCDOM) S XMY("G.IFC CLIN ERRORS@"_GMRCDOM)="" Q
  . S XMY("G.IFC PATIENT ERROR MESSAGES")=""
+ S XMSUB="Incoming IFC patient error, "_GMRCNAM
+ S XMDUZ="Consult/Request Tracking Package"
  S XMTEXT="GMRCMSG("
- D EN1^XMD
+ D ^XMD
  Q
  ;
 PTMPIER(GMRCDFN) ;send IFC local MPI error to MAS mail group
@@ -209,3 +199,4 @@ PTMPIER(GMRCDFN) ;send IFC local MPI error to MAS mail group
  S XMTEXT="GMRCMSG("
  D ^XMD
  Q
+ ;

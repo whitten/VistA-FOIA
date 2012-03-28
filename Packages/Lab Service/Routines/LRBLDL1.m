@@ -1,6 +1,7 @@
-LRBLDL1 ;AVAMC/REG - BLOOD DONOR LABELS ; 10/23/88  15:45 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDL1 ; IHS/DIR/FJE - BLOOD DONOR LABELS 10/23/88 15:45 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  U IO S P=P(1) F A=0:1 S P=$O(^LRE("B",P)) G:P=""!(P]P(2)) END F I=0:0 S I=$O(^LRE("B",P,I)) Q:'I  S W=$O(^LRE(I,5,0)) I W>LRSDT S W=^(W,0) D W
 END D V^LRU,END^LRUTL Q
  ;

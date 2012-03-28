@@ -1,4 +1,4 @@
-MCAROG ; GENERATED FROM 'MCAROG' PRINT TEMPLATE (#984) ; 10/04/96 ; (FILE 699, MARGIN=80)
+MCAROG ; GENERATED FROM 'MCAROG' PRINT TEMPLATE (#3708) ; 11/29/04 ; (FILE 699, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,17 +11,18 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(984,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3708,"DXS")
+ S I(0)="^MCAR(699,",J(0)=699
  D N:$X>1 Q:'DN  W ?1 W "PROCEDURE: "
  X DXS(1,9.2) S X=$P(DIP(101),U,8) S D0=I(0,0) K DIP K:DN Y W X
  D N:$X>44 Q:'DN  W ?44 W "WARD/CLINIC: "
- S X=$G(^MCAR(699,D0,0)) S Y=$P(X,U,11) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,20)
+ S X=$G(^MCAR(699,D0,0)) S Y=$P(X,U,11) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,20)
  D N:$X>1 Q:'DN  W ?1 W "Endoscopist: "
- D N:$X>15 Q:'DN  W ?15 S Y=$P(X,U,8) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ D N:$X>15 Q:'DN  W ?15 S Y=$P(X,U,8) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>44 Q:'DN  W ?44 W "FELLOW: "
- S X=$G(^MCAR(699,D0,200)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(699,D0,200)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>44 Q:'DN  W ?44 W "2ND FELLOW: "
- S X=$G(^MCAR(699,D0,29)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(699,D0,29)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  S X=1 X "F I=1:1:X "_$S($D(^UTILITY($J,"W")):"S X="" |TAB|"" D L^DIWP",1:"W !") S X="" K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 X DXS(2,9) K DIP K:DN Y W X
  D N:$X>2 Q:'DN  W ?2 W "Liver Biopsy: "
@@ -45,11 +46,12 @@ A1R ;
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 X DXS(8,9) K DIP K:DN Y W X
  W ?0 D IND^MCARGS K DIP K:DN Y
  D N:$X>2 Q:'DN  W ?2 W "COMMENT:"
- S X=$G(^MCAR(699,D0,0)) D N:$X>12 Q:'DN  S DIWL=13,DIWR=80 S Y=$P(X,U,6) S X=Y D ^DIWP
- D A^DIWW
+ S X=$G(^MCAR(699,D0,0)) D T Q:'DN  S DIWL=13,DIWR=80 S Y=$P(X,U,6) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>0 Q:'DN  W ?0 X DXS(9,9) K DIP K:DN Y W X
  D N:$X>2 Q:'DN  W ?2 W "Where Performed: "
- S X=$G(^MCAR(699,D0,0)) S Y=$P(X,U,10) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(699,D0,0)) S Y=$P(X,U,10) S Y=$S(Y="":Y,$D(^SC(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>44 Q:'DN  W ?44 W "Start - End: "
  S DIP(1)=$S($D(^MCAR(699,D0,9)):^(9),1:"") S X=$P(DIP(1),U,1)_" - "_$P(DIP(1),U,2) K DIP K:DN Y W X
  D N:$X>2 Q:'DN  W ?2 W "Urgency: "
@@ -58,16 +60,24 @@ A1R ;
  S I(1)=34,J(1)=699.05 F D1=0:0 Q:$O(^MCAR(699,D0,34,D1))'>0  X:$D(DSC(699.05)) DSC(699.05) S D1=$O(^(D1)) Q:D1'>0  D:$X>15 T Q:'DN  D B1
  G B1R
 B1 ;
- S X=$G(^MCAR(699,D0,34,D1,0)) D N:$X>4 Q:'DN  W ?4 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(699.48,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(699,D0,34,D1,0)) D N:$X>4 Q:'DN  W ?4 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(699.48,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  Q
 B1R ;
  D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 W "Insertion Depth: "
- S X=$G(^MCAR(699,D0,15)) S Y=$P(X,U,6) S Y=$S(Y="":Y,$D(^MCAR(697,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(699,D0,15)) S Y=$P(X,U,6) S Y=$S(Y="":Y,$D(^MCAR(697,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  W ?21 D:MCARGNAM="COL" COL^MCARGS K DIP K:DN Y
  D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 W "Medications Used:"
  S I(1)=8,J(1)=699.38 F D1=0:0 Q:$O(^MCAR(699,D0,8,D1))'>0  X:$D(DSC(699.38)) DSC(699.38) S D1=$O(^(D1)) Q:D1'>0  D:$X>21 T Q:'DN  D C1
- G C1R^MCAROG1
+ G C1R
 C1 ;
- S X=$G(^MCAR(699,D0,8,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,40)
+ S X=$G(^MCAR(699,D0,8,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  W "  "
- G ^MCAROG1
+ S DIP(1)=$S($D(^MCAR(699,D0,8,D1,0)):^(0),1:"") S X=$P(DIP(1),U,3)_" mg  " K DIP K:DN Y W X
+ S X=$G(^MCAR(699,D0,8,D1,0)) S Y=$P(X,U,2) W:Y]"" $S($D(DXS(11,Y)):DXS(11,Y),1:Y)
+ Q
+C1R ;
+ W ?21 D:MCARGNAM="LAP" LAP^MCARGS K DIP K:DN Y
+ K Y K DIWF
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

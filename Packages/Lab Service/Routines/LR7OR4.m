@@ -1,5 +1,5 @@
-LR7OR4 ;slc/dcm - Get Lab TEST Info ;8/11/97
- ;;5.2;LAB SERVICE;**256,356**;Sep 27, 1994;Build 8
+LR7OR4 ;VA/slc/dcm - Get Lab TEST Info ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**256,356,1027**;NOV 01, 1997;Build 8
  ;Entry points:  EN
 GET(TEST) ;Get TEST ifn
  I '$D(TEST) Q ""
@@ -100,6 +100,14 @@ CRRV(RT,RV) ;Convert Referance Range Values - convert embedded M code into a mor
  ;X - Work variable
  N SP5,SP10,X
  S SP5="     ",SP10=SP5_SP5,X=""
+ ;
+ ; ----- BEGIN IHS/OIT/MKK -- LR*5.2*1027
+ S:+$G(CNT)<1 CNT=0
+ I RV["SEX"&(RV["AGE") D  Q
+ . Q:$G(Y(1))["Age and sex"
+ . S Y(1)=SP5_RT_" - Age and sex dependent range values, please contact lab for specifics." Q
+ ; ----- END IHS/OIT/MKK -- LR*5.2*1027
+ ; 
  I RV'["$S(" D  Q
  . I $L($P(RV,"^")),'$L($P(RV,"^",2)),$P(RV,"^")?.ANP S CNT=CNT+1,Y(CNT)=SP5_RT_$S($P(RV,"^")?.N:" low : "_$TR($P(RV,"^"),""""),1:"  : "_$TR($P(RV,"^"),"""")) Q
  . I '$L($P(RV,"^")),$L($P(RV,"^",2)),$P(RV,"^",2)?.ANP S CNT=CNT+1,Y(CNT)=SP5_RT_$S($P(RV,"^",2)?.N:" high : "_$TR($P(RV,"^",2),""""),1:" : "_$TR($P(RV,"^",2),"""")) Q
@@ -118,6 +126,8 @@ CRRV(RT,RV) ;Convert Referance Range Values - convert embedded M code into a mor
  . S CNT=CNT+1,Y(CNT)=SP5_RT
  . I $L($P(RV,"^")) D FAVO($P(RV,"^"),"low")
  . I $L($P(RV,"^",2)) D FAVO($P(RV,"^",2),"high")
+ Q
+ ;
 GSV(X,SEX) ;Get Sex Value
  ;Variables passed in:
  ;X - Work variable low/high range value

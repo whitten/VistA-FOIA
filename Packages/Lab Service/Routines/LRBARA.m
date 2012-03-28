@@ -1,5 +1,5 @@
 LRBARA ;DALOI/JMC - INTERMEC 3000/4000 SERIES 1x2 LABEL FORMAT ;8/29/94  12:36
- ;;5.2;LAB SERVICE;**161,218**;Sep 27, 1994
+ ;;5.2T9;LR;**161,218,1018**;Nov 17, 2004
  ;
  ; This routine will program the Intermec 3000/4000 for 1X2 label formats
  ; which can be used with LRLABELA routine to print either one normal

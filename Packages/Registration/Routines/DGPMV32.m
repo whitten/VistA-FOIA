@@ -1,13 +1,20 @@
 DGPMV32 ;ALB/MIR - CONTINUE TRANSFER A PATIENT OPTION ;5/7/91  09:08
  ;;5.3;Registration;**418**;Aug 13, 1993
- S DGPMTYP=$P(DGPMA,"^",18) I $S('DGPMTYP:1,'$D(^DG(405.2,+DGPMTYP,"E")):1,'^("E"):1,1:0) I '$P(DGPMA,"^",4)!'$P(DGPMA,"^",6) S DA=DGPMDA,DIK="^DGPM(" D ^DIK W !,"Incomplete Transfer...Deleted" K DIK S DGPMA="" G Q
+ ;IHS/ANMC/LJF  7/26/2001 added checks for DGQUIET
+ ;
+ ;IHS/ANMC/LJF 7/26/2001 added check for DGQUIET to write statement
+ ;S DGPMTYP=$P(DGPMA,"^",18) I $S('DGPMTYP:1,'$D(^DG(405.2,+DGPMTYP,"E")):1,'^("E"):1,1:0) I '$P(DGPMA,"^",4)!'$P(DGPMA,"^",6) S DA=DGPMDA,DIK="^DGPM(" D ^DIK W !,"Incomplete Transfer...Deleted" K DIK S DGPMA="" G Q
+ S DGPMTYP=$P(DGPMA,"^",18) I $S('DGPMTYP:1,'$D(^DG(405.2,+DGPMTYP,"E")):1,'^("E"):1,1:0) I '$P(DGPMA,"^",4)!'$P(DGPMA,"^",6) S DA=DGPMDA,DIK="^DGPM(" D ^DIK W:'$D(DGQUIET) !,"Incomplete Transfer...Deleted" K DIK S DGPMA="" G Q
+ ;IHS/ANMC/LJF 7/26/2001 end of mod
+ ;
  I $S($P(DGPMA,"^",6,7)=$P(DGPMP,"^",6,7):0,'DGPMABL:0,1:1) S DGPMND=DGPMA D AB ;if change in room-bed or ward and next movement is to absence, update subsequent absences
 CONT S DGPMTYP="^"_DGPMTYP_"^" I "^13^44^"[DGPMTYP D ECA^DGPMV321 ;Edit Corresponding admission when TO ASIH or RESUME ASIH
  I DGPMTYP="^43^" D ASIHOF
  I "^14^45^"[DGPMTYP D UHD^DGPMV321 ;if FROM ASIH or CHANGE ASIH LOCATION (O.F.)
  I $D(^DG(405.1,+$P(DGPMA,"^",4),0)),'$P(^(0),"^",5) G Q
  S Y=DGPMDA D:'DGPMOUT SPEC^DGPMV36
-Q I DGPMA'=DGPMP W !,"Patient Transfer",$S('$D(^DGPM(+DGPMDA,0)):" Deleted.",'DGPMP:"red.",1:" Updated.") K ORQUIT
+Q ;I DGPMA'=DGPMP W !,"Patient Transfer",$S('$D(^DGPM(+DGPMDA,0)):" Deleted.",'DGPMP:"red.",1:" Updated.") K ORQUIT              ;IHS/ANMC/LJF 7/26/2001
+ I DGPMA'=DGPMP W:'$D(DGQUIET) !,"Patient Transfer",$S('$D(^DGPM(+DGPMDA,0)):" Deleted.",'DGPMP:"red.",1:" Updated.") K ORQUIT  ;IHS/ANMC/LJF 7/26/2001
  Q
 AB ;update absences upon ward/room-bed change during admit or transfer patient options
  S DGI=$P(DGPMND,"^"),DIE="^DGPM(",DIC(0)="M" W !,"Updating subsequent Absences"

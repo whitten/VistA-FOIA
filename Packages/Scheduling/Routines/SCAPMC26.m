@@ -1,5 +1,6 @@
-SCAPMC26 ;ALB/REW - API: Patients in a Clinic ; December 1, 1995 [12/21/98 4:30pm]
+SCAPMC26 ;ALB/REW - API: Patients in a Clinic ; December 1, 1995 [ 12/06/2000  9:24 AM ]
  ;;5.3;Scheduling;**41,157**;AUG 13, 1993
+ ;IHS/ANMC/LJF 12/06/2000 changed SSN to HRCN in Long Patient ID
  ;
 PTCL(SC44,SCDATES,SCLIST,SCERR) ; patients in a clinic
  ; Input:
@@ -50,7 +51,8 @@ ST N DFN,SCOK,SCCL,SCCLDT
  ..I $$DTCHK^SCAPU1(SCBEGIN,SCEND,SCINCL,$P($P(SCNODE,U,1),"."),$P(SCNODE,U,3)) D
  ...S SCN=$G(@SCLIST@(0),0)+1
  ...S @SCLIST@(0)=SCN
- ...S @SCLIST@(SCN)=DFN_U_$P($G(^DPT(DFN,0)),U,1)_U_U_$P(SCNODE,U,1)_U_$P(SCNODE,U,3)_U_"1"_U_SC44_U_$P($G(^DPT(DFN,.36)),U,3)
+ ...;S @SCLIST@(SCN)=DFN_U_$P($G(^DPT(DFN,0)),U,1)_U_U_$P(SCNODE,U,1)_U_$P(SCNODE,U,3)_U_"1"_U_SC44_U_$P($G(^DPT(DFN,.36)),U,3)  ;IHS/ANMC/LJF 12/06/2000
+ ...S @SCLIST@(SCN)=DFN_U_$P($G(^DPT(DFN,0)),U,1)_U_U_$P(SCNODE,U,1)_U_$P(SCNODE,U,3)_U_"1"_U_SC44_U_$$HRCN^BDGF2(DFN,+$G(DUZ(2)))   ;IHS/ANMC/LJF 12/06/2000
  ...Q
  ..S @SCLIST@("SC PTCL",DFN,SCX,SCN)=""
  ..Q

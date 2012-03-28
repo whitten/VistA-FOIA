@@ -1,4 +1,5 @@
 LRAPD1 ;AVAMC/REG/WTY/KLL - AP DATA ENTRY ;9/25/00
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**41,91,248,259,317**;Sep 27, 1994
  ;
  ;WTY;17-AUG-01;Unwrapped text and add kills for DR string

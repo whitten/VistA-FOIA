@@ -1,6 +1,6 @@
-LRBLA1 ;AVAMC/REG/CYM - BB ADM DATA ;6/21/96  07:45
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLA1 ; IHS/DIR/AAB - BB ADM DATA 07:45 ; [ 6/21/96 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  K LRB D W S LRF=1 D H Q:LR("Q")  D ^LRBLA2
  Q:$O(^TMP("LR",$J,"N","T",0))=""&($O(^TMP("LR",$J,"N","P",0))="")  D H Q:LR("Q")  W !!,"COUNT",?7,"TEMPORARY DEFERRAL REASON"
  F A=0:0 S A=$O(^TMP("LR",$J,"N","T",A)) Q:'A  S Y=^(A),X=9999999-Y,^TMP("LR",$J,"Z",X,A)=Y

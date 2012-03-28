@@ -1,4 +1,5 @@
-%ZOSV2 ; SFISC/JC - Capacity Mgmt - Performance Data ;06/27/96  10:17
+%ZOSV2 ; SFISC/JC - Capacity Mgmt - Performance Data ;06/27/96  10:17 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**35**;JUL 03, 1995
 DB ;Collect volume set information for this environment
 START D VSET^%VOLDEF I '%SMSTART G DONE

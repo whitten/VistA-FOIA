@@ -1,4 +1,5 @@
-XGS ;SFISC/VYD - SCREEN PRIMITIVES ;03/16/95  11:00
+XGS ;SFISC/VYD - SCREEN PRIMITIVES ;03/16/95  11:00 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 SAY(R,C,S,A) ;use this for coordinate output instead of WRITE
  ;output to screen and update virtual screen (XGSCRN)

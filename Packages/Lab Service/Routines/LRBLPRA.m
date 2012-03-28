@@ -1,6 +1,7 @@
-LRBLPRA ;AVAMC/REG - BB PT RECORD ;2/18/93  09:46 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPRA ; IHS/DIR/FJE - BB PT RECORD 2/18/93 09:46 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  I LR(7),'$O(^LR(A,1.7,0)),'$O(^LR(A,3,0)) Q
  S W=^LR(A,0),Y=$P(W,"^",3),P=$P(W,"^",2),X=^DIC(P,0,"GL") Q:'$D(@(X_Y_",0)"))  S X=^(0),^TMP("LRBL",$J,P,$P(X,"^"),A)=$P(X,"^",3)_"^"_$P(X,"^",9)_"^"_$P(W,"^",5)_"^"_$P(W,"^",6) Q
  ;
@@ -24,6 +25,7 @@ QUE U IO K ^TMP("LRBL",$J) D L^LRU,S^LRU
  ;
 B F LRDFN=0:0 S LRDFN=$O(^TMP("LRBL",$J,LR,LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S LR(4)=^(LRDFN) D W
  Q
-W D:$Y>(IOSL-6) H^LRBLPR Q:LR("Q")  S LRDPF=$P(^LR(LRDFN,0),U,2),Y=+LR(4),SSN=$P(LR(4),"^",2) D SSN^LRU,D^LRU W !,LRP,?31,SSN,?43,Y,?56,$J($P(LR(4),"^",3),2),?59,$P(LR(4),"^",4) D ^LRBLPR1 Q
+W ;D:$Y>(IOSL-6) H^LRBLPR Q:LR("Q")  S LRDPF=$P(^LR(LRDFN,0),U,2),Y=+LR(4),SSN=$P(LR(4),"^",2) D SSN^LRU,D^LRU W !,LRP,?31,SSN,?43,Y,?56,$J($P(LR(4),"^",3),2),?59,$P(LR(4),"^",4) D ^LRBLPR1 Q
+ D:$Y>(IOSL-6) H^LRBLPR Q:LR("Q")  S LRDPF=$P(^LR(LRDFN,0),U,2),DFN=$P(^(0),U,3),Y=+LR(4),SSN=$P(LR(4),"^",2) D SSN^LRU,D^LRU W !,LRP,?31,SSN,?43,Y,?56,$J($P(LR(4),"^",3),2),?59,$P(LR(4),"^",4) D ^LRBLPR1 Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q

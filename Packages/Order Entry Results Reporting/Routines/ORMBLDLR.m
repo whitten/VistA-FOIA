@@ -1,5 +1,5 @@
-ORMBLDLR ; SLC/MKB - Build outgoing Lab ORM msgs ;11/17/00  11:10
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**97,190,195**;Dec 17, 1997
+ORMBLDLR ; SLC/MKB - Build outgoing Lab ORM msgs ;17-Jun-2009 12:01;PLS
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**97,190,1002,1004**;Dec 17, 1997
 HL7DATE(DATE) ; -- FM -> HL7 format
  Q $$FMTHL7^XLFDT(DATE)  ;**97
  ;
@@ -9,20 +9,24 @@ PTR(NAME) ; -- Returns ptr value of prompt in Dialog file
 AP ; -- new Lab AP order
  ;    fall through to CH - no difference at this time
 CH ; -- new Lab CH order
- N IP,OI,START,STOP,URG,CMMT,INST,I,J,X
+ N IP,OI,START,STOP,URG,CMMT,INST,IND,IND2,I,J,X
  S START=$P($G(^OR(100,IFN,0)),U,8),STOP=$P($G(^(0)),U,9)
  S OI=$$PTR("OR GTX ORDERABLE ITEM"),URG=$$PTR("OR GTX LAB URGENCY")
  S CMMT=$$PTR("OR GTX WORD PROCESSING 1")
+ S IND=$$PTR("OR GTX CLININD"),IND2=$$PTR("OR GTX CLININD2") ; IHS/MSC/DKM - Clinical indicator prompts
  S IP="" ;$S($D(^OR(100,<ISOLATION ORDER FOR DFN>)):1,1:0)
  S $P(ORMSG(4),"|",8)="^^^"_$$HL7DATE(START)_U_$$HL7DATE(STOP)
  S I=4,INST=0 F  S INST=$O(ORDIALOG(OI,INST)) Q:INST'>0  D
  . S X=+$G(ORDIALOG(URG,INST)),X=$P($G(^LAB(62.05,X,0)),U,4)_";"_X
  . S I=I+1,ORMSG(I)="OBR||||"_$$USID^ORMBLD(ORDIALOG(OI,INST))_"|||||||"_$$COLLTYPE_"|"_IP_"|||"_$$SPEC_"||||||||||||^^^^^"_X
+ . ; IHS/MSC/DKM - Add clinical indicator as reason for study
+ . S:IND $P(ORMSG(I),"|",32)=$S(IND2:$G(ORDIALOG(IND2,INST)),1:"")_U_$G(ORDIALOG(IND,INST))_U_$S(IND2:"I9",1:"99IND")
+ . ; End of clinical indicator mod
  . S J=$O(^TMP("ORWORD",$J,CMMT,INST,0)) Q:'J  ; no comments for test
  . S I=I+1,ORMSG(I)="NTE|"_INST_"|P|"_^TMP("ORWORD",$J,CMMT,INST,J,0)
  . S L=0 F  S J=$O(^TMP("ORWORD",$J,CMMT,INST,J)) Q:J'>0  S L=L+1,ORMSG(I,L)=^(J,0)
  ; Add DG1 & ZCL segment(s) for Billing Aware
- D DG1^ORWDBA3($G(IFN),"I",I)
+ D DG1^ORWDBA1($G(IFN),"I",I)
  Q
  ;
 BB ; -- new Lab BB order

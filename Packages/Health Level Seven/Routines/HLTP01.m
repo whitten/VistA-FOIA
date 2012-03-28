@@ -1,4 +1,5 @@
-HLTP01 ;AISC/SAW-Transaction Processor Module (Cont'd) ;02/16/2000  11:15
+HLTP01 ;AISC/SAW-Transaction Processor Module (Cont'd) ;02/16/2000  11:15 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**2,25,34,47,60**;Oct 13, 1995
  ;
  ;Validate message header

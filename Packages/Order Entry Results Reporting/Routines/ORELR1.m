@@ -1,5 +1,5 @@
 ORELR1 ; slc/dcm - Cross check/update file 100 with file 69
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**20,42,323**;Dec 17, 1997;Build 10
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**20,42**;Dec 17, 1997
 EN ;Fix inconsistencies from ^OR to ^LRO(69
  W !,"This utility will look for inconsistencies between OE/RR 3.0 and Lab files."
  W !,"It will compare records in the Orders file (100) with the Lab Order file (69)."
@@ -10,7 +10,7 @@ EN ;Fix inconsistencies from ^OR to ^LRO(69
  W !,"Child orders with no parent order",?53,"Pointer removed"
  W !,"Child order missing parent pointer",?53,"Pointer restored"
  W !,"Incorrect status on parent order",?53,"Status corrected"
- ;W !,"Old veiled orders",?53,"Purged" ;DJE-VM *323 - it's not appropriate to purge unveiled orders since OR*3*282
+ W !,"Old veiled orders",?53,"Purged"
  W !,"Unrecognized pointer to file 69",?53,"Order cancelled"
  W !,"Unconverted orders from OE/RR 2.5",?53,"Order lapsed"
  W !,"Invalid pointer to file 69",?53,"Order cancelled"
@@ -59,7 +59,7 @@ DEQUE ;Queued entry point
  W:PTCNT !,"Parent status update total: "_PTCNT
  W:HCNT !,"Bad child pointer total: "_HCNT
  W:NCNT !,"Orders with no status total: "_NCNT
- ;W:VCNT !,"Old veiled orders: "_VCNT ;DJE-VM *323 - it's not appropriate to purge unveiled orders since OR*3*282
+ W:VCNT !,"Old veiled orders: "_VCNT
  W:UCCNT !,"Unrecognized package link: "_UCCNT
  W:BSCNT !,"Bad package link ,null status: "_BSCNT
  W:IVCNT !,"Invalid package link: "_IVCNT

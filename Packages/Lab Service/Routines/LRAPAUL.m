@@ -1,4 +1,6 @@
-LRAPAUL ;AVAMC/REG/CYM - PATHOLOGY LIST BY PATHOLOGIST/TECH ;2/9/98  13:59 ;
+LRAPAUL ; IHS/DIR/AAB - PATHOLOGY LIST BY PATHOLOGIST/TECH 2/9/98 13:59 ; [ 02/03/1999  2:07 PM ]
+ ;;5.2;LR;**1002,1003,1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**72,173,201**;Sep 27, 1994
  D ^LRAP G:'$D(Y) END
  S LRP=$S("SPAU"[LRSS:"Resident Pathologist",LRSS="CY":"Cytotechnologist",1:"Resident or EM Technologist")
@@ -18,7 +20,9 @@ QUE U IO D FIELD^DID(63,13.7,"","POINTER","LRS") S LRE=0 S:LRSS="AU" LRS=LRS("PO
 W D:$Y>(IOSL-6) H Q:LR("Q")  I '$D(^LR(LRP,"AU")) K ^LR("AAU",LRC,LRP) Q
  Q:$P($P($G(^LR(LRP,"AU")),U,6)," ")'=LRABV  Q:$P(^LR(LRP,"AU"),"^",LRA)'=LRB  S LRE=LRE+1,Z=^("AU")
 PRT Q:LRF  D:$Y>(IOSL-6) H Q:LR("Q")
- W !,LRE,")",?3,$J($P(Z,"^",6),4),?18 S Y=+Z D DT W Y,?35 S X=^LR(LRP,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),SSN=$P(V,"^",9) D SSN^LRU W $P(V,"^") W:LRSS'="AU" "  ",SSN Q:LRSS'="AU"
+ ;W !,LRE,")",?3,$J($P(Z,"^",6),4),?18 S Y=+Z D DT W Y,?35 S X=^LR(LRP,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),SSN=$P(V,"^",9) D SSN^LRU W $P(V,"^") W:LRSS'="AU" "  ",SSN Q:LRSS'="AU"
+ W !,LRE,")",?3,$J($P(Z,"^",6),4),?18 S Y=+Z D DT W Y,?35 S X=^LR(LRP,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),V=@(X_Y_",0)"),SSN=$P(V,"^",9) D SSN^LRU W $P(V,"^") W:LRSS'="AU" "  ",HRCN Q:LRSS'="AU"
+ ;PREVIOUS LINE COMMENTED IHS/DIR TUC/AAB 5/4/98
  S DA=LRP D D^LRAUAW S X2=$P(V,"^",3),X1=LR(63,12) D ^%DTC S X=X\365.25 S:X<1 X="<1" W ?62,$J(X,2)
  S X=$P(Z,"^",11)_":" W ?66,$E($P($P(LRS,X,2),";"),1,12) Q:'LRV
  F T=0:0 S T=$O(^LR(LRP,"AY",T)) Q:'T  S B=+^(T,0),B=$S($D(^LAB(61,B,0)):$P(^(0),"^"),1:B) D:$Y>(IOSL-6) H1 Q:LR("Q")  W !?16,B D M
@@ -39,7 +43,9 @@ MR F M=0:0 S M=$O(^LR(LRP,LRSS,LRI,2,T,2,M)) Q:'M  S N=+^(M,0),N=$S($D(^LAB(61.1
 P K DIC S DIC("A")="PROVIDER : ",DIC(0)="AEQN",DIC="^VA(200,",D="AK.PROVIDER" D IX^DIC K DIC Q:Y<1  S LRB=+Y,LRA=7,X=$P(Y,U,2) Q
  ;
 H I $D(LR("F")),$E(IOST,1,2)="C-" D M^LRU Q:LR("Q")
- D F^LRU W !,LRB(1)," ",LRO(68)," list from:",LRSTR," to:",LRLST W:LRD !,"List of reports not released" W !,"Count",?6,"Case#",?18,"Case date",?35,"Patient" W:LRSS="AU" ?62,"Age",?66,"Autopsy type" W:LRSS'="AU" "/SSN" W !,LR("%") Q
+ ;D F^LRU W !,LRB(1)," ",LRO(68)," list from:",LRSTR," to:",LRLST W:LRD !,"List of reports not released" W !,"Count",?6,"Case#",?18,"Case date",?35,"Patient" W:LRSS="AU" ?62,"Age",?66,"Autopsy type" W:LRSS'="AU" "/SSN" W !,LR("%") Q
+ D F^LRU W !,LRB(1)," ",LRO(68)," list from:",LRSTR," to:",LRLST W:LRD !,"List of reports not released" ;IHS/DIR TUC/FJE
+ W !,"Count",?6,"Case#",?18,"Case date",?35,"Patient" W:LRSS="AU" ?62,"Age",?66,"Autopsy type" W:LRSS'="AU" "/HRCN" W !,LR("%") Q  ;IHS/DIR TUC/AAB
 H1 D H Q:LR("Q")  W !,LRE,")",?3,$J($P(Z,"^",6),4),?18 S Y=+Z D DT W Y,?31,$P(V,"^") Q
 H2 D H1 Q:LR("Q")  W !?16,B Q
  ;

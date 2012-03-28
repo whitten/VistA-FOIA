@@ -1,4 +1,5 @@
-XUDHSET ;ISC-SF/RWF - Setup devices ;5/5/97  15:41
+XUDHSET ;ISC-SF/RWF - Setup devices ;5/5/97  15:41 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**49**;Jul 10, 1995
  Q
  ;N1 device name, N2 resource name, CNT # of slots

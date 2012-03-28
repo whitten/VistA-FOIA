@@ -1,4 +1,4 @@
-DGPTXCP ; GENERATED FROM 'DGPT QUICK PROFILE' PRINT TEMPLATE (#216) ; 06/26/96 ; (FILE 45.86, MARGIN=80)
+DGPTXCP ; GENERATED FROM 'DGPT QUICK PROFILE' PRINT TEMPLATE (#3560) ; 10/29/04 ; (FILE 45.86, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(216,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3560,"DXS")
+ S I(0)="^DG(45.86,",J(0)=45.86
  D N:$X>0 Q:'DN  W ?0 W "Census Period Start Date: "
  S X=$G(^DG(45.86,D0,0)) W ?28 S Y=$P(X,U,5) D DT
  D N:$X>0 Q:'DN  W ?0 W "Census Period End   Date: "

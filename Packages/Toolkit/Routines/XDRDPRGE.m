@@ -1,5 +1,5 @@
 XDRDPRGE ;SF-IRMFO/IHS/OHPRD/JCM - PURGE DUPLICATE RECORD FILE; ;8/28/08  18:20
- ;;7.3;TOOLKIT;**23,42,113**;Apr 25, 1995;Build 5
+ ;;7.3;TOOLKIT;**23,42,113**;Apr 25, 1995;Build 9
  ;;Per VHA Directive 2004-038, this routine should not be modified.
  ;;
 START ;

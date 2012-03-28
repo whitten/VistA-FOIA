@@ -1,56 +1,32 @@
 RAUTL5 ;HISC/CAH,FPT,GJC-Utility Routine ;3/12/98  13:27
- ;;5.0;Radiology/Nuclear Medicine;**8,26,75**;Mar 16, 1998;Build 4
-CH ; Populate the 'CLINICAL HISTORY' field (#400); file 75.1 (^RAO(75.1))
+ ;;5.0;Radiology/Nuclear Medicine;**8,26**;Mar 16, 1998
+CH ; Populate the 'CLINICAL HISTORY' field (400) in file 74 (^RADPT)
  ; Called from 'CREATE1^RAORD1'.
- ;
- ;Ask for 'Reason for Study' (required)
- ;Note: RAOUT & RAREAST will be needed later in the ordering process
- D STYREA(.RAOUT,.RAREAST) I $D(RAOUT) D XIT QUIT
- K ^TMP($J,"RAWP") ;must always start with a clean slate...
- ;
-CH1 ;ask/re-ask 'CLINICAL HISTORY'
- I $D(RAVSTFLG),$D(RAVLEDTI),$D(RAVLECNI),$D(^RADPT(RADFN,"DT",RAVLEDTI,"P",RAVLECNI,"H")) S:$D(^("H",0)) ^TMP($J,"RAWP",0)=^(0) F RAI=1:1 Q:'$D(^RADPT(RADFN,"DT",RAVLEDTI,"P",RAVLECNI,"H",RAI,0))  S ^TMP($J,"RAWP",RAI,0)=^(0)
- ;Display the Rad/Nuc Med division specific clin. history message (in any)
- I $L($G(^RA(79,+RADIV,"HIS"))) W !!?3,$C(7),^("HIS"),! K DIR S DIR(0)="E" D ^DIR
- I $D(DIRUT) D XIT Q
- N RAYN S DIC="^TMP("_$J_",""RAWP"",",DWPK=1,DIWESUB="Clinical History"
- W !,"CLINICAL HISTORY FOR EXAM" D EN^DIWE K DIC,DIWESUB,DWPK
- I '$O(^TMP($J,"RAWP",0)) D XIT QUIT
+ N WPFLG
+CH1 I $D(RAVSTFLG),$D(RAVLEDTI),$D(RAVLECNI),$D(^RADPT(RADFN,"DT",RAVLEDTI,"P",RAVLECNI,"H")) S:$D(^("H",0)) ^TMP($J,"RAWP",0)=^(0) F RAI=1:1 Q:'$D(^RADPT(RADFN,"DT",RAVLEDTI,"P",RAVLECNI,"H",RAI,0))  S ^TMP($J,"RAWP",RAI,0)=^(0)
+ I $L($G(^RA(79,+RADIV,"HIS"))) W !!?3,*7,^("HIS"),! K DIR S DIR(0)="E" D ^DIR I $D(DTOUT)!($D(DUOUT)) S RAOUT=1 Q
+ S DIC="^TMP("_$J_",""RAWP"",",DWPK=1,DIWESUB="Clin Hist/Reason" W !,"CLINICAL HISTORY FOR EXAM"
+ D EN^DIWE K DIWESUB I '$O(^TMP($J,"RAWP",0)) W !!,*7,"A clinical history corresponding to this request is required.",! D  Q:$D(RAOUT)  G CH1
+ .S DIR(0)="Y",DIR("A")="Do you want to exit processing request",DIR("B")="Yes" D ^DIR K DIR S:Y!($D(DIRUT)) RAOUT=1
  K DIC S DIC="^TMP("_$J_",""RAWP"",",DWPK=1
- S RAWPFLG=$$VALWP("^TMP("_$J_",""RAWP"","),RAYN=0
- I 'RAWPFLG D  D:RAYN'=1 PURGECH Q:RAYN'=1  G CH1
- .W !!,$C(7),"Text must be at least two (2) alphanumeric characters in length.",!
- .N X,Y K DIR,DIROUT,DIRUT,DTOUT,DUOUT S DIR(0)="Y",DIR("B")="Yes"
- .S DIR("A")="Do you want to enter a proper clinical history for this request"
- .S DIR("?",1)="The clinical history must at a minimum consist of two alphanumeric characters."
- .S DIR("?",2)="Enter 'Y' to enter a proper clinical history, or 'N' to bypass entering"
- .S DIR("?")="the clinical history for this request." D ^DIR
- .S:+Y RAYN=1 ;the user will to try to enter a CH
- .S:$D(DIRUT)#2 RAYN=-1 ;timeout or caret entered, exit w/o a CH
- .;else the user enters 'No' and does not want to enter a CH
- .K DIR,DIROUT,DIRUT,DTOUT,DUOUT
- .Q
- I RAYN<1 D XIT Q
+ S WPFLG=$$VALWP("^TMP("_$J_",""RAWP"",")
+ I 'WPFLG D  Q:$D(RAOUT)  G CH
+ . W !!,$C(7),"A clinical history corresponding to this request is required.",!
+ . K DIR S DIR(0)="Y",DIR("B")="Yes"
+ . S DIR("A")="Do you want to exit processing this request"
+ . S DIR("?")="Enter 'Y' for yes, 'N' for no." D ^DIR K DIR
+ . S:+Y!($D(DIRUT)) RAOUT=1 K DIROUT,DIRUT,DTOUT,DUOUT
+ . Q
 WPLEN ;Is clin hist too long to go into a local array for OE/RR HL7 msg?
- N RACNT,RAX S (RACNT,RAX)=0
- F  S RAX=$O(^TMP($J,"RAWP",RAX)) S RACNT=RACNT+1 Q:RAX'>0
- I RACNT>350 S RAYN=0 D  D:RAYN'=1 PURGECH Q:RAYN'=1  G CH1
- .W !!,$C(7),"The clinical history cannot exceed 350 lines in length."
- .N X,Y K DIR,DIROUT,DIRUT,DTOUT,DUOUT
- .S DIR(0)="Y",DIR("B")="Yes"
- .S DIR("A")="Do you want to enter a proper clinical history for this request"
- .S DIR("?",1)="The clinical history cannot exceed 350 lines in length and must"
- .S DIR("?",2)=" at a minimum consist of two alphanumeric characters."
- .S DIR("?",3)="Enter 'Y' to enter a proper clinical history, or 'N' to bypass"
- .S DIR("?")="entering the clinical history for this request." D ^DIR
- .S:+Y RAYN=1 ;the user will to try to enter a CH
- .S:$D(DIRUT)#2 RAYN=-1 ;timeout or caret entered, exit w/o a CH
- .;else the user enters 'No' and does not want to enter a CH
- .K DIR,DIROUT,DIRUT,DTOUT,DUOUT
- .Q
-XIT ;kill variable(s), exit CH subroutine
- K RAWPFLG
- Q
+ S (CNT,X)=0 F  S X=$O(^TMP($J,"RAWP",X)) S CNT=CNT+1 Q:X'>0
+ I CNT>350 K CNT D  Q:$D(RAOUT)  G CH
+ . W !!,$C(7),"Clinical history cannot exceed 350 lines."
+ . K DIR S DIR(0)="Y",DIR("B")="Yes"
+ . S DIR("A")="Do you want to exit processing this request"
+ . S DIR("?")="Enter 'Y' for yes, 'N' for no." D ^DIR K DIR
+ . S:+Y!($D(DIRUT)) RAOUT=1 K DIROUT,DIRUT,DTOUT,DUOUT
+ . Q
+ K CNT Q
  ;
 VALWP(RAROOT) ; Validate word processing field.
  ; Pass back '1' if data is valid, '0' if not valid.
@@ -157,25 +133,3 @@ MIDNGHT(X) ; Check if the date passed in is midnight.  If it is, add one
  S:X["." X=$E(X,1,($F(X,".")+3)) ; chop off seconds IF there's decimal
  S:+$P(X,".",2)=24!(+$P(X,".",2)=0) X=$$FMADD^XLFDT(X,0,0,1,0) ; add a minute to midnight
  Q X
- ;
-STYREA(RAOUT,RAREAST) ;ask for the 'Reason for Study' P75 (required)
- ;return: RAOUT-set if the user enters '^' or times out
- ;      RAREAST-the reason entered by the user
- N DA,DIR,DIROUT,DIRUT,DTOUT,DUOUT,X,Y S DIR(0)="75.1,1.1" D ^DIR
- S:$D(DIRUT)#2 RAOUT="" Q:$D(RAOUT)#2  S RAREAST=Y
- Q
- ;
-DIWP(DIWL,DIWR,X) ; work ^DIWP & ^DIWW FM call "WRITE" mode P75
- ;input: DIWL=left margin
- ;       DIWR=right margin
- ;          X=text to be formatted
- N %,DIW,DIWF,DIWT,DN,I,Z
- K ^UTILITY($J,"W") S DIWF="W" D ^DIWP,^DIWW
- K ^UTILITY($J,"W")
- Q
- ;
-PURGECH ;Delete the invalid 'CLINICAL HISTORY'; inform the user
- ;of the deletion (user interactive roll & scroll interface).
- W !,"Invalid CLINICAL HISTORY deleted..." K ^TMP($J,"RAWP")
- Q
- ;

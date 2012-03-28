@@ -1,5 +1,5 @@
 PSAPROC3 ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,60**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3**; 10/24/97
  ;This routine allows the user to edit invoices with errors or missing
  ;data.
  ;
@@ -54,7 +54,7 @@ QTY ;If qty is blank, prompt for it.
  Q
  ;
 RECD ;Enter the date the invoiced drugs were received.
- S DIR(0)="D",DIR("A")="Date received",DIR("?")="Enter the date the drugs were received.",DIR("??")="^D RECHELP^PSAPROC3" ;*60 removed default receive date
+ S DIR(0)="D",DIR("A")="Date received",DIR("?")="Enter the date the drugs were received.",DIR("??")="^D RECHELP^PSAPROC3" S:PSARECD DIR("B")=$$FMTE^XLFDT(PSARECD)
  D ^DIR K DIR I $G(DIRUT) S PSAOUT=1 Q
  S:$P(^XTMP("PSAPV",PSACTRL,"IN"),"^",6)'=+Y $P(^XTMP("PSAPV",PSACTRL,"IN"),"^",11)=+Y S PSAIN=^XTMP("PSAPV",PSACTRL,"IN")
  Q

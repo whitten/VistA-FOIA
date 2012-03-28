@@ -1,4 +1,5 @@
-DIP10 ;SFISC/TKW - PROCESS BY(0) INPUT VARIABLES ;12:59 PM  6 Aug 1999
+DIP10 ;SFISC/TKW - PROCESS BY(0) INPUT VARIABLES ;12:59 PM  6 Aug 1999 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**2**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 EN ;

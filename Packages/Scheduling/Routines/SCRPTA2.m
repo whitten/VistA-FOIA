@@ -1,5 +1,7 @@
-SCRPTA2 ;ALB/CMM - Patient Listing w/Team Assignment Data ; 30 Jun 99  1:33 PM
- ;;5.3;Scheduling;**41,88,140,148,174,181,177,526**;AUG 13, 1993;Build 8
+SCRPTA2 ;ALB/CMM - Patient Listing w/Team Assignment Data ; 30 Jun 99  1:33 PM [ 11/02/2000  9:49 AM ]
+ ;;5.3;Scheduling;**41,88,140,148,174,181,177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed PT ID from SSN to HRCN
+ ;                        moved PT ID column to fit 6 digits
  ;
  ;Patient Listing w/Team Assignment Data Report continued
  ;
@@ -69,8 +71,8 @@ FOUND2(START,NODE,TPIEN,POS,TPNODE,PRAC,PIEN,ROLN,PCAP,PRCN) ;
  N PTNAME,PID,ADATE
  S PTNAME=$P($G(^DPT(PIEN,0)),"^") ;patient name
  S PID=$P($G(^DPT(PIEN,.36)),"^",3),PID=$TR(PID,"-","")
- ;9 digit ssn SD*5.3*526 - dmr
- ;S PID=$E(PID,6,10) ;last four pid include 5th for pseudo notation
+ S PID=$E(PID,6,10) ;last four pid include 5th for pseudo notation
+ S PID=$$HRCN^BDGF2(PIEN,+$G(DUZ(2)))  ;IHS/ANMC/LJF 11/2/2000
  ;
  S ADATE=$P(NODE,"^",3) ;position assignment date - fm format
  ;convert to external format
@@ -118,8 +120,9 @@ FORMAT(IIEN,INAME,TNAME,TIEN,PC,PTNAME,PID,PNAME,PIEN,POS,TPIEN,ADATE,PTIEN,ROLN
  S @STORE@(IIEN,TIEN)="Team:  "_TNAME
  S $E(@STORE@(IIEN,TIEN),40)="Primary Care Team: "_$S(PC=1:"YES",1:"NO")
  ;
- S @STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN)=$E(PTNAME,1,17)
- S $E(@STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN),19)=PID
+ S @STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN)=$E(PTNAME,1,21)
+ ;S $E(@STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN),24)=PID  ;IHS/ANMC/LJF 11/2/2000
+ S $E(@STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN),23)=PID   ;IHS/ANMC/LJF 11/2/2000
  S $E(@STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN),31)=ADATE
  S $E(@STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN),43)=PCAP
  S $E(@STORE@(IIEN,TIEN,PIEN,TPIEN,PTNAME,PTIEN),49)=$E(PNAME,1,21)
@@ -139,7 +142,8 @@ NOTA(PTIEN,PIEN) ;
  ;
  S PTNAME=$E($P($G(^DPT(PIEN,0)),"^"),1,20) ;patient name
  S PID=$P($G(^DPT(PIEN,.36)),"^",3),PID=$TR(PID,"-","")
- ;S PID=$E(PID,6,10) ;9 digit ssn patch 526
+ S PID=$E(PID,6,10) ;last 4 plus 5th for psuedo
+ S PID=$$HRCN^BDGF2(PIEN,+$G(DUZ(2)))   ;IHS/ANMC/LJF 11/2/2000
  ;
  S TIEN=+$P($G(^SCPT(404.42,PTIEN,0)),"^",3) ;team ien
  S TMN=$G(^SCTM(404.51,TIEN,0))

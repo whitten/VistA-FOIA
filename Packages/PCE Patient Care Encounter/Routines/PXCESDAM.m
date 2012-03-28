@@ -1,5 +1,5 @@
 PXCESDAM ;ISL/dee,ALB/Zoltan - PCE List Manager display of appointments ;11/20/98
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,34,147,172**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,34**;Aug 12, 1996
  ;
  ;Originally Developed using code from:
 SDAM ;MJK/ALB - Appt Mgt ; 12/1/91
@@ -41,10 +41,6 @@ SEL ;
  I '$D(PXCEHLOC) N PXCEHLOC S PXCEHLOC=""
  S PXCEVIEN=$$SELAPPM
  I PXCEVIEN=-1 G SELQ
- ; next 3 lines PX*1.0*172
- N PXREC,PXDUZ,PXPTSSN S PXDUZ=DUZ,PXPTSSN=$TR($G(PXCEPAT("SSN")),"-")
- D SEC^PXCEEXP(.PXREC,PXDUZ,PXPTSSN)
- I PXREC W !!,"Security regulations prohibit computer access to your own medical record." H 3 G SELQ
  ;
  D APPCHECK(.PXCEVIEN,PXCEHLOC,PXCEAPDT,PXCEPAT)
  I '$D(PXCEVIEN) G SELQ
@@ -66,7 +62,7 @@ SELAPPM() ;
  I '$D(PXCEPAT) N PXCEPAT
  I '$D(PXCEHLOC) N PXCEHLOC
  S PXCEAPDT=$P(^TMP("SDAMIDX",$J,SDW),"^",3)
- I $G(PXCEPAT)="" S PXCEPAT=$P(^TMP("SDAMIDX",$J,SDW),"^",2) D PATINFO^PXCEPAT(.PXCEPAT) I $D(DIRUT) Q -1
+ I $G(PXCEPAT)="" S PXCEPAT=$P(^TMP("SDAMIDX",$J,SDW),"^",2) D PATINFO^PXCEPAT(.PXCEPAT)
  I $G(PXCEHLOC)="" S PXCEHLOC=$P(^TMP("SDAMIDX",$J,SDW),"^",4)
  ;
  ;Look for visits for this patient at the appointment date and time.

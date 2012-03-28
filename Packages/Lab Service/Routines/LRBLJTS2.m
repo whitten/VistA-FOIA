@@ -1,6 +1,7 @@
-LRBLJTS2 ;AVAMC/REG - TRANSFUSION STATISTICS ;9/14/89  08:54 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJTS2 ; IHS/DIR/FJE - TRANSFUSION STATISTICS 9/14/89 08:54 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  S LRT=0 D H S C(1)=0 F A=0:0 S C(1)=$O(^TMP($J,"C",C(1))) Q:C(1)=""!(LR("Q"))  S C=+$O(^(C(1),0)) I $D(^TMP($J,"D",C)) D H1 Q:LR("Q")  D L
  Q:LR("Q")  W !,"Total cost of all components: ",$J(LRT,9,2) D H2 Q:LR("Q")
  S A=0 F  S A=$O(^TMP($J,"Z",A)) Q:A=""  D A

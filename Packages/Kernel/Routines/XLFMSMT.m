@@ -1,4 +1,4 @@
-XLFMSMT ;SLC,SF/MH,RWF - Callable functions for conversions in measurement ;04/09/2002  09:02
+XLFMSMT ;SLC,SF/MH,RWF - Callable functions for conversions in measurement ;04/09/2002  09:02 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**228**;Jul 10, 1995
  N I,VAL
  W !!,"Routine: "_$T(+0),! F I=8:1  S VAL=$T(+I) Q:'$L(VAL)  I VAL[";;" W !,VAL

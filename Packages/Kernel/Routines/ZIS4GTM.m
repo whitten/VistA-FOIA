@@ -1,5 +1,5 @@
 %ZIS4 ;ISF/RWF,DW - DEVICE HANDLER SPECIFIC CODE (GT.M for Unix/VMS) ;05/29/2008
- ;;8.0;KERNEL;**275,425,440,499**;Jul 10, 1995;Build 14
+ ;;8.0;KERNEL;**275,425,440,499**;Jul 10, 1995;Build 24
  ;Per VHA Directive 2004-038, this routine should not be modified
 OPEN ;From %ZIS3 for TRM
  G OPN2:$D(IO(1,IO))

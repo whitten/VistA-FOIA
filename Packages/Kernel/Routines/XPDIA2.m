@@ -1,4 +1,5 @@
-XPDIA2 ;SFISC/RSD - Delete Options and cleanup pointers ;11/03/99  12:58
+XPDIA2 ;SFISC/RSD - Delete Options and cleanup pointers ;11/03/99  12:58 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**68,131**;Jul 10, 1995
  Q
 OPT ;options

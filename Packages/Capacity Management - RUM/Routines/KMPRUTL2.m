@@ -1,5 +1,5 @@
-KMPRUTL2 ;OAK/RAK - RUM Data for All Nodes (Graph) ;5/28/03  09:15
- ;;2.0;CAPACITY MANAGEMENT - RUM;;May 28, 2003
+KMPRUTL2 ;SFISC/RAK - RUM Data for All Nodes (Graph) ;22 Oct 1998
+ ;;1.0;CAPACITY MANAGEMENT - RUM;;Dec 09, 1998
  ;
 ELEMDATA(KMPRELMT,KMPRST,KMPREN,KMPRNODE,KMPRARRY,KMPRQIET) ;-- elements
  ; compile rum element stats.

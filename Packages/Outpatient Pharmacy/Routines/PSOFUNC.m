@@ -1,9 +1,9 @@
-PSOFUNC ;BHAM ISC/DRI - functions moved from the psf global ;10/26/92 11:49
- ;;7.0;OUTPATIENT PHARMACY;**146,223,249,251**;DEC 1997;Build 202
+PSOFUNC ;BHAM ISC/DRI - functions moved from the psf global ; 10/26/92 11:49
+ ;;7.0;OUTPATIENT PHARMACY;**146**;DEC 1997
 STAT ;gets status of rx
  S ST0=+$P(RX0,"^",15) I ST0<12,$O(^PS(52.5,"B",J,0)),$D(^PS(52.5,+$O(^(0)),0)),'$G(^("P")) S ST0=5
  I ST0<12,$P(RX2,"^",6)<DT S ST0=11
- S ST=$P("Error^Active^Non-Verified^Refill^Hold^Non-Verified^Suspended^^^^^Done^Expired^Discontinued^Deleted^Discontinued By Provider^Discontinued (Edit)^Provider Hold^","^",ST0+2),$P(RX0,"^",15)=ST0
+ S ST=$P("Error^Active^Non-Verified^Refill^Hold^Non-Verified^Suspended^^^^^Done^Expired^Discontinued^Deleted^Discontinued^Discontinued (Edit)^Provider Hold^","^",ST0+2),$P(RX0,"^",15)=ST0
  Q
 CUTDATE ;calculates exp/cancel cutoff date in PSODTCUT
  S X1=DT,X2=-120 D C^%DTC S PSODTCUT=X,PSOPRPAS=$P($G(PSOPAR),"^",7) Q
@@ -19,5 +19,5 @@ INP526 ;input transform for drug field (#6) in prescription file (#52)
 INP5261 D EN^DDIOL("Duplicate Drug in Rx #"_$P(^PSRX(RX,0),"^")_" . Discontinue? (Y/N): ","","$C(7),?10") R ZX:DTIME
  I ZX["^" D EN^DDIOL("NO UP ARROW ALLOWED","","!") S ZX="?"
  I ZX["?" D EN^DDIOL("Enter Y to discontinue this Prescription","","!") D EN^DDIOL(" ","","!") G INP5261
- S ZX=ZX?1"Y".E I ZX S $P(^PSRX(RX,"STA"),"^")=12,$P(^PSRX(RX,3),"^",5)=DT D CAN^PSOTPCAN(RX) D EN^DDIOL("     Discontinued") Q
+ S ZX=ZX?1"Y".E I ZX S $P(^PSRX(RX,"STA"),"^")=12 D CAN^PSOTPCAN(RX) D EN^DDIOL("     Discontinued") Q
  K X,XS,ZS Q

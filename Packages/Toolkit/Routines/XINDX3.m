@@ -1,5 +1,5 @@
 XINDX3 ;ISC/REL,GRK,RWF - PROCESS MERGE/SET/READ/KILL/NEW/OPEN COMMANDS ;06/24/08  15:44
- ;;7.3;TOOLKIT;**20,27,61,68,110,121,128**;Apr 25, 1995;Build 1
+ ;;7.3;TOOLKIT;**20,27,61,68,110,121**;Apr 25, 1995;Build 10
  ; Per VHA Directive 2004-038, this routine should not be modified.
 PEEK S Y=$G(LV(LV,LI+1)) Q
 PEEK2 S Y=$G(LV(LV,LI+2)) Q
@@ -61,14 +61,8 @@ KL4 S NOA=S1 D DN,ARGS^XINDX2,UP,INC2 Q
 NE ;NEW
  S ERR=$S("("[$E(ARG):26,1:0) I ERR G ^XINDX1 ;look for null or (
  S STR=ARG D ^XINDX9
-N2 D INC Q:S=""  G N2:CH=","
- ;I CH?1P,("%@()"'[CH)&("$E"'[$E(S,1,2)) D E^XINDX1(11) G N2
- ;check for '@' and '$$' patch 128
- I CH?1P,(CH'=S) D  G:$G(ERTX)]"" N2
- . I "@("[CH,"$$E"'[$E(S,1,2),($P(S,CH,2)'?1A) D E^XINDX1(11) Q
- . I "$"[CH,(LV(LV,1)'="@") D E^XINDX1(11) Q
- S GK="~" D ARG^XINDX2
- G N2
+N2 D INC Q:S=""  G N2:CH="," I CH?1P,("%@()"'[CH)&("$E"'[$E(S,1,2)) D E^XINDX1(11) G N2
+ S GK="~" D ARG^XINDX2 G N2
  ;
 RD S STR=ARG D ^XINDX9 S ARG=""
 RD1 D INC Q:S=""

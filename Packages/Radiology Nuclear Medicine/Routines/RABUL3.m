@@ -1,13 +1,10 @@
 RABUL3 ;HISC/FPT,GJC-'RAD/NUC MED REPORT DELETION' Bulletin ;3/21/95  13:56
- ;;5.0;Radiology/Nuclear Medicine;**56**;Mar 16, 1998;Build 3
- ;Supported IA #10035 ^DPT(
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ; The variables DA must be defined.  The value of DA must be greater
  ; than 0.  These conditions must exist for the RAD/NUC MED REPORT
  ; DELETION bulletin to execute.
- ; Called from: 
- ;   ^DD(74,.01,1,2,0-"DT") xref nodes if deletion via Fileman
- ;   routine RARTE7, if deletion via Rad pkg (RA*5*56)
+ ; Called from: ^DD(74,.01,1,2,0-"DT") xref nodes
  ; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ;                     ***** Variable List *****
  ; 'DIFQ'     -> Variable used to check if we are installing the
@@ -32,7 +29,7 @@ RABUL3 ;HISC/FPT,GJC-'RAD/NUC MED REPORT DELETION' Bulletin ;3/21/95  13:56
  ; Case Number ; RACASE ; XMB(3) <---> Report Status ; RASTAT ; XMB(6)
  ; Imaging Loc ; RAILOC ; XMB(7)
  ;
-EN1 Q:$D(DIFQ)!(+$G(DA)'>0)  ; Quit if installing software or invalid IEN
+ Q:$D(DIFQ)!(+$G(DA)'>0)  ; Quit if installing software or invalid IEN
  N A,RACASE,RACN,RADDT,RADTI,RADFN,RAEXAM,RAFN1,RAFN2,RAILOC,RANAME
  N RARXAM,RASSN,RASTAT,RAXDT,X,Y
  S A=$G(^RARPT(DA,0))
@@ -51,7 +48,7 @@ EN1 Q:$D(DIFQ)!(+$G(DA)'>0)  ; Quit if installing software or invalid IEN
  S RAFN1=$P(RAEXAM(0),U,21),RAFN2=$P($G(^DD(70.03,21,0)),U,2)
  S RADDT=$$XTERNAL^RAUTL5(RAFN1,RAFN2)
  S RADDT=$S(RADDT]"":RADDT,1:"Unknown")
- S RAFN1=$S($D(RACLOAK)#2:RACLOAK,1:$P(A,U,5)),RAFN2=$P($G(^DD(74,5,0)),U,2)
+ S RAFN1=$P(A,U,5),RAFN2=$P($G(^DD(74,5,0)),U,2)
  S RASTAT=$$XTERNAL^RAUTL5(RAFN1,RAFN2)
  S RASTAT=$S(RASTAT]"":RASTAT,1:"Unknown")
  S RAFN1=$P(RARXAM(0),U,4),RAFN2=$P($G(^DD(70.02,4,0)),U,2)
@@ -63,9 +60,3 @@ EN1 Q:$D(DIFQ)!(+$G(DA)'>0)  ; Quit if installing software or invalid IEN
  D ^XMB:$D(^XMB(3.6,"B",XMB))
  K XMB,XMB0,XMC0,XMDT,XMM,XMMG
  Q
-CLOAK ;called from RARTE7 right after report is deleted but cloaked
- Q:'$D(RAIEN)#2  ;report ien
- Q:'$D(RAIEN2)#2  ;activity log sub ien
- S DA=RAIEN
- S RACLOAK=$P(^RARPT(DA,"L",RAIEN2,0),U,4) ;previous rpt status
- G EN1

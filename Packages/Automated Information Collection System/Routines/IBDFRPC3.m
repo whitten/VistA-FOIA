@@ -1,5 +1,5 @@
 IBDFRPC3 ;ALB/AAS - AICS Identify patient form form id ; 12-FEB-96
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**6,3,17**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
  ; -- used by AICS Data Entry System (routine IBDFDE)
  ;    used by AICS Workstation software
@@ -10,13 +10,12 @@ IDPAT(RESULT,FORMID) ; -- Procedure
  ;    rpc := IBD EXPAND FORMID
  ;
  ; -- input  FORMID = pointer to form tracking (357.96)
- ;                    if Formid := Formid_"LOOKUP" then no errors created
  ;           Result = called by reference
  ;
  ; -- output  The format of the returned array is as follows
  ;        result = $p1 :=  Patient Name^
  ;                 $p2 :=  Patient IEN
- ;                 $p3 :=  patient primary identifier (pid)
+ ;                 $p3:=  patient primary identifier (pid)
  ;                 $p4 :=  form name
  ;                 $p5 :=  form IEN (pointer to 357)
  ;                 $p6 :=  Clinic Name 
@@ -35,25 +34,20 @@ IDPAT(RESULT,FORMID) ; -- Procedure
  ;                 $p19:=  shortedge/long edge binding
  ;                 $p20:=  check out date time
  ;
- N C,I,J,X,Y,NODE,PATNM,DFN,PID,CLIN,CLINNM,FORMNM,FORM,APPT,APPTNM,STATUS,STATNM,FRMDEF,PROVDEF,APPTSTI,APPTSTE,CLINPH,DUPLX,SCANPG,CO,LOOKUP
+ N C,I,J,X,Y,NODE,PATNM,DFN,PID,CLIN,CLINNM,FORMNM,FORM,APPT,APPTNM,STATUS,STATNM,FRMDEF,PROVDEF,APPTSTI,APPTSTE,CLINPH,DUPLX,SCANPG,CO
  K RESULT
  S FORMID("SOURCE")=1
- S LOOKUP=0
- ;
- ; -- formid is for lookup only
- I $E(FORMID,($L(FORMID)-5),$L(FORMID))="LOOKUP" S FORMID=+FORMID,LOOKUP=1
  ;
  ; -- scanner may send in leading spaces, strip it off
  I +FORMID'=FORMID,$L(FORMID) S FORMID=+$P(FORMID," ",3)
  S RESULT="Form ID not a valid value, null or zero^^^"
- I '$G(FORMID) D:'$G(LOOKUP) LOGERR^IBDF18E2(3579604,.FORMID) G IDPATQ
+ I '$G(FORMID) D LOGERR^IBDF18E2(3579604,.FORMID) G IDPATQ
  ;
  S RESULT="Form ID not found^^^"
  S NODE=$G(^IBD(357.96,+FORMID,0))
- I NODE="" D:'$G(LOOKUP) LOGERR^IBDF18E2(3579605,.FORMID) G IDPATQ
+ I NODE="" D LOGERR^IBDF18E2(3579605,.FORMID) G IDPATQ
  ;
- S DFN=+$P(NODE,"^",2)
- I 'DFN S RESULT="Patient Information is Missing^^^^" G IDPATQ
+ S DFN=$P(NODE,"^",2)
  S PATNM=$P($G(^DPT(DFN,0)),"^"),PID=$P($G(^DPT(DFN,.36)),"^",3)
  S APPT=+$P(NODE,"^",3)
  S APPTSTI=$P($G(^DPT(DFN,"S",APPT,0)),"^",2)
@@ -90,10 +84,11 @@ PRDEF(CLIN) ;Provider Default for Clinic
  Q $G(Y)
  ;
 SDV(DFN,APPT) ; -- try to find checkout date of stand alone encounter
- N CO,IBOE,IBVAL,IBCBK
- S CO="",IBOE=""
- S IBVAL("DFN")=DFN,IBVAL("BDT")=APPT,IBVAL("EDT")=APPT+.000001
- S IBCBK="I '$P(Y0,U,6),$P(Y0,U,8)=3 S IBOE=Y,CO=$P(Y0,U,7),SDSTOP=1"
- D SCAN^IBSDU("PATIENT/DATE",.IBVAL,"",IBCBK,1)
- Q CO_"^"_IBOE
- ;
+ N CO,QUIT,SDV,SDV1,SDOE
+ S CO="",SDOE=""
+ S SDV=+$P(APPT,"."),QUIT=0
+ F  S SDV=+$O(^SDV("C",DFN,SDV)) Q:'SDV!(QUIT)  D
+ .S SDV1=0 F  S SDV1=+$O(^SDV(+SDV,"CS",SDV1)) Q:'SDV1!(QUIT)  D
+ ..S SDOE=+$P($G(^SDV(+SDV,"CS",+SDV1,0)),"^",8)
+ ..S X=$G(^SCE(+SDOE,0)) I +X=APPT S CO=$P(X,"^",7),QUIT=1
+ Q CO_"^"_SDOE

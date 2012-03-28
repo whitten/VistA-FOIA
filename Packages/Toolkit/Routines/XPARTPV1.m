@@ -1,4 +1,5 @@
-XPARTPV1 ;SLC/KCM - Transport, supporting calls
+XPARTPV1 ;SLC/KCM - Transport, supporting calls [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**1001**;APR 1, 2003
  ;;7.3;TOOLKIT;**26**;Apr 25, 1995
  ;
 ZPKG(IEN,NAME) ; get package IEN & Name

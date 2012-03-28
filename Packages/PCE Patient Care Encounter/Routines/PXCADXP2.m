@@ -1,5 +1,5 @@
-PXCADXP2 ;ISL/dee & LEA/Chylton - Validates & Translates data from the PCE Device Interface into a call to V POV & update Problem List ; 6/6/05 12:16pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**115,130,168**;Aug 12, 1996;Build 14
+PXCADXP2 ;ISL/dee & LEA/Chylton - Validates & Translates data from the PCE Device Interface into a call to V POV & update Problem List ; 9/12/01 12:16pm
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**115**;Aug 12, 1996
  Q
  ;
 PART2 ;
@@ -38,12 +38,6 @@ PART2 ;
  ;PX*1*115 - HNC Condition
  S PXCAITEM=$P(PXCADXPL,U,16)
  I '(PXCAITEM=1!(PXCAITEM=0)!(PXCAITEM="")) S PXCA("ERROR","DIAGNOSIS/PROBLEM",PXCAPRV,PXCAINDX,16)="HNC flag bad^"_PXCAITEM
- ;
- S PXCAITEM=$P(PXCADXPL,U,17)
- I '(PXCAITEM=1!(PXCAITEM=0)!(PXCAITEM="")) S PXCA("ERROR","DIAGNOSIS/PROBLEM",PXCAPRV,PXCAINDX,17)="CV flag bad^"_PXCAITEM
- ;
- S PXCAITEM=$P(PXCADXPL,U,18)
- I '(PXCAITEM=1!(PXCAITEM=0)!(PXCAITEM="")) S PXCA("ERROR","DIAGNOSIS/PROBLEM",PXCAPRV,PXCAINDX,18)="PROJ 112/SHAD flag bad^"_PXCAITEM
  ;
  ;Narrative: Required for DX and for new Problem
  S PXCAITEM=$P(PXCADXPL,"^",13),PXCAITM2=$L(PXCAITEM)

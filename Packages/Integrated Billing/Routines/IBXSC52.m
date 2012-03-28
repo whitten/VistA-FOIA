@@ -1,4 +1,4 @@
-IBXSC52 ; ;02/03/08
+IBXSC52 ; ;11/29/04
  D DE G BEGIN
 DE S DIE="^DGCR(399,D0,""OC"",",DIC=DIE,DP=399.041,DL=2,DIEL=1,DU="" K DG,DE,DB Q:$O(^DGCR(399,D0,"OC",DA,""))=""
  I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,1) S:%]"" DE(1)=% S %=$P(%Z,U,2) S:%]"" DE(2)=% S %=$P(%Z,U,3) S:%]"" DE(4)=% S %=$P(%Z,U,4) S:%]"" DE(8)=%
@@ -65,11 +65,11 @@ X1 S DIC("S")="I $P(^DGCR(399.1,+Y,0),U,4)=1,$S(+Y'=22:1,$P(^DPT($P(^DGCR(399,DA
  ;
 2 D:$D(DG)>9 F^DIE17,DE S DQ=2,DW="0;2",DV="RD",DU="",DLB="DATE",DIFLD=.02
  G RE
-X2 S %DT="EX" D ^%DT S X=Y K:DT<X!(2000101>X) X
+X2 S %DT="E" D ^%DT S X=Y K:DT<X!(2000101>X) X
  Q
  ;
 3 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=3 D X3 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
-X3 I $P($G(^DGCR(399.1,+^DGCR(399,DA(1),"OC",DA,0),0)),U,9)'=2 S Y="@554"
+X3 I $P(^DGCR(399,DA(1),0),U,19)'=2 S Y="@554"
  Q
 4 S DW="0;3",DV="P5'",DU="",DLB="STATE",DIFLD=.03
  S DU="DIC(5,"
@@ -82,9 +82,9 @@ X5 S Y="@555"
 7 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=7 D X7 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
 X7 I '$P(^DGCR(399.1,+^DGCR(399,DA(1),"OC",DA,0),0),U,10) S Y="@555"
  Q
-8 S DW="0;4",DV="RDX",DU="",DLB="END DATE",DIFLD=.04
+8 S DW="0;4",DV="D",DU="",DLB="END DATE",DIFLD=.04
  G RE
-X8 S %DT="EX" D ^%DT S X=Y K:X<1 X I $D(X),X<$P($G(^DGCR(399,DA(1),"OC",DA,0)),U,2) K X
+X8 S %DT="EX" D ^%DT S X=Y K:Y<1 X
  Q
  ;
 9 S DQ=10 ;@555

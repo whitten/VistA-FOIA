@@ -1,5 +1,5 @@
-XTRUTL1 ;ISCSF/RWF - Developer Routine Utilities Build File ;10/09/2002  09:17
- ;;7.3;TOOLKIT;**20,66**;Apr 25, 1995
+XTRUTL1 ;ISCSF/RWF - Developer Routine Utilities Build File ;10/09/2002  09:17 [ 12/18/2003  5:00 PM ]
+ ;;7.3;TOOLKIT;**20,66,1002**;Apr 25, 1995
  ;
  Q  ;No entry from the top.
 BUILD() ;This will select an entry in the BUILD file.

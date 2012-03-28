@@ -1,5 +1,6 @@
 LRLNC0 ;DALOI/CA/FHS-MAP LAB TESTS TO LOINC CODES ;1-OCT-1998
- ;;5.2;LAB SERVICE;**215,232,278,280,399,407**;Sep 27,1994;Build 1
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
+ ;;5.2;LAB SERVICE;**215,232,278,280**;Sep 27,1994
  ;Reference to ^DD supported by IA # 10154
  ;=================================================================
  ; Ask VistA test to map-Lookup in Lab Test file #60
@@ -82,7 +83,7 @@ TEST W @IOF
  S DIR(0)="PO^60:QENMZ,",DIR("A")="VistA Lab Test to "_$S($D(LRDEL):"Delete/Unmap",1:"Link/Map")_" to LOINC "
  S DIR("?")="Select Lab test you wish to "_$S($D(LRDEL):"delete/unmap",1:"link/map")_" to a LOINC Code"
  D ^DIR K DIR
- I $D(DIRUT)!'Y K DIRUT S LREND=1 K LRDEL Q
+ I $D(DIRUT)!'Y K DIRUT S LREND=1 Q
  S LRIEN=+Y,LRTEST=$P(Y,U,2)
  L +^LAB(60,LRIEN):2 I '$T W !?4,"Another user is editing this entry",! H 5 Q
  ;Check for RESULT NLT CODE and if not one let enter
@@ -101,7 +102,7 @@ DIS64 D  Q:$G(LR64DIS)
  .W !,"You must select one now to continue with the mapping of this test!",!
  K DIE,DA,DR S DIE="^LAB(60,",DA=+LRIEN,DR=64.1 D ^DIE K DIE,DA,DR
  L -^LAB(60,LRIEN)
- I $G(X)<1!($D(Y)) S LRNLT="",LREND=1 K LRDEL Q
+ I $G(X)<1 S LRNLT="" Q
  I $P($G(^LAB(60,+LRIEN,64)),U,2) D
  . N DIC,DA,DR
  . S DIC="^LAB(60,",DA=+LRIEN,DR=64 W !! W ?5,"IEN: [",DA,"] ",$P(^LAB(60,LRIEN,0),U) S S=$Y D EN^DIQ

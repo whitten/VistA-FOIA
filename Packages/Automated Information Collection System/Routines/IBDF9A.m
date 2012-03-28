@@ -1,13 +1,12 @@
 IBDF9A ;ALB/CJM - ENCOUNTER FORM - (create,edit,delete selection list) ;FEB 1,1993
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**15**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 LIST ;Create, Edit, or Delete a selection list from the form
  N IBVALMBG
  S VALMBCK="R",IBVALMBG=VALMBG
  K DIR S DIR("?",1)="You can create a [N]ew list, edit its [A]ppearance, [D]elete it,",DIR("?")="edit its [Co]ntents, [P]osition or size its columns.  Choose from:"
  S DIR("B")="C" I $G(IBBLK) D
- .S X=$G(^IBE(357.2,+$O(^IBE(357.2,"C",IBBLK,0)),0))
- .I $P(X,"^",14),'$P(X,"^",19) S DIR("B")="A" ;dynamic list, can't edit contents, default changed to appearance, unless its clinical reminders
+ .I $P($G(^IBE(357.2,+$O(^IBE(357.2,"C",IBBLK,0)),0)),"^",14) S DIR("B")="A" ;dynamic list, can't edit contents, default changed to appearance
  ;
  S DIR(0)="SAB^A:APPEARANCE;C:CONTENTS;D:DELETE;N:NEW;P:POSITION",DIR("A")="[N]ew   [A]ppearance   [D]elete   [C]ontents   [P]osition: "
  W !!,DIR("?",1),!,DIR("?"),!
@@ -120,11 +119,8 @@ DLTLIST ;expects IBBLK to be defined
  ;
 LISTTYPE(RTN) ;sets IBDYN=1 if the rtn is dynamic selection,IBINPUT to the input interface
  N NODE
- I '$G(RTN) S (IBDYN,IBINPUT,IBCLRM)=0 Q
- S NODE=$G(^IBE(357.6,RTN,0))
- S IBDYN=$P(NODE,"^",14)
- S IBINPUT=$P(NODE,"^",13)
- S IBCLRM=$P(NODE,"^",20)
+ I '$G(RTN) S (IBDYN,IBINPUT)=0 Q
+ S NODE=$G(^IBE(357.6,RTN,0)) S IBDYN=$P(NODE,"^",14),IBINPUT=$P(NODE,"^",13)
  Q
  ;
 OTHEROK(PI) ;returns 1 if the selection interface=PI allows 'other', 0 otherwise

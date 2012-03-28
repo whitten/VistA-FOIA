@@ -1,5 +1,5 @@
 DGBTOA6 ;ALB/SCK - DGBT BENE TRAVEL PAYABLE CLAIMS REPORT ; 6/29/93 7/16/93
- ;;1.0;Beneficiary Travel;;September 25, 2001
+ ;;5.3;Registration;**13,51**;Aug 13, 1993
 ACCTS ;
  U IO
  N Y

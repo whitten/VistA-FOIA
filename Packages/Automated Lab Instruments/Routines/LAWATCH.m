@@ -1,4 +1,5 @@
-LAWATCH ;SLC/RWF/FHS - WATCH DATA IN ^LA GLOBAL ;8/8/89  11:36 ;
+LAWATCH ; IHS/DIR/FJE - WATCH DATA IN ^LA GLOBAL 8/8/89 11:36 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
 IN ;DALISC/TNN - Query user for ^LA or ^LAH - 02/02/93
  K DIR S DIR(0)="SO^1:RAW DATA IN LA GLOBAL;2:VERIFIABLE DATA IN LAH GLOBAL",DIR("A")="Select a File to watch"
@@ -12,7 +13,8 @@ START S U="^" W !,"THIS ROUTINE WILL ALLOW YOU TO WATCH THE ACCUMULATION",!," OF
 DOWN W !?7,"Do you wish to See 'Download data' " S %=1 D YN^DICN G QUIT:%<1 I %=1 D LA0
 DATA W !!?7,"Do you wish to look at 'Upload' data nodes " S %=1 D YN^DICN G QUIT:%<1!(%=2) S LANODE="I"
 LA1 G LA2:$D(^LA(LRTSK,"I",0)),NOTSYS:LRTSK#10=1,NOSYS:$D(^LA(+(LRTSK-1\10_1),"I",0))[0
- W !?3,"There isn't any data there! Should I start saving the data" S %=2 D YN^DICN G QUIT:%=2!(%=-1) W !,"This will prevent the automatic processing of the data." G LA1:%=0
+ ;W !?3,"There isn't any data there! Should I start saving the data" S %=2 D YN^DICN G QUIT:%=2!(%=-1) W !,"This will prevent the automatic processing of the data." G LA1:%=0
+ W !?3,"There isn't any data there! Should I leave the data in ^LA?" S %=2 D YN^DICN G QUIT:%=2!(%=-1) W !,"This will prevent the automatic processing of the data." G LA1:%=0  ;IHS/ANMC/CLS 11/1/95
  I '$D(^LA(LRTSK,"I",0))#2 S ^LA(LRTSK,"I")=0,^("I",0)=0 W !!?10,$C(7),"YOU MUST MANUALLY START THE ( "_$P(^LAB(62.4,LRTSK,0),U,3)_") PROGRAM " G QUIT
 LA2 R !?5,"Begin with what number ? ",I7:DTIME Q:'$T!(I7="^")  S I7=+I7 I '$D(^LA(LRTSK,LANODE,I7)) W $C(7),!?10,I7," DOES NOT EXIST ",! G LA2
 LA3 W !!!,LRINST,!," Number of Records: ",$S($D(^LA(LRTSK,LANODE))#2:^(LANODE),1:"??"),?$X+5,"Processed Records: ",$S($D(^LA(LRTSK,LANODE,0))#2:^(0),1:"??") W:$D(^LA("LOCK",LRTSK)) " Active flag SET."

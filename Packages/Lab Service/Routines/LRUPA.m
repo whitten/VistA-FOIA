@@ -1,4 +1,5 @@
-LRUPA ;AVAMC/REG/WTY - LAB ACCESSION LIST:DATE & TEST ;9/25/00
+LRUPA ;AVAMC/REG/WTY - LAB ACCESSION LIST:DATE & TEST ;9/25/00 [ 04/14/2003  2:18 PM ]
+ ;;5.2T9;LR;**1002,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**72,248**;Sep 27, 1994
  ;
  ;Reference to ^%DT supported by IA #10003
@@ -28,7 +29,10 @@ QUE U IO S (Q(1),Q(2))=0,LRU(1)=+$O(^LAB(62,"B","UNKNOWN",0)) D L^LRU,S^LRU,H S 
 H ;from LRUPA1
  I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,LRO(68)," ACCESSIONS for ",Z(1),! W:$D(C)#2 "Collection Sample: ",C,!
- W "# = Not VA patient  " W:LRSS="CY" "* = Reviewed by pathologist" W:LRSS="CH" ?30,"*=STAT" W ?55,$S("SPCYEMAU"[LRSS:"% =Incomplete",1:"") I LRSS="CY" W ?72,"Slide"
+ ;W "# = Not VA patient  " W:LRSS="CY" "* = Reviewed by pathologist" W:LRSS="CH" ?30,"*=STAT" W ?55,$S("SPCYEMAU"[LRSS:"% =Incomplete",1:"") I LRSS="CY" W ?72,"Slide"
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ W "# = Not IHS patient  " W:LRSS="CY" "* = Reviewed by pathologist" W:LRSS="CH" ?30,"*=STAT" W ?55,$S("SPCYEMAU"[LRSS:"% =Incomplete",1:"") I LRSS="CY" W ?72,"Slide"  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  W !,"Acc num",?12,$S(LRSS="MI":"Patient/Source",1:"Patient"),?28,"ID",?34,"Loc" I "CYEMSP"[LRSS W ?48,"Organ/tissue",!,LR("%") Q
  W ?40 W:"AUBBCYEMSP"'[LRSS "Specimen/Sample" W:LRSS="BB" "Specimen date" I LRSS="CY" W ?72,"Count"
  I "BBCHMI"[LRSS W ?64,"Test",?76,"Tech",!,LR("%") Q

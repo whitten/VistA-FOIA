@@ -1,5 +1,8 @@
 LREGFR ;DALOI/SDV/AH Calculate Creatinine-eGFR ;Feb 2, 2004
- ;;5.2;LAB SERVICES;**289,313**;Sep 27, 1994
+ ;;5.2;LR;**289,313,1022**;September 20, 2007
+ ;;
+ ; VA PATCHES 289 & 313 included in IHS LAB PATCH 1022
+ ;;
  ;
  ; Reference to EN^DDIOL supported by IA #10142
  ; Reference to $$GET1^DIQ supported by IA #2056

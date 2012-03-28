@@ -1,4 +1,5 @@
-LRARCU ;DALISC/CKA - LAB ARCHIVED CAP UTILITIES ;5/22/95
+LRARCU ; IHS/DIR/AAB - LAB ARCHIVED CAP UTILITIES ; [ 5/22/95 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**59**;Aug 31, 1995
  ;same as LRCAPU except archived wkld file
 WKLDNAME(LRCC) ;Call with CAP code or IFN, returns WKLD proc name.

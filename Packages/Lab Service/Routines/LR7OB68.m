@@ -1,4 +1,6 @@
-LR7OB68 ;slc/dcm - Get Lab data from 68 ;8/11/97
+LR7OB68 ; IHS/DIR/AAB - Get Lab data from 68 ; [ 8/11/97 ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**121**;Sep 27, 1994
  ;
 68(CTR,ACCDT,ACC,ACCN,TEST) ;Get data from file 68

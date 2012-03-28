@@ -1,5 +1,5 @@
 LRBARCFA ;DALOI/JMC - Lab Label Zebra Configuration Utility ;8/29/94  12:36
- ;;5.2;LAB SERVICE;**218**;Sep 27, 1994
+ ;;5.2T9;LR;**218,1018**;Nov 17, 2004
  ;
 EN ;
  N DA,DIR,DIRUT,DTOUT,DUOUT,LRY,X,Y

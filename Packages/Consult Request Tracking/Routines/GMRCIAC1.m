@@ -1,6 +1,5 @@
-GMRCIAC1 ;SLC/JFR - FILE IFC ACTIVITIES cont'd ;04/29/09  12:09
- ;;3.0;CONSULT/REQUEST TRACKING;**22,66**;DEC 27, 1997;Build 30
- ;#2051($$FIND1^DIC), #2053(DIE)
+GMRCIAC1 ;SLC/JFR - FILE IFC ACTIVITIES cont'd ;2/11/02 16:11
+ ;;3.0;CONSULT/REQUEST TRACKING;**22**;DEC 27, 1997
  Q
 COMP(GMRCAR) ;process partial result, clin complete and admin complete
  ;
@@ -51,7 +50,7 @@ COMP(GMRCAR) ;process partial result, clin complete and admin complete
  ;
 FWD(GMRCAR)     ;file forward action from a remote site
  ;Input:
- ; GMRCAR = array name containing message
+ ; GMRCAR = array name containing message 
  ;      e.g.  ^TMP("GMRCIF",$J)
  ;
  N GMRCFDA,GMRCDA,GMRCFWSR,GMRCFROM,GMRCORC,GMRCTIFC,GMRCLAC,GMRCROL
@@ -114,7 +113,7 @@ FWD(GMRCAR)     ;file forward action from a remote site
  ;
 SF(GMRCAR) ;add significant findings
  ; Input:
- ; GMRCAR = array name containing message
+ ; GMRCAR = array name containing message 
  ;      e.g.  ^TMP("GMRCIF",$J)
  ;
  N FDA,GMRCERR,GMRCOSF,GMRCISF
@@ -135,7 +134,7 @@ SF(GMRCAR) ;add significant findings
  D UPDATE^DIE("","FDA(1)",,"GMRCERR") ;file last action and SF
  D FILEACT^GMRCIAC2(GMRCDA,4,,$NA(^TMP("GMRCIS",$J))) ;activity track
  D  ;send notifications
- . I $P(^GMR(123,GMRCDA,12),U,5)="F" Q  ;filler only gets hist. SF
+ . I $P(^GMR(123,GMRCDA,12),U,5)="F" Q  ;filler only gets hist. SF 
  . N GMRCORTX
  . S GMRCORTX=$S(GMRCISF="N":"No ",GMRCISF="Y":"",1:"Unknown ")
  . S GMRCORTX=GMRCORTX_"Sig Findings for "_$$ORTX^GMRCAU(+GMRCDA)
@@ -147,7 +146,7 @@ SF(GMRCAR) ;add significant findings
  ;
 RESUB(GMRCAR) ;resubmit a cancelled, remote consult
  ; Input:
- ;   GMRCAR - array name containing message
+ ;   GMRCAR - array name containing message 
  ;      e.g.  ^TMP("GMRCIF",$J)
  ;
  K ^TMP("GMRCIN",$J)
@@ -174,14 +173,6 @@ RESUB(GMRCAR) ;resubmit a cancelled, remote consult
  . I GMRCURG'>1 Q
  . I GMRCURG=$P(^GMR(123,GMRCDA,0),U,9) Q  ;no change
  . S GMRCFDA(5)=GMRCURG
- . Q
- D  ;check for change earliest date WAT/66
- . N GMRCERDT
- . S GMRCERDT=$P($P(^TMP("GMRCIN",$J,"ORC"),"|",7),U,4)
- . I '$L(GMRCERDT) Q
- . S GMRCERDT=$$FMDATE^GMRCHL7(GMRCERDT)
- . I GMRCERDT=$P(^GMR(123,GMRCDA,0),U,24) Q  ;no change
- . S GMRCFDA(17)=GMRCERDT
  . Q
  I $D(^TMP("GMRCIN",$J,"OBX",2)) D  ; change in Prov. DX?
  . N PROVDX
@@ -216,7 +207,7 @@ RESUB(GMRCAR) ;resubmit a cancelled, remote consult
  . N ACT S ACT=1
  . S GMRCNTIF=0
  . F  S ACT=$O(^GMR(123,GMRCDA,40,ACT)) Q:'ACT!($G(GMRCNTIF))  D
- .. I ($P(^GMR(123,GMRCDA,40,ACT,0),U,2)=25),$O(^GMR(123,GMRCDA,40,ACT)) S GMRCNTIF=1 ;wat/66 Remedy 278355
+ .. I $P(^GMR(123,GMRCDA,40,ACT,0),U,2)=25,$O(^(40,ACT)) S GMRCNTIF=1
  ;
  D  ;print SF-513 & send notifications
  . I '$G(GMRCNTIF) Q  ;part of a FWD to IFC

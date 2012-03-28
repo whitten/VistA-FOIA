@@ -1,22 +1,40 @@
 PSOORDER ;BHAM ISC/SAB- utility routine to return Rx data ; 04/09/96 10:30 am
- ;;7.0;OUTPATIENT PHARMACY;**11,20,9,46,103,165**;DEC 1997
- ;^PS(55 supported by DBIA 2228
- ;^PSDRUG supported by DBIA 221
- ;^VA(200 supported by DBIA 10060
- ;^SC supported by DBIA 10040
- ;^DPT supported by DBIA 10035
- ;^PSNAPIS supported by DBIA 2531
- ;^PSNDF supported by DBIA 2195
- ;^PS(50.7 supported by DBIA 2223
- ;^PS(50.606 supported by DBIA 2174
- ;^PS(51.2 supported by DBIA 2226
- ;^PS(50.607 supported by DBIA 2221
+ ;;7.0;OUTPATIENT PHARMACY;**11,20,9,46,103**;DEC 1997
+ ;External reference to File #55 supported by DBIA 2228
+ ;External reference to ^PSDRUG supported by DBIA 221
+ ;External reference to ^VA(200 supported by DBIA 10060
+ ;External reference to ^SC supported by DBIA 10040
+ ;External reference to ^DPT supported by DBIA 10035
+ ;External reference to ^PSNAPIS supported by DBIA 2531
+ ;External reference to ^PSNDF supported by DBIA 2195
+ ;External reference to ^PS(50.7 supported by DBIA 2223
+ ;External reference to ^PS(50.606 supported by DBIA 2174
+ ;data returned
+ ;^tmp("psor",$j,rxn,0)=id^fd^lsfd^st^rx#^qty^ds^rf^rfm^drct^rxct^exdt^reldt^rtsdt^wpc^dfn
+ ;
+ ;if status equals Hold: ^tmp("psor",$j,rxn,"hold",0)=hdrs^hdcom^hddt
+ ;if the rx has an entry in the suspense file (#52.5) ^tmp("psor",$j,rxn,"sus",0)=prt^cmind
+ ;^tmp("psor",$j,rxn,1)= pr^clk^vrp^cln^rxp^mw^div^oerr#
+ ;
+ ;cmop data: If applicable
+ ;^tmp("psor",$j,rxn,"cmop",n,0)=trans #^seq #^fill #^cmsta^cmdc dt^ndc
+ ;^tmp("psor",$j,rx,"cmop",1,1,0)=cmdc reason
+ ;
+ ;^tmp("psor",$j,rxn,"drug",0)=dr^va print name^drug id^va drug class
+ ;^tmp("psor",$j,rxn,"drugoi",0)=orderable item
+ ;^tmp("psor",$j,rxn,"ib",0)=copay transaction type^ib number
+ ;^tmp("psor",$j,rxn,"ref",n,0)=rfd^pr^clk^qty^ds^drct^rxct^reldt^rstdt^m/w^div ;refill data
+ ;;^tmp("psor",$j,rxn,"act",n,0)=d/t^rea^new person^rx #^comments
+ ;^tmp("psor",$j,rxn,"rpar",n,0)=prd^pr^clk^qty^ds^drct^rxct^reldt^rstdt^m/w^div ;partial fill data
+ ;^tmp("psor",$j,rxn,"sig",n,0)=condensed medication instructions (SIG)
+ ;^tmp("psor",$j,rxn,"sig1",n,0)=expanded medication instructions (SIG)
+ ;^tmp("psor",$j,rxn,"act",n,0)=d/t^rea^new person^filltype^comments pso*7*20
  ;
  ;for full break down of data returned see DBIA #1878
  ;
 EN(DFN,RX) ;
  K ^TMP("PSOR",$J)
- N SIG,SG,IEN,CMOP,CMIN,CMIND,HDST,I,LSFD,PSO2,PSOCF,PSOCST,PSODR,PSODT,PSOLFD,PSOFD,PSOID,PSOJ,PSOPR,PSOPLCL,PSOPLPR,PSOREF,PSORF,PSORFCL,PSORFPR,PSOST,PSOX,RX0,RX0,RX1,RX3,RX3,RXH,RXP,ST0,SUS,FPN
+ N SIG,SG,IEN,CMOP,CMIN,CMIND,HDST,I,LSFD,PSO2,PSOCF,PSOCST,PSODR,PSODT,PSOLFD,PSOFD,PSOID,PSOJ,PSOPR,PSOPLCL,PSOPLPR,PSOREF,PSORF,PSORFCL,PSORFPR,PSOST,PSOX,RX0,RX0,RX1,RX3,RX3,RXH,RXP,ST0,SUS
  Q:'$D(^PSRX(RX,0))!('$D(^PSRX(RX,2)))!('$D(^PSRX(RX,3)))!($G(^PSRX(RX,"STA"))=13)
  I $G(DFN)'="",$P($G(^PSRX(RX,0)),"^",2)'=$G(DFN) Q
  I '$G(DFN) S DFN=+$P($G(^PSRX(RX,0)),"^",2)
@@ -27,27 +45,18 @@ EN(DFN,RX) ;
  ..S PSORFPR=$P(RX0,"^",4) I PSORFPR S PSORFPR=PSORFPR_";"_$P($G(^VA(200,PSORFPR,0)),"^")
  ..S PSORFCL=$P(RX1(I),"^",7) I PSORFCL S PSORFCL=PSORFCL_";"_$P($G(^VA(200,PSORFCL,0)),"^")
  ..S ^TMP("PSOR",$J,RX,"REF",I,0)=+RX1(I)_"^"_$G(PSORFPR)_"^"_$G(PSORFCL)_"^"_$P(RX1(I),"^",4)_"^"_+$P(RX1(I),"^",10)_"^"_+$P(RX1(I),"^",11)_"^"
- ..S ^TMP("PSOR",$J,RX,"REF",I,0)=^TMP("PSOR",$J,RX,"REF",I,0)_PSOCST_"^"_$P(RX1(I),"^",18)_"^"_$P(RX1(I),"^",16)_"^"
- ..S ^TMP("PSOR",$J,RX,"REF",I,0)=^TMP("PSOR",$J,RX,"REF",I,0)_$S($P(RX1(I),"^",2)="M":"M;MAIL",1:"W;WINDOW")_"^"_$P(RX1(I),"^",9)_"^"_$P(RX1(I),"^",8)_"^"_$P($G(^PSRX(RX,1,I,1)),"^",3)
+ ..S ^TMP("PSOR",$J,RX,"REF",I,0)=^TMP("PSOR",$J,RX,"REF",I,0)_PSOCST_"^"_$P(RX1(I),"^",18)_"^"_$P(RX1(I),"^",16)_"^"_$S($P(RX1(I),"^",2)="M":"M;MAIL",1:"W;WINDOW")_"^"_$P(RX1(I),"^",9)
  .F I=0:0 S I=$O(^PSRX(RX,"P",I)) Q:'I  I $D(^PSRX(RX,"P",I,0)) S RXP(I)=^PSRX(RX,"P",I,0) D
  ..S PSOCST=$P(RXP(I),"^",4)*+$P(RXP(I),"^",11)
  ..S PSOPLPR=$P(RX0,"^",4) I PSOPLPR S PSOPLPR=PSOPLPR_";"_$P($G(^VA(200,PSOPLPR,0)),"^")
  ..S PSOPLCL=$P(RXP(I),"^",7) I PSOPLCL S PSOPLCL=PSOPLCL_";"_$P($G(^VA(200,PSOPLCL,0)),"^")
  ..S ^TMP("PSOR",$J,RX,"RPAR",I,0)=+RXP(I)_"^"_$G(PSOPLPR)_"^"_$G(PSOPLCL)_"^"_$P(RXP(I),"^",4)_"^"_+$P(RXP(I),"^",10)_"^"
- ..S ^TMP("PSOR",$J,RX,"RPAR",I,0)=^TMP("PSOR",$J,RX,"RPAR",I,0)_+$P(RXP(I),"^",11)_"^"_PSOCST_"^"_$P(RXP(I),"^",19)_"^"_$P(RXP(I),"^",16)_"^"
- ..S ^TMP("PSOR",$J,RX,"RPAR",I,0)=^TMP("PSOR",$J,RX,"RPAR",I,0)_$S($P(RXP(I),"^",2)="M":"M;MAIL",1:"W;WINDOW")_"^"_$P(RXP(I),"^",9)_"^"_$P(RXP(I),"^",8)_"^"_$P(RXP(I),"^",12)
- .S MI=0 F I=0:0 S I=$O(^PSRX(RX,6,I)) Q:'I  S RP(I)=^PSRX(RX,6,I,0) D
- ..S UN=$P(RP(I),"^",3) I UN S PSOX=$G(^PS(50.607,UN,0)) S UN=UN_";"_$P(PSOX,"^")
- ..S RT=$P(RP(I),"^",7) I RT S PSOX=$G(^PS(51.2,RT,0)) S RT=RT_";"_$P(PSOX,"^")
- ..S MI=MI+1,^TMP("PSOR",$J,RX,"MI",MI,0)=$P(RP(I),"^")_"^"_$P(RP(I),"^",2)_"^"_UN_"^"_$P(RP(I),"^",4)_"^"_$P(RP(I),"^",5)_"^"_$P(RP(I),"^",6)_"^"_RT_"^"_$P(RP(I),"^",8)_"^"_$P(RP(I),"^",9)
- .F I=0:0 S I=$O(^PSRX(RX,"INS1",I)) Q:'I  S ^TMP("PSOR",$J,RX,"PI",I,0)=^PSRX(RX,"INS1",I,0)
- K MI,RP,PSOX,UN,RT
+ ..S ^TMP("PSOR",$J,RX,"RPAR",I,0)=^TMP("PSOR",$J,RX,"RPAR",I,0)_+$P(RXP(I),"^",11)_"^"_PSOCST_"^"_$P(RXP(I),"^",19)_"^"_$P(RXP(I),"^",16)_"^"_$S($P(RXP(I),"^",2)="M":"M;MAIL",1:"W;WINDOW")_"^"_$P(RXP(I),"^",9)
  S PSOLFD=+$G(RX3),PSODR=+$P(RX0,"^",6),PSOPR=$P(RX0,"^",4),PSOREF=$P(RX0,"^",9),PSOID=$P(RX0,"^",13),PSOST=$P($G(^PSRX(RX,"STA")),"^"),PSODT=$P(RX2,"^",6)
  D ODT S PSOFD=$P(RX2,"^",2),PSOX=$S($D(^PSDRUG(PSODR,0)):$P(^(0),"^"),1:"NOT ON FILE"),PSODR=PSODR_";"_PSOX
  S PSOPR=$P(RX0,"^",4) I PSOPR S PSOX=$G(^VA(200,PSOPR,0)) S PSOPR=PSOPR_";"_$P(PSOX,"^")
  S CLK=$P(RX0,"^",16) I CLK S PSOX=$G(^VA(200,CLK,0)) S CLK=CLK_";"_$P(PSOX,"^")
  S VPR=$P(RX2,"^",10) I VPR S PSOX=$G(^VA(200,VPR,0)) S VPR=VPR_";"_$P(PSOX,"^")
- S FPN=$P(OERR,"^",5) I FPN S PSOX=$G(^VA(200,FPN,0)) S FPN=FPN_";"_$P(PSOX,"^")
  S CLN=$P(RX0,"^",5) I CLN S PSOX=$G(^SC(CLN,0)) S CLN=CLN_";"_$P(PSOX,"^")
  S RXP=$P(RX0,"^",3)_";"_$P($G(^PS(53,+$P(RX0,"^",3),0)),"^")
  S MW=$S($P(RX0,"^",11)="W":"W;WINDOW",1:"M;MAIL")
@@ -60,8 +69,8 @@ EN(DFN,RX) ;
  .S ^TMP("PSOR",$J,RX,"HOLD",0)=HDST_"^"_$P(RXH,"^",2)_"^"_$P(RXH,"^",3)
  S PSOCF=+$P(RX0,"^",17)*(+$P(RX0,"^",7)) ;cost of original fill;
  S ^TMP("PSOR",$J,RX,0)=PSOID_"^"_PSOFD_"^"_PSOLFD_"^"_$G(PSOX)_"^"_$P(RX0,"^")_"^"_$P(RX0,"^",7)_"^"_$P(RX0,"^",8)_"^"_$P(RX0,"^",9)_"^"_$G(PSORF)_"^"_+$P(RX0,"^",17)_"^"_$G(PSOCF)_"^"_$G(PSODT)_"^"_$P(RX2,"^",13)_"^"_$P(RX2,"^",15)
- S ^TMP("PSOR",$J,RX,0)=^TMP("PSOR",$J,RX,0)_"^"_$S($P($G(^PSRX(RX,"PC")),"^"):"Yes",1:"No")_"^"_$G(DFN)_";"_$P($G(^DPT(+$G(DFN),0)),"^")_"^"_$P(RX2,"^")
- S ^TMP("PSOR",$J,RX,1)=PSOPR_"^"_CLK_"^"_VPR_"^"_CLN_"^"_RXP_"^"_MW_"^"_$P(RX2,"^",9)_"^"_$P(OERR,"^",2)_"^"_FPN_"^"_$P(RX2,"^",7)_"^"_$P($G(^PSRX(RX,"TPB")),"^")
+ S ^TMP("PSOR",$J,RX,0)=^TMP("PSOR",$J,RX,0)_"^"_$S($P($G(^PSRX(RX,"PC")),"^"):"Yes",1:"No")_"^"_$G(DFN)_";"_$P($G(^DPT(+$G(DFN),0)),"^")
+ S ^TMP("PSOR",$J,RX,1)=PSOPR_"^"_CLK_"^"_VPR_"^"_CLN_"^"_RXP_"^"_MW_"^"_$P(RX2,"^",9)_"^"_$P(OERR,"^",2)
  S ^TMP("PSOR",$J,RX,"DRUG",0)=$G(PSODR)
  I +$G(^PSDRUG(+$P(RX0,"^",6),"ND")),+$P($G(^("ND")),"^",3) D
  .I $T(^PSNAPIS)]"" S PSOXN=$$PROD2^PSNAPIS($P(^PSDRUG(+$P(RX0,"^",6),"ND"),"^"),$P(^PSDRUG(+$P(RX0,"^",6),"ND"),"^",3)) S ^TMP("PSOR",$J,RX,"DRUG",0)=^TMP("PSOR",$J,RX,"DRUG",0)_"^"_$P($G(PSOXN),"^")_"^"_$P($G(PSOXN),"^",2) D  Q
@@ -88,7 +97,7 @@ CMOP F I=0:0 S I=$O(^PSRX(RX,4,I)) Q:'I  I $D(^PSRX(RX,4,I,0)) S CMOP=^PSRX(RX,4
  .S ^TMP("PSOR",$J,RX,"CMOP",I,0)=$P(CMOP,"^")_"^"_$P(CMOP,"^",2)_"^"_$P(CMOP,"^",3)_"^"_$S($P(CMOP,"^",4)=1:"1;Dispensed",$P(CMOP,"^",4)=2:"2;Retransmitted",$P(CMOP,"^",4)=3:"3;Not Dispensed",1:"0;Transmitted")_"^"_$P(CMOP,"^",5)
  .S ^TMP("PSOR",$J,RX,"CMOP",I,0)=^TMP("PSOR",$J,RX,"CMOP",I,0)_"^"_$P(CMOP,"^",8)
  .S:$P(CMOP,"^",4)=3 ^TMP("PSOR",$J,RX,"CMOP",1,1,0)=$G(^PSRX(RX,4,I,1,0))
- K SIG,SG,IEN,CMOP,CMIN,CMIND,HDST,I,LSFD,PSO2,PSOCF,PSOCST,PSODR,PSODT,PSOLFD,PSOFD,PSOID,PSOJ,PSOPR,PSOPLCL,PSOPLPR,PSOREF,PSORF,PSORFCL,PSORFPR,PSOST,PSOX,RX,RX0,RX0,RX1,RX3,RX3,RXH,RXP,ST0,SUS,FPN
+ K SIG,SG,IEN,CMOP,CMIN,CMIND,HDST,I,LSFD,PSO2,PSOCF,PSOCST,PSODR,PSODT,PSOLFD,PSOFD,PSOID,PSOJ,PSOPR,PSOPLCL,PSOPLPR,PSOREF,PSORF,PSORFCL,PSORFPR,PSOST,PSOX,RX,RX0,RX0,RX1,RX3,RX3,RXH,RXP,ST0,SUS
  Q
 ODT ;canceled or expiration date
  I +PSOST=12!(+PSOST=14)!(+PSOST=15) D

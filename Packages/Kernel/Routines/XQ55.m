@@ -36,10 +36,10 @@ USERS1 ; 080115 code added to handle options on the COMMON (XUCOMMAND) menu
  S XQP=0 F  S XQP=$O(^TMP($J,XQP)) Q:XQP=""  S XQN=^TMP($J,XQP,0) F J=1:1:XQN Q:'$D(^TMP($J,XQP,J))  I $P($P(^TMP($J,XQP,J),U,2),",")=XUCOMMON D
  . D  Q:'Y
  . . W !,"***"
- . . W !,"*** This option is available from the 'SYSTEM COMMAND OPTIONS'  ***"
- . . W !,"*** (XUCOMMAND) menu available to all active users unless       ***"
- . . W !,"*** protected by a KEY - DO YOU REALLY WANT THE ENTIRE LIST     ***"
- . . W !,"*** OF THESE USERS???                                           ***",!
+ . . W !,"*** This option is available from the 'SYSTEM COMMAND OPTIONS' ***"
+ . . W !,"*** (XUCOMMAND) menu available to all active users unless ***"
+ . . W !,"*** protected by a KEY - DO YOU REALLY WANT THE ENTIRE LIST ***"
+ . . W !,"*** OF THESE USERS??? ***",!
  . . N DIR S DIR(0)="Y" D ^DIR S:'Y XQNOPRNT=1 Q:'Y
  . . Q
  . S XQU=0,XQPS="(C)" F  S XQU=$O(^VA(200,XQU)) Q:XQU'>0  I $D(^VA(200,XQU,.1)),+$$ACTIVE^XUSER(XQU),$$KEYCHECK() S II=1 D SETU

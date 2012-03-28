@@ -1,5 +1,5 @@
-GMTSOBA2 ; SLC/KER - HS Object - Ask               ; 05/22/2008
- ;;2.7;Health Summary;**58,89**;Oct 20, 1995;Build 61
+GMTSOBA2 ; SLC/KER - HS Object - Ask               ; 01/06/2003
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;
  ; External References
  ;   DBIA  10018  ^DIE  (file #142)
@@ -100,16 +100,6 @@ SC ; Suppress Components w/o Data
  K:+($G(GMTSQ))>0 GMTSOBJ("SUPPRESS COMPONENTS") Q:+($G(GMTSQ))>0
  S X=+($G(Y)) K:+X'>0 GMTSOBJ("SUPPRESS COMPONENTS")
  Q
-NODATA ; Override No Data Available output
- Q:+($G(GMTSQ))>0  N X,Y,DIR,DIROUT,DUOUT,DTOUT,GMTSDLD,GMTSDEF
- S GMTSOBJ("NO DATA")="",DIR("A")=" Overwrite No Data Available Message  "
- S GMTSDEF=$G(^GMT(142.5,+($G(GMTSDA)),2))
- S (DIR("?"),DIR("??"))="^D NODATA^GMTSOBH",DIR("B")=GMTSDEF,DIR(0)="FO^3:60"
- D ^DIR S:$D(DIROUT)!($D(DTOUT)) GMTSQ=1
- I +($G(GMTSQ))>0 S GMTSOBJ("NO DATA")="" Q
- S GMTSOBJ("NO DATA")=Y
- Q
- ;
 ET(X) ; Edit Type X
  Q:+($G(DUZ))'>0  N ADEL,B,BY,CHANGE,CNT,DA,DHD,DIC,DIE,DIK,DIR,DIROUT,DLAYGO,DR,DTOUT
  N DUOUT,EXISTS,FLDS,FR,GMTSEG,GMTSIEN,GMTSDEF,GMTSIFN,GMTSMGR,GNTSN

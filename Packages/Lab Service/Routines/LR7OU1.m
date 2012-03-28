@@ -1,4 +1,5 @@
-LR7OU1 ;slc/dcm - General Utilities ;8/11/97
+LR7OU1 ;slc/dcm - General Utilities ;8/11/97 [ 04/25/2003  10:17 AM ]
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,187,235**;Sep 27, 1994
  ;
 EN(TST,SUB) ;Expand a lab panel

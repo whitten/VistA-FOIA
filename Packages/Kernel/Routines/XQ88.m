@@ -1,4 +1,4 @@
-XQ88 ;SF/GFT,RWF,AMF,JLI,LUKE - Build menu trees ;04/18/2002  11:08
+XQ88 ;SF/GFT,RWF,AMF,JLI,LUKE - Build menu trees ;04/18/2002  11:08 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**156**;Jul 10, 1995
  ;Taken from XQ8 and XQ81 to make a stripped down menu rebuild
  ;

@@ -1,6 +1,5 @@
 RARTUVR3 ;HISC/GJC-Unverified Reports ;8/19/97  11:28
- ;;5.0;Radiology/Nuclear Medicine;**56,47**;Mar 16, 1998;Build 21
- ;Supported IA #2056 GET1^DIQ
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 EN1 ; Entry point for unverified reports option when sort is on
  ; Exam Date or Pri. Inter. Staff
  ; Data Storage:
@@ -23,7 +22,7 @@ EN1 ; Entry point for unverified reports option when sort is on
  .... Q:'+$P(RA7003,"^",17)  ; no report
  .... S RA74=$G(^RARPT(+$P(RA7003,"^",17),0))
  .... Q:$P(RA74,"^",5)=""  ; no status, skeletal rpt created by imaging
- .... Q:"^V^X^EF^"[("^"_$P(RA74,"^",5)_"^")  ;Skip Verified, Deleted, E-filed rpts
+ .... Q:$P(RA74,"^",5)="V"  ; verified, quit
  .... I $D(ZTQUEUED) D STOPCHK^RAUTL9 S:$G(ZTSTOP)=1 RAOUT=1 Q:RAOUT
  .... ; *****  check if user selected this division & imaging type  ****
  .... S RA7002=$G(^RADPT(RADFN,"DT",RADTI,0)) ; 0 node Reg. Exams sub-file
@@ -34,7 +33,7 @@ EN1 ; Entry point for unverified reports option when sort is on
  .... ;*****************************************************************
  .... S (RAMEMLOW,RAPRTSET,RAPSET)=0 D EN1^RAUTL20 ; mem of a printset?
  .... S:RAPRTSET RAPSET="1." S:RAMEMLOW RAPSET="1+"
- .... S RAPIS=$$GET1^DIQ(200,+$P(RA7003,"^",15)_",",.01)
+ .... S RAPIS=$P($G(^VA(200,+$P(RA7003,"^",15),0)),"^")
  .... S:RAPIS="" RAPIS="Unknown"
  .... S RAPAT=$G(^DPT(RADFN,0))
  .... S RASSN=$$SSN^RAUTL() S:RASSN="" RASSN="Unknown"
@@ -78,8 +77,7 @@ HDR ; header code
  S RAPAGE=RAPAGE+1 W !?(IOM-$L(RAHD)\2),RAHD
  W !,$S(RABD="S":"Primary Interpreting Staff: ",1:"Division: "),RA1
  W ?94,$$FMTE^XLFDT(DT,"1P")_"   Page: "_RAPAGE
- I $$USESSAN^RAHLRU1() W !,?93,"Exam",?102,"Report",!,"Patient",?21,"Patient ID",?34,"Exam Date",?44,"Case",?61,"Procedure",?93,"Status",?102,"Entered",?112,"Pri. Int'g Staff"
- I '$$USESSAN^RAHLRU1() W !,?87,"Exam",?96,"Report",!,"Patient",?21,"Patient ID",?38,"Exam Date",?48,"Case",?55,"Procedure",?87,"Status",?96,"Entered",?106,"Pri. Int'g Staff"
+ W !,?87,"Exam",?96,"Report",!,"Patient",?21,"Patient ID",?38,"Exam Date",?48,"Case",?55,"Procedure",?87,"Status",?96,"Entered",?106,"Pri. Int'g Staff"
  W !,RADASH
  Q
 GETDATA ; get to the data
@@ -111,12 +109,9 @@ PRTDATA ; print the data
  S RAXSTAT=$E($S($P(^RA(72,+$P(RANODE,"^",5),0),"^")]"":$P(^(0),"^"),1:"Unknown"),1,7)
  S RARPTENT=$$FMTE^XLFDT(($P($G(^RARPT(+$P(RANODE,"^",19),0)),"^",6)\1),"2P")
  S:RABD="S" RAPIS=RA1
- S:RABD="E" RAPIS=$$GET1^DIQ(200,+$P(RANODE,"^",17)_",",.01)
+ S:RABD="E" RAPIS=$P($G(^VA(200,+$P(RANODE,"^",17),0)),"^")
  S:RAPIS="" RAPIS="Unknown"
- N RASSAN,RACNDSP S RASSAN=$P(RANODE,"^",33)
- S RACNDSP=$S((RASSAN'=""):RASSAN,1:RACSE)
- I $$USESSAN^RAHLRU1() W !,$E(RAPAT,1,20),?21,$P(RANODE,"^",2),?34,$$FMTE^XLFDT(RAEXDT,"2P"),?44,RACNDSP,?61,RAPRC,?93,RAXSTAT,?102,RARPTENT,?112,$E(RAPIS,1,19)
- I '$$USESSAN^RAHLRU1() W !,$E(RAPAT,1,20),?21,$P(RANODE,"^",2),?38,$$FMTE^XLFDT(RAEXDT,"2P"),?48,RACSE,?55,RAPRC,?87,RAXSTAT,?96,RARPTENT,?106,$E(RAPIS,1,25)
+ W !,$E(RAPAT,1,20),?21,$P(RANODE,"^",2),?38,$$FMTE^XLFDT(RAEXDT,"2P"),?48,RACSE,?55,RAPRC,?87,RAXSTAT,?96,RARPTENT,?106,$E(RAPIS,1,25)
  I $Y>(IOSL-4) S RAOUT=$$EOS^RAUTL5() D:'RAOUT HDR
  Q
 ZERO ; set division totals to zero

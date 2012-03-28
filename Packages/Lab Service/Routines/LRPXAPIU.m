@@ -1,5 +1,6 @@
-LRPXAPIU ; SLC/STAFF Lab Extract API Utilities ;1/29/04  14:32
- ;;5.2;LAB SERVICE;**295,315**;Sep 27, 1994;Build 25
+LRPXAPIU ;VA/SLC/STAFF - Lab Extract API Utilities ;1/29/04  14:32
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
  ; lab APIs
  ; dbia 4246
@@ -122,10 +123,7 @@ PROCNM(PROC) ; API $$(procedure ien) -> procedure name
  Q $P($G(^LAB(61.5,+$G(PROC),0)),U)
  ;
 ICD9(ICD9) ; API $$(icd9 ien) -> icd code^name
- N LRTMP
- S ICD9=$P($$ICDDX^ICDCODE(ICD9,,,1),U,2)
- S LRTMP=$$ICDD^ICDCODE(ICD9,"LRTMP")
- Q ICD9_U_$G(LRTMP(1))
+ Q $P($G(^ICD9(+$G(ICD9),0)),U)_U_$G(^ICD9(+$G(ICD9),1))
  ;
 DOD(DFN) ; API $$(dfn) -> date of death else 0
  Q +$G(^DPT(+$G(DFN),.35)) ; dbia 13

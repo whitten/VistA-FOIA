@@ -1,4 +1,6 @@
-LRAPL ;SLC/BA/AVAMC/REG/CYM - ANATOMIC PATH LABELS ;2/13/98  12:27 ;
+LRAPL ; IHS/DIR/AAB - ANATOMIC PATH LABELS 2/13/98 12:27 ; [ 07/08/1998 10:00 AM ]
+ ;;5.2;LR;**1002,1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**72,201**;Sep 27, 1994
  S LRDICS="SPCYEM" D ^LRAP G:'$D(Y) END
 ASK S %DT="",X="T" D ^%DT S LR(5)=$E(Y,1,3)+1700 W !,"Enter year: ",LR(5),"// " R X:DTIME G:'$T!(X[U) END S:X="" X=LR(5)
@@ -19,11 +21,13 @@ QUE U IO D XR^LRU
  D END^LRUTL,END Q
 W S LRX=$G(^LR(LRDFN,LRSS,LRI,0)) I LRX="" K ^LR(LRXREF,LR(2),LRABV,A,LRDFN,LRI) Q
  Q:$P($P(LRX,U,6)," ")'=LRABV
- S W=^LR(LRDFN,0),Y=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)") S P(1)=$P(X,"^"),SSN=$P(X,"^",9),S(6)=$P(LRX,"^",6),LRSPECDT=+LRX D SSN^LRU
+ ;S W=^LR(LRDFN,0),Y=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)") S P(1)=$P(X,"^"),SSN=$P(X,"^",9),S(6)=$P(LRX,"^",6),LRSPECDT=+LRX D SSN^LRU
+ S W=^LR(LRDFN,0),(DFN,Y)=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)") S P(1)=$P(X,"^"),SSN=$P(X,"^",9),S(6)=$P(LRX,"^",6),LRSPECDT=+LRX D SSN^LRU  ;IHS/ANMC/CLS 11/1/95
  F B=0:0 S B=$O(^LR(LRDFN,LRSS,LRI,.1,B)) Q:'B  S S(2)=^(B,0) D P
  Q
 P W !,S(6),"  Taken: ",$$FMTE^XLFDT(LRSPECDT,"D")
- W !,P(1)," ",SSN
+ ;W !,P(1)," ",SSN
+ W !,P(1)," ",HRCN  ;IHS/ANMC/CLS 11/1/95
  W !,$P(S(2),"^") F X=4:1:LR(1) W !
  Q
 HELP W $C(7),!!,"Enter numbers only",! Q

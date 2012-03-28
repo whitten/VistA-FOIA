@@ -1,5 +1,5 @@
-LA7VIN1A ;DALOI/JMC - Process Incoming UI Msgs, continued ; 01/14/99
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**64,67**;Sep 27, 1994
+LA7VIN1A ;VA/DALOI/JMC - Process Incoming UI Msgs, continued ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**64,1027**;NOV 01, 1997
  ; This routine is a continuation of LA7VIN1.
  ; It performs generation of any mail bulletins needed.
  ;
@@ -168,22 +168,24 @@ SENDACB ; Send abnormal/critical bulletin
  ;
 SMB ; Send mail bulletin
  ; Ignore any restrictions (domain closed or protected by security key)
- ; MailMan rejects bulletins sent by 'non-human' user LRLAB,HL.
- ; Use POSTMASTER (.5) as sender to insure successful delivery.
  ;
- N LRDUZ,XMERR
- S LRDUZ=DUZ
- D DUZ^XUP(.5)
  S XMINSTR("ADDR FLAGS")="R"
  S XMINSTR("FROM")="LAB PACKAGE"
  S XMTO("G."_$$FAMG^LA7VHLU1(LA76248,1))=""
  D SENDBULL^XMXAPI(DUZ,XMBNAME,.XMPARM,$S($D(LA7BODY):"LA7BODY",1:""),.XMTO,.XMINSTR,.LA7TSK,"")
- D DUZ^XUP(LRDUZ)
  ;
  Q
  ;
  ;
 SA ; Send alert
+ ;
+ ; ---- BEGIN IHS/OIT/MKK -- LR*5.2*1027 -- Send information via alert as well
+ K XQADATA,XQAROU
+ S XQADATA=$G(^LAH(LWL,1,LA7ISQN,.1,"PID","PNM"))
+ S XQADATA=XQADATA_"^"_$G(^LAH(LWL,1,LA7ISQN,.1,"OBR","SID"))
+ S XQADATA=XQADATA_"^"_$P(LA7I(0),"^",8)_" ["_$P(LA7I(0),"^",7)_"]"
+ S XQAROU="ALERT^BLRUTIL3"
+ ; ---- END IHS/OIT/MKK -- LR*5.2*1027
  ;
  M XQA=XMTO
  D DEL^LA7UXQA(XQAID)

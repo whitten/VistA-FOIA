@@ -1,4 +1,6 @@
-LRMIXALL ;DALISC/FHS - RE INDEX "AI" "AJ" "AS" FOR ^LAB(62.06
+LRMIXALL ; IHS/DIR/FJE - RE INDEX "AI" "AJ" "AS" FOR ^LAB(62.06 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 EN ;Also called from the ^DD(62.06,1 X-ref indexes by FM
  N X

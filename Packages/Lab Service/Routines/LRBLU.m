@@ -1,6 +1,6 @@
-LRBLU ;AVAMC/REG/CYM - BB UTIL ;1/22/97  15:32 ;
- ;;5.2;LAB SERVICE;**97,90,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLU ; IHS/DIR/AAB - BB UTIL 1/22/97 15:32 ; [ 04/29/98 10:53 AM ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**97,90**;Sep 27, 1994
  ;
  K:$L(X)<6!($L(X)>11)!(X'?.UN) X ;input trans ^DD(65.54,4,
  I $D(X),$D(^LRE("C",X)) S W=X(1)+50000 F Y=0:0 Q:'$D(X)  S Y=$O(^LRE("C",X,Y)) Q:'Y  K:'$D(^LRE(Y,0)) ^LRE("C",X,Y) I $D(^LRE("C",X,Y)) D I
@@ -14,25 +14,14 @@ S ;sets C-xref in FILE 65
  S Y=^LRD(65,DA,0),S=$P(Y,U,2),C=$P(Y,U,4),A=$P(Y,U) I C,S]"" S Y=$O(^LAB(66,C,"SU","B",S,0)) S:Y Y=$L($P(^LAB(66,C,"SU",Y,0),U,10)) S:Y ^LRD(65,"C",$E(A,Y+1,$L(A)),DA)=""
  Q
 K ;Kill C-xref in FILE 65
- S LR("DEAD")=0
- S A="" F  S A=$O(^LRD(65,"C",A)) Q:A=""!(LR("DEAD"))  I $D(^LRD(65,"C",A,DA)) K ^LRD(65,"C",A,DA) S LR("DEAD")=1
- K LR("DEAD")
+ S Y=^LRD(65,DA,0),S=$P(Y,U,2),C=$P(Y,U,4),A=$P(Y,U) I C,S]"" S Y=$O(^LAB(66,C,"SU","B",S,0)) S:Y Y=$L($P(^LAB(66,C,"SU",Y,0),U,10)) K:Y ^LRD(65,"C",$E(A,Y+1,$L(A)),DA)
  Q
-KK S Y=^LRD(65,DA,0),S=$P(Y,U,2),C=$P(Y,U,4),A=LR(65,.01)
- I C,S]"" D
- . S Y=$O(^LAB(66,C,"SU","B",S,0))
- . S:Y Y=$L($P(^LAB(66,C,"SU",Y,0),U,10))
- I Y K ^LRD(65,"C",$E(A,Y+1,$L(A)),DA) Q
- Q
+KK S Y=^LRD(65,DA,0),S=$P(Y,U,2),C=$P(Y,U,4),A=LR(65,.01) I C,S]"" S Y=$O(^LAB(66,C,"SU","B",S,0)) S:Y Y=$L($P(^LAB(66,C,"SU",Y,0),U,10)) K:Y ^LRD(65,"C",$E(A,Y+1,$L(A)),DA) Q
 S1 I 1
  Q
 K1 ;Kill AG x-ref DD(65,4.1,1,
  S A=^LRD(65,DA,6),Z=$P(A,U,4),A=+A
- I A,Z D
- . S B=+$P($G(^LR(A,1.6,Z,0)),U,11)
- . K ^LRD(65,"AB",$E(X,1,30),DA)
- . K ^LRD(65,DA,4),^(5),^(6),^(7),^LR(A,1.6,Z),^LR("AB",A,B,Z)
- . I $D(^LR(A,1.6,0)) S A=^(0),Z=$O(^(0)),^(0)=$P(A,U,1,2)_U_Z_U_$S('Z:Z,1:($P(A,U,4)-1))
+ I A,Z S B=+$P($G(^LR(A,1.6,Z,0)),U,11) X:$D(^DD(65,4.2,1,1,2)) ^(2) K ^LRD(65,DA,4),^(5),^(6),^(7),^LR(A,1.6,Z),^LR("AB",A,B,Z) I $D(^LR(A,1.6,0)) S A=^(0),Z=$O(^(0)),^(0)=$P(A,U,1,2)_U_Z_U_$S('Z:Z,1:($P(A,U,4)-1))
  Q
 A ;Makes change to ^LRD(65,"AP" & date unit assigned if necessary
  I X'="C",X'="IG" K ^LRD(65,"AP",DA(1),DA(2)) S $P(^LRD(65,DA(2),2,DA(1),0),U,2)="" Q
@@ -54,9 +43,7 @@ EN2 ;called by TRANSFUSION entry in EXECUTE CODE file
  S A=0 F B=1:1 S A=$O(^LR(LRDFN,"BB",A)) Q:'A!(A>X)  W:B=1 $C(7),!,"Specimen(s) received within past 72 hrs:" S Z=^(A,0),Y=+Z D DT^LRU W !,Y,?18,$P(Z,U,6)
  Q
 EN3 ;delete user print list for transfusion & hematology data
- D OUT
- S X="BLOOD BANK" D ^LRUTL
- G:'LRAA OUT
+ D OUT S LRAA=$O(^LRO(68,"B","BLOOD BANK",0)) G:'LRAA OUT
  I '$D(^LRO(69.2,LRAA,7,0)) W $C(7),!!,"There are no user lists." G OUT
  S (DIC,DIE)="^LRO(69.2,LRAA,7,",DIC(0)="AEQM" D ^DIC K DIC G:Y<1 OUT
  S DA=+Y,DA(1)=LRAA,DR=.01 D ^DIE G EN3

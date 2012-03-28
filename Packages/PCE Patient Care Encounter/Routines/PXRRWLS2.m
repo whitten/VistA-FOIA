@@ -1,5 +1,5 @@
 PXRRWLS2 ;ISA/Zoltan - Sort encounters for encounter summary report.;12/1/1998
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**58,61,133**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**58,61**;Aug 12, 1996
  ;
  ; Code migrated from PXRRWLSE.
  ;
@@ -84,8 +84,7 @@ PRV2 ; Migrated from PXRRWLSE
  . E  D
  .. ;Get the clinic.
  .. S CLINIEN=$P(VISIT,U,8)
- .. I CLINIEN="" S CLINIEN=0
- .. I CLINIEN,$D(^DIC(40.7,CLINIEN,0))[0 S CLINIEN=0
+ .. I $D(^DIC(40.7,CLINIEN,0))[0 S CLINIEN=0
  .. I CLINIEN>0 S HLOCNAM=$P(^DIC(40.7,CLINIEN,0),U,1)_U_CLINIEN
  .. E  S HLOCNAM="Unknown"
  ;

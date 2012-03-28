@@ -1,5 +1,7 @@
-DGPMVDL1 ;ALB/MIR - DELETE PATIENT MOVEMENTS, CONTINUED ; 11 JAN 88 @9
+DGPMVDL1 ;ALB/MIR - DELETE PATIENT MOVEMENTS, CONTINUED ; 11 JAN 88 @9 [ 03/09/2001  9:45 AM ]
  ;;5.3;Registration;;Aug 13, 1993
+ ;IHS/ANMC/LJF  3/09/2001 added IHS ^utility nodes
+ ;
 D3 ;can this discharge be deleted?
  I $P(DGPMP,"^",18)=42 S DGPMER=1 W !,"You can not delete a WHILE ASIH type discharge" Q
  I $P(DGPMAN,"^",21),("^41^46^"[("^"_+$P(DGPMP,"^",18)_"^")) S DGPMER=1 W !,"Delete through corresponding NHCU/DOM movements" Q
@@ -41,7 +43,15 @@ DD ;Delete discharge, update admission mvt, and PTF record
  ;pass in DGPMADM - admission mvt for which d/c is being deleted
  Q:'$D(^DGPM(+DGPMADM,0))  S DA=$P(^(0),"^",17) I '$D(^DGPM(+DA,0)) Q
  S ^UTILITY("DGPM",$J,1,DGPMADM,"P")=$S($D(^UTILITY("DGPM",$J,1,DGPMADM,"P")):^("P"),1:^DGPM(+DGPMADM,0)) ;adm mvt before deletion
+ ;
+ ;IHS/ANMC/LJF 3/09/2001 added IHS ^utility nodes
+ S ^UTILITY("DGPM",$J,1,DGPMADM,"IHSP")=$S($D(^UTILITY("DGPM",$J,1,DGPMADM,"IHSP")):^("IHSP"),1:$G(^DGPM(+DGPMADM,"IHS")))
+ S ^UTILITY("DGPM",$J,3,DA,"IHSP")=$G(^DGPM(DA,"IHS"))
+ S ^UTILITY("DGPM",$J,3,DA,"IHSA")=""
+ ;IHS/ANMC/LJF end of changes
+ ;
  S ^UTILITY("DGPM",$J,3,DA,"P")=^DGPM(DA,0),^("A")="",DIK="^DGPM(" D ^DIK
  S ^UTILITY("DGPM",$J,1,DGPMADM,"A")=^DGPM(+DGPMADM,0) ;set after of admission
+ S ^UTILITY("DGPM",$J,1,DGPMADM,"IHSA")=$G(^DGPM(+DGPMADM,"IHS")) K DGPMADM Q  ;IHS/ANMC/LJF 3/09/2001
  S DA=$P(^DGPM(DGPMADM,0),"^",16),DIE="^DGPT(",DR="70///@;71///@;72///@" D ^DIE
  K DGPMADM Q

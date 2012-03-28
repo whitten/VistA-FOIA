@@ -1,5 +1,8 @@
-SCRPTA ;ALB/CMM - Patient Listing w/Team Assignment Data ; 29 Jun 99  04:11PM
- ;;5.3;Scheduling;**41,48,52,114,174,181,177,526**;AUG 13, 1993;Build 8
+SCRPTA ;ALB/CMM - Patient Listing w/Team Assignment Data ; 29 Jun 99  04:11PM [ 11/02/2000  9:48 AM ]
+ ;;5.3;Scheduling;**41,48,52,114,174,181,177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed 132 column message
+ ;                        added call to list template
+ ;                        moved PT ID column to fit 6 digits
  ;
  ;Patient Listing w/Team Assignment Data Report
  ;
@@ -13,7 +16,8 @@ PROMPTS ;
  W ! K Y D PRMTT^SCRPU1 I '$D(VAUTT) G ERR
  W ! K Y D ROLE^SCRPU1 I '$D(VAUTR) G ERR
  W ! K Y S VAUTPP="" D PRACT^SCRPU1 K VAUTPP I '$D(VAUTP) G ERR
- W !!,"This report requires 132 column output!"
+ ;W !!,"This report requires 132 column output!"  ;IHS/ANMC/LJF 11/2/2000
+ W !!,"This report, when printed on paper, requires wide paper or condensed print!"  ;IHS/ANMC/LJF 11/2/2000
  D QUE(.VAUTD,.VAUTT,.VAUTR,.VAUTP) Q 
  ;
 QUE(INST,TEAM,ROLE,PRACT) ; 
@@ -56,6 +60,8 @@ RET S NUMBER=0
  Q NUMBER
  ;
 QENTRY ;
+ I $E(IOST,1,2)="C-" D ^BSDSCTA Q    ;IHS/ANMC/LJF 11/2/2000
+IHS ;EP; entry point for list template  ;IHS/ANMC/LJF 11/2/2000
  ;driver entry point
  S TITL="Patient Listing For Team Assignments"
  S STORE="^TMP("_$J_",""SCRPTA"")"
@@ -148,7 +154,8 @@ HEADER ;
 SHEAD ;
  ;setup column headers
  S @STORE@("H2")="Patient Name"
- S $E(@STORE@("H2"),19)="Pt ID"
+ ;S $E(@STORE@("H2"),24)="Pt ID" ;IHS/ANMC/LJF 11/2/2000
+ S $E(@STORE@("H2"),23)="Pt ID"  ;IHS/ANMC/LJF 11/2/2000
  S $E(@STORE@("H1"),31)="Date"
  S $E(@STORE@("H2"),31)="Assigned"
  S $E(@STORE@("H2"),43)="PC?"

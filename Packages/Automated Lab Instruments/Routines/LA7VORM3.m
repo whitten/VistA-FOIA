@@ -1,5 +1,5 @@
-LA7VORM3 ;DALOI/JMC - LAB ORM (Order) message builder cont'd ; 11-21-986
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64**;Sep 27, 1994
+LA7VORM3 ;VA/DALOI/JMC - LAB ORM (Order) message builder cont'd ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997;Build 9
  ;
  ;
 OBR ;Observation Request segment for Lab Order
@@ -13,15 +13,24 @@ OBR ;Observation Request segment for Lab Order
  S OBR(1)=$$OBR1^LA7VOBR(.LA7OBRSN) ;initialize OBR segment
  ;
  ; Remote UID
- S OBR(2)=$$OBR2^LA7VOBR(LA7UID,LA7FS,LA7ECH)
+ ;cmi/maw 5/11/10 changed back to original code to transform in Ensemble
+ ;S OBR(2)=$$OBR2^LA7VOBR(LA7UID,LA7FS,LA7ECH)  ;cmi/maw 3/10/2010 orig
+ S OBR(2)=$$OBR2^LA7VOBR(LA7UID,LA7FS,LA7ECH)  ;cmi/maw 7/1/2010 for order number
+ ;S OBR(2)=$$ORC2^LA7VORC($P(LA76802(.1),"^"),LA7FS,LA7ECH)  ;cmi/maw 3/10/2010 order number
  ;
  ; Universal service ID - check for non-VA code system
  S LA7X=""
  I $P(LA762801(5),"^")]"" S LA7X=$P(LA762801(5),"^",1)_"^"_$P(LA762801(5),"^",2)_"^"_$P(LA762801(5),"^",5)
  S OBR(4)=$$OBR4^LA7VOBR(LA7NLT,LA760,LA7X,LA7FS,LA7ECH)
+ I $$UP^XLFSTR($P($G(LA7SCFG),U,2))["QUEST" D  ;cmi/maw 4/14/2010 for quest order number
+ . N LA7ORD,LA7ORDN
+ . S LA7ORD=$P(OBR(4),HLCOMP)
+ . S LA7ORDN=$P(OBR(4),HLCOMP,2)
+ . S OBR(4)=HLCOMP_HLCOMP_HLCOMP_LA7ORD_HLCOMP_LA7ORDN
  ;
  ; Collection date/time
  S OBR(7)=$$OBR7^LA7VOBR($P(LA76802(3),"^"))
+ S OBR(7)=$P(OBR(7),"-")  ;cmi/maw 4/14/2010 remove timezone offset
  ;
  ; Collection end date/time
  I $P(LA762801(2),U,4)=1 D
@@ -57,7 +66,11 @@ OBR ;Observation Request segment for Lab Order
  S OBR(16)=$$ORC12^LA7VORC($P(LA76802(0),"^",8),$P(LA7X,"^",3),LA7FS,LA7ECH)
  ;
  ; Placer's field #1 (HOST site)
- S OBR(18)="LA7V HOST "_SITE
+ ;S OBR(18)="LA7V HOST "_SITE
+ ;cmi/maw 5/10/2010 changed so Order number is here, we will reverse them via Ensemble on inbound ORU^R01
+ S OBR(18)=$$ORC2^LA7VORC($P(LA76802(.1),"^"),LA7FS,LA7ECH)  ;cmi/maw 3/10/2010 order number
+ ;S OBR(18)=$$OBR2^LA7VOBR(LA7UID,LA7FS,LA7ECH)  ;cmi/maw 3/10/2010 acc # UID
+ ;cmi/maw 3/10/2009 lets put accession number here
  ;
  ; Placer's field #2
  K LA7X

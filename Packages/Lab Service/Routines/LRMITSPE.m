@@ -1,5 +1,5 @@
-LRMITSPE ;SLC/STAFF - MICRO TREND PROCESS EXTRACT ;10/28/93  15:17
- ;;5.2;LAB SERVICE;**96,257,344**;Sep 27, 1994
+LRMITSPE ;VA/SLC/STAFF - MICRO TREND PROCESS EXTRACT ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**96,257,344,1027**;NOV 01, 1997
  ; from LRMITSP
  ;Reference to ^SC supported by IA# 10040
  ;Reference to ^SC C xref supported by IA# 908
@@ -51,7 +51,7 @@ DATA ; quit if not a valid patient or task is stopped
  ..S LRSDIV=0
  ..F  S LRSDIV=$O(LRM("DIV","S",LRSDIV)) Q:LRSDIV=""  D
  ...I LRSDIV=LRDIV,LRDIV'=0 D ^LRMITSPO
- ..Q 
+ ..Q
  .; get data on organisms
  .D ^LRMITSPO
  Q

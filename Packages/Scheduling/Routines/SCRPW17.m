@@ -1,5 +1,7 @@
 SCRPW17 ;RENO/KEITH/MRY - Prompts for clinic related outputs ; 21 JUL 2000  1:45 PM
  ;;5.3;Scheduling;**139,144,155,222**;AUG 13, 1993
+ ;IHS/ANMC/LJF 8/24/2001  return division using IHS call
+ ;
 ASK(SDADD,SDRES,SD,SDFMT,SDORD,SDSDT) ;Ask for clinic report parameters
  ;Required input: SDADD='1' to prompt user for "addons", "0" to not ask
  ;Required input: SDRES='1' to prompt user for clinic to restart run from, '0' to not ask
@@ -81,6 +83,12 @@ DIVA(SDDIV) ;Ask for division(s)
  ;Output: '1' if successful, '0' if not
  ;Output: SDDIV='0' if 'all', '1' if specific divisions^text: "all" or institution name^division ifn, for non-multidivisional
  ;Output: SDDIV(division ifn)=division name
+ ;
+ ;IHS/ANMC/LJF 8/24/2001 return division using IHS call
+ NEW X S X=$$DIV^BSDU I 'X Q 0
+ S SDDIV(X)=$$DIVNM^BSDU(X),SDDIV="1^"_SDDIV(X)_U_X Q 1
+ ;IHS/ANMC/LJF 8/24/2001 end of new code
+ ;
  N SDX,SDOUT S SDOUT=0 K SDDIV
  S SDX=$G(^DG(43,1,"GL")) I '$$PRIM^VASITE() W !!,$C(7),"No medical center defined in site parameters!" Q 0
  I '$P(SDX,U,2) S SDDIV="0^"_$P($G(^DG(40.8,$$PRIM^VASITE(),0)),U)_U_$$PRIM^VASITE() Q 1

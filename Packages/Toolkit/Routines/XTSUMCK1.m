@@ -1,4 +1,5 @@
-XTSUMCK1 ;Boise/MAW,SFISC/RSD-process routine checksum job results ;10/04/96  12:37
+XTSUMCK1 ;Boise/MAW,SFISC/RSD-process routine checksum job results ;10/04/96  12:37 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**44**;Jul 10, 1995
  ;this routine is normally called via an ALERT process...
  W !!,"ROUTINE CHECKSUM REPORT"

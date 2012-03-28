@@ -1,4 +1,4 @@
-XQCHK1 ;BP-OAK/BDT - Check security on option; 5/12/03 12:32pm
+XQCHK1 ;BP-OAK/BDT - Check security on option; 5/12/03 12:32pm [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**303**; Jul 10,1995
  Q
 CHCK1 ;check if there is another path to access a specific option

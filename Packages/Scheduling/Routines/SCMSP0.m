@@ -122,11 +122,11 @@ MAILGRP ;Create entry in MAIL GROUP file (#3.8) that will be attached to
  S DIC("P")=$P(^DD(3.8,12,0),"^",2)
  S DA(1)=PTR2MG
  S DLAYGO=3.8
- S X="XXX@Q-ACS.MED.VA.GOV"
+ S X="XXX@DOMAIN.NAME"
  D ^DIC
- S MSGTXT(1)="    XXX@Q-ACS.MED.VA.GOV successfully added as REMOTE MEMBER"
+ S MSGTXT(1)="    XXX@DOMAIN.NAME successfully added as REMOTE MEMBER"
  I (Y<0) D
- .S MSGTXT(1)="    ** Unable to add XXX@Q-ACS.MED.VA.GOV as REMOTE MEMBER"
+ .S MSGTXT(1)="    ** Unable to add XXX@DOMAIN.NAME as REMOTE MEMBER"
  .S MSGTXT(2)="    ** Remote member must be added manually"
  D MES^XPDUTL(.MSGTXT)
  ;Done

@@ -1,6 +1,6 @@
 PXCEEXP ;ISL/dee - Main routine for the List Manager display for encounter profile of a visit and related v-files ;6/20/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**172**;Aug 12, 1996
- ;;
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
+ ;; ;
  Q
 EN ; -- main entry point for PXCE ENCOUNTER PROFILE
  N PXCEVIEN,PXCEQUIT
@@ -20,19 +20,10 @@ EN1 ;
  . S PXCEPAT=$P($G(^AUPNVSIT(PXCEVIEN,0)),"^",5)
  . D PATINFO^PXCEPAT(.PXCEPAT)
  S PXCEAEVW="D"
- ; next 3 lines added per PX*1.0*172
- N PXPTSSN,PXREC,PXDUZ S PXDUZ=DUZ,PXPTSSN=$TR($G(PXCEPAT("SSN")),"-")
- D SEC(.PXREC,PXDUZ,PXPTSSN)
- I PXREC W !!,"Security regulations prohibit computer access to your own medical record." H 3 G QUIT
+ ;
  D EN^VALM("PXCE ENCOUNTER PROFILE")
 QUIT ;
  D MAKELIST^PXCENEW,DONE^PXCE
- Q
- ;
-SEC(PXREC,PXDUZ,PXPTSSN) ; added per PX*1.0*172
- N PXNPSSN S PXREC=0
- S PXNPSSN=$$GET1^DIQ(200,PXDUZ_",",9,"I","","PXNPERR")
- I PXNPSSN=PXPTSSN S PXREC=1
  Q
  ;
 HDR ; -- header code

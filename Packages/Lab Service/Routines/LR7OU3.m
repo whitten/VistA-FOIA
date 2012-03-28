@@ -1,4 +1,6 @@
-LR7OU3 ;slc/dcm - Match entries in file 60 to 64 ;8/11/97
+LR7OU3 ; IHS/DIR/AAB - Match entries in file 60 to 64 ; [ 8/11/97 ]
+ ;;5.2;LR;**1003**;JUN 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**121**;Sep 27, 1994
 6 ;Find matches starting with file 60 ->64
  N X,IFN,IFN1,Y,Z,CTR,CTR1

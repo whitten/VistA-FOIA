@@ -1,5 +1,5 @@
-LREVENT ;DALIO/JMC - Shipping Event X-ref Utility ; [ 05/21/97  2:26 PM ]
- ;;5.2;LAB SERVICE;**153,286**;Sep 27, 1994
+LREVENT ;VA/DALIO/JMC - Shipping Event X-ref Utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**153,286,1027**;NOV 01, 1997
  Q
  ;
 ADT ; set logic for ADT x-ref in file 62.85

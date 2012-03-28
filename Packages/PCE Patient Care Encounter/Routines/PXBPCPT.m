@@ -1,5 +1,5 @@
-PXBPCPT ;ISL/JVS,ESW - PROMPT CPT ;3/18/05 12:55pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,73,89,112,121,132,149,124,190**;Aug 12, 1996;Build 9
+PXBPCPT ;ISL/JVS,ESW - PROMPT CPT ; 4/23/03 7:15pm
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,73,89,112**;Aug 12, 1996
  ;
  ;
  ;
@@ -33,14 +33,6 @@ C1 ;----Third entry point
  I DATA?1.N1"E".NAP S DATA=" "_DATA
  I $L(DATA)>200 S (DATA,EDATA)=$E(DATA,1,199)
  I DATA?24.N S (DATA,EDATA)=$E(DATA,1,24)
- ; ----- Check & remove control character PX*190 -----
- S ZZDATA=""
- S ZDATA="" F J=1:1:$L(DATA) S ZDATA=$E(DATA,J)  D
- .I $A(ZDATA)>31,($A(ZDATA)'=127) S ZZDATA=ZZDATA_ZDATA
- I $L(ZZDATA)=0 W $C(7),"??" D HELP^PXBUTL0("CPTM") G C
- S (DATA,EDATA)=ZZDATA
- K ZZDATA,ZDATA,J
- ; 
  D CASE^PXBUTL
  ;----SPACE BAR---
  I DATA=" ",$D(^DISV(DUZ,"PXBCPT-1")) S DATA=^DISV(DUZ,"PXBCPT-1") W DATA
@@ -114,7 +106,7 @@ LI ;--------If picked a line number display
  ;
  ;--If a "?" is NOT entered during lookup
  S FROM="CPT",(VAL,Y)=$P($P($$DOUBLE1^PXBGCPT2(FROM),"^",2),"--",1)
- S (X,DATA,EDATA)=VAL,DIC=81,DIC(0)="MZ",DIC("S")="I $P($$CPT^ICPTCOD(Y,IDATE),U,7)" D ^DIC
+ S (X,DATA,EDATA)=VAL,DIC=81,DIC(0)="MZ" D ^DIC
  I Y<1 S DATA="^C" G C1
  ;
  ;--If Y is good and already in file...
@@ -127,12 +119,11 @@ LI ;--------If picked a line number display
 FIN ;--FINISH CPT
  I $G(SELINE) S $P(REQE,"^",1)=$P($G(PXBSAM(SELINE)),"^",3)
  I $P(REQE,"^",1)="" S $P(REQE,"^",1)="...No Provider Selected..."
- I $L(Y,"^")'>1 S X=Y,DIC=81,DIC(0)="ZM",DIC("S")="I $P($$CPT^ICPTCOD(Y,IDATE),U,7)" D ^DIC
+ I $L(Y,"^")'>1 S X=Y,DIC=81,DIC(0)="ZM" D ^DIC
  I Y<0 D HELP^PXBUTL0("CPTM") G C
  S OK=$$CPTOK^PXBUTL(+Y,IDATE) D  G:+OK=0 C
  .I +OK=0 W IOCUF,IOCUF,IORVON,"INACTIVE!--",IORVOFF D HELP1^PXBUTL1("CPTI") ;--HELP
  S CPT=Y(0)
- N PXINF S PXINF=$$CPT^ICPTCOD(+Y,IDATE),$P(CPT,U,2)=$P(PXINF,U,3)
  S ^DISV(DUZ,"PXBCPT-1")=$P(CPT,"^",1)
  I $D(PXBNCPT) S PXBNCPTF=1
  I $D(PXBKY(Y(0,0))),$G(SELINE) D
@@ -154,17 +145,6 @@ FIN ;--FINISH CPT
  S $P(REQE,"^",3)=$P(CPT,"^",1)_"-- "_$P(CPT,"^",2)
  S PXBNCPT($P(CPT,"^",1))=$P(REQI,"^",8)
  S:$P(REQI,"^",8)]"" PXBNCPT($P(CPT,"^",1),$P(REQI,"^",8))=""
- ;PX124 adds to REQ*
-REST I $P(REQI,U,8) D
- .N CTR,VAL,IEN
- .S IEN=$P(REQI,U,8)
- .S $P(REQI,U,13,19)=$P($G(^AUPNVCPT(IEN,0)),U,9,15)
- .S $P(REQI,U,12)=$P($G(^AUPNVCPT(IEN,0)),U,5)
- .F CTR=12:1:19 D
- ..S VAL=$P(REQI,U,CTR)
- ..S:VAL VAL=$$ICDDX^ICDCODE(VAL,IDATE),$P(REQE,U,CTR)=$P($G(VAL),U,2)_" --"_$P($G(VAL),U,4)
- .S VAL=$P($G(^AUPNVCPT(IEN,12)),U,2),$P(REQI,U,22)=VAL
- .S:VAL $P(REQE,U,22)=$P($G(^VA(200,VAL,0)),U,1)
  ;
 CPTX ;--CPT Exit and cleanup
  I $P(REQE,"^",1)="" S $P(REQE,"^",1)="...No Provider Selected..."
@@ -187,9 +167,7 @@ MULTI(CPTCD) ;--Prompt user to Edit existing CPT code or Add as new entry
  N DIR,DA,X,Y
  S DIR(0)="SB^E:EDIT;A:ADD"
  S DIR("A")="Do you wish to (E)dit or (A)dd"
- ;PX*2.0*132
- I (($E(CPTCD)?1N)&($D(^IBE(357.69,+CPTCD))))!(($E(CPTCD)?1A)&($D(^IBE(357.69,CPTCD)))) D
- .S DIR(0)="SB^E:EDIT",DIR("A")="You may only (E)dit this code, no duplicate E&M codes allowed."
+ I $D(^IBE(357.69,+CPTCD)) S DIR(0)="SB^E:EDIT",DIR("A")="You may only (E)dit this code, no duplicate E&M allowed."
  S DIR("A",1)="CPT "_CPTCD_" already on file for this Encounter"
  D ^DIR
  I Y']""!(Y="^") Q -1

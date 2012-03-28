@@ -1,5 +1,5 @@
 XPDDP1 ;SFISC/RSD - Continue Display a package ;
- ;;8.0;KERNEL;**525**;Jul 10, 1995;Build 10
+ ;;8.0;KERNEL;**525**;Jul 10, 1995;Build 16
  ; Per VHA Directive 2004-038, this routine should not be modified.
 PNT(XPDGR) ; Print a package, XPDGR=global root
  ;XPDFL=0 - Build   - ^XPD(9.7 global root

@@ -1,8 +1,5 @@
 RACPT1 ;HISC/GJC,FPT-Procedure/CPT Stats Report ;12/29/00  11:28
- ;;5.0;Radiology/Nuclear Medicine;**26,69,103**;Mar 16, 1998;Build 2
- ;04/05/2010 KAM/BP Remedy Call 349101 CPT Codes w/modifiers do not
- ;                                     display properly
- ;01/19/2006 KAM/BAY Remedy Call 97373 CPT Code Display Problem
+ ;;5.0;Radiology/Nuclear Medicine;**26**;Mar 16, 1998
 CHK ;
  I $O(RACCESS(DUZ,""))="" D SETVARS^RAPSET1(0) S RAPSTX=""
  I $O(RACCESS(DUZ,""))="" D ACCVIO^RAUTL19 S RAQUIT=1 Q
@@ -40,12 +37,8 @@ DATE D DATE^RAUTL Q:RAPOP
  W ! D ZIS^RAUTL
  Q
 PRINT ; Output data
- ; 01/19/2006 KAM/BAY Changed next line to utilize $$NAMCODE^RACPTMSC
- I '$G(RACMLIST) W !,$P($$NAMCODE^RACPTMSC(CPT,""),U),?7,$S($D(^RAMIS(71,J,0)):$E($P(^(0),"^"),1,38),1:"UNKNOWN") S RATOT(1)=+$P(^(0),U,10) ;cost per unit
- ; 01/19/2006 KAM/BAY Changed next line to utilize $$NAMCODE^RACPTMSC
- ;I $G(RACMLIST) W !,$P($$NAMCODE^RACPTMSC(CPT,""),U),?15,$S($D(^RAMIS(71,J,0)):$E($P(^(0),"^"),1,30),1:"UNKNOWN") S RATOT(1)=+$P(^(0),U,10) ;cost per unit
- ; 01/13/2010 KAM/BAY Changed next line to display CPT w/Modifier
- I $G(RACMLIST) W !,$S(CPT["-":$P($$NAMCODE^RACPTMSC($P(CPT,"-"),""),U)_"-"_$P(CPT,"-",2),1:$P($$NAMCODE^RACPTMSC(CPT,""),U)),?15,$S($D(^RAMIS(71,J,0)):$E($P(^(0),"^"),1,30),1:"UNKNOWN") S RATOT(1)=+$P(^(0),U,10) ;cost per unit KEN TESTING
+ I '$G(RACMLIST) W !,CPT,?7,$S($D(^RAMIS(71,J,0)):$E($P(^(0),"^"),1,38),1:"UNKNOWN") S RATOT(1)=+$P(^(0),U,10) ;cost per unit
+ I $G(RACMLIST) W !,CPT,?15,$S($D(^RAMIS(71,J,0)):$E($P(^(0),"^"),1,30),1:"UNKNOWN") S RATOT(1)=+$P(^(0),U,10) ;cost per unit
  S RATOT(2)=RATOT*RATOT(1) ;occurrence * cost per unit
  S RATOT(4)=$G(^TMP($J,"RA",RAI,RADIV,RAIMAG(1),"DONE"))
  S RATOT(5)=$G(^TMP($J,"RA",RAI,RADIV,RAIMAG(1),"COST"))

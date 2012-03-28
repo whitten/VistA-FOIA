@@ -1,5 +1,5 @@
-LRMITSE ;SLC/STAFF - MICRO TREND ENTRY ;3/4/93  17:07
- ;;5.2;LAB SERVICE;**96,257**;Sep 27, 1994
+LRMITSE ;VA/SLC/STAFF - MICRO TREND ENTRY ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**96,257,1027**;NOV 01, 1997
  ; from LRMITS
  ; collect input data for trend report
  ; LRAP(drug node)=organism #  if antibiotic pattern defined

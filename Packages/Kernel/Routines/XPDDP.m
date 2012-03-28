@@ -1,5 +1,5 @@
 XPDDP ;SFISC/RSD - Display a package ;03/18/2008
- ;;8.0;KERNEL;**21,28,44,68,100,108,229,304,346,463,488,525**;Jul 10, 1995;Build 10
+ ;;8.0;KERNEL;**21,28,44,68,100,108,229,304,346,463,488,525**;Jul 10, 1995;Build 16
  ; Per VHA Directive 2004-038, this routine should not be modified.
  ; Options: XPD PRINT BUILD calls EN1
  ;          XPD PRINT INSTALL calls EN2

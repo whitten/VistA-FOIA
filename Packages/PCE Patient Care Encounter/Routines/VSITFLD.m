@@ -1,5 +1,5 @@
 VSITFLD ;ISD/MRL,RJP - Visit Tracking file fields array setup ;6/20/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,81,111,130,124,164,168**;Aug 12, 1996;Build 14
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,81,111**;Aug 12, 1996
  ; Patch PX*1*76 changes the 2nd line of all VSIT* routines to reflect
  ; the incorporation of the module into PCE.  For historical reference,
  ; the old (VISIT TRACKING) 2nd line is included below to reference VSIT
@@ -29,7 +29,6 @@ FLD ; - Visit file fields; array subscript and field DD number fmt
  S ^TMP("VSITDD",$J,"USR")="USR;.23;0;23;Invalid Created by User [0:23]"
  S ^TMP("VSITDD",$J,"OPT")="OPT;.24;0;24"
  S ^TMP("VSITDD",$J,"PRO")="PRO;.25;0;25"
- S ^TMP("VSITDD",$J,"ACT")="ACT;.26;0;26"
  S ^TMP("VSITDD",$J,"OUT")="OUT;2101;21;1"
  S ^TMP("VSITDD",$J,"VID")="VID;15001;150;1"
  S ^TMP("VSITDD",$J,"IO")="IO;15002;150;2"
@@ -40,16 +39,6 @@ FLD ; - Visit file fields; array subscript and field DD number fmt
  S ^TMP("VSITDD",$J,"EC")="EC;80004;800;4"
  S ^TMP("VSITDD",$J,"MST")="MST;80005;800;5" ;added 6/17/98 for MST enhancement
  S ^TMP("VSITDD",$J,"HNC")="HNC;80006;800;6" ;PX*1*111 added for HNC enhancement
- S ^TMP("VSITDD",$J,"CV")="CV;80007;800;7" ;PX*1*130 Combat Veteran
- S ^TMP("VSITDD",$J,"SHAD")="SHAD;80008;800;8" ;PX*1*168 Project 112/SHAD
- S ^TMP("VSITDD",$J,"SCEF")="SCED;80011;800;11" ;PX*1*124 SC EDIT FLAG
- S ^TMP("VSITDD",$J,"AOEF")="AOED;80012;800;12" ;PX*1*124 AO EDIT FLAG
- S ^TMP("VSITDD",$J,"IREF")="IRED;80013;800;13" ;PX*1*124 IR EDIT FLAG
- S ^TMP("VSITDD",$J,"ECEF")="ECED;80014;800;14" ;PX*1*124 EC EDIT FLAG
- S ^TMP("VSITDD",$J,"MSTEF")="MSTED;80015;800;15" ;PX*1*124 MST EDIT FLAG
- S ^TMP("VSITDD",$J,"HNCEF")="HNCED;80016;800;16" ;PX*1*124 HNC EDIT FLAG
- S ^TMP("VSITDD",$J,"CVEF")="CVED;80017;800;17" ;PX*1*124 CV EDIT FLAG
- S ^TMP("VSITDD",$J,"SHADEF")="SHADED;80018;800;18" ;PX*1*168 SHAD EDIT FLAG
  S ^TMP("VSITDD",$J,"COM")="COM;81101;811;1"
  S ^TMP("VSITDD",$J,"VER")="VER;81201;812;1"
  S ^TMP("VSITDD",$J,"PKG")="PKG;81202;812;2"

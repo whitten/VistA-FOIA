@@ -1,4 +1,4 @@
-MCAROPV ; GENERATED FROM 'MCAROPV' PRINT TEMPLATE (#990) ; 10/04/96 ; (FILE 698.1, MARGIN=80)
+MCAROPV ; GENERATED FROM 'MCAROPV' PRINT TEMPLATE (#3714) ; 11/29/04 ; (FILE 698.1, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,17 +11,18 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(990,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3714,"DXS")
+ S I(0)="^MCAR(698.1,",J(0)=698.1
  D N:$X>32 Q:'DN  W ?32 X DXS(1,9) K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 S DIP(1)=$S($D(^MCAR(698.1,D0,0)):^(0),1:"") S X="MODEL: "_$S('$D(^MCAR(698.4,+$P(DIP(1),U,3),0)):"",1:$P(^(0),U,1)) K DIP K:DN Y W X
  D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(698.1,D0,0)):^(0),1:"") S X="MANUFACTURER: "_$S('$D(^MCAR(698.6,+$P(DIP(1),U,4),0)):"",1:$P(^(0),U,1)) K DIP K:DN Y W X
  D N:$X>2 Q:'DN  W ?2 S DIP(1)=$S($D(^MCAR(698.1,D0,0)):^(0),1:"") S X="SERIAL NUMBER: "_$P(DIP(1),U,5) K DIP K:DN Y W X
  D N:$X>2 Q:'DN  W ?2 W "ATTENDING PHYSICIAN: "
- S X=$G(^MCAR(698.1,D0,3)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(698.1,D0,3)) S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>2 Q:'DN  W ?2 W "FELLOW-1st: "
- S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>2 Q:'DN  W ?2 W "FELLOW-2nd: "
- S Y=$P(X,U,3) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S Y=$P(X,U,3) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>2 Q:'DN  W ?2 W "THRESHOLD (VOLTS):"
  S X=$G(^MCAR(698.1,D0,0)) S Y=$P(X,U,6) W:Y]"" $J(Y,5,1)
  D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(698.1,D0,0)):^(0),1:"") S X="RESISTANCE (OHMS): "_$P(DIP(1),U,8) K DIP K:DN Y W X
@@ -35,27 +36,27 @@ BEGIN ;
  S I(1)=10,J(1)=698.11 F D1=0:0 Q:$O(^MCAR(698.1,D0,10,D1))'>0  S D1=$O(^(D1)) D:$X>14 T Q:'DN  D A1
  G A1R
 A1 ;
- S X=$G(^MCAR(698.1,D0,10,D1,0)) S DIWL=1,DIWR=65 D ^DIWP
+ S X=$G(^MCAR(698.1,D0,10,D1,0)) S DIWL=15,DIWR=79 D ^DIWP
  Q
 A1R ;
- D 0^DIWW K DIP K:DN Y
+ D 0^DIWW
  D ^DIWW
  S I(100)="^MCAR(690,",J(100)=690 S I(0,0)=D0 S DIP(1)=$S($D(^MCAR(698.1,D0,0)):^(0),1:"") S X=$P(DIP(1),U,2),X=X S D(0)=+X S D0=D(0) I D0>0 D B1
- G B1R^MCAROPV1
+ G B1R
 B1 ;
  D T Q:'DN  D N D N D N:$X>29 Q:'DN  W ?29 X DXS(3,9) K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 W "PACING INDICATION: "
  S I(101)="""P""",J(101)=690.07 F D1=0:0 Q:$O(^MCAR(690,D0,"P",D1))'>0  X:$D(DSC(690.07)) DSC(690.07) S D1=$O(^(D1)) Q:D1'>0  D:$X>23 T Q:'DN  D A2
  G A2R
 A2 ;
- S X=$G(^MCAR(690,D0,"P",D1,0)) D T Q:'DN  W ?0 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(694.1,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,100)
+ S X=$G(^MCAR(690,D0,"P",D1,0)) D T Q:'DN  W ?0 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(694.1,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,100)
  Q
 A2R ;
  D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 W "RISK FACTORS: "
  S I(101)="""P1""",J(101)=690.08 F D1=0:0 Q:$O(^MCAR(690,D0,"P1",D1))'>0  X:$D(DSC(690.08)) DSC(690.08) S D1=$O(^(D1)) Q:D1'>0  D:$X>18 T Q:'DN  D B2
  G B2R
 B2 ;
- S X=$G(^MCAR(690,D0,"P1",D1,0)) D N:$X>17 Q:'DN  W ?17 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695.4,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,40)
+ S X=$G(^MCAR(690,D0,"P1",D1,0)) D N:$X>17 Q:'DN  W ?17 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695.4,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  W ", "
  S Y=$P(X,U,2) D DT
  Q
@@ -68,4 +69,12 @@ B2R ;
  S X=$G(^MCAR(690,D0,"P3")) S Y=$P(X,U,3) W:Y]"" $S($D(DXS(10,Y)):DXS(10,Y),1:Y)
  D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 X DXS(7,9.2) S X=$S(DIP(102):DIP(103),DIP(104):X) K DIP K:DN Y W X
  S X=$G(^MCAR(690,D0,"P3")) S Y=$P(X,U,4) D DT
- G ^MCAROPV1
+ D T Q:'DN  D N D N:$X>2 Q:'DN  W ?2 X DXS(8,9.2) S X=$S(DIP(102):DIP(103),DIP(104):X) K DIP K:DN Y W X
+ S X=$G(^MCAR(690,D0,"P3")) W ?0,$E($P(X,U,5),1,25)
+ Q
+B1R ;
+ K J(100),I(100) S:$D(I(0,0)) D0=I(0,0)
+ K Y K DIWF
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

@@ -1,5 +1,5 @@
 DGBTCR2 ;ALB/SCK - BENEFICIARY TRAVEL FORM 70-3542d CONTINUE; 2/7/88@08:00  6/11/93@09:30
- ;;1.0;Beneficiary Travel;;September 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
  ;This routine is a modification of AIVBTPRT / pmg / GRAND ISLAND ;07 Jul 88  12:02 PM
  Q
 PRINT ;Continuation of DGBTCR1, called by DGBTCR

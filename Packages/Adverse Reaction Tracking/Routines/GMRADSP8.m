@@ -1,5 +1,6 @@
-GMRADSP8 ;HIRMFO/WAA-DISPLAY ALLERGY ;9/6/95  11:06
- ;;4.0;Adverse Reaction Tracking;;Mar 29, 1996
+GMRADSP8 ;HIRMFO/WAA-DISPLAY ALLERGY ;26-Oct-2010 17:03;DU
+ ;;4.0;Adverse Reaction Tracking;**1002**;Mar 29, 1996;Build 32
+ ;IHS/MSC/MGH added source to header
 DISPLAY(ARRAY) ;This subroutine will print out the Reactant
  ; ARRAY is the array that is passed
  N CNT
@@ -9,8 +10,8 @@ DISPLAY(ARRAY) ;This subroutine will print out the Reactant
 HEAD ;Print the top of page for the display
  W #
  D WRITE(2,68,"OBS/")
- D WRITE(1,0,"REACTANT"),WRITE(0,53,"VER."),WRITE(0,59," MECH. "),WRITE(0,68,"HIST"),WRITE(0,74,"TYPE")
- D WRITE(1,0,"--------"),WRITE(0,53,"----"),WRITE(0,59,"-------"),WRITE(0,68,"----"),WRITE(0,74,"----")
+ D WRITE(1,0,"REACTANT"),WRITE(0,40,"SOURCE"),WRITE(0,53,"VER."),WRITE(0,59," MECH. "),WRITE(0,68,"HIST"),WRITE(0,74,"TYPE")
+ D WRITE(1,0,"--------"),WRITE(0,40,"------"),WRITE(0,53,"----"),WRITE(0,59,"-------"),WRITE(0,68,"----"),WRITE(0,74,"----")
  Q
  ;
 WRITE(NL,TAB,STRING,GMRAOUT,HEAD) ; This will display all the

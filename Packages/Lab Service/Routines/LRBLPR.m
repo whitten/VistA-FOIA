@@ -1,5 +1,7 @@
-LRBLPR ;AVAMC/REG - BLOOD BANK PT RECORD ;2/18/93  09:46 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
+LRBLPR ; IHS/DIR/FJE - BLOOD BANK PT RECORD 2/18/93 09:46 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END
  W !!?20,"PRINT CURRENT PATIENT BLOOD BANK RECORDS",!!,"The dates asked will be from the BLOOD BANK ACCESSION LIST:"
  D B^LRU G:Y<0 END
@@ -14,7 +16,8 @@ QUE U IO W @IOF K ^TMP("LRBL",$J) D L^LRU,S^LRU S S=LRSDT-1
  D H S LR("F")=1
  F LR=0:0 S LR=$O(^TMP("LRBL",$J,"B",LR)) Q:'LR!(LR("Q"))  S LRP=0 F LR(1)=0:0 S LRP=$O(^TMP("LRBL",$J,"B",LR,LRP)) Q:LRP=""!(LR("Q"))  D B
 OUT K ^TMP("LRBL",$J),^TMP($J) W:IOST'?1"C".E @IOF D END^LRUTL,END Q
-S Q:'$D(^LR(A,0))  S W=^(0),Y=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU S ^TMP("LRBL",$J,"B",P,$P(X,"^"),A)=$P(X,"^",3)_"^"_SSN_"^"_$P(W,"^",5)_"^"_$P(W,"^",6) Q
+S ;Q:'$D(^LR(A,0))  S W=^(0),Y=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU S ^TMP("LRBL",$J,"B",P,$P(X,"^"),A)=$P(X,"^",3)_"^"_SSN_"^"_$P(W,"^",5)_"^"_$P(W,"^",6) Q
+ Q:'$D(^LR(A,0))  S W=^(0),(DFN,Y)=$P(W,"^",3),(LRDPF,P)=$P(W,"^",2),X=^DIC(P,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU S ^TMP("LRBL",$J,"B",P,$P(X,"^"),A)=$P(X,"^",3)_"^"_HRCN_"^"_$P(W,"^",5)_"^"_$P(W,"^",6) Q  ;IHS/ANMC/CLS 11/1/95
  ;
 B F LRDFN=0:0 S LRDFN=$O(^TMP("LRBL",$J,"B",LR,LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  S LR(4)=^(LRDFN) D W
  Q
@@ -24,6 +27,7 @@ W I LR(7),'$O(^LR(LRDFN,1.7,0)),'$O(^LR(LRDFN,3,0)) Q
 H ;from LRBLPR1, LRBLPRA
  I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,"BLOOD BANK PATIENTS" I $D(LRSTR),$D(LRLST) W " from ",LRSTR," to ",LRLST
- W !?10,"Patient",?34,"SSN",?49,"DOB",?55,"ABO",?59,"Rh",!,LR("%") Q
+ ;W !?10,"Patient",?34,"SSN",?49,"DOB",?55,"ABO",?59,"Rh",!,LR("%") Q
+ W !?10,"Patient",?34,"HRCN",?49,"DOB",?55,"ABO",?59,"Rh",!,LR("%") Q  ;IHS/ANMC/CLS 11/1/95
  ;
 END D V^LRU Q

@@ -1,4 +1,4 @@
-XUHUIMSG ;SFISC/SO- Create Mail Message Of Change ;6:27 AM  10 Jun 2002
+XUHUIMSG ;SFISC/SO- Create Mail Message Of Change ;6:27 AM  10 Jun 2002 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**236**;Jul 10, 1995
  I XUHUIXR="AXUHUI" D M200 Q
  D MKEY

@@ -1,5 +1,5 @@
 LR7OV2 ;slc/dcm - Menu actions for parameter updates ;8/11/97
- ;;5.2;LAB SERVICE;**121,187**;Sep 27, 1994
+ ;;5.2T9;LR;**121,187,1018**;Nov 17, 2004
  ;
 ALL ;Get all tests in file 60. Used for initial conversion.
  N AIFN

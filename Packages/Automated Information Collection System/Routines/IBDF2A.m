@@ -1,5 +1,5 @@
-IBDF2A ;ALB/CJM - ENCOUNTER FORM (builds form and prints it) ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**1,46**;APR 24, 1997
+IBDF2A ;ALB/CJM - ENCOUNTER FORM (builds form and prints it);NOV 16,1992
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
 FORM(IBFORM,WITHDATA) ;prints FORM - defines IBDEVICE array
  ;input variables - IBFORM=ien of the form, WITHDATA=1 if the form should be completed with data 
  ;
@@ -43,13 +43,12 @@ DRWFORM(IBFORM,WITHDATA,IBDEVICE) ;prints IBFORM - IBDEVICE array already define
  D LNPRINT^IBDF2F($G(IBPFID))
  ;
  ;print the overflow report
- D OVERFLOW^IBDF1B3
+ I IBPRINT("WITH_DATA") D OVERFLOW^IBDF1B3
  ;
  K ^TMP("IB",$J,"INTERFACES"),^TMP("IBDF",$J,"FORM")
  ;
  ;reset printer defaults if PCL5
- I $G(IBDEVICE("PCL")) D
- . X $G(^%ZIS(2,$G(IOST(0)),2))
+ I $G(IBDEVICE("PCL")) S %ZIS="0Q",IOP=ION_";"_IOST_";"_IOM_";"_IOSL D ^%ZIS
  Q
  ;
 DRWBLKS ;draws all the form's blocks

@@ -1,5 +1,5 @@
 PXCASK ;ISL/dee - Validates & Translates data from the PCE Device Interface into PCE's PXK format for Skin Test ;3/14/97
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**27,124**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**27**;Aug 12, 1996
  Q
  ; Variables
  ;   PXCASK  Copy of a SKIN TEST node of the PXCA array
@@ -14,8 +14,7 @@ SK(PXCASK,PXCANUMB,PXCAPRV,PXCAERRS) ;
  S PXCAFTER=$P(PXCASK,"^",1)_"^"_PXCAPAT_"^"_PXCAVSIT_"^"
  S PXCAFTER=PXCAFTER_$P(PXCASK,"^",3)_"^"
  S PXCAFTER=PXCAFTER_$P(PXCASK,"^",2)_"^"
- ;PX*1*124
- S PXCAFTER=PXCAFTER_$P(PXCASK,"^",4)_"^^"_$P(PXCASK,"^",6)_"^"_$P(PXCASK,"^",7)_"^"_$P(PXCASK,"^",8)_"^"_$P(PXCASK,"^",9)_"^"_$P(PXCASK,"^",10)_"^"_$P(PXCASK,"^",11)_"^"_$P(PXCASK,"^",12)_"^"_$P(PXCASK,"^",13)
+ S PXCAFTER=PXCAFTER_$P(PXCASK,"^",4)
  S ^TMP(PXCAGLB,$J,"SK",PXCANUMB,"IEN")=""
  S ^TMP(PXCAGLB,$J,"SK",PXCANUMB,0,"BEFORE")=""
  S ^TMP(PXCAGLB,$J,"SK",PXCANUMB,0,"AFTER")=PXCAFTER

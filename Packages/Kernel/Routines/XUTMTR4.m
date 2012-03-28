@@ -1,4 +1,5 @@
-XUTMTR4 ;SEA/RDS - TaskMan: ToolKit, Report 4 (Print List) ;5/12/94  12:08
+XUTMTR4 ;SEA/RDS - TaskMan: ToolKit, Report 4 (Print List) ;5/12/94  12:08 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 MAIN ;
  ;print the list of tasks stored at @XUTMT("NODE")

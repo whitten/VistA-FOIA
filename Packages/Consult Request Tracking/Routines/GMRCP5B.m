@@ -1,16 +1,11 @@
-GMRCP5B ;SLC/DCM,RJS,WAT - Print Consult form 513 (Gather Data - Footers, Provisional Diagnosis and Reason For Request) ;03/04/09  11:42
- ;;3.0;CONSULT/REQUEST TRACKING;**4,13,12,15,24,23,22,29,65,66**;Dec 27, 1997;Build 30
+GMRCP5B ;SLC/DCM,RJS - Print Consult form 513 (Gather Data - Footers, Provisional Diagnosis and Reason For Request) ;11/5/02 07:35
+ ;;3.0;CONSULT/REQUEST TRACKING;**4,13,12,15,24,23,22,29**;Dec 27, 1997
  ;
  ; Patch #23 add "SERVICE RENDERED AS:" to SF513
- ; This routine invokes IA #1252 (SDUTL3),#10112 (VASITE)
+ ; This routine invokes IA #1252,#10112
  ; DBIA 10035      ;PATIENT FILE
  ; DBIA 2849       ;PROTOCOL
  ; DBIA 10060      ;NEW PERSON
- ; DBIA 10061      ;VADPT
- ; 10103           ;FMTE^XLFDT
- ; 10003           ;%DT
- ; 2056            ;$$GET1^DIQ
- ; ICR 4156        ;REGISTRATION, COMBAT VETERAN STATUS
  Q
  ;
 INIT(GMRCSG) ; Initialize the form
@@ -49,12 +44,13 @@ PDIAG ;
  I $S('$P(GMRCRD,U,23):1,$P(GMRCRD(12),U,5)="P":1,1:0) D
  .S GMRCQSTR=$P(GMRCRD,U,14)
  .S:'GMRCQSTR GMRCQSTR=$$GET1^DIQ(100,+$P(GMRCRD,U,3),1)
- .S GMRCPGR=$$GET1^DIQ(200,+$G(GMRCQSTR),.137) S:'$L(GMRCPGR) GMRCPGR=$$GET1^DIQ(200,+$G(GMRCQSTR),.138)
- .S GMRCIPH=$$GET1^DIQ(200,$G(GMRCQSTR),.132)
+ .S GMRCX=$G(^VA(200,+GMRCQSTR,.13))
+ .S GMRCPGR=$P(GMRCX,U,7) S:'$L(GMRCPGR) GMRCPGR=$P(GMRCX,U,8)
+ .S GMRCIPH=$P(GMRCX,U,2)
  .;
- .S GMRCQSTT=$$GET1^DIQ(200,+$G(GMRCQSTR),20.3)
- .S:'$L(GMRCQSTT) GMRCQSTT=$$GET1^DIQ(200,+$G(GMRCQSTR),8)
- .S GMRCQSTR=$$GET1^DIQ(200,+$G(GMRCQSTR),.01)
+ .S GMRCQSTT=$P($G(^VA(200,+GMRCQSTR,20)),U,3)
+ .S:'$L(GMRCQSTT) GMRCQSTT=$$GET1^DIQ(200,+GMRCQSTR,8)
+ .S GMRCQSTR=$P($G(^VA(200,+GMRCQSTR,0)),U,1)
  ;
  I $P(GMRCRD,U,23),$P(GMRCRD(12),U,5)="F" D
  .S GMRCQSTR=$P(GMRCRD(12),U,6)
@@ -78,7 +74,6 @@ PDIAG ;
  .D BLD("PDIAG",1,0,59,"|")
  D BLD("PDIAG",1,1,0,GMRCPGR)
  D BLD("PDIAG",1,0,35,"|SERVICE RENDERED AS:")
- D BLD("PDIAG",1,0,59,"|EARLIEST DATE:") ;WAT/66
  D BLD("PDIAG",1,0,59,"|")
  S GMRCINOU=$S($P(GMRCRD,U,18)="O":"Outpatient",1:"Inpatient")
  I $D(GMRCIPH)>0 D
@@ -87,7 +82,6 @@ PDIAG ;
  E  D
  .D BLD("PDIAG",1,1,35,"|"_GMRCINOU)
  D BLD("PDIAG",1,0,59,"|")
- D BLD("PDIAG",1,0,59,"|"_$$FMTE^XLFDT($P(GMRCRD,U,24),1)) ;WAT/66
  K GMRCINOU
  ;***************************************************************
  D BLD("PDIAG",1,1,0,GMRCDVL)
@@ -96,7 +90,7 @@ PDIAG ;
  ;
 FTR(GMRCSG) ;Footer of form 513
  ;
- N GMRCRMBD,GMRCFAC1,GMRCLOC,GMRCX,SUB,VAIN,VAPA,VAERR
+ N GMRCRMBD,GMRCFAC1,GMRCLOC,GMRCX,GMRCPEL,SUB,VAIN,VAPA,VAERR
  ;
  D ADD^VADPT,INP^VADPT
  ;
@@ -143,10 +137,33 @@ FTR(GMRCSG) ;Footer of form 513
  ;
  D BLD("FTR",0,1,0,GMRCDVL)
  ;
+ ; get and format eligibility info
+ D
+ . N VAEL
+ . D ELIG^VADPT
+ . S GMRCPEL=$P(VAEL(1),U,2)
+ ;
  F SUB=0,1 D
- .I SUB D BLD("FTR",SUB,1,33,"Page ","GMRCPG,38"_" FIRST ONE") I 1
- .E  I '$G(GMRCGUI) D BLD("FTR",SUB,1,33,"Page ","GMRCPG,38"_" SECOND ONE")
- I $G(GMRCPG)=0 D BLD("FTR",0,1,51,"Standard Form 513 (Rev 9-77)")
+ . N GMRCFLN
+ . S GMRCFLN=$P($G(^DPT(GMRCDFN,0)),U,1)_"   "_GMRCPEL_"   "
+ . S GMRCFLN=GMRCFLN_$E($G(GMRCELIG),1,(79-$L(GMRCFLN)))
+ . D BLD("FTR",SUB,1,0,GMRCFLN)
+ . D BLD("FTR",SUB,1,0,GMRCSN)
+ . D BLD("FTR",SUB,0,16,$$EXDT(GMRCDOB))
+ . D BLD("FTR",SUB,0,51,"CONSULTATION SHEET")
+ ;
+ ;                                  ADDRESS LINES 1-3
+ F GMRCX=1,2,3 D:$L(VAPA(GMRCX))
+ . D BLD("FTR",0,1,0,VAPA(GMRCX))
+ . I GMRCX=1 D BLD("FTR",0,0,51,"Standard Form 513 (Rev 9-77)")
+ ;
+ ;         CITY              STATE                ZIP CODE
+ S GMRCX=VAPA(4)_"   "_$P(VAPA(5),U,2)_"      "_VAPA(6)
+ ;
+ I $L(VAPA(8)) S GMRCX=GMRCX_"      Phone: "_VAPA(8)   ; TELEPHONE (IF AVAILABLE)
+ ;
+ D BLD("FTR",0,1,0,GMRCX)
+ ;
  Q
  ;
 CONSRQ(GMRCRQ) ;

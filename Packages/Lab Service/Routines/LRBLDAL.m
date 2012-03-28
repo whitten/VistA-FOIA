@@ -1,6 +1,7 @@
-LRBLDAL ;AVAMC/REG - BLOOD DONOR LETTERS ;7/18/91  08:52 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDAL ; IHS/DIR/FJE - BLOOD DONOR LETTERS 7/18/91 08:52 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  U IO S ^TMP("LRBLY",65.5,2)=LRY,^TMP("LRBLY",65.5,6.2)=LRF I '$D(^LAB(65.9,+LRL,0)) W !!,"Blood bank letter ",$P(LRL,U,2)," has been deleted." G END
  D SET
  S LRP=LRP(1) F LRA=0:1 S LRP=$O(^LRE("B",LRP)) Q:LRP=""!(LRP]LRP(2))  F LRI=0:0 S LRI=$O(^LRE("B",LRP,LRI)) Q:LRI<1  S LRW=$O(^LRE(LRI,5,0)) I LRW>LRSDT S LRW=^(LRW,0) D W

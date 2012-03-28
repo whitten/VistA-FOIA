@@ -1,4 +1,5 @@
-LRAPST ;AVAMC/REG - TISSUE STAIN LOOK-UP ;8/12/95  14:15 ;
+LRAPST ; IHS/DIR/AAB - TISSUE STAIN LOOK-UP 8/12/95 14:15 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D ^LRAP G:'$D(Y) END D S
 GETP W ! D ^LRDPA G:LRDFN<1 END D I G GETP
@@ -29,7 +30,8 @@ WT I C>0 W !,"More accessions " S %=2 D YN^LRU W $C(13),$J("",30),$C(13) S E=$S(
 SEL W !?30,"(",$J(C,2),")",?40,$J(LREP,7),?55,Y
  S LRST=0 F A=1:1 S LRST=$O(^LR(LRDFN,LRSS,LRI,.1,LRST)) Q:'LRST  W:$D(^(LRST,0)) !?3,$P(^(0),U) I A#5=0 W !?3,"More specimens " S %=2 D YN^LRU W:%=1 $C(13),$J("",33),$C(13) Q:%'=1
  Q
-H W @IOF,LRP," ",SSN(1)," Acc #: ",LREP," Date: ",LRY I $D(LRF) W !?34,"Date  Gross Description/Cutting  Type" Q
+H ;W @IOF,LRP," ",SSN(1)," Acc #: ",LREP," Date: ",LRY I $D(LRF) W !?34,"Date  Gross Description/Cutting  Type" Q
+ W @IOF,LRP," ",HRCN," Acc #: ",LREP," Date: ",LRY I $D(LRF) W !?34,"Date  Gross Description/Cutting  Type" Q  ;IHS/ANMC/CLS 11/1/95
  W !?46,$S("AUSPCY"[LRSS:"Slide/Ctrl",1:"Count"),?57,"Last " W $S(LRSS="EM":"section",1:"stain") W:"AUSPEM"[LRSS "/block" W " date" Q
 M R !,"'^' TO STOP: ",LRM:DTIME S:'$T LRM=U D:LRM'[U H Q
 S ;called by LRAPBS,LRAPSA,LRAPSL,LRAPWR

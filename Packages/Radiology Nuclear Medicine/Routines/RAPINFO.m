@@ -1,5 +1,5 @@
 RAPINFO ;HIRMFO/GJC - Display Imaging Procedure Rad/Nuc Med info ;11/5/99  12:32
- ;;5.0;Radiology/Nuclear Medicine;**10,45**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;**10**;Mar 16, 1998
 EN1 ; Associated option: [DISPLAY IMAGING PROCEDURE RAD/NUC MED INFORMATION]
  N RADIC,RAINA,RAITYPE,RAQUIT,RAUTIL
  K ^TMP($J,"RA PROCEDURES") W !
@@ -34,7 +34,7 @@ START ; Start processing data & printing to the device here.
  U IO N I,J,RA0,RA1,RA2,RA71,RADD,RAHDR,RAIDFIER,RALN,RAMAX,RANOW,RAPG
  N RARUNDT,RAXIT S RA0="",(RAMAX,RAPG,RAXIT)=0
  S RAHDR="Radiology/Nuclear Medicine Procedure Information"
- S $P(RALN,"-",(IOM+1))=""
+ S $P(RALN,"-",(IOM+1))="",DIWF="W",DIWL=1,DIWR=$S(IOM=132:100,1:70)
  S RADD=$P($G(^DD(71,6,0)),"^",3)
  F I=1:1:$L(RADD,";") S J=$P($P(RADD,";",I),":",2) Q:J']""  D
  . S:$L(J)>RAMAX RAMAX=$L(J)
@@ -48,23 +48,11 @@ START ; Start processing data & printing to the device here.
  .. S RAIDFIER=$$BLD^RAPINFO(RA1)
  .. I $Y>(IOSL-4) S RAXIT=$$EOS^RAUTL5() Q:RAXIT  D HDR^RAPINFO
  .. Q:RAXIT  W !,$E(RA0,1,30),?34,RAIDFIER
- ..;
- ..;check if the descendents have CM relations
- ..I $P(RA71,U,6)="P" D  Q:RAXIT
- ...S RA2=0 F  S RA2=$O(^RAMIS(71,RA1,4,RA2)) Q:'RA2  D  Q:RAXIT
- ....S RA21=+$G(^RAMIS(71,RA1,4,RA2,0)) D DESC(RA21,"P")
- ....Q
- ...K RA2,RA21 Q
- ..;
- ..;check if the non-parent has CM relations
- ..E  D:$O(^RAMIS(71,RA1,"CM",0)) DESC(RA1,"") Q:RAXIT
- ..;
  .. I $O(^RAMIS(71,RA1,"EDU",0)) D
- ... S DIWF="W",DIWL=1,DIWR=$S(IOM=132:100,1:76)
- ... S RA2=0 K ^UTILITY($J,"W") S X="Educational Desc: "
- ... F  S RA2=$O(^RAMIS(71,RA1,"EDU",RA2)) Q:RA2'>0  D  K X Q:RAXIT
+ ... S RA2=0 K ^UTILITY($J,"W")
+ ... F  S RA2=$O(^RAMIS(71,RA1,"EDU",RA2)) Q:RA2'>0  D  Q:RAXIT
  .... I $Y>(IOSL-4) S RAXIT=$$EOS^RAUTL5() Q:RAXIT  D HDR^RAPINFO
- .... Q:RAXIT  S X=$G(X)_$G(^RAMIS(71,RA1,"EDU",RA2,0)) Q:X']""  D ^DIWP
+ .... Q:RAXIT  S X=$G(^RAMIS(71,RA1,"EDU",RA2,0)) Q:X']""  D ^DIWP
  .... Q
  ... D:'RAXIT ^DIWW ; *** procedure message text to be printed
  ... Q  ;             *** once procedure messages are changed to WP
@@ -122,26 +110,3 @@ KILL ; Kill and quit the application
  K C,DDH,DIROUT,DIRUT,DIW,DIWF,DIWL,DIWR,DIWT,DN,DTOUT,DUOUT,X,Y
  K Z,ZTDESC,ZTRTN,ZTSAVE,I,POP,DISYS
  Q
- ;
-DESC(RAPRC,RAFLG) ; display the descendants associated with the
- ; parent procedure
- ;input: RAPRC-IEN of the procedure in the Rad/Nuc Med Procedure file
- ;       RAFLG-indicates procedure type; "P" if parent, else null
- I RAFLG="P" D  Q:RAXIT
- .S RAIDFIER=$$BLD^RAPINFO(RAPRC)
- .I $Y>(IOSL-4) S RAXIT=$$EOS^RAUTL5() Q:RAXIT  D HDR^RAPINFO
- .Q:RAXIT  W:$X ! W ?2,$E($P($G(^RAMIS(71,RAPRC,0)),U),1,30),?34,RAIDFIER
- .Q
- Q:+$O(^RAMIS(71,RAPRC,"CM",0))=0
-CMEDIA ; display the contrast media associated with the parent procedure
- K X,^UTILITY($J,"W") S RA3=0,X="Contrast Media: "
- S DIWF="W",DIWL=3,DIWR=$S(IOM=132:100,1:76)
- F  S RA3=$O(^RAMIS(71,RAPRC,"CM",RA3)) Q:RA3'>0  D
- .S RA3(0)=$P($G(^RAMIS(71,RAPRC,"CM",RA3,0)),U)
- .S X=X_$$EXTERNAL^DILFD(71.0125,.01,"",RA3(0))_", "
- .Q
- I $Y>(IOSL-4) S RAXIT=$$EOS^RAUTL5() Q:RAXIT  D HDR^RAPINFO
- S X=$P(X,", ",1,$L(X,", ")-1) D ^DIWP,^DIWW
- K ^UTILITY($J,"W"),DIWF,DIWL,DIWR,RA3,X
- Q
- ;

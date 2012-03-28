@@ -1,16 +1,24 @@
-SDAMEP ;ALB/CAW - Extended Display ; 16 May 2001  1:46 PM
- ;;5.3;Scheduling;**241,334,480**;Aug 13, 1993
+SDAMEP ;ALB/CAW - Extended Display ; 16 May 2001  1:46 PM [ 01/05/2005  8:21 AM ]
+ ;;5.3;Scheduling;**241,1001,1012**;Aug 13, 1993
+ ;IHS/ANMC/LJF 7/12/2000 rerouted to IHS display format
  ;
 EN ; Selection of appointment
  K ^TMP("SDAMEP",$J)
  S VALMBCK=""
  D SEL G ENQ:'$D(SDW)!(SDERR)
- N SDWIDTH,SDPT,SDSC,SDPTI,SDAMEP
- W ! D WAIT^DICD
+ ;
+ ;IHS/ITSC/WAR 11/26/2004 PATCH #1001 Need DFN defined prior to PID^VADPT call
  S DFN=$P(^TMP("SDAMIDX",$J,SDW),U,2)
- D FULL^VALM1 S DIC=2,DIC(0)="EM",X="`"_DFN  ;,SDAMEP=1
- D ^DIC I Y<0 S VALMBCK="R" Q
- D EN^VALM("SDAM APPT PROFILE")
+ ;IHS/ANMC/LJF 7/12/2000
+ D PID^VADPT
+ S DFN=$P(^TMP("SDAMIDX",$J,SDW),U,2),SDT=$P(^(SDW),U,3),SDCL=$P(^(SDW),U,4),SDDA=$P(^(SDW),U,5),SDLN=0
+ S SDWLE=$P(^TMP("SDAMIDX",$J,SDW),U,6)  ;cmi/maw 6/1/2010 PATCH 1012 for wait list
+ I $G(SDWLE)]"" D EN^BSDAMEPW(SDWLE) Q  ;cmi/maw 6/1/2010 PATCH 1012 for wait list
+ D EN^BSDAMEP Q
+ ;IHS/ANMC/LJF 7/12/2000
+ ;
+ N SDWIDTH,SDPT,SDSC,SDPTI
+ W ! D WAIT^DICD,EN^VALM("SDAM APPT PROFILE")
  S VALMBCK="R"
 ENQ Q
  ;
@@ -27,7 +35,7 @@ HDR ; Header
 INIT ;
  N VA,VAERR,SDFSTCOL,SDSECCOL
  D PID^VADPT
- S SDT=$P(^TMP("SDAMIDX",$J,SDW),U,3),DFN=$P(^(SDW),U,2),SDCL=$P(^(SDW),U,4),SDDA=$P(^(SDW),U,5),SDLN=0  ;added DFN SD*5.3*480
+ S DFN=$P(^TMP("SDAMIDX",$J,SDW),U,2),SDT=$P(^(SDW),U,3),SDCL=$P(^(SDW),U,4),SDDA=$P(^(SDW),U,5),SDLN=0
  D INIT^SDAMEP1
  D APDATA^SDAMEP1 ;        Appointment Data
  D APLOG^SDAMEP3 ;         Appointment Event Log

@@ -1,18 +1,21 @@
-ORWRA ; ALB/MJK/REV/JDL -Imaging Calls ;8/6/02  1:30 [2/12/04 9:25am]
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,85,109,135,132,148,154,141,160,149,190**;Dec 17, 1997
-EXAMS(ROOT,DFN) ; Return imaging exams
+ORWRA ; ALB/MJK/REV/JDL -Imaging Calls ;17-Jun-2009 16:29;PLS
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,85,109,135,132,148,154,141,160,149,190,1002,1005**;Dec 17, 1997
+ ; IHS/MSC/DKM - 05/02/2007 - Added BEG, END, MAX parameters
+EXAMS(ROOT,DFN,BEG,END,MAX) ; Return imaging exams
  ; RPC: ORWRA IMAGING EXAMS
  ;  See RPC definition for details on input and output parameters
- D GET(0)
+ D GET(0,.BEG,.END,.MAX)
  Q
-EXAMS1(ROOT,DFN) ; Return imaging exams
+ ; IHS/MSC/DKM - 05/02/2007 - Added BEG, END, MAX parameters
+EXAMS1(ROOT,DFN,BEG,END,MAX) ; Return imaging exams
  ; RPC: ORWRA IMAGING EXAMS1
  ;  See RPC definition for details on input and output parameters
- D GET(1)
+ D GET(1,.BEG,.END,.MAX)
  Q
-GET(GSITE) ;Get the data
+ ; IHS/MSC/DKM - 05/02/2007 - Modified to support new parameters
+GET(GSITE,BEG,END,MAX) ;Get the data
  N I,ID,RADATA,STRING,SITE,ORCX
- N BEG,END,MAX,P1,P2
+ N P1,P2
  S RADATA=$NA(^TMP($J,"RAE1",DFN))
  S ROOT=$NA(^TMP($J,"ORAEXAMS"))
  S ORCX=1  ;show cancelled reports
@@ -20,9 +23,12 @@ GET(GSITE) ;Get the data
  ;
  ; -- set date range
  D GETDEFG(.STRING)
- S BEG=$P(STRING,U)
- S END=$P(STRING,"^",2)
- S MAX=$P(STRING,"^",3)
+ S:'$L($G(BEG)) BEG=$P(STRING,U)
+ S:'$L($G(END)) END=$P(STRING,"^",2)
+ S:'$L($G(MAX)) MAX=$P(STRING,"^",3)
+ I $L(BEG),BEG'=+BEG D DT^DILF("T",BEG,.BEG)
+ I $L(END),END'=+END D DT^DILF("T",END,.END)
+ S @ROOT@(-1)=BEG_U_END_U_MAX
  I GSITE="1" S MAX=MAX_"P"
  D EN1^RAO7PC1(DFN,BEG,END,MAX,ORCX)
  ;
@@ -30,8 +36,8 @@ GET(GSITE) ;Get the data
  S I=0,ID="",SITE=""
  I $G(GSITE) S SITE=$$SITE^VASITE,SITE=$P(SITE,"^",2)_";"_$P(SITE,"^",3)_U
  F  S ID=$O(@RADATA@(ID)) Q:ID=""  D
- . S P1=$P($G(^TMP($J,"RAE1",DFN,ID,"CPRS")),U) ;The member of set indicator from Radiology 
- . S P2=$P($G(^TMP($J,"RAE1",DFN,ID,"CPRS")),U,2) ;The parent procedure name from Radiology  
+ . S P1=$P($G(^TMP($J,"RAE1",DFN,ID,"CPRS")),U) ;The member of set indicator from Radiology
+ . S P2=$P($G(^TMP($J,"RAE1",DFN,ID,"CPRS")),U,2) ;The parent procedure name from Radiology
  . S I=I+1
  . S @ROOT@(I)=SITE_ID_U_(9999999.9999-ID)_U_@RADATA@(ID)_U_P1_U_P2
  K @RADATA
@@ -74,7 +80,7 @@ RPT(ROOT,DFN,ORID,ALPHA,OMEGA,DTRANGE,REMOTE,ORMAX,ORFHIE) ; -- return imaging r
  S RADATA=$NA(^TMP($J,"RAE3"))
  S ROOT=$NA(^TMP("ORXPND",$J))
  K @RADATA,@ROOT
- ; 
+ ;
  ; -- set up exam id and call to get report text
  S ID=$TR(ORID,"-",U)
  ;

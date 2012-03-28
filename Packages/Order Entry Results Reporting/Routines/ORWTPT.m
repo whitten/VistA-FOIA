@@ -1,5 +1,5 @@
-ORWTPT ; SLC/STAFF Personal Preference - Teams ;5/4/01  15:55
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**85,243**;Oct 24, 2000;Build 242
+ORWTPT ; SLC/STAFF Personal Preference - Teams ;5/4/01  16:01
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**85**;Oct 24, 2000
  ;
 GETTEAM(USERS,TEAM) ; RPC
  ; returns members of a team
@@ -31,9 +31,7 @@ PLISTS(TEAMS,USER) ; from ORWTPP
  .S ZERO=$G(^OR(100.21,NUM,0))
  .I $P(ZERO,U,2)'="P" Q
  .S CNT=CNT+1
- .N VIS S VIS=$P($G(^OR(100.21,NUM,11)),U)
- .I '$L(VIS) S VIS=1
- .S TEAMS(CNT)=NUM_U_ZERO_U_VIS
+ .S TEAMS(CNT)=NUM_U_ZERO
  Q
  ;
 PLTEAMS(TEAMS,USER) ; from ORWTPP

@@ -1,5 +1,5 @@
 PSANAC ;BIR/LTL-Populate Pharmacy Location with Inventory Items ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**15,64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**15**; 10/24/97
  ;This routine loads inventory/DA items into a pharmacy location.
  ;
  ;References to ^PSDRUG( are covered by IA #2095
@@ -41,7 +41,7 @@ STUFF ..S PSAQTY=$P($G(^PRCP(445,+PSAINV,1,+PSAIT,0)),U,7)*$S($P($G(^(0)),U,29):
  ..D NOW^%DTC S PSADT=+$E(%,1,12) K %
  ..S ^PSD(58.8,+PSALOC,1,+PSADRUG,5,0)="^58.801A^^"
  ..S DIC="^PSD(58.8,+PSALOC,1,+PSADRUG,5,",DIC(0)="L",(X,DINUM)=$E(DT,1,5)*100,DA(2)=PSALOC,DA(1)=PSADRUG,DIC("DR")="1////^S X=PSAQTY",DLAYGO=58.8 D ^DIC K DIC,DINUM,DLAYGO
- ..F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ ..F  L +^PSD(58.81,0):0 I  Q
 FIND ..S PSAT=$P(^PSD(58.81,0),U,3)+1 I $D(^PSD(58.81,PSAT)) S $P(^PSD(58.81,0),U,3)=$P(^PSD(58.81,0),U,3)+1 G FIND
  ..S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSAT D ^DIC K DIC,DINUM,DLAYGO L -^PSD(58.81,0)
  ..S DIE="^PSD(58.81,",DA=PSAT,DR="1////11;2////^S X=PSALOC;3////^S X=PSADT;4////^S X=PSADRUG;5////^S X=PSAQTY;6////^S X=DUZ;9////0" D ^DIE K DIE

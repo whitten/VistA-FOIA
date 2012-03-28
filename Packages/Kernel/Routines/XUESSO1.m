@@ -1,5 +1,5 @@
 XUESSO1 ;LUKE/SEA Single Sign-on utilities;02/11/10  14:57;08/18/09  14:29
- ;;8.0;KERNEL;**165,183,196,245,254,269,337,395,466,523**;Jul 10, 1995;Build 16
+ ;;8.0;KERNEL;**165,183,196,245,254,269,337,395,466,523**;Jul 10, 1995;Build 19
  ;Per VHA Directive 2004-038, this routine should not be modified.
  ;
 GET(INDUZ) ;Gather identifying data from user's home site.

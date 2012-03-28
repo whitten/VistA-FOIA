@@ -1,5 +1,5 @@
 %ZISF ;SFISC/AC - HOST FILES FOR GT.M on Unix/VMS  ;9/3/08  09:48
- ;;8.0;KERNEL;**275,499**;Jul 10, 1995;Build 14
+ ;;8.0;KERNEL;**275,499**;Jul 10, 1995;Build 24
  ;Per VHA Directive 2004-038, this routine should not be modified
 HFS ;Host File Server
  ;Calling parameters in %ZIS override Device file.

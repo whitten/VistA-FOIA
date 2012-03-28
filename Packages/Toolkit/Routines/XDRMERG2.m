@@ -1,5 +1,8 @@
-XDRMERG2 ;SF-IRMFO.SEA/JLI - TENATIVE UPDATE POINTER NODES ; [6/12/02 9:48am]
- ;;7.3;TOOLKIT;**23,38,40,42,46,62**;Apr 25, 1995
+XDRMERG2 ;SF-IRMFO.SEA/JLI - TENATIVE UPDATE POINTER NODES ; [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**23,38,40,42,46,62,1001,1003**;Apr 25, 1995
+ ;IHS/OIT/LJF 02/09/2007 PATCH 1003 prevent View Merge Status from scrolling off screen
+ ;            03/02/2007 PATCH 1003 set 19th piece of ^DPT on FROM patient for backward
+ ;                                     compatibility with PCC Mgt Reports
  ;;
  Q
  ;
@@ -79,6 +82,10 @@ DOMAIN(FILE,FROM) ; MERGE ACTUAL ENTRIES IN THE FILE (THE ONES POINTED TO)
  . . D MERGEIT(XDRDIC,IENFROM,IENTO)
  . S @(XDRDIC_IENFROM_",0)")=XDRVAL
  . S @(XDRDIC_IENFROM_",-9)")=IENTO
+ . ;
+ . ;IHS/OIT/LJF 03/02/2007 PATCH 1003 for backwards compatibility
+ . I FILE=2,$$GET^XPAR("PKG","BPM USE IHS LOGIC") S $P(@(XDRDIC_IENFROM_",0)"),U,19)=IENTO
+ . ;
  . D SETALIAS ; SET UP ALIAS ENTRY IN SELECTED FILES
  . N VALUE,XDRXX,XDRYY
  . S VALUE=$$FIND1^DIC(15.3,",","Q",FILE)
@@ -172,6 +179,8 @@ CHK1 ;
  . . W ?50,$P(XJOB,U,3),?55,$P(XJOB,U,4),?64," ",$P(XJOB,U,5)
  . . I $P(^TMP($J,"BDT",N),"~")="E" S N=N+1 W !?5,"ERROR: ",$E($P(^TMP($J,"BDT",N),"~"),1,230),!
  K ^TMP($J,"BDT")
+ ;
+ D PAUSE^BPMU  ;IHS/OIT/LJF 02/09/2007 PATCH 1003
  Q
  ;
 HEADER ;REM -9/25/96 Write header.

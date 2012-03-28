@@ -1,4 +1,5 @@
-XUTMTZ3 ;SEA/RDS - TaskMan: Toolkit, troubleshooting, part 4 ;6/25/91  15:20 ;
+XUTMTZ3 ;SEA/RDS - TaskMan: Toolkit, troubleshooting, part 4 ;6/25/91  15:20 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 HERE ;REPORT--log errors by count for this cpu

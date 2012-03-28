@@ -1,5 +1,5 @@
-ORWLRR ;SLC/STAFF- rpc routing for lab results ;4/9/10  12:54
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,280**;Dec 17, 1997;Build 85
+ORWLRR ;SLC/STAFF- rpc routing for lab results ;10/20/98  14:08
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10**;Dec 17, 1997
  ;
  ; this routine simply routes CPRS rpc calls to the appropriate lab routine
  ;
@@ -27,8 +27,8 @@ CHEMTEST(ORY,FROM,DIR) ; from Remote Procedure file
  D CHEMTEST^LR7OGO(.ORY,FROM,DIR)
  Q
  ;
-GRID(ORY,DFN,DATE1,DATE2,SPEC,TESTS) ; from Remote Procedure file
- D GRID^ORWLRRG(.ORY,DFN,DATE1,DATE2,SPEC,.TESTS)
+GRID(ORY,DFN,DATE1,DATE2,SPEC,ORTESTS) ; from Remote Procedure file
+ D GRID^LR7OGG(.ORY,DFN,DATE1,DATE2,SPEC,.ORTESTS)
  Q
  ;
 INTERIM(ORY,DFN,DATE1,DATE2) ; Interim Report RPC (All Tests by Date)
@@ -89,7 +89,7 @@ INFO(ORY,ORTEST) ; Get Lab test description info
  I '$L($T(ONE^LR7OR4)) S ORY(1)="Missing lab API (part of patch LR*5.2*256)" Q
  D ONE^LR7OR4(.ORY,.ORTEST)
  Q
-REMOTE(DFN,ROOT) ;Setup for remote data
+REMOTE(DFN,ROOT)  ;Setup for remote data
  N REMOTE,ORGO
  S REMOTE=+$P(DFN,";",2),ORGO=1
  I 'REMOTE S DFN=+DFN Q ORGO ;DFN = DFN;ICN for remote calls
@@ -99,11 +99,11 @@ REMOTE(DFN,ROOT) ;Setup for remote data
  . I DFN<0 D SETITEM^ORWRP(.ROOT,"Patient not found on remote system") S ORGO=0 Q
  . S:'$D(DUZ("AG")) DUZ("AG")="" ;Broker not currently setting agency for remote sites
  Q ORGO
-SET() ;Shared setup of ROOT node
+SET()     ;Shared setup of ROOT node
  K ^TMP("ORDATA",$J,"OUTPUT")
  S ROOT=$NA(^TMP("ORDATA",$J,"OUTPUT"))
  Q ROOT
-CLEAN(ORY,ROOT) ;Shared Clean-up
+CLEAN(ORY,ROOT)   ;Shared Clean-up
  I '$O(@ROOT@(0)) S @ROOT@(1)="",@ROOT@(2)="No Data Found"
  I $S($D(ORY):$S('$O(@ORY@(0)):1,1:0),1:$O(@ROOT@(0))) M @ORY=@ROOT
  K ^TMP("ORDATA",$J,"OUTPUT")

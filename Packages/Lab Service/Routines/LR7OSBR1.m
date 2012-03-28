@@ -1,5 +1,6 @@
 LR7OSBR1 ;slc/dcm - Silent BB rpt cont. ;8/11/97
- ;;5.2;LAB SERVICE;**121,201,228,230,292,387**;Sep 27, 1994;Build 10
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
+ ;;5.2;LAB SERVICE;**121,201,228,230,292**;Sep 27, 1994
  ;from LRBLPBR
  ;Reference to GETS^DIQ supported by IA #2056
 EN ;
@@ -99,8 +100,7 @@ L ;
  Q
 H ;
  D LN
- S X=GIOM/2-(10/2+5),^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(X,CCNT,"---- BLOOD BANK ----")
- S:'$D(^TMP("LRH",$J,"BLOOD BANK")) ^("BLOOD BANK")=GCNT
+ S X=GIOM/2-(10/2+5),^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(X,CCNT,"---- BLOOD BANK ----"),^TMP("LRH",$J,"BLOOD BANK")=GCNT
  D LN
  S ^TMP("LRC",$J,GCNT,0)=$$S^LR7OS(1,CCNT,"ABO Rh: "_$J($P(LR,"^",3),2)_" "_$P(LR,"^",4))
  Q

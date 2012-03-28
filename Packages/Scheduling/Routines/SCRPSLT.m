@@ -1,5 +1,7 @@
 SCRPSLT ;ALB/CMM - Summary Listing of Teams ; 29 Jun 99  04:11PM
- ;;5.3;Scheduling;**41,52,177,231,520**;AUG 13, 1993;Build 26
+ ;;5.3;Scheduling;**41,52,177,231**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed 132 column message
+ ;                        added call to list template
  ;
  ;Summary Listing of Teams Report
  ;
@@ -12,7 +14,8 @@ PROMPTS ;
  W ! D INST^SCRPU1 I Y=-1 G ERR
  W ! K Y D PRMTT^SCRPU1 I '$D(VAUTT) G ERR
  W ! K Y D ROLE^SCRPU1 I '$D(VAUTR) G ERR
- W !!,"This report requires 132 column output!"
+ ;W !!,"This report requires 132 column output!"                                     ;IHS/ANMC/LJF 11/02/2000
+ W !!,"This report, when printed on paper, requires wide paper or condensed print!"  ;IHS/ANMC/LJF 11/02/2000
  D QUE(.VAUTD,.VAUTT,.VAUTR) Q
  ;
 QUE(INST,TEAM,ROLE) ;queue report
@@ -53,6 +56,8 @@ RET S NUMBER=0
  Q NUMBER
  ;
 QENTRY ;
+ I $E(IOST,1,2)="C-" D ^BSDSCSLT Q   ;IHS/ANMC/LJF 11/02/2000
+IHS ;EP; entry point for list template  ;IHS/ANMC/LJF 11/02/2000
  ;driver entry point
  S TITL="Summary Listing of Teams"
  S STORE="^TMP("_$J_",""SCRPSLT"")"
@@ -104,7 +109,7 @@ FIND ;
  Q
  ;
 PRINTIT(STORE,TITL) ;
- N INST,EINST,ETEAM,TEM,EPRACT,PRACT,NXT,PAGE,NPAGE,NEW,POS,SCAC
+ N INST,EINST,ETEAM,TEM,EPRACT,PRACT,NXT,PAGE,NPAGE,NEW,POS
  S (INST,EINST)="",(NPAGE,STOP)=0,PAGE=1 W:$E(IOST)="C" @IOF
  D TITLE^SCRPU3(.PAGE,TITL)
  D FORHEAD^SCRPSLT2
@@ -129,14 +134,10 @@ PRINTIT(STORE,TITL) ;
  ...I PRACT="" Q
  ...S POS=""
  ...F  S POS=$O(@STORE@(INST,TEM,PRACT,POS)) Q:POS=""!(STOP)  D
- ....W !,$G(@STORE@(INST,TEM,PRACT,POS))
- ....S SCAC=""
- ....F  S SCAC=$O(@STORE@(INST,TEM,PRACT,POS,SCAC)) Q:SCAC=""!(STOP)  D
- .....W !,$G(@STORE@(INST,TEM,PRACT,POS,SCAC))
- .....I IOST'?1"C-".E,$Y>(IOSL-4) D NEWP^SCRPSLT2(INST,TEM,TITL,.PAGE)
- .....I IOST?1"C-".E,$Y>(IOSL-4) D HOLD1^SCRPSLT2(.PAGE,TITL,INST,TEM)
- .....I STOP Q
- ....;W !,$G(@STORE@(INST,TEM,PRACT,POS)) ;writes info
+ ....I IOST'?1"C-".E,$Y>(IOSL-4) D NEWP^SCRPSLT2(INST,TEM,TITL,.PAGE)
+ ....I IOST?1"C-".E,$Y>(IOSL-4) D HOLD1^SCRPSLT2(.PAGE,TITL,INST,TEM)
+ ....I STOP Q
+ ....W !,$G(@STORE@(INST,TEM,PRACT,POS)) ;writes info
  ..Q:STOP
  ..I IOST'?1"C-".E,$Y>(IOSL-8) D NEWP^SCRPSLT2(INST,TEM,TITL,.PAGE,1)
  ..I IOST?1"C-".E,$Y>(IOSL-8) D HOLD1^SCRPSLT2(.PAGE,TITL,INST,TEM,1)

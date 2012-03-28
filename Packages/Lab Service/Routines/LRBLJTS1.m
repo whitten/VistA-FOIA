@@ -1,6 +1,7 @@
-LRBLJTS1 ;AVAMC/REG - TRANSFUSION STATS ;3/3/93  22:49 ;
- ;;5.2;LAB SERVICE;**247,267**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJTS1 ; IHS/DIR/FJE - TRANSFUSION STATS 3/3/93 22:49 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  S L=0,B=LRSDT F B(1)=0:0 S B=$O(^LRD(65,"AB",B)) Q:'B!(B>LRLDT)  S A=0 F A(1)=0:0 S A=$O(^LRD(65,"AB",B,A)) Q:'A  I $D(^LRD(65,A,4)),$P(^(4),"^")="T" S Y=$P(^(4),"^",2) D T
  D K^LRU,P,^LRBLJTS2 Q
 T Q:'$D(^LRD(65,A,6))  S X=$P(^(6),"^",3) Q:X']LRA!(X]LRB)  S J=$P(^(0),"^",4),Z=^LAB(66,J,0),Z(1)=$P(Z,"^"),Z(26)=$P(Z,"^",26) Q:Z(1)']LRC!(Z(1)]LRE)
@@ -25,13 +26,13 @@ L S (K,Z,Z(1),L(1))=0 F F=0:0 S L(1)=$O(^TMP($J,"P",L(1))) Q:L(1)=""!(LR("Q"))  
 R F W=0:0 S W=$O(^TMP($J,"A",T,C,L,W)) Q:'W!(LR("Q"))  S T(2)=$E(W,4,5)_"/"_$E(W,6,7)_"/"_$E(W,2,3) F I=0:0 S I=$O(^TMP($J,"A",T,C,L,W,I)) Q:'I!(LR("Q"))  S V=^(I) D W
  Q
 W D:$Y>(IOSL-5) H3 Q:LR("Q")  S V(1)=$P(V,"^",3),Y=$P(V,"^",2),K=K+V(1),Z=Z+1 W ! I L'=Z(1) S Z(1)=L W $E(L(1),1,20)
- W ?21,T(2),?30,$E($P(V,"^",2),1,18),?49,$J(V(1),9,2),?60,$P(V,"^"),?75,$J(Z,4)
+ W ?21,T(2),?30,$E($P(V,"^",2),1,19),?50,$J(V(1),9,2),?61,$P(V,"^"),?75,$J(Z,4)
  S X=$P(V,"^",4) S:X="" X="?" S:'$D(^TMP($J,"Z",X,T,Y)) ^(Y)="0^0" S X=^(Y),X(1)=$P(X,"^")+V(1),X(2)=$P(X,"^",2)+1,^(Y)=X(1)_"^"_X(2) Q
 H ;from LRBLJTS2
  I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,"Transfusions by Treating Specialty/Physician (",LRSTR," - ",LRLST,")" Q
  ;
-HDR D H Q:LR("Q")  W !,"Patient transfused",?21,"Date",?30,"Physician",?53,"Cost",?60,"Unit ID",?74,"Count",!,LR("%") Q
+HDR D H Q:LR("Q")  W !,"Patient transfused",?21,"Date",?30,"Physician",?53,"Cost",?61,"Unit ID",?74,"Count",!,LR("%") Q
 H1 D:$Y>(IOSL-5) HDR Q:LR("Q")  W !!?20,"TREATING SPECIALTY: ",T Q
 H2 D:$Y>(IOSL-5) H1 Q:LR("Q")  W !,"Component: ",C(1),":",!?11 F X=1:1:$L(C(1)) W "-"
  Q

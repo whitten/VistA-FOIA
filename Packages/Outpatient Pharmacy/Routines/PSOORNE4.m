@@ -1,6 +1,10 @@
-PSOORNE4 ;BIR/SAB-display renew RXs from backdoor ;07/29/96
- ;;7.0;OUTPATIENT PHARMACY;**11,27,32,36,46,75,96,103,99,117,131,225**;DEC 1997;Build 29
+PSOORNE4 ;BIR/SAB-display renew RXs from backdoor ;09-Dec-2010 09:13;SM
+ ;;7.0;OUTPATIENT PHARMACY;**11,27,32,36,46,75,96,103,99,117,131,1008,1009**;DEC 1997
  ;^SC DBIA-10040;^PS(50.7-2223;^PS(50.606-2174;^PS(50.607-2221;^PS(51.2-2226;^PSDRUG-221;^PS(55-2228
+ ; Modified - IHS/CIA/PLS - 01/27/04 - Added display of IHS Fields
+ ;            IHS/MSC/PLS - 03/13/08 - Added line RMK+10
+ ;                          01/23/09 - Added line RMK+11
+ ;                          12/09/10 - Added line VER+17
 EN(PSONEW) N FLD,LST,VALMCNT
 EN1 K PSOQUIT D:$G(PSONEW("ENT"))'>0  I $G(PSORENW("POE"))=1 S PSOREEDT=1 D SV
  .S PSOREEDT=1 D SV
@@ -9,10 +13,14 @@ EN1 K PSOQUIT D:$G(PSONEW("ENT"))'>0  I $G(PSORENW("POE"))=1 S PSOREEDT=1 D SV
 RDD D DSPL,^PSOLMRN D:$G(PKI1)=2 DCP^PSOPKIV1 I $G(PSORX("FN")) S VALMBCK="Q" K PSOREEDT Q
  G:'$G(PSOQUIT) RDD
  Q
-EDT D KV^PSOVER1 S DIR("A")="Select Field to Edit by number",DIR(0)="LO^1:"_$S($G(PSOREEDT):10,1:8)
+ ; IHS/CIA/PLS - 01/27/04 - Commented out next to extend range to include zero
+EDT ;D KV^PSOVER1 S DIR("A")="Select Field to Edit by number",DIR(0)="LO^1:"_$S($G(PSOREEDT):10,1:8)
+ D KV^PSOVER1 S DIR("A")="Select Field to Edit by number",DIR(0)="LO^0:"_$S($G(PSOREEDT):10,1:8)
  D ^DIR I $D(DTOUT)!($D(DUOUT)) D KV^PSOVER1 S VALMBCK="" Q
 EDTSEL S PSOLM=1,(PSONEW("DFLG"),PSONEW("FIELD"),PSONEW3)=0
- I +Y S LST=Y D HLDHDR^PSOLMUTL S PSOEDT=1 D  Q:$G(PSODIR("DFLG"))!($G(PSODIR("QFLG")))
+ ; IHS/CIA/PLS - 01/27/04 - Changed to $L to include zero value
+ ;I +Y S LST=Y D HLDHDR^PSOLMUTL S PSOEDT=1 D  Q:$G(PSODIR("DFLG"))!($G(PSODIR("QFLG")))
+ I $L(Y) S LST=Y D HLDHDR^PSOLMUTL S PSOEDT=1 D  Q:$G(PSODIR("DFLG"))!($G(PSODIR("QFLG")))
  .F FLD=1:1:$L(LST,",") Q:$P(LST,",",FLD)']""  D @(+$P(LST,",",FLD)) Q:$G(PSODIR("DFLG"))!($G(PSODIR("QFLG")))
  E  S VALMBCK="" D FULL^VALM1
  Q
@@ -42,6 +50,7 @@ VER S (PSONEW("DFLG"),PSONEW("QFLG"))=0 I PSONEW("ENT")=0 D  K PSOORRNW,PSOFROM1
  D STOP^PSORENW1 I +$G(PSEXDT) D  S PSORENW("QFLG")=1
  .S Y=PSORENW("FILL DATE") X ^DD("DD") S VALMSG=Y_" fill date is past expiration date "
  .S Y=$P(PSEXDT,"^",2) X ^DD("DD") S VALMSG=VALMSG_Y_"."
+ I '$$SCREEN^APSPMULT(+$G(PSORENW("DRUG IEN")),,1) S PSORENW("QFLG")=1,VALMSG="^Sorry, this drug is not currently available in this facility" Q  ;IHS/MSC/JDS - 12/09/10 - MDF
  Q
 DSPL G:$G(PSONEW("ENT"))>0 DSP
  S PSONEW("ENT")=0 F I=0:0 S I=$O(^PSRX(PSONEW("OIRXN"),6,I)) Q:'I  S DOSE=^PSRX(PSONEW("OIRXN"),6,I,0) D
@@ -51,9 +60,7 @@ DSPL G:$G(PSONEW("ENT"))>0 DSP
  .S PSONEW("NOUN",PSONEW("ENT"))=$P(DOSE,"^",4),PSONEW("VERB",PSONEW("ENT"))=$P(DOSE,"^",9)
  .I $G(^PSRX(PSONEW("OIRXN"),6,I,1))]"" S PSONEW("ODOSE",PSONEW("ENT"))=^PSRX(PSONEW("OIRXN"),6,I,1)
  .K DOSE
-DSP D ^PSOORUT2 K ^TMP("PSOPO",$J) S IEN=0
- D:$G(PSONEW("PENDING ORDER")) LMDISP^PSOORFI5(+PSONEW("PENDING ORDER"))
- D:$G(PKI1) L1^PSOPKIV1
+DSP D ^PSOORUT2 K ^TMP("PSOPO",$J) S IEN=0 D:$G(PKI1) L1^PSOPKIV1
  D DIN^PSONFI(PSODRUG("OI"),$S($G(PSODRUG("IEN")):PSODRUG("IEN"),1:""))
  S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                 Rx#: "_PSONEW("NRX #")
  I +$G(PSODRUG("OI")) D
@@ -82,7 +89,7 @@ DSP D ^PSOORUT2 K ^TMP("PSOPO",$J) S IEN=0
  .I $G(PSONEW("CONJUNCTION",I))]"" S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Conjunction: "_$S($G(PSONEW("CONJUNCTION",I))="A":"AND",$G(PSONEW("CONJUNCTION",I))="T":"THEN",$G(PSONEW("CONJUNCTION",I))="X":"EXCEPT",1:"")
 PAT S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)=$S($G(PSOREEDT):" (10)",1:"     ")_"Pat Instruction:" D INS2^PSOBKDED
  S RXN=PSONEW("OIRXN") D INST1^PSORENW
- ;I $O(PRC(0)) D PC1^PSOORNE5
+ I $O(PRC(0)) D PC1^PSOORNE5
  K RXN S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                 SIG:"
  I $G(SIGOK),$O(SIG(0)) D  K SG,MIG
  .F I=0:0 S I=$O(SIG(I)) Q:'I  F SG=1:1:$L(SIG(I)) D
@@ -105,11 +112,27 @@ PAT S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)=$S($G(PSOREEDT):" (10)",1:"     ")_"Pat I
  S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="  (7)         Copies: "_$S($G(PSONEW("COPIES")):PSONEW("COPIES"),1:1)
 RMK S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="  (8)        Remarks: "_$S($G(PSONEW("REMARKS"))]"":PSONEW("REMARKS"),1:"")
  S $P(RN," ",35)=" ",IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="   Entry By: "_$P(^VA(200,DUZ,0),"^")_$E(RN,$L($P(^VA(200,DUZ,0),"^"))+1,35)
+ ; IHS/CIA/PLS - 01/26/04 - Add IHS Fields to display
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="Enter a zero (0) to edit IHS specific fields."
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                  NDC: "_$$GET1^DIQ(52,PSONEW("OIRXN"),27)
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                  AWP: "_$$GET1^DIQ(52,PSONEW("OIRXN"),9999999.06)_"       Unit Cost: "_$$GET1^DIQ(52,PSONEW("OIRXN"),17)   ; IHS/CIA/PLS - 01/15/04
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Triplicate #: "_$$GET1^DIQ(52,PSONEW("OIRXN"),9999999.14)   ; IHS/CIA/PLS - 01/15/04
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="          Bill Status: "_$$EXTERNAL^DILFD(52,9999999.07,,$G(PSONEW("BST")))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Manufacturer: "_$G(PSONEW("MANUFACTURER"))_"   Lot #: "_$G(PSONEW("LOT #"))_"  ExpDate: "_$$FMTE^XLFDT($G(PSONEW("EXPIRATION DATE")))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="          Chronic Med: "_$$EXTERNAL^DILFD(52,9999999.02,,$G(PSONEW("CM")))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="       Substitution: "_$$EXTERNAL^DILFD(52,9999999.25,,$G(PSONEW("DAW")))  ;IHS/MSC/PLS - 03/13/08
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="           Cash Due: "_$$EXTERNAL^DILFD(52,9999999.26,,$G(PSONEW("CASH DUE")))   ; IHS/MSC/PLS - 01/23/09
+ ;S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="              Insurer: "_$G(PSONEW("INSURER"))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="  "
+ ; End IHS Fields
  I $G(PSOFDR) S ^TMP("PSOPO",$J,IEN,0)="   Entry By: "_$P(^VA(200,$P(OR0,"^",4),0),"^")_$E(RN,$L($P(^VA(200,$P(OR0,"^",4),0),"^"))+1,35)
  D NOW^%DTC S PSONEW("LOGIN DATE")=$S($P($G(OR0),"^",6):$P($G(OR0),"^",6),1:%) K %,X S Y=PSONEW("LOGIN DATE") X ^DD("DD")
  S ^TMP("PSOPO",$J,IEN,0)=^TMP("PSOPO",$J,IEN,0)_"Entry Date: "_$P(Y,"@")_" "_$P(Y,"@",2) K RN
  S (VALMCNT,PSOPF)=IEN
  Q
+0 ; EP - IHS/CIA/PLS - 01/26/04 - Prompt IHS Fields
+ D IHSFLDS^APSPDIR(.PSONEW) Q
+ ;
 1 D 1^PSOBKDED Q
 2 D 2^PSOBKDED Q
 3 D 9^PSOBKDED Q

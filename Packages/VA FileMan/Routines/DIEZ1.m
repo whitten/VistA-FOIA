@@ -1,4 +1,5 @@
-DIEZ1 ;SFISC/GFT-COMPILE INPUT TEMPLATE ;9:27 AM  22 Oct 1999
+DIEZ1 ;SFISC/GFT-COMPILE INPUT TEMPLATE ;9:27 AM  22 Oct 1999 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**4,11**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  D QF^DIEZ2 S L=2,X="DE S DIE="_Q_",DIC=DIE,DP="_DP_",DL="_DL_",DIEL="_DIEZL_",DU="""" K DG,DE,DB Q:$O("_DIE_"DA,""""))=""""",DS=-1 D L S X=""

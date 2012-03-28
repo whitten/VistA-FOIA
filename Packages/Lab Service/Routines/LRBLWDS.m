@@ -1,6 +1,7 @@
-LRBLWDS ;AVAMC/REG - STUFF WORKLOAD IN 65.5 ;3/3/93  14:37
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLWDS ; IHS/DIR/FJE - STUFF WORKLOAD IN 65.5 14:37 ; [ 3/3/93 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  S:'$D(^LRE(LRQ,5,LRI,99,0)) ^(0)="^65.599PA^^" I '$D(^(LRT,0)) S ^(0)=LRT,X=^LRE(LRQ,5,LRI,99,0),^(0)=$P(X,"^",1,2)_"^"_LRT_"^"_($P(X,"^",4)+1)
  S:'$D(^LRE(LRQ,5,LRI,99,LRT,1,0)) ^(0)="^65.5991DA^^" I '$D(^LRE(LRQ,5,LRI,99,LRT,1,LRK,0)) S ^(0)=LRK_"^"_DUZ,X=^LRE(LRQ,5,LRI,99,LRT,1,0),^(0)=$P(X,"^",1,2)_"^"_LRK_"^"_($P(X,"^",4)+1)
  F LR("W")=0:0 S LR("W")=$O(LRT(LR("W"))) Q:'LR("W")  D STF

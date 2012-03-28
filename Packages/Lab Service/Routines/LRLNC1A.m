@@ -1,4 +1,5 @@
 LRLNC1A ; DALCOI/CA/FHS - ADD/EDIT RESULT NLT CODES IN LAB TEST FILE (#60) ; 1-OCT-1998
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**278**;Sep 27,1994
  ;=================================================================
 TEST ;ADD/EDIT RESULT NLT CODE

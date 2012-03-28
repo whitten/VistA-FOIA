@@ -1,4 +1,5 @@
-DIP3 ;SFISC/GFT,TKW-PRINT HEADING, PAGE, COPIES ;06:51 PM  9 Dec 1999
+DIP3 ;SFISC/GFT,TKW-PRINT HEADING, PAGE, COPIES ;06:51 PM  9 Dec 1999 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**23**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  I DJ,DE]"" S DJ=DJ+1,^UTILITY("DIP2",$J,DJ)=DE,DE=""

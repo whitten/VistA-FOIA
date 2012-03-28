@@ -1,5 +1,7 @@
-TIUPRPN7 ;SLC/MJC - Progress Notes Outpt Batch Prt ;6/26/01
- ;;1.0;TEXT INTEGRATION UTILITIES;**45,100,121**;Jun 20, 1997
+TIUPRPN7 ;SLC/MJC - Progress Notes Outpt Batch Prt ;27-Oct-2005 10:08;MGH
+ ;;1.0;TEXT INTEGRATION UTILITIES;**45,100,121,1003**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/26/2003 changed SSN to HRCN
+ ;IHS/CIA/MGH Changed patch print to print each note on a separate page
  ;
 BATCH ;batch print outpatient progress notes sorted by terminal digit
  ;if you wish to exlude a particular hospital location from this
@@ -46,7 +48,7 @@ DEV S %ZIS("B")=$P($G(^%ZIS(1,+$P($G(^TIU(8925.94,$P(TIUDIV,U,2),1)),U,2),0),"")
  Q
 PRINT ;entry point for non-interactive tasked job
  ;requires TIUDIV set to the division you want notes for
- ;if queued non-interactively, file 8925.94- field #1.02 will need 
+ ;if queued non-interactively, file 8925.94- field #1.02 will need
  ;to contain the start time of the batch
  ;[TIU PRINT PN BATCH SCHEDULED]- entry point if called from file #19.2
  ;
@@ -65,11 +67,13 @@ PRINT ;entry point for non-interactive tasked job
  ...D REPLACE^TIUPRPN3(IFN,DATE,1501)
  S IFN=0 F  S IFN=$O(^TMP("TIUREPLACE",$J,IFN)) Q:'IFN  D
  .S DFN=$P(^TIU(8925,IFN,0),U,2),SSN=$P(^DPT(DFN,0),U,9)
- .S SSN=$E(SSN,8,9)_$E(SSN,6,7)_$E(SSN,4,5)_$E(SSN,1,3)
+ .;S SSN=$E(SSN,8,9)_$E(SSN,6,7)_$E(SSN,4,5)_$E(SSN,1,3)     ;IHS/ITSC/LJF 02/26/2003
+ .NEW HRCN D PID^VADPT S SSN=HRCN                            ;IHS/ITSC/LJF 02/26/2003
  .S DATE=^TMP("TIUREPLACE",$J,IFN,"DT")
  .S ^TMP("TIUPR",$J,SSN_";"_DFN,DATE,IFN)="Vice SF 509"
  I '$D(^TMP("TIUPR",$J)) D TROUBLE G EXIT
- D PRINT^TIUPRPN1(1,1)
+ ;IHS/CIA/MGH change print format so that it prints a new page per note
+ D PRINT^TIUPRPN1(1,0)    ;PATCH 1003
  S $P(^TIU(8925.94,TIUDIV,1),U)=STOP
 EXIT K ^TIU("TIUPR",$J),^TMP("TIULQ",$J),^TMP("TIUREPLACE",$J)
  Q

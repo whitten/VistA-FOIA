@@ -1,5 +1,5 @@
 GMTSOBU ; SLC/KER - HS Object - Utility           ; 01/06/2003
- ;;2.7;Health Summary;**58,89**;Oct 20, 1995;Build 61
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;                      
  ; External References
  ;   DBIA 10096  ^%ZOSF("DEL"
@@ -46,9 +46,7 @@ EHST(X) ; Existing Health Summary Type
  . D REN I $L($G(GMTSETYP)),$L($G(GMTSETTL)) S GMTSTYP=GMTSETYP,GMTSTTL=GMTSETTL,(GMTSEDAT,GMTSDAT)=$$TIEN
  . S X=+GMTSEDAT S:+X>0 GMTSQIT=0
  ;   Use the pre-existing HS
- ;AGP CHANGE TO TEST POSSIBLE FIX
- ;I +GMTS>0,$L(GMTSTYP) BREAK S GMTSTE=1,(X,GMTSEDAT)=+($G(GMTSDAT)),GMTSQIT=0
- I +GMTS>0,$L(GMTSTYP) S GMTSTE=1,(X,GMTSEDAT)=+($G(GMTSEDAT)),GMTSQIT=0
+ I +GMTS>0,$L(GMTSTYP) S GMTSTE=1,(X,GMTSEDAT)=+($G(GMTSDAT)),GMTSQIT=0
  Q X
 REN ; Rename Health Summary Type
  N DIR,DIROUT,DUOUT,DTOUT,X,Y,GMTSNN,GMTSNT,GMTSNA S (GMTSETYP,GMTSETTL)=""

@@ -1,5 +1,6 @@
-GMRADPT ;HIRMFO/RM,WAA-UTILITY TO GATHER PATIENT DATA ;1/15/98  13:47
- ;;4.0;Adverse Reaction Tracking;**2,10**;Mar 29, 1996
+GMRADPT ;HIRMFO/RM,WAA-UTILITY TO GATHER PATIENT DATA ;18-Mar-2011 10:56;MGH
+ ;;4.0;Adverse Reaction Tracking;**2,10,1002**;Mar 29, 1996;Build 32
+ ;IHS/MSC/MGH Inactive node added
 EN1 ; ENTRY TO GATHER PATIENT A/AR DATA
  ;INPUT VARIABLES:
  ;
@@ -13,14 +14,15 @@ EN1 ; ENTRY TO GATHER PATIENT A/AR DATA
  ;               2 return only non-verified data.
  ;           C = X_Y_Z
  ;               where X, Y, and Z are either 0 or 1.  1 would mean to
- ;               return an Adverse Reaction of that particular type, 
- ;               and zero means do not return an Adverse Reaction of 
+ ;               return an Adverse Reaction of that particular type,
+ ;               and zero means do not return an Adverse Reaction of
  ;               that type.
  ;               X is for TYPE=OTHER
  ;               Y is for TYPE=FOOD
  ;               Z is for TYPE=DRUG.
  ;               E.g., 001 (return drug only), 111 (returns all types),
  ;               and 010 (returns food only).
+ ;           D=1 Include inactive allergies
  ;OUTPUT VARIABLES:
  ; GMRAL = 1 if patient has Adverse Reaction
  ;         0 if patient has no known Adverse Reaction
@@ -74,9 +76,11 @@ DPT ;
  K GMRA,GMRANODE,GMRAOSOF,GMRAREC,GMRATCNT
  Q
 SETAL ;
- N %,GMRAI,GMRASIGN
+ N %,GMRAI,GMRASIGN,CHK
  ;Q:'$P(GMRANODE,"^",12)&'$D(GMRAOSOF)  ;IF NOT SIGNED OFF MARK IT
  Q:+$G(^GMR(120.8,GMRAREC,"ER"))&'$D(GMRAERR)  ;IF ENTERED IN ERROR QUIT
+ S CHK=$$CHK(GMRAREC)
+ Q:CHK=1
  I GMRAL'=1 S GMRAL=1 ; PATIENT HAS ALLERGIES
  S GMRAI=0 ; BEGIN CHECK FOR ADR/ALL CRITERIA
  I '$P(GMRA,"^") S GMRAI=1
@@ -97,17 +101,33 @@ PASS(GMRAREC,GMRAL) ; Data filer
  ;Output:
  ;     GMRAL(GMRAREC) the array entry for the record
  ;
- N GMRANODE
+ N GMRANODE,GMRAIN,GMRINODE,GMRAY2,GMRAZ2,GMRASRC,GMRAZSRC,GMRASNO,GMTAZT,GMRAX,GMRAY,GMRAY2,GMRAZ,GMRAZT
  S GMRANODE=$G(^GMR(120.8,GMRAREC,0)) Q:GMRANODE=""
+ S GMRASRC=$P($G(^GMR(120.8,GMRAREC,9999999.11)),U,1)
+ S GMRASNO=$P($G(^GMR(120.8,GMRAREC,9999999.11)),U,2)
+ ;IHS/MSC/MGH Added node for inactive
+ S GMRINODE=$G(^GMR(120.8,GMRAREC,9999999.12))
  S %=$P(GMRANODE,"^",14)
  S GMRAL(GMRAREC)=$P(GMRANODE,"^",1,2)_"^"_$E($P(GMRANODE,"^",20))_"^"_+$P(GMRANODE,"^",16)_"^"_$S(%="A"!(%="U"):0,1:1)
  S GMRAL(GMRAREC)=GMRAL(GMRAREC)_"^"_$S(%="A":"ALLERGY;0",%="P":"PHARMACOLOGIC;2",%="U":"UNKNOWN;U",1:"")_"^"_$P(GMRANODE,"^",20)_"^"_$S(%="A":"ALLERGY;A",%="P":"PHARMACOLOGIC;P",%="U":"UNKNOWN;U",1:"")
  S GMRAL(GMRAREC)=GMRAL(GMRAREC)_"^"_$P(GMRANODE,"^",3)
+ S GMRAL(GMRAREC)=GMRAL(GMRAREC)_"^"_GMRASRC_"^"_GMRASNO
  Q:'$O(^GMR(120.8,GMRAREC,10,0))  ;QUIT IF NO SIGNS/SYMPTOMS
  S:'$D(GMRAOTH) GMRAOTH=$O(^GMRD(120.83,"B","OTHER REACTION",0))
  S GMRAX=0,GMRAY=1 F  S GMRAX=$O(^GMR(120.8,GMRAREC,10,GMRAX)) Q:GMRAX<1  D  I GMRAZ'="" S GMRAL(GMRAREC,"S",GMRAY)=GMRAZ(1),GMRAY=GMRAY+1
  .S GMRAZ=$G(^GMR(120.8,GMRAREC,10,GMRAX,0))
  .S GMRAZ(1)=$S(+GMRAZ'=GMRAOTH:$P($G(^GMRD(120.83,+GMRAZ,0)),U)_";"_+GMRAZ,1:$P(GMRAZ,U,2)_";"_+GMRAZ)
+ .S GMRAZSRC=$P($G(^GMR(120.8,GMRAREC,10,GMRAX,9999999.11)),U,1)
+ .S GMRAZT=$P($G(^GMR(120.8,GMRAREC,10,GMRAX,0)),U,4)
+ .I GMRAZSRC S GMRAZ(1)=GMRAZ(1)_U_GMRAZT_U_GMRAZSRC
  .Q
- K GMRAX,GMRAY,GMRAZ
  Q
+CHK(GMRAIEN) ;IHS/MSC/MGH Check to see if this allergy is inactive
+ N Z,INACT,REACT,INZ
+ S INZ=0
+ I $P(GMRA,U,4)=1 Q 0
+ S Z=$O(^GMR(120.8,GMRAIEN,9999999.12,$C(0)),-1) I +Z D
+ .S INACT=$P($G(^GMR(120.8,GMRAIEN,9999999.12,Z,0)),U,1)
+ .S REACT=$P($G(^GMR(120.8,GMRAIEN,9999999.12,Z,0)),U,4)
+ .I +INACT&(REACT="") S INZ=1
+ Q INZ

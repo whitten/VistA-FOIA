@@ -1,4 +1,5 @@
-XPDIA0 ;SFISC/RSD - Cont. of XPDIA ;03/09/2000  06:50
+XPDIA0 ;SFISC/RSD - Cont. of XPDIA ;03/09/2000  06:50 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**131,144**;Jul 10, 1995
  Q
 PROE1 ;protocols entry pre

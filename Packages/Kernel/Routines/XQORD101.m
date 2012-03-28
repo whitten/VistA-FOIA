@@ -1,4 +1,5 @@
-XQORD101 ; slc/KCM - Build menus in XUTL (file 101) ;9/24/98  16:40
+XQORD101 ; slc/KCM - Build menus in XUTL (file 101) ;9/24/98  16:40 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**98**;Sept. 24,1998
 SET ;From: Cross reference in file 101, field 99  Entry: DA  Exit: DA
  ;NOTE:  Lock ^ORD(101,DA) when calling

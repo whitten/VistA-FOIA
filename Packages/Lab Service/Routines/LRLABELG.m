@@ -1,4 +1,5 @@
 LRLABELG ;DALOI/JMC - 1x3 label for Zebra Stripe printer; 6/4/98
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**218**;Sep 27, 1994
  ; Print Lab labels 25mm X 76mm (1X3) labels.
  ; Label length = 200 dots.

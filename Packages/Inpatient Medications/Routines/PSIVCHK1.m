@@ -1,5 +1,5 @@
 PSIVCHK1 ;BIR/PR,MLM-CHECK ORDER FOR INTEGRITY ;23 Oct 98 / 10:00 AM
- ;;5.0; INPATIENT MEDICATIONS ;**21,41,50,74,111,113**;16 DEC 97;Build 63
+ ;;5.0; INPATIENT MEDICATIONS ;**21,41,50,74**;16 DEC 97
  ;
  ; Reference to ^PS(52.6 is supported by DBIA# 1231.
  ; Reference to ^PS(52.7 is supported by DBIA# 2173.
@@ -8,11 +8,7 @@ PSIVCHK1 ;BIR/PR,MLM-CHECK ORDER FOR INTEGRITY ;23 Oct 98 / 10:00 AM
  ;Need DFN and ON
  ;
  I P(9)="",P("TYP")="P" S ERR=1 W !,"*** No schedule exists for this order!"
- I P(11)="",P("TYP")="P",'P(15),$S(($G(P(15))="O"):0,($G(P(15))="OC"):0,$$DOW^PSIVUTL($P(P(9)," PRN")):1,1:P(9)'["PRN") D
- . I $$DOW^PSIVUTL(P(9)) S P(15)="D"
- . I P(15)="D" S ERR=1 W !,"*** This is a 'DAY OF THE WEEK' schedule and MUST have admin times!" Q
- . I $G(P(15)) Q:$$ODD^PSGS0(P(15))
- . I $$ONETIME^PSIVEDT1($G(P(9)))!$$PRNOK^PSGS0($G(P(9)))!$$ONCALL^PSIVEDT1($G(P(9))) Q
+ I P(11)="",P("TYP")="P",'P(15),$S(P(9)="ONE TIME"!(P(9)="ON CALL")!(P(9)="1 TIME"):0,"^NOW^STAT^ONCE^ONE-TIME^ONETIME^1TIME^1-TIME^ONCALL^ON-CALL^"[(U_$P(P(9)," ")_U):0,1:(P(9)'["PRN")) D
  . S ERR=1 W !,"*** There are no administration times defined for this order!"
  S PDM=11 S PDM=0 F DRGT="AD","SOL" I $D(DRG(DRGT)) F DRGI=0:0 S DRGI=$O(DRG(DRGT,DRGI)) Q:'DRGI!PDM  I $P(P("PD"),U)=$P(DRG(DRGT,DRGI),U,6) S PDM=11
  I $E(P("OT"))'="I",'PDM D GTPD^PSIVORE2 S PDM=11

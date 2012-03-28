@@ -1,5 +1,5 @@
 XUVERIFY ;SF/MUS - Checks a users ACCESS and VERIFY CODES ;11/23/2004  14:43
- ;;8.0;KERNEL;**2,26,59,265**;Jul 10, 1995
+ ;;8.0;KERNEL;**2,26,59,265**;Jul 10, 1995;Build 5
  ; The variables % and %DUZ must be set before running this
  ; program   % - may equal "A","V" OR both "AV"
  ;        %DUZ - must equal the users DUZ

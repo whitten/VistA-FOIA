@@ -1,4 +1,5 @@
-LA7ADL1 ;DALOI/JMC - Automatic Download of Test Orders (Cont'd) ; 1/30/95 09:00
+LA7ADL1 ;DALOI/JMC - Automatic Download of Test Orders (Cont'd) ; 1/30/95 09:00 [ 04/21/2003  8:15 AM ]
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;AUTOMATED LAB INSTRUMENTS;**17,23,57**;Sep 27, 1994
  ;
 BUILD ; Build test listing for all instruments designated for auto download.
@@ -87,6 +88,10 @@ CHKRTN() ; Check if download routine defined and valid
  ;
  ; Check if routine label valid
  I 'LA7ERR,$L($P(LA7AUTO(LA7INST,9),"^",3)) D
+ .;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ . S HLZOS=$$VERSION^%ZOSV(1)
+ . Q:HLZOS'[("Cache")
+ .;----- END IHS MODIFICATIONS
  . I $L($T(@$P(LA7AUTO(LA7INST,9),"^",3,4))) Q
  . S LA7ERR=1
  . S XQAMSG="Invalid download routine label (field #93)"

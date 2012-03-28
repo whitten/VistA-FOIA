@@ -1,4 +1,5 @@
-LADMND ;SLC/RWF - DEMAND ANALYZER IN MODE 3 ;7/20/90  08:06 ;
+LADMND ; IHS/DIR/FJE - DEMAND ANALYZER IN MODE 3 7/20/90 08:06 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;CROSS LINK BY ID OR IDE
  ;Internal entry # for CHEM TESTS field in auto instrument file must match the identifying # for each test.

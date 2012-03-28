@@ -1,6 +1,5 @@
-HLOCLNT1 ;IRMFO-ALB/CJM/RBN - Writing messages, reading acks;03/24/2004  14:43 ;02/18/2011
- ;;1.6;HEALTH LEVEL SEVEN;**126,130,131,134,137,139,146,155**;Oct 13, 1995;Build 4
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOCLNT1 ;IRMFO-ALB/CJM - Writing messages, reading acks;03/24/2004  14:43
+ ;;1.6;HEALTH LEVEL SEVEN;**126,130,131**;Oct 13, 1995;Build 10
  ;
  ;
 WRITEMSG(HLCSTATE,HLMSTATE) ;
@@ -12,12 +11,11 @@ WRITEMSG(HLCSTATE,HLMSTATE) ;
  ;Output:
  ;  Function returns 1 on success, 0 on failure
  ;
-ZB6 ;
  N SEG,QUIT,HDR
  S QUIT=0
- I '$G(HLMSTATE("IEN")) S QUIT=1 G ZB7
+ Q:'$G(HLMSTATE("IEN")) 0
  S HDR(1)=HLMSTATE("HDR",1),HDR(2)=HLMSTATE("HDR",2)
- I '$$WRITEHDR^HLOT(.HLCSTATE,.HDR) S QUIT=1 G ZB7
+ Q:'$$WRITEHDR^HLOT(.HLCSTATE,.HDR) 0
  I HLMSTATE("BATCH") D
  .N LAST S LAST=0
  .S HLMSTATE("BATCH","CURRENT MESSAGE")=0
@@ -32,7 +30,6 @@ ZB6 ;
  .F  Q:'$$HLNEXT^HLOMSG(.HLMSTATE,.SEG)  D  Q:QUIT
  ..S:'$$WRITESEG^HLOT(.HLCSTATE,.SEG) QUIT=1
  S:'$$ENDMSG^HLOT(.HLCSTATE) QUIT=1
-ZB7 ;
  Q 'QUIT
  ;
 READACK(HLCSTATE,HDR,MSA) ;
@@ -47,23 +44,21 @@ READACK(HLCSTATE,HDR,MSA) ;
  ;   HDR(2) is components 7-end
  ;  MSA (pass by reference) the MSA segment as an unsubscripted variable
  ;
-ZB8 ;
- N SEG,SUCCESS
- S SUCCESS=0
+ N SEG
  K HDR,MSA,MAX,I
  S MAX=HLCSTATE("SYSTEM","MAXSTRING")-40 ;MAX is the maximum that can be safely stored on a node, leaving room for the other fields stored with MSA seg
- G:'$$READHDR^HLOT(.HLCSTATE,.HDR) ZB9
+ Q:'$$READHDR^HLOT(.HLCSTATE,.HDR) 0
  F  Q:'$$READSEG^HLOT(.HLCSTATE,.SEG)  D
  .I $E($E(SEG(1),1,3)_$E($G(SEG(2)),1,3),1,3)="MSA" D
  ..S MSA=""
  ..F I=1:1 Q:'$D(SEG(I))  S MSA=MSA_$S((MAX-$L(MSA))<1:"",1:$E(SEG(I),1,MAX))
- I $D(MSA),HLCSTATE("MESSAGE ENDED") D  S SUCCESS=1
+ I $D(MSA),HLCSTATE("MESSAGE ENDED") D  Q 1
  .D SPLITHDR^HLOSRVR1(.HDR)
  .S HLCSTATE("COUNTS","ACKS")=$G(HLCSTATE("COUNTS","ACKS"))+1
-ZB9 Q SUCCESS
+ Q 0
  ;
 CONNECT(LINK,PORT,TIMEOUT,HLCSTATE) ;
-ZB1 ;sets up HLCSTATE() and opens a client connection
+ ;sets up HLCSTATE() and opens a client connection
  ;Input:
  ;  LINK - name of the link to connect to
  ;  PORT (optional) port # to connect to, defaults to that specified by the link
@@ -71,8 +66,7 @@ ZB1 ;sets up HLCSTATE() and opens a client connection
  ;Output:
  ;   HLCSTATE - array to hold the connection state
  ;
- I '$G(HLCSTATE("CONNECTED")) S HLCSTATE("CONNECTED")=0
- I HLCSTATE("CONNECTED") D  G:HLCSTATE("CONNECTED") ZB2
+ I $G(HLCSTATE("CONNECTED")) D  Q:HLCSTATE("CONNECTED")
  .I $G(HLCSTATE("LINK","NAME"))]"",($G(HLCSTATE("LINK","NAME"))'=LINK) D CLOSE^HLOT(.HLCSTATE) Q
  .I $G(HLCSTATE("LINK","NAME"))]"",$G(PORT),($G(HLCSTATE("LINK","PORT"))'=PORT) D CLOSE^HLOT(.HLCSTATE) Q
  .I (HLCSTATE("SYSTEM","OS")="CACHE") D  Q
@@ -81,19 +75,12 @@ ZB1 ;sets up HLCSTATE() and opens a client connection
  .;D CLOSE^HLOT(.HLCSTATE)
  K HLCSTATE
  N ARY,NODE
- I '$$GETLINK^HLOTLNK(LINK,.ARY) S HLCSTATE("LINK","NAME")=LINK,HLCSTATE("LINK","PORT")=$G(PORT) D LINKDOWN^HLOCLNT(.HLCSTATE) G ZB2
+ I '$$GETLINK^HLOTLNK(LINK,.ARY) S HLCSTATE("LINK","NAME")=LINK,HLCSTATE("LINK","PORT")=$G(PORT) D LINKDOWN^HLOCLNT(.HLCSTATE) Q 0
  M HLCSTATE("LINK")=ARY
-ZB24 ;
- I HLCSTATE("LINK","SHUTDOWN") S HLCSTATE("CONNECTED")=0 D LINKDOWN^HLOCLNT(.HLCSTATE) G ZB2
+ I HLCSTATE("LINK","SHUTDOWN") S HLCSTATE("CONNECTED")=0 D LINKDOWN^HLOCLNT(.HLCSTATE) Q 0
  ;overlay the port if supplied from the queue
  S:$G(PORT) HLCSTATE("LINK","PORT")=PORT
- ;
- ; *** Begin HL*1.6*146 - RBN ***
- ;S HLCSTATE("READ TIMEOUT")=20
- ;get the dynamic value of the client read timeout
- D GETTIME^HLOTCP(.HLCSTATE)
- ; *** End HL*1.6*146 - RBN ***
- ; ;
+ S HLCSTATE("READ TIMEOUT")=20
  S HLCSTATE("OPEN TIMEOUT")=$S($G(TIMEOUT):TIMEOUT,1:30)
  S HLCSTATE("COUNTS")=0
  S HLCSTATE("READ")="" ;where the reads are stored
@@ -106,7 +93,7 @@ ZB24 ;
  S NODE=^%ZOSF("OS")
  S HLCSTATE("SERVER")=0
  S HLCSTATE("SYSTEM","OS")=$S(NODE["DSM":"DSM",NODE["OpenM":"CACHE",NODE["G.TM":"G.TM",1:"")
- I HLCSTATE("SYSTEM","OS")="" D LINKDOWN^HLOCLNT(.HLCSTATE) G ZB2
+ I HLCSTATE("SYSTEM","OS")="" D LINKDOWN^HLOCLNT(.HLCSTATE) Q 0
  D
  .N SYS
  .D SYSPARMS^HLOSITE(.SYS)
@@ -120,19 +107,17 @@ ZB24 ;
  D OPEN^HLOT(.HLCSTATE)
  ;
  ;mark the failure time for the link so other processes know not to try for a while
- I 'HLCSTATE("CONNECTED"),'HLCSTATE("LINK","SINGLE THREADED") D LINKDOWN^HLOCLNT(.HLCSTATE)
- I 'HLCSTATE("CONNECTED"),HLCSTATE("LINK","SINGLE THREADED"),'HLCSTATE("LOCK FAILED") D LINKDOWN^HLOCLNT(.HLCSTATE)
-ZB2 ;
+ I 'HLCSTATE("CONNECTED") D LINKDOWN^HLOCLNT(.HLCSTATE)
  Q HLCSTATE("CONNECTED")
  ;
 BADMSGS(WORK) ;
- ;finds messages that won't transmit after 8 hours of trying and takes them off the outgoing queue
+ ;finds messages that won't transmit and takes them off the outgoing queue
  N LINK
  S LINK=""
  F  S LINK=$O(^HLTMP("FAILING LINKS",LINK)) Q:LINK=""  D
  .N TIME,QUE,COUNT
  .S TIME=$G(^HLTMP("FAILING LINKS",LINK)) Q:TIME=""
- .Q:$$HDIFF^XLFDT($H,TIME,2)<28800  ;8 hours
+ .Q:$$HDIFF^XLFDT($H,TIME,2)<7200
  .Q:'$$IFOPEN^HLOUSR1(LINK)
  .L +^HLB("QUEUE","OUT",LINK):0
  .S QUE=""
@@ -142,26 +127,19 @@ BADMSGS(WORK) ;
  ..Q:'MSG
  ..S COUNT=$G(^HLB(MSG,"TRIES"))
  ..I COUNT>20 D
- ...N NODE0,NODE1,NODE2,TIME,RAPP,SAPP,FS,CS,ACTION,MTYPE,EVENT
- ...S NODE0=$G(^HLB(MSG,0))
- ...Q:'$P(NODE0,"^",2)
- ...S TIME=$$NOW^XLFDT
- ...S NODE1=$G(^HLB(MSG,1))
- ...S NODE2=$G(^HLB(MSG,2))
- ...S FS=$E(NODE1,4)
+ ...N NODE,TIME,APP,FS,ACTION
+ ...S NODE=$G(^HLB(MSG,0))
+ ...Q:'$P(NODE,"^",2)
+ ...S TIME=+$G(^HLA($P(NODE,"^",2),0))
+ ...S NODE=$G(^HLB(MSG,1))
+ ...S FS=$E(NODE,4)
  ...Q:FS=""
- ...S CS=$E(NODE1,5)
- ...Q:CS=""
- ...S SAPP=$P(NODE1,FS,3)
- ...S:SAPP="" SAPP="UNKNOWN"
- ...S RAPP=$P(NODE1,FS,5)
- ...S MTYPE=$P($P(NODE2,FS,4),CS)
- ...S EVENT=$P($P(NODE2,FS,4),CS,2)
+ ...S APP=$P(NODE,FS,3)
+ ...Q:APP=""
  ...S $P(^HLB(MSG,0),"^",21)=COUNT_" FAILED TRANSMISSIONS"
  ...S $P(^HLB(MSG,0),"^",20)="TF"
- ...S ^HLB("ERRORS",RAPP,TIME,MSG)=""
- ...D COUNT^HLOESTAT("OUT",RAPP,SAPP,MTYPE,EVENT)
- ...S ACTION=$P(NODE0,"^",14,15)
+ ...S ^HLB("ERRORS","TF",APP,TIME,MSG)=""
+ ...S ACTION=$P(NODE,"^",14,15)
  ...I ACTION'="^",ACTION]"" D INQUE^HLOQUE(LINK,QUE,MSG,ACTION,1)
  ...D DEQUE^HLOQUE(LINK,QUE,"OUT",MSG)
  .L -^HLB("QUEUE","OUT",LINK)

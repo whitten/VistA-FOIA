@@ -1,5 +1,5 @@
-PXAPIEED ;ISL/dee - PCE's API to ask standalone encounter or add then edit it or to delete a standalone ; 8/14/00 2:47pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,147**;Aug 12, 1996
+PXAPIEED ;ISL/dee - PCE's API to ask standalone encounter or add then edit it or to delete a standalone ;9/5/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**1**;Aug 12, 1996
  Q
  ;
 ENCEDIT(WHAT,PACKAGE,SOURCE,DFN,BEGINDT,ENDDT,HLOC,SCREEN,APPOINT,PROMPT,COSTATUS) ;--Ask for encounter the edit it of delete it
@@ -10,12 +10,9 @@ ENCEDIT(WHAT,PACKAGE,SOURCE,DFN,BEGINDT,ENDDT,HLOC,SCREEN,APPOINT,PROMPT,COSTATU
  ; -2^text      = error of some kind^simple text message
  ; -3^text      = error in deleting^simple text message
  ;
- N VISITIEN,PXRESULT,PXRETURN,PXVISIT,PXBEGDT,PXX
+ N VISITIEN,PXRESULT,PXRETURN,PXVISIT,PXBEGDT
  I $G(DFN)<1 S DFN=$$ASKPAT^PXBAPI1()
  Q:DFN<1 -1
- D 2^VADPT I +VADM(6) D  Q:$D(DUOUT)!$D(DIRUT) -1
- . S DIR(0)="E",DIR("A")="Enter RETURN to continue or '^' to exit"
- . S DIR("A",2)="WARNING "_VADM(7) D ^DIR
  S PXBEGDT=$S($$SWITCHD^PXAPI>BEGINDT:$$SWITCHD^PXAPI,1:BEGINDT)
  S VISITIEN=$$VISITLST^PXAPI(DFN,PXBEGDT,ENDDT,HLOC,SCREEN,APPOINT,PROMPT,COSTATUS)
  I $P(VISITIEN,"^",1)="D" D

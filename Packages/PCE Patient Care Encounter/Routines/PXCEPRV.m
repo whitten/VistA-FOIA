@@ -1,5 +1,5 @@
-PXCEPRV ;ISL/dee - Used to edit and display V PROVIDER ;5/10/05 6:23pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**7,27,124**;Aug 12, 1996
+PXCEPRV ;ISL/dee - Used to edit and display V PROVIDER ;3/19/97
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**7,27**;Aug 12, 1996
  ;
  Q
  ;
@@ -105,8 +105,8 @@ EPROV12 ;
  S DIC("S")="I $$ACTIVPRV^PXAPI(Y,PXPRVDT)"
  D ^DIC
  K DIR
- I $D(DUOUT)!$D(DTOUT) S PXCEEND=1 Q
- Q:X=""
+ I $D(DUOUT)!$D(DTOUT)!(X="") S DIRUT=1 Q
+ Q:$D(DIRUT)
  S $P(PXCEAFTR($P(PXCETEXT,"~",1)),"^",$P(PXCETEXT,"~",2))=$P(Y,"^")
  ;S:'($D(X)#2) X=+Y
  Q

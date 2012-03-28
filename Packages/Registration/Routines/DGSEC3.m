@@ -1,7 +1,10 @@
-DGSEC3 ;ALB/RMO - Purge Record of User Access from Security Log ; 22 JUN 87 1:00 pm
+DGSEC3 ;ALB/RMO - Purge Record of User Access from Security Log ; [ 09/13/2001  4:02 PM ]
  ;;5.3;Registration;;Aug 13, 1993
+ ;IHS/ANMC/LJF 9/6/2000 improved error message when parameter not set
+ ;
  I '$D(^XUSEC("DG SECURITY OFFICER",DUZ)) W !!?3,*7,"You do not have the appropriate access privileges to purge user access." Q
- I '+$P(^DG(43,1,0),"^",33) W !!?3,*7,"Record of user access can not be purged from the security log." Q
+ ;I '+$P(^DG(43,1,0),"^",33) W !!?3,*7,"Record of user access can not be purged from the security log." Q
+ I '+$P(^DG(43,1,0),"^",33) W !!?3,*7,"***Record of user access can not be purged from the security log!!",!?3,"Please use the Update Security Parameters option to enter # of days",!?3,"to maintain sensitivity.***" Q  ;IHS/ANMC/LJF 9/6/2000
 ASKPAT R !!,"Select PATIENT: ",X:DTIME G Q:'$T!(X="^")!(X="") I $E(X,1,3)="ALL"!($E(X,1,3)="all") S DFN="ALL" G ASKDTE
  S DIC="^DGSL(38.1,",DIC(0)="EMQ",DGSENFLG="" D ^DIC K DGSENFLG I Y>0 S DFN=+Y G ASKDTE
  W:X'["?" *7 W !!?3,"Enter 'ALL' or a select patient to purge user access from security log." G ASKPAT

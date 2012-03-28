@@ -1,6 +1,5 @@
 RAREG1 ;HISC/CAH,FPT,DAD AISC/MJK,RMO-Register Patient ;10/15/97  09:34
- ;;5.0;Radiology/Nuclear Medicine;**7,21,93**;Mar 16, 1998;Build 3
- ; 07/15/2008 BAY/KAM rem call 249750 RA*5*93 Correct DIK Calls
+ ;;5.0;Radiology/Nuclear Medicine;**7,21**;Mar 16, 1998
 ASKORD I $D(RAVSTFLG),$G(YY)]"",$P(YY,U,5) D ASET G PACS
  ; radparfl = 1 if user chose detail-to-parent conversion
  ; radparpr = ien of file 74 of parent proc to replace detail proc
@@ -31,7 +30,7 @@ PACS I $D(^TMP($J,"RAREG1")) S RACNT=0 F  S RACNT=$O(^TMP($J,"RAREG1",RACNT)) Q:
  .Q
  K RAREGTMP
  D:$D(RADPARFL) CKDUPORD^RAREG2 ; ck for dupl procs in outstndg orders
-Q I '$D(RAREC) W !!?3,*7,"No exams entered for this visit. Must delete..." S DA(1)=RADFN,DA=RADTI,DIK="^RADPT("_DA(1)_",""DT""," D ^DIK W "...deletion complete!" K RAPX
+Q I '$D(RAREC) W !!?3,*7,"No exams entered for this visit. Must delete..." S DA(1)=RADFN,DA=RADTI,DIK="^RADPT(DA(1),""DT""," D ^DIK W "...deletion complete!" K RAPX
  D LABEL^RAREG3
 Q1 D Q4^RAREG4
  G PAT^RAREG
@@ -44,8 +43,7 @@ Q1 D Q4^RAREG4
  ;Then the next available CN is calculated and written to the first
  ;piece of ^RA(79.2,1,"CN").  The node is locked during this transaction.
 CN ;VARIABLES RATYPE,RADT AND RASET MUST EXIST AT THIS POINT
- ; 11/05/2008 BAY/KAM rem call 273496 RA*5*93 Add lock timeout to next line
- L +^RA(79.2,RATYPE,"CN"):$S($G(DILOCKTM)>0:DILOCKTM,1:3) D CAL:'$D(^RA(79.2,RATYPE,"CN")),CAL:DT>$P(^("CN"),"^",2),CAL:+^("CN")>99999 S RAX=+^RA(79.2,RATYPE,"CN") D DUP
+ L +^RA(79.2,RATYPE,"CN") D CAL:'$D(^RA(79.2,RATYPE,"CN")),CAL:DT>$P(^("CN"),"^",2),CAL:+^("CN")>99999 S RAX=+^RA(79.2,RATYPE,"CN") D DUP
  ; need recalculate if DUP returns an over 99999 value
  I RAX>99999 D CAL S RAX=+^RA(79.2,RATYPE,"CN") D DUP
  I 'RASET S X=RAX G CNQ

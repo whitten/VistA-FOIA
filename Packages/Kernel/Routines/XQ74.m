@@ -1,4 +1,5 @@
-XQ74 ;SEA/MJM - Phantom Jump processor ; ;4/26/91  3:18 PM
+XQ74 ;SEA/MJM - Phantom Jump processor ; ;4/26/91  3:18 PM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  Q:'$D(XQMM("J"))  I '$L(XQMM("J")) K XQMM("J") G M2^XQ
  I +XQMM("J")=-1 G RESET

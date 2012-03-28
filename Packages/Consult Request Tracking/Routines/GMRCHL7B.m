@@ -1,31 +1,20 @@
-GMRCHL7B ;SLC/DCM,MA,JFR - Process data from GMRCHL7A ;04/29/09  08:53
- ;;3.0;CONSULT/REQUEST TRACKING;**1,5,12,21,17,22,33,66**;DEC 27, 1997;Build 30
- ;
- ; This routine invokes IA #3991(ICDAPIU), #2053(DIE), #10006(DIC), #2056(GET1^DIQ)
- ;
-NEW(MESSAGE) ;Add new order
+GMRCHL7B ;SLC/DCM,MA - Process order parameters from ^GMRCHL7A and place data into ^GMR(123 global ;10/17/01 17:18
+ ;;3.0;CONSULT/REQUEST TRACKING;**1,5,12,21,17,22**;DEC 27, 1997
+ ; Patch #21 changed Activity title on Consult detail display
+ ; from "ENTERED IN CPRS" to "CPRS RELEASED ORDER".
+NEW ;Add new order
  ;GMRCO=^GMR(123,IFN, the new file number in file ^GMR(123,
  ;GMRCORFN=OE/RR file number       GMRCWARD=ward patient is on
  ;GMRCSS=service consult sent to   GMRCAD=date/time of request
  ;GMRCPRI=procedure/request        GMRCURGI=urgency
- ;GMRCERDT=earliest desired date
  ;GMRCATN=attention                GMRCSTS=OE/RR order status
  ;GMRCORNP=patient's provider      GMRCTYPE=request type (request or consult)
  ;GMRCSBR=service rendered on what basis (Inpatient, or Outpatient)
  ;GMRCRFQ=reason for request array - word processing fields
  ;GMRCOTXT=order display text from dialog or orderable item
  ;GMRCPRDG=provisional DX
- ;GMRCPRCD=provisional DX code
- ;
- ; Output:
- ;    MESSAGE = rejection message if problems encountered while filing
- ;
- ;    check for inactive ICD-9 code in Prov. DX
- I $L($G(GMRCPRCD)) D  I $D(MESSAGE) Q  ; rejected due to inactive code
- . I +$$STATCHK^ICDAPIU(GMRCPRCD,DT) Q  ;code is OK
- . S MESSAGE="Provisional DX code is inactive. Unable to file request."
- ;
- N DIC,DLAYGO,X,Y,DR,DIE,GMRCADUZ,GMRCCP
+ ;GMRCPRCD=provisional DX code 
+ N DIC,DLAYGO,X,DR,DIE,GMRCADUZ,GMRCCP
  S DIC="^GMR(123,",DIC(0)="L",X="""N""",DLAYGO=123 D ^DIC K DLAYGO Q:Y<1
  ; Patch #21 changed GMRCA=1 to GMRCA=2
  S (DA,GMRCO)=+Y,GMRCSTS=5,GMRCA=2,DIE=DIC
@@ -34,9 +23,9 @@ NEW(MESSAGE) ;Add new order
  D ^DIE
  I GMRCOTXT=$$GET1^DIQ(123.5,+GMRCSS,.01) S GMRCOTXT=""
  ;Added new field .1 to DR on 7/11/98 to save the order text
- S DR="6////^S X=GMRCPLI;8////^S X=GMRCSTS;9////^S X=GMRCA;10////^S X=GMRCORNP;13////^S X=GMRCTYPE;14////^S X=$G(GMRCSBR);17////^S X=$G(GMRCERDT);30////^S X=$G(GMRCPRDG);.1////^S X=$G(GMRCOTXT)" ;wat/66
+ S DR="6////^S X=GMRCPLI;8////^S X=GMRCSTS;9////^S X=GMRCA;10////^S X=GMRCORNP;13////^S X=GMRCTYPE;14////^S X=$G(GMRCSBR);30////^S X=$G(GMRCPRDG);.1////^S X=$G(GMRCOTXT)"
  I $D(GMRCPRCD) S DR=DR_";30.1///^S X=GMRCPRCD"
- S GMRCCP=$P($G(^GMR(123.3,+GMRCPRI,0)),U,4) I GMRCCP D  ;file CP
+ S GMRCCP=$P($G(^GMR(123.3,+GMRCPRI,0)),U,4) I GMRCCP D  ;file CP 
  . S DR=DR_";1.01///^S X=GMRCCP"
  D  ;check to see if an IFC and add .07 ROUTING FACILITY
  . I $G(GMRCPRI) D  Q  ;see if procedure is mapped
@@ -66,11 +55,10 @@ DC(GMRCO,ACTRL) ;Discontinue request from OERR
  ;Denied request also gets this action. Deny request updates status to dc
  ;GMRCO=IEN of record in file ^GMR(123, i.e., ^GMR(123,DA,
  ;ACTRL=GMRCCTRL=control code defining action -
- ;         DC control code = action DC for discontinued
+ ;         DC control code = action DC for discontinued 
  ;         CA control code = action DY for denied
  ;Update the last action taken, order status, and processing activity
  Q:'$L(GMRCO)
- Q:'$D(^GMR(123,+GMRCO,0))
  N GMRCACT,GMRCSVC,GMRCDFN,GMRCFL,GMRCADUZ,GMRCRQR,DA
  S GMRCACT=$O(^GMR(123.1,"D",ACTRL,0))
  S GMRCSTS=$P(^GMR(123.1,GMRCACT,0),"^",2)

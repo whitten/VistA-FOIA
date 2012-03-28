@@ -1,5 +1,5 @@
 XPDIJ ;SFISC/RSD - Install Job ;08/14/2008
- ;;8.0;KERNEL;**2,21,28,41,44,68,81,95,108,124,229,275,506**;Jul 10, 1995;Build 11
+ ;;8.0;KERNEL;**2,21,28,41,44,68,81,95,108,124,229,275,506**;Jul 10, 1995;Build 19
  ;Per VHA Directive  2004-038, this routine should not be modified.
 EN ;install all packages
  ;XPDA=ien of first package

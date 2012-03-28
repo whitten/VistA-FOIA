@@ -1,4 +1,5 @@
-LALBG3 ;SLC/RAF - IL BG3 Blood Gas Analyzer interface ;9/2/94 14:33 ;
+LALBG3 ; IHS/DIR/FJE - IL BG3 Blood Gas Analyzer interface 9/2/94 14:33 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
 LA1 S:$D(ZTQUEUED) ZTREQ="@"
  S LANM=$T(+0),TSK=$O(^LAB(62.4,"C",LANM,0)),U="^" Q:TSK<1

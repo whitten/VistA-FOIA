@@ -1,4 +1,5 @@
-XQSRV1 ;SEA/MJM - Server option utilities ;10/15/96  13:14
+XQSRV1 ;SEA/MJM - Server option utilities ;10/15/96  13:14 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**50**;Jul 10, 1995
  ;
  ;File the message in POSTMASTER'S mailbox of option's name

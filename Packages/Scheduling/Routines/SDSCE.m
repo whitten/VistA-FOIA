@@ -1,7 +1,10 @@
-SDSCE ;ALB/GRR - TO CHANGE EXISTING PATTERN AVAILABILITY FROM 15 TO 30 OR 60 MIN SLOTS ; 30 NOV 84
+SDSCE ;ALB/GRR - TO CHANGE EXISTING PATTERN AVAILABILITY FROM 15 TO 30 OR 60 MIN SLOTS ; [ 09/13/2001  2:51 PM ]
  ;;5.3;Scheduling;**79**;Aug 13, 1993
+ ;IHS/ANMC/LJF  8/18/2000 added DIC("W") to warn if clinic inactivated
+ ;
 RD K SDFSW S SDONE=0 D DT^DICRW S DIC=44,DIC(0)="AEQMZ",DIC("A")="Select CLINIC NAME: ",DIC("S")="I $P(^(0),""^"",3)=""C"",'$G(^(""OOS""))"
  S:'$D(DTIME) DTIME=300 I '$D(DT) D DT^SDUTL
+ S DIC("W")=$$INACTMSG^BSDU   ;IHS/ANMC/LJF 8/18/2000
  D ^DIC K DIC("A"),DIC("S") Q:"^"[X  G:Y<0 RD S U="^",DIE=44,(SDHSC,DA)=+Y,DR="1912;Q;I X'=60,X'=30 W *7,!,""This function will only change appt length to 30 or 60 minutes"" S Y="""";1917;S SDZZ=1"
  K SDRE,SDRE1,SDIN,SDIN1 I $D(^SC(DA,"I")) S SDIN=+^("I"),Y=SDIN D DTS^SDUTL S SDIN1=Y,SDRE=+$P(^("I"),"^",2),Y=SDRE D DTS^SDUTL S SDRE1=Y
  I $S('$D(SDIN):0,'SDIN:0,SDIN>DT:0,SDRE'>DT&(SDRE):0,1:1) W !,*7,"Clinic is inactivated ",$S(SDRE:"from ",1:"as of "),SDIN1,$S(SDRE:" to "_SDRE1,1:"")," -- you must reactivate to perform this function" Q

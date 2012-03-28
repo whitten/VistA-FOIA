@@ -1,4 +1,6 @@
-LRNIGHT1 ;SLC/DCM - NIGHTLY LAB CLEANUP (^LAM,^LRO(67.9) ;2/6/91  08:47 ;
+LRNIGHT1 ; IHS/DIR/FJE - NIGHTLY LAB CLEANUP (^LAM,^LRO(67.9) 2/6/91 08:47 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  Q:'$L($P(^LAB(69.9,1,1),"^",9))  S X="T-"_($P(^(1),"^",9)+1),%DT="" D ^%DT S LDT=Y
  S I=0 F  S I=$O(^LAM(I)) Q:I<1  S J=0 F  S J=$O(^LAM(I,1,J)) Q:J<1  S LRCT=$S($D(^(J,1,0)):$P(^(0),"^",4),1:0) D LAM S $P(^LAM(I,1,J,1,0),"^",4)=$S(LRCT>0:LRCT,1:0)

@@ -1,5 +1,5 @@
-DGENEGT3 ;ALB/KCL/RGL - PROCESS INCOMING MFN HL7 MSGS; 04-MAY-1999 ; 7/23/03 4:49pm
- ;;5.3;Registration;**232,306,417,451**;Aug 13, 1993
+DGENEGT3 ;ALB/KCL - PROCESS INCOMING MFN HL7 MSGS; 04-MAY-1999 ; 10/24/01 9:12am
+ ;;5.3;Registration;**232,306,417**;Aug 13, 1993
  ;
  ;
 MFI ; Description: This procedure parses the MFI segment type.
@@ -76,23 +76,17 @@ UPLDEGT(DGEGT,ERROR) ;
  ;
  ; Outputs: None
  ;
- ; Store EGT from HEC and quit.
+ N CURIEN
  ;
- I $$STORE^DGENEGT(.DGEGT,,1)
+ ; is there a current EGT setting?
+ S CURIEN=$$FINDCUR^DGENEGT()
  ;
- ;  Old code removed per DG*5.3*451
- ;;
- ;N CURIEN
- ;;
- ;; is there a current EGT setting?
- ;S CURIEN=$$FINDCUR^DGENEGT()
- ;;
- ;; if there is no current EGT, store EGT from HEC and quit
- ;I 'CURIEN D  Q
- ;.I $$STORE^DGENEGT(.DGEGT,,1)
- ;;
- ;; if there is a current EGT, delete current, and store EGT from HEC
- ;I $$DELETE^DGENEGT(CURIEN) D
- ;.I $$STORE^DGENEGT(.DGEGT,,1)
+ ; if there is no current EGT, store EGT from HEC and quit
+ I 'CURIEN D  Q
+ .I $$STORE^DGENEGT(.DGEGT,,1)
+ ;
+ ; if there is a current EGT, delete current, and store EGT from HEC
+ I $$DELETE^DGENEGT(CURIEN) D
+ .I $$STORE^DGENEGT(.DGEGT,,1)
  ;
  Q

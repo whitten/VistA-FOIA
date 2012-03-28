@@ -1,8 +1,5 @@
-RAPCE ;HIRMFO/GJC-Interface with PCE APIs for wrkload, visits ;9/7/04 12:36pm
- ;;5.0;Radiology/Nuclear Medicine;**10,17,21,26,41,57,56**;Mar 16, 1998;Build 3
- ;Supported IA #2053 FILE^DIE
- ;Supported IA #4663 SWSTAT^IBBAPI
- ;Controlled IA #1889 DATA2PCE^PXAPI
+RAPCE ;HIRMFO/GJC-Interface with PCE APIs for wrkload, visits ;9/29/97  15:26
+ ;;5.0;Radiology/Nuclear Medicine;**10,17,21,26**;Mar 16, 1998
  Q
 COMPLETE(RADFN,RADTI,RACNI) ; When an exam status changes to 'complete'
  ; Input: RADFN-> Patient DFN, RADTI-> Exam Timestamp, RACNI-> Case IEN
@@ -22,8 +19,6 @@ COMPLETE(RADFN,RADTI,RACNI) ; When an exam status changes to 'complete'
  S RA7002=$G(^RADPT(RADFN,"DT",RADTI,0))
  S RAXAMSET=+$P(RA7002,"^",5) ; is this part of an exam set? 1=YES
 EN2 S RA791=$G(^RA(79.1,+$P(RA7002,"^",4),0))
- ; Initialize variables required for PFSS 1B project and check the switch status.
- N RAPFSW,RACCOUNT S RAPFSW=$$SWSTAT^IBBAPI ; Requirement 12
  Q:+$P(RA791,"^",21)=2  ; no credit, quit
  S RAEARRY="RAERROR" N @RAEARRY
 LON ; lock at P level
@@ -36,7 +31,6 @@ LON ; lock at P level
  . S RA7003=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0)) I $P($G(^RA(72,+$P(RA7003,U,3),0)),U,3)'=9 Q  ;check code instead of name
  . S RACNT=RACNT+1 D SETUP I $G(RABAD) Q
  . D:'$D(^TMP("RAPXAPI",$J,"ENCOUNTER")) ENC(RACNT)
- . D DX^RABWPCE($P(RA7003,U,11)) ; Ordering ICD Dx and related data.
  . D PROC(RACNT)
  . Q
  S RACNI=RACNISAV ;restore value so unlock would work 012601
@@ -51,35 +45,25 @@ NONSET ; non-exam sets
  I $G(RADUPRC) D RESEND^RAPCE1 G KOUT ; branch off to re-send rec(s) this dt/tm
  S RACNT=RACNT+1
  D SETUP
- D:'$G(RABAD) ENC(RACNT) D:'$G(RABAD) DX^RABWPCE($P(RA7003,U,11)) D:'$G(RABAD) PROC(RACNT) D:'$G(RABAD) PCE(RADFN,RADTI,RACNI)
+ D:'$G(RABAD) ENC(RACNT) D:'$G(RABAD) PROC(RACNT) D:'$G(RABAD) PCE(RADFN,RADTI,RACNI)
  I $G(RABAD) W:'$D(ZTQUEUED)&('$D(RARECMPL)) !,"Unable to credit exam" D FAILBUL^RAPCE2(RADFN,RADTI,RACNI,$S($G(RADUZ):RADUZ,1:DUZ)) ;Missing data, send failure bulletin for single case, don't attempt to pass data to PCE
  ;
 KOUT K ^TMP("RAPXAPI",$J)
  L -^RADPT(RADFN,"DT",RADTI,"P",RACNI)
  Q
 ENC(X) ; Set up the '"RAPXAPI",$J,"ENCOUNTER"' nodes
- N RAIMGLOC,RA17,RARPTLOC
- S RA17=+$P(RA7003,U,17)
- S RARPTLOC=$P($G(^RARPT(RA17,"BA")),U,1)
- S RAIMGLOC=$P($G(^RA(79.1,+RARPTLOC,0)),"^")
- S:'RAIMGLOC RAIMGLOC=$P($G(^RA(79.1,+$P(RA7002,"^",4),0)),"^")
+ N RAIMGLOC S RAIMGLOC=$P($G(^RA(79.1,+$P(RA7002,"^",4),0)),"^")
  I RAIMGLOC="" S RABAD=1 Q  ; needs imaging location
  S ^TMP("RAPXAPI",$J,"ENCOUNTER",X,"PATIENT")=RADFN
  S ^TMP("RAPXAPI",$J,"ENCOUNTER",X,"ENC D/T")=RADTE
- S ^TMP("RAPXAPI",$J,"ENCOUNTER",X,"HOS LOC")=RAIMGLOC
+ S ^TMP("RAPXAPI",$J,"ENCOUNTER",X,"HOS LOC")=RAIMGLOC ;Img Loc
  S ^TMP("RAPXAPI",$J,"ENCOUNTER",X,"SERVICE CATEGORY")="X"
  S ^TMP("RAPXAPI",$J,"ENCOUNTER",X,"ENCOUNTER TYPE")="A"
  Q
 PCE(RADFN,RADTI,RACNI) ; Pass on the information to the PCE software
- N RASULT
- ; If the PFSS switch is not active then do not pass RACCOUNT parameter to DATA2PCE call.
- I 'RAPFSW S RASULT=$$DATA2PCE^PXAPI("^TMP(""RAPXAPI"",$J)",RAPKG,"RAD/NUC MED",.RAVSIT,"","","","",.@RAEARRY)
- ; If the PFSS switch is active then use RACCOUNT parameter in DATA2PCE call.
- I RAPFSW D
- . ; PFSS Requirement 6, 11
- . S RASULT=$$DATA2PCE^PXAPI("^TMP(""RAPXAPI"",$J)",RAPKG,"RAD/NUC MED",.RAVSIT,"","","","",.@RAEARRY,.RACCOUNT)
- . Q
- I (RASULT=1)!(RASULT=-1) D  ;Visit file pointer, set 'Credit recorded' to yes. 
+ Q  ;IHS/CIA/PLS  5/2/2003 use IHS PCC calls instead
+ N RASULT S RASULT=$$DATA2PCE^PXAPI("^TMP(""RAPXAPI"",$J)",RAPKG,"RAD/NUC MED",.RAVSIT,"","","","",.@RAEARRY)
+ I RASULT=1 D  ;file Visit file pointer, set 'Credit recorded' to yes. 
  . W:'$D(ZTQUEUED)&('$D(RARECMPL)) !?5,"Visit credited.",!
  . D:'RAXAMSET VISIT(RADFN,RADTI,RACNI,RAVSIT)
  . D:'RAXAMSET RECDCS(RADFN,RADTI,RACNI) ; only one exam, not a set
@@ -118,12 +102,8 @@ PROC(X) ; Set up the other '"RAPXAPI",$J,"PROCEDURE"' nodes for this case
  S ^TMP("RAPXAPI",$J,"PROCEDURE",X,"PROCEDURE")=$P(RA71,"^",9)
  S ^TMP("RAPXAPI",$J,"PROCEDURE",X,"NARRATIVE")=$P(RA71,"^")
  S ^TMP("RAPXAPI",$J,"PROCEDURE",X,"ENC PROVIDER")=$S(RA7003(15)]"":RA7003(15),1:RA7003(12)) ; Pri. Int Staff if exists, else Pri Int Resident
- S ^TMP("RAPXAPI",$J,"PROCEDURE",X,"ORD PROVIDER")=RA7003(14) ; Requesting Physician.
  S ^TMP("RAPXAPI",$J,"PROCEDURE",X,"EVENT D/T")=RADTE
- ; if the PFSS switch is active Get both Dept. Code and Account Reference Number (RACCOUNT)
- I RAPFSW D GETDEPT^RABWIBB ; Requirement 9
  D CPTMOD(X)
- D PROCDX^RABWPCE(X) ; Add Ordering ICD Dx to each Procedure.
  Q
 RECDCS(RADFN,RADTI,RACNI) ; Set 'Clinic Stop Recorded' to yes
  ; (70.03, fld 23)
@@ -134,10 +114,8 @@ SETUP ; Setup examination data node information
  ; If no provider, or inactive CPT, fail
  S RA7003=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0))
  S RA7003(12)=$P(RA7003,"^",12) ; Pri. Inter. Resident
- S RA7003(14)=$P(RA7003,"^",14) ; Requesting Physician.
  S RA7003(15)=$P(RA7003,"^",15) ; Pri. Inter. Staff
- ; OK to send if missing resident/staff ONLY if report Elec. Filed
- I (RA7003(12)="")&(RA7003(15)=""),$P($G(^RARPT(+$P(RA7003,U,17),0)),U,5)'="EF" S RABAD=1 Q
+ I (RA7003(12)="")&(RA7003(15)="") S RABAD=1 Q
  S RA71=$G(^RAMIS(71,+$P(RA7003,"^",2),0))
  ; store CPT Modifiers' .01 value
  K RACPTM S RA=0 F  S RA=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"CMOD",RA)) Q:'RA  S RA1=$$BASICMOD^RACPTMSC($P($G(^(RA,0)),"^"),+$P(RA7002,"^")) S:+RA1>0 RACPTM(RA)=$P(RA1,"^",2) ;only valid cpt mods

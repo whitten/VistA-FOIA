@@ -1,11 +1,13 @@
-PSORENW4 ;BIR/SAB - rx speed renew ; 11/13/08 8:50am
- ;;7.0;OUTPATIENT PHARMACY;**11,23,27,32,37,64,46,75,71,100,130,117,152,148,264,225,301**;DEC 1997;Build 2
+PSORENW4 ;BIR/SAB - rx speed renew ;09-Dec-2010 09:15;SM
+ ;;7.0;OUTPATIENT PHARMACY;**11,23,27,32,37,64,46,75,71,100,130,117,152,1004,1005,1009**;DEC 1997
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External reference to ^PS(50.7 supported by DBIA 2223
  ;External references L, UL, PSOL, and PSOUL^PSSLOCK supported by DBIA 2789
  ;External reference to LK^ORX2 and ULK^ORX2 supported by DBIA 867
-SEL K PSODRUG ;PSO*7*301
- I $P(PSOPAR,"^",4)=0 S VALMSG="Renewing is NOT Allowed. Check Site Parameters!",VALMBCK="" Q
+ ;
+ ; Modified - IHS/CIA/PLS - 12/26/05 - Line PROCESS+18
+ ;            IHS/MSC/PLS - 12/09/10 - Added three lines at PROCESS+35
+SEL I $P(PSOPAR,"^",4)=0 S VALMSG="Renewing is NOT Allowed. Check Site Parameters!",VALMBCK="" Q
  N VALMCNT I '$G(PSOCNT) S VALMSG="This patient has no Prescriptions!",VALMBCK="" Q
  S PSOPLCK=$$L^PSSLOCK(PSODFN,0) I '$G(PSOPLCK) D LOCK^PSOORCPY S VALMSG=$S($P($G(PSOPLCK),"^",2)'="":$P($G(PSOPLCK),"^",2)_" is working on this patient.",1:"Another person is entering orders for this patient.") K PSOPLCK S VALMBCK="" Q
  K PSOPLCK S X=PSODFN_";DPT(" D LK^ORX2 I 'Y S VALMSG="Another person is entering orders for this patient.",VALMBCK="" D UL^PSSLOCK(PSODFN) Q
@@ -19,9 +21,7 @@ SEL K PSODRUG ;PSO*7*301
 SELQ K PSORNSPD,RTE,DRET,PRC,PHI S X=PSODFN_";DPT(" D ULK^ORX2,UL^PSSLOCK(PSODFN),CLEAN^PSOVER1
  Q
  ;
-PROCESS ; Process one order at a time
- I $$LMREJ^PSOREJU1($P(PSOLST(ORN),"^",2)) W $C(7),!!,"Rx "_$$GET1^DIQ(52,$P(PSOLST(ORN),"^",2),.01)_" has OPEN/UNRESOLVED 3rd Party Payer Rejects!" K DIR,PSOMSG D PAUSE^VALM1 Q
- D PSOL^PSSLOCK($P(PSOLST(ORN),"^",2)) I '$G(PSOMSG) W $C(7),!!,$S($P($G(PSOMSG),"^",2)'="":$P($G(PSOMSG),"^",2),1:"Another person is editing Rx "_$P(^PSRX($P(PSOLST(ORN),"^",2),0),"^")),! K DIR,PSOMSG D PAUSE^VALM1 Q
+PROCESS D PSOL^PSSLOCK($P(PSOLST(ORN),"^",2)) I '$G(PSOMSG) W $C(7),!!,$S($P($G(PSOMSG),"^",2)'="":$P($G(PSOMSG),"^",2),1:"Another person is editing Rx "_$P(^PSRX($P(PSOLST(ORN),"^",2),0),"^")),! K DIR,PSOMSG D PAUSE^VALM1 Q
  K RET,DRET,PRC,PHI S PSORENW("OIRXN")=$P(PSOLST(ORN),"^",2),PSOFROM="NEW"
  S PSORENW("RX0")=^PSRX(PSORENW("OIRXN"),0),PSORENW("RX2")=^(2),PSORENW("RX3")=^(3),PSORENW("STA")=^("STA"),PSORENW("TN")=$G(^("TN")),SIGOK=$P($G(^PSRX(PSORENW("OIRXN"),"SIG")),"^",2)
  I SIGOK F I=0:0 S I=$O(^PSRX(PSORENW("OIRXN"),"SIG1",I)) Q:'I  S SIG(I)=^PSRX(PSORENW("OIRXN"),"SIG1",I,0)
@@ -39,6 +39,12 @@ PROCESS ; Process one order at a time
  S PSORENW("QTY")=$P(PSORENW("RX0"),"^",7)
  ;S PSORENW("DAYS SUPPLY")=$P(PSORENW("RX0"),"^",8)
  ;S PSORENW("# OF REFILLS")=$P(PSORENW("RX0"),"^",9)
+ ; IHS/CIA/PLS - 12/29/05 - Added IHS fields to array for RENEW prescription
+ N TALK
+ I $D(^PSRX(PSORENW("OIRXN"),9999999)) D
+ .S PSORENW("AWP")=$$AWP^APSQDAWP($P($G(PSORENW("RX2")),U,7),$G(PSORENW("DRUG IEN")),.TALK)
+ .S PSORENW("BST")=$P($G(^PSRX(PSORENW("OIRXN"),9999999)),U,7)
+ .S PSORENW("CM")=$P($G(^PSRX(PSORENW("OIRXN"),9999999)),U,2)
  S PSORENW("INS")=$S($G(PSORENW("ENT"))]"":PSORENW("ENT"),1:$G(^PSRX(PSORENW("OIRXN"),"INS")))
  S:$G(PSORENW("ENT"))']"" PSORENW("ENT")=0
  F I=0:0 S I=$O(^PSRX(PSORENW("OIRXN"),6,I)) Q:'I  S DOSE=^PSRX(PSORENW("OIRXN"),6,I,0) D
@@ -48,18 +54,18 @@ PROCESS ; Process one order at a time
  .S PSORENW("NOUN",PSORENW("ENT"))=$P(DOSE,"^",4),PSORENW("VERB",PSORENW("ENT"))=$P(DOSE,"^",9)
  .I $G(^PSRX(PSORENW("OIRXN"),6,I,1))]"" S PSORENW("ODOSE",PSORENW("ENT"))=^PSRX(PSORENW("OIRXN"),6,I,1)
  .K DOSE
- I $P($G(^PSDRUG(PSORENW("DRUG IEN"),"CLOZ1")),"^")="PSOCLO1" N PSON S PSON=0 D  I PSON K PSON D POZ,KLIB^PSORENW1 D PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2)) Q
- . I '$L($P(^VA(200,PSORENW("PROVIDER"),"PS"),"^",2)),'$L($P(^VA(200,PSORENW("PROVIDER"),"PS"),"^",3)) D  Q
- . . S PSON=1 W $C(7),!!,"Only providers with DEA# or a VA# can write prescriptions for clozapine.",!
- . I '$D(^XUSEC("YSCL AUTHORIZED",PSORENW("PROVIDER"))) D 
- . . S PSON=1 W $C(7),!!,"Provider must hold YSCL AUTHORIZED key to write prescriptions for clozapine.",!
+ I $P($G(^PSDRUG(PSORENW("DRUG IEN"),"CLOZ1")),"^")="PSOCLO1",$P(^VA(200,PSORENW("PROVIDER"),"PS"),"^",2)'?2U7N D  D KLIB^PSORENW1 D PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2)) Q
+ .W $C(7),!!,"Only providers with DEA numbers can write prescriptions for clozaril.",!
+ ;IHS/MSC/JDS - 12/09/10 - Added next two lines for MDF
+ I '$$SCREEN^APSPMULT(+PSORENW("DRUG IEN"),,1) D  D KLIB^PSORENW1 D PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2)) Q
+ .W $C(7),!!,"Sorry, this drug is not currently available in this facility",!
  I $G(PSORNW("MAIL/WINDOW"))]"" S PSORENW("MAIL/WINDOW")=PSORNW("MAIL/WINDOW")
  I $O(^PSRX(PSORENW("OIRXN"),"PI",0)) D  K T
  .S PHI=^PSRX(PSORENW("OIRXN"),"PI",0),T=0
  .F  S T=$O(^PSRX(PSORENW("OIRXN"),"PI",T)) Q:'T  S PHI(T)=^PSRX(PSORENW("OIRXN"),"PI",T,0)
- ;I $O(^PSRX(PSORENW("OIRXN"),"PRC",0)) D  K T
- ;.S PRC=^PSRX(PSORENW("OIRXN"),"PRC",0),T=0
- ;.F  S T=$O(^PSRX(PSORENW("OIRXN"),"PRC",T)) Q:'T  S PRC(T)=^PSRX(PSORENW("OIRXN"),"PRC",T,0)
+ I $O(^PSRX(PSORENW("OIRXN"),"PRC",0)) D  K T
+ .S PRC=^PSRX(PSORENW("OIRXN"),"PRC",0),T=0
+ .F  S T=$O(^PSRX(PSORENW("OIRXN"),"PRC",T)) Q:'T  S PRC(T)=^PSRX(PSORENW("OIRXN"),"PRC",T,0)
  W !!,"Now Renewing Rx # "_PSORENW("ORX #")_"   Drug: "_$P($G(^PSDRUG(+$G(PSORENW("DRUG IEN")),0)),"^"),!
  I '$P($G(^PSDRUG($P(PSORENW("RX0"),"^",6),2)),"^") D  G:$G(PSORENW("DFLG")) PROCESSX
  .I $P($G(^PSRX(PSORENW("OIRXN"),"OR1")),"^") S PSODRUG("OI")=$P(^PSRX(PSORENW("OIRXN"),"OR1"),"^"),PSODRUG("OIN")=$P(^PS(50.7,+^("OR1"),0),"^") Q
@@ -85,7 +91,7 @@ DSPL K PSOEDT,PSOLM S PSDY=PSORENW("DAYS SUPPLY"),PSRF=PSORENW("# OF REFILLS")
 PROCESSX I PSORENW("DFLG") D  W:'$G(POERR) !,$C(7),"Rx NOT RENEWED. RENEWED RX DELETED",! S POERR("DFLG")=1 D CLEAN^PSOVER1
  .K PHI,PRC,PSODRUG,SIG,PSORXED,SIGOK
  .K PSORENW("DOSE"),PSORENW("DURATION"),PSORENW("DRUG IEN"),PSORENW("ENT"),PSORENW("INS"),PSORENW("NOUN"),PSORENW("ROUTE"),PSORENW("SCHEDULE"),PSORENW("SIG"),PSORENW("VERB"),PSORENW("UNITS")
- .D POZ
+ .K DIR,DIRUT,DTOUT S DIR(0)="E",DIR("A")="Press Return to Continue" D ^DIR K DIR,DIRUT,DTOUT
  K PSORDLOK I PSORENW("DFLG") S PSORDLOK=1
  D:$G(PSORENW("OLD FILL DATE"))]"" SUSDATEK^PSOUTIL(.PSORENW)
  K BBRN,BBRN1,PSODRUG,PSORX("PROVIDER NAME"),PSORX("CLINIC")
@@ -114,8 +120,4 @@ ASK ;upfront questions
  S PSOQTY=Y K DIR,DIRUT
  D CLINIC^PSODIR2(.PSORENW) Q:PSORENW("DFLG")
  D PROV^PSODIR(.PSORENW) S:PSORENW("DFLG") PSORENW("DFLG")=0
- Q
- ;
-POZ ;
- K DIR S DIR(0)="E",DIR("A")="Press Return to Continue" D ^DIR K DIR,DIRUT,DTOUT
  Q

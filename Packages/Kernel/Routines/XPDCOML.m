@@ -1,5 +1,5 @@
 XPDCOML ;SFISC/GFT -COMPARE TWO LISTS, LEFT/RIGHT ;08/14/2008
- ;;8.0;KERNEL;**506**;Jul 10, 1995;Build 11
+ ;;8.0;KERNEL;**506**;Jul 10, 1995;Build 19
  ; Per VHA Directive 2004-038, this routine should not be modified.
  ;
 EN(LEFT,RIGHT,HEADER) ;

@@ -1,5 +1,5 @@
 PXKMAIN2 ;ISL/JVS - Special Routine ;5/21/96  13:20
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**69,186**;Aug 12, 1996;Build 3
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**69**;Aug 12, 1996
  ;  VARIABLES
  ; See variables lists under each line tag
  ;
@@ -77,7 +77,7 @@ PRVTYPE ;---POPULATE PROVIDER TYPE
  .I '$G(PXKPRV) Q
  .S PXKDT=+$P($G(^AUPNVSIT($G(^TMP("PXK",$J,"VST",1,"IEN")),0)),"^",1)
  .;--** ADD FUNCTION
- .S TYPE=+$$GET^XUA4A72($G(PXKPRV),+$P($G(PXKDT),".")) Q:TYPE<1
+ .S TYPE=+$$GET^XUA4A72($G(PXKPRV),$G(PXKDT)) Q:TYPE<1
  .I $P(NOD0,"^",6)']"" S $P(NOD0,"^",6)=TYPE
  .S ^TMP("PXK",$J,"PRV",PXKPSUB,0,"AFTER")=NOD0
  Q

@@ -1,27 +1,23 @@
 IBDF18A ;ALB/CJM/AAS - ENCOUNTER FORM - utilities for PCE ;12-AUG-94
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**34,38,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**34,38**;APR 24, 1997
  ;                                       
-GLL(CLINIC,INTRFACE,ARY,FILTER,PAR5,PAR6,ENCDATE) ; -- get lots of lists in one call
+GLL(CLINIC,INTRFACE,ARY,FILTER) ; -- get lots of lists in one call
  ; -- input see GETLST but pass interface by reference expects
  ;    intrface(n) = name of select list in package interface file
- ;
- ; -- PAR5 => not currently used
- ; -- PAR6 => not currently used
  ;
  ; -- output see GETLST
  N X,COUNT
  S COUNT=0
- S X="" F  S X=$O(INTRFACE(X)) Q:X=""  D GETLST(CLINIC,INTRFACE(X),ARY,$G(FILTER),.COUNT,$G(PAR6),ENCDATE)
+ S X="" F  S X=$O(INTRFACE(X)) Q:X=""  D GETLST(CLINIC,INTRFACE(X),ARY,$G(FILTER),.COUNT)
  Q
  ;
-GETLST(CLINIC,INTRFACE,ARY,FILTER,COUNT,MODIFIER,ENCDATE) ; -- returns any specified selection list for a clinic
+GETLST(CLINIC,INTRFACE,ARY,FILTER,COUNT,MODIFIER) ; -- returns any specified selection list for a clinic
  ; -- input  CLINIC = pointer to hospital location file for clinic
  ;         INTRFACE = name of selection list in package interface file
  ;              ARY = name of array to return list in
  ;           FILTER = predefined filters (optional, default = 1)
  ;                                       1 = must be selection list
  ;                                       2 = only visit cpts on list
- ;          ENCDATE = encounter date
  ;         MODIFIER = if modifiers are to be passed, 1=yes send modifiers
  ;                                                   
  ; -- output  The format of the returned array is as follows
@@ -40,7 +36,7 @@ GETLST(CLINIC,INTRFACE,ARY,FILTER,COUNT,MODIFIER,ENCDATE) ; -- returns any speci
  ;         @ARY@(2,"MODIFIER",k+1)=2 character CPT Modifier value
  ;        
  ;         @ARY@(k) = ^next group header
- ;         @ARY@(k+1) = problem ien or cpt or icd code^user define text
+ ;       @ARY@(k+1) = problem ien or cpt or icd code^user define text
  ;
  ; -- output modification for patch 34:
  ;         Narrative to Send to PCE (instead of printed text)
@@ -58,19 +54,8 @@ GETLST(CLINIC,INTRFACE,ARY,FILTER,COUNT,MODIFIER,ENCDATE) ; -- returns any speci
  ;         then convert it to look like a diagnosis list
  ;
  N I,J,X,Y,INUM,IBQUIT,FORM,SETUP,LIST,BLOCK,OLDARY,IBDTMP,ROW,COL,BLK
- N LIST1,PACKAGE
  K ^TMP("IBDUP",$J)
  S (IBQUIT,LIST)=0
- S PACKAGE=$E(INTRFACE,1,30)
- ;
- ;Setup array containing NAME of the Package Interface file
- ;This is the second paramenter passed by PCE, TIU, & CPRS
- S LIST1("DG SELECT CPT PROCEDURE CODES")=""
- S LIST1("DG SELECT ICD-9 DIAGNOSIS CODE")=""
- S LIST1("DG SELECT VISIT TYPE CPT PROCE")=""
- S LIST1("GMP INPUT CLINIC COMMON PROBLE")=""
- S LIST1("GMP PATIENT ACTIVE PROBLEMS")=""
- ;
  S COUNT=$G(COUNT,0)
  I $G(FILTER)<1 S FILTER=1 ;default value=1
  I FILTER>1 S OLDARY=ARY,ARY="IBDTMP"
@@ -106,8 +91,6 @@ GETLST(CLINIC,INTRFACE,ARY,FILTER,COUNT,MODIFIER,ENCDATE) ; -- returns any speci
  ; -- always check for both diagnosis and clinic common problems when
  ;    looking for diagnosis, return in diagnosis format
  I $E(INTRFACE,1,30)=$E("DG SELECT ICD-9 DIAGNOSIS CODES",1,30) D CCP(COUNT)
- ;This routine checks list that have CPT & ICD codes for CSV.
- D CHKLST^IBDF18A2:$D(LIST1(PACKAGE))
  ;
  K ^TMP("IBDUP",$J)
  ;
@@ -185,31 +168,27 @@ TOV2 ; -- get the type of visit codes from cpt lists using filter
  Q
  ;
  ; -- here are some sample tests for different lists
-TEST1 K VAR D GETLST(573,"DG SELECT ICD-9 DIAGNOSIS CODES","VAR",1,"","",DT)
+TEST1 K VAR D GETLST(573,"DG SELECT ICD-9 DIAGNOSIS CODES","VAR",1)
  X "ZW VAR"
  Q
  ;
-TEST2 K VAR D GETLST(301,"DG SELECT ICD-9 DIAGNOSIS CODES","VAR",1,"","",DT)
+TEST2 K VAR D GETLST(301,"DG SELECT ICD-9 DIAGNOSIS CODES","VAR",1)
  X "ZW VAR"
  Q
  ;
-TEST4 K VAR D GETLST(300,"DG SELECT VISIT TYPE CPT PROCEDURES","VAR",1,"",1,DT)
+TEST4 K VAR D GETLST(300,"DG SELECT VISIT TYPE CPT PROCEDURES","VAR",1)
  X "ZW VAR"
  Q
  ;
-TEST5 K VAR D GETLST(300,"PX SELECT IMMUNIZATIONS","VAR",1,DT)
+TEST5 K VAR D GETLST(300,"PX SELECT IMMUNIZATIONS","VAR",1)
  X "ZW VAR"
  Q
  ;
-TEST5A K VAR D GETLST(300,"PX SELECT SKIN TESTS","VAR",1,DT)
+TEST6 K VAR D GETLST(573,"DG SELECT CPT PROCEDURE CODES","VAR",1)
  X "ZW VAR"
  Q
  ;
-TEST6 K VAR D GETLST(573,"DG SELECT CPT PROCEDURE CODES","VAR",1,"",1,DT)
- X "ZW VAR"
- Q
- ;
-TEST7 K VAR D GETLST(573,"DG SELECT VISIT TYPE CPT PROCEDURES","VAR",1,"",1,DT)
+TEST7 K VAR D GETLST(573,"DG SELECT VISIT TYPE CPT PROCEDURES","VAR",1)
  X "ZW VAR"
  Q
  ;

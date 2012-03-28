@@ -1,7 +1,7 @@
-IBXSC43 ; ;08/13/09
+IBXSC43 ; ;11/29/04
  D DE G BEGIN
-DE S DIE="^DGCR(399,D0,""CC"",",DIC=DIE,DP=399.04,DL=2,DIEL=1,DU="" K DG,DE,DB Q:$O(^DGCR(399,D0,"CC",DA,""))=""
- I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,1) S:%]"" DE(1)=%
+DE S DIE="^DGCR(399,D0,""CV"",",DIC=DIE,DP=399.047,DL=2,DIEL=1,DU="" K DG,DE,DB Q:$O(^DGCR(399,D0,"CV",DA,""))=""
+ I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,1) S:%]"" DE(1)=% S %=$P(%Z,U,2) S:%]"" DE(2)=%
  K %Z Q
  ;
 W W !?DL+DL-2,DLB_": "
@@ -49,10 +49,24 @@ SAVEVALS S @DIEZTMP@("V",DP,DIIENS,DIFLD,"O")=$G(DE(DQ)) S:$D(^("F"))[0 ^("F")=$
 NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
 KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="IBXSC43",DQ=1+D G B
-1 S DW="0;1",DV="M*P399.1'",DU="",DLB="CONDITION CODE",DIFLD=.01
+1 S DW="0;1",DV="M*P399.1'",DU="",DLB="VALUE CODE",DIFLD=.01
+ S DE(DW)="C1^IBXSC43"
  S DU="DGCR(399.1,"
  G RE:'D S DQ=2 G 2
-X1 S DIC("S")="I +$P($G(^DGCR(399.1,+Y,0)),U,15)" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
+C1 G C1S:$D(DE(1))[0 K DB
+ S X=DE(1),DIC=DIE
+ K ^DGCR(399,DA(1),"CV","B",$E(X,1,30),DA)
+C1S S X="" G:DG(DQ)=X C1F1 K DB
+ S X=DG(DQ),DIC=DIE
+ S ^DGCR(399,DA(1),"CV","B",$E(X,1,30),DA)=""
+C1F1 Q
+X1 S DIC("S")="I +$P($G(^DGCR(399.1,+Y,0)),U,11)" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
  Q
  ;
-2 G 1^DIE17
+2 D:$D(DG)>9 F^DIE17,DE S DQ=2,DW="0;2",DV="F",DU="",DLB="VALUE",DIFLD=.02
+ G RE
+X2 K:$L(X)>9!($L(X)<1) X
+ I $D(X),X'?.ANP K X
+ Q
+ ;
+3 G 1^DIE17

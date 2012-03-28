@@ -1,4 +1,5 @@
-DIC0 ;SFISC/TKW-Lookup routine utilities called by DIC ;12/10/99  12:10
+DIC0 ;SFISC/TKW-Lookup routine utilities called by DIC ;12/10/99  12:10 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**4,20**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;

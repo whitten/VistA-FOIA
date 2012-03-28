@@ -1,5 +1,5 @@
-LA7VSTP1 ;DALOI/JMC - CONT. from LA7VSTP ; 12/3/1997
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,46,64**;Sep 27, 1994
+LA7VSTP1 ;VA/DALOI/JMC - CONT. from LA7VSTP ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,46,64,1027**;NOV 01, 1997
  ;
 HOST ; Hosts setup for Remote site
  ; changing remote site to collection site but not in File 771 (1-15 char)

@@ -1,5 +1,5 @@
-PXBGPOV4 ;ISL/JVS - DOUBLE ?? GATHERING OF FORM DIAGNOSES ; 5/7/03 3:31pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,28,121**;Aug 12, 1996
+PXBGPOV4 ;ISL/JVS - DOUBLE ?? GATHERING OF FORM DIAGNOSES ;4/28/97  09:07
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,28**;Aug 12, 1996
  ;
  ;
  ;
@@ -19,7 +19,7 @@ NEW ;
 START1 ;--RECYCLE POINT
  S TITLE="- - F O R M    D I A G N O S I S - -"
  ;
- D GETLST^IBDF18A(CLINIC,$P($T(POV^PXBAICS),";;",2),"PXBPMT",,,,IDATE)
+ D GETLST^IBDF18A(CLINIC,$P($T(POV^PXBAICS),";;",2),"PXBPMT")
 ME ;
  ;--------TEST PURPOSES-------
  ;S PXBPMT(0)=4
@@ -33,10 +33,9 @@ ME ;
  .S (SUB,CNT)=0 F  S SUB=$O(PXBPMT(SUB)) Q:SUB=""  D
  ..Q:$P(PXBPMT(SUB),"^",1)=""
  ..S CODE=$P(PXBPMT(SUB),"^",1)
- ..;S Y=$O(^ICD9("AB",CODE_" ",0)) Q:Y=""
- ..;I $P($G(^ICD9(Y,0)),"^",9)=1 Q
- ..;I $P(^(0),"^",11)'=""&(IDATE>($P(^(0),"^",11))) Q
- ..Q:'$P($$ICDDX^ICDCODE(DATA,IDATE),"^",10)
+ ..S Y=$O(^ICD9("AB",CODE_" ",0)) Q:Y=""
+ ..I $P($G(^ICD9(Y,0)),"^",9)=1 Q
+ ..I $P(^(0),"^",11)'=""&(IDATE>($P(^(0),"^",11))) Q
  ..S NAME=$P(PXBPMT(SUB),"^",2)
  ..S CNT=CNT+1
  ..S ^TMP("PXBTOTAL",$J,"DILIST","ID",CNT,.01)=CODE
@@ -111,7 +110,7 @@ SUB ;--DISPLAY LIST TO THE SCREEN
  .W !,SUB,?6,NAME
  Q
 SETUP ;-SETP VARIABLES
- S FILE=200,FIELD=.01
+ S FILE=200,FIELD=.01 D
  S HEADING="W !,""ITEM"",?6,""NAME"""
  Q
 PRMPT2 ;-----Yes and No prompt if onlyi choice

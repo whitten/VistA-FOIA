@@ -1,4 +1,5 @@
-XQSRV5 ;MJM/SEA - Check out a server option server;11/9/92  9:54 AM ;01/09/2001  13:32
+XQSRV5 ;MJM/SEA - Check out a server option server;11/9/92  9:54 AM ;01/09/2001  13:32 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**155**;Jul 10, 1995
  ;
  ;This routine is called by the option XQSCHK.  It does various

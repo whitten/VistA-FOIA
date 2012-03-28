@@ -1,4 +1,5 @@
-XQ72A ;SEA/LUKE - Jump Utilities (Part II)  ;05/08/98  10:12
+XQ72A ;SEA/LUKE - Jump Utilities (Part II)  ;05/08/98  10:12 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**46**;Jul 10, 1995
  ;
 NOJ ;Pop to target option and return, not a real jump.

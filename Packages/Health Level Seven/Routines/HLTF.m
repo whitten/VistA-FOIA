@@ -1,9 +1,5 @@
-HLTF ;AISC/SAW,JRP-Create/Process Message Text File Entries ;10/01/2008  14:05
- ;;1.6;HEALTH LEVEL SEVEN;**1,19,43,55,109,120,122,142**;Oct 13, 1995;Build 17
- ;Per VHA Directive 2004-038, this routine should not be modified.
- ;
- Q
- ;
+HLTF ;AISC/SAW,JRP-Create/Process Message Text File Entries ;01/23/06  12:56
+ ;;1.6;HEALTH LEVEL SEVEN;**1,19,43,55,109,120**;Oct 13, 1995;Build 12
 FILE ;Create Entries in files 772 and 773 for Version 1.5 Interface Only
  D CREATE(,.HLDA,.HLDT,.HLDT1)
  Q
@@ -74,21 +70,7 @@ MT(HLX) ;Create entry in Message Text file (#772)
  ;add to Message Admin file #773
 MA(X,HLMID) ;X=ien in file 772, HLMID=msg. id (passed by ref.)
  ;return ien in file 773
- ;
- ; patch HL*1.6*122: MPI-client/server start
- F  L +^HL(772,+$G(X)):10 Q:$T  H 1
- ; patch HL*1.6*142: MPI-client/server start
- N COUNT,FLAG
- S FLAG=0
- F COUNT=1:1:15 D  Q:FLAG  H COUNT
- . Q:'($D(^HL(772,X,0))#2)
- . Q:($G(^HL(772,X,0))']"")
- . S FLAG=1
- ; patch HL*1.6*142: MPI-client/server end
  Q:'$G(^HL(772,X,0)) 0
- L -^HL(772,+$G(X))
- ; patch HL*1.6*122: MPI-client/server end
- ;
  N DA,DD,DO,DIC,DIE,DR,HLDA,HLCNT,HLJ,Y
  S DIC="^HLMA(",DIC(0)="L"
  F HLCNT=0:1 D  Q:Y>0  H HLCNT
@@ -125,28 +107,87 @@ CHNGMID(PTRMT,NEWID) ;Change message ID for entry in Message Text file
  ;
 OUT(HLDA,HLMID,HLMTN) ;File Data in Message Text File for Outgoing Message
  ;Version 1.5 Interface Only
+ Q:'$D(HLFS)
  ;
- ; patch HL*1.6*122: HLTF routine splitted, moves sub-routines,
- ; OUT, IN, and ACK to HLTF2 routine.
+ I HLMTN="ACK"!(HLMTN="MCF")!(HLMTN="ORR") Q:'$D(HLMSA)  D ACK(HLMSA,"I") Q
  ;
- D OUT^HLTF2($G(HLDA),$G(HLMID),$G(HLMTN))
+ ;-- if message contained MSA find inbound message
+ I $D(HLMSA),$D(HLNDAP),$P(HLMSA,HLFS,3)]"" D
+ . N HLDAI
+ . S HLDAI=0
+ . F  S HLDAI=$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),$P(HLMSA,HLFS,3),HLDAI)) Q:'HLDAI!($P($G(^HL(772,+HLDAI,0)),U,4)="I")
+ . I 'HLDAI K HLDAI
+ ;
+ D STUFF^HLTF0("O")
+ ;
+ N HLAC S HLAC=$S($D(HLERR):4,'$P(HLNDAP0,"^",10):1,1:2) D STATUS^HLTF0(HLDA,HLAC,$G(HLMSG))
+ D:$D(HLCHAR) STATS^HLTF0(HLDA,HLCHAR,$G(HLEVN))
+ ;
+ ;-- update status if MSA and found inbound message
+ I $D(HLMSA),$D(HLDAI) D
+ .N HLERR,HLMSG I $P(HLMSA,HLFS,4)]"" S HLERR=$P(HLMSA,HLFS,4)
+ .S HLAC=$P(HLMSA,HLFS,2)
+ .I HLAC'="AA" S HLMSG=$S(HLAC="AR":"Application Reject",HLAC="AE":"Application Error",1:"")_" - "_HLERR
+ .S HLAC=$S(HLAC'="AA":4,1:3) D STATUS^HLTF0(HLDAI,HLAC,$G(HLMSG))
  Q
  ;
 IN(HLMTN,HLMID,HLTIME) ;File Data in Message Text File for Incoming Message
  ;Version 1.5 Interface Only
+ Q:'$D(HLFS)
+ I HLMTN="ACK"!(HLMTN="MCF")!(HLMTN="ORR") Q:'$D(HLMSA)  D ACK(HLMSA,"O",$G(HLDA)) Q
  ;
- ; patch HL*1.6*122: HLTF routine splitted, moves sub-routines,
- ; OUT, IN, and ACK to HLTF2 routine.
+ N HLDAI S HLDA=0
+ I $D(HLNDAP),HLMID]"" D
+ .F  S HLDA=+$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),HLMID,HLDA)) Q:'HLDA!($P($G(^HL(772,+HLDA,0)),U,4)="I")
+ .I HLDA D
+ ..S HLDT=+$P($G(^HL(772,HLDA,0)),"^"),HLDT1=$$HLDATE^HLFNC(HLDT)
+ ..K ^HL(772,HLDA,"IN")
+ .I $D(HLMSA),$P(HLMSA,HLFS,3)]"" D
+ ..S HLDAI=0
+ ..F  S HLDAI=$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),$P(HLMSA,HLFS,3),HLDAI)) Q:'HLDAI!($P($G(^HL(772,+HLDAI,0)),U,4)="O")
+ ..I 'HLDAI K HLDAI
  ;
- D IN^HLTF2($G(HLMTN),$G(HLMID),$G(HLTIME))
+ I 'HLDA D CREATE(.HLMID,.HLDA,.HLDT,.HLDT1) K HLZ
+ ;
+ D STUFF^HLTF0("I")
+ N HLAC S HLAC=$S($D(HLERR):4,1:1) D STATUS^HLTF0(HLDA,HLAC,$G(HLMSG))
+ ;
+ D MERGE15^HLTF1("G",HLDA,"HLR",HLTIME)
+ ;
+ I '$D(HLERR),$D(HLMSA),$D(HLDAI) D
+ .N HLAC,HLERR,HLMSG I $P(HLMSA,HLFS,4)]"" S HLERR=$P(HLMSA,HLFS,4)
+ .S HLAC=$P(HLMSA,HLFS,2) I HLAC'="AA" S HLMSG=$S(HLAC="AR":"Application Reject",1:"Application Error")_" - "_HLERR
+ .S HLAC=$S(HLAC'="AA":4,1:3) D STATUS^HLTF0(HLDAI,HLAC,$G(HLMSG))
  Q
  ;
 ACK(HLMSA,HLIO,HLDA) ;Process 'ACK' Message Type - Version 1.5 Interface Only
+ ; To determine the correct message to link the ACK, HLIO is used.
+ ; For an ack from DHCP (original message from remote system) then
+ ; HLIO should be "I" so that the correct inbound message is ack-ed. For
+ ; an inbound ack (original message outbound from DHCP) HLIO should be
+ ; "O". This distinction must be made due to the possible duplicate
+ ; message ids from a bi-direction interface.
  ;
- ; patch HL*1.6*122: HLTF routine splitted, moves sub-routines,
- ; OUT, IN, and ACK to HLTF2 routine.
+ ; Input : MSA - MSA from ACK message.
+ ;         HLIO - Either "I" or "O" : See note above.
+ ;Output : None
  ;
- D ACK^HLTF2($G(HLMSA),$G(HLIO),$G(HLDA))
+ N HLAC,HLMIDI
+ ;-- set up required vars
+ S HLAC=$P(HLMSA,HLFS,2),HLMIDI=$P(HLMSA,HLFS,3)
+ ;-- quit
+ Q:HLMIDI']""!(HLAC']"")!('$D(HLNDAP))
+ ;-- find message to ack
+ I '$G(HLDA) S HLDA=0 D
+ . F  S HLDA=+$O(^HL(772,"AH",+$P($G(HLNDAP0),U,12),HLMIDI,HLDA)) Q:'HLDA!($P($G(^HL(772,+HLDA,0)),U,4)=HLIO)
+ ;-- quit if no message
+ Q:'$D(^HL(772,+HLDA,0))
+ ;-- check for error
+ I $P(HLMSA,HLFS,4)]"" N HLERR S HLERR=$P(HLMSA,HLFS,4)
+ I $D(HLERR),'$D(HLMSG) N HLMSG S HLMSG="Error During Receipt of Acknowledgement Message"_$S(HLAC="AR":" - Application Reject",HLAC="AE":" - Application Error",1:"")_" - "_HLERR
+ ;-- update status
+ S HLAC=$S(HLMTN="MCF":2,HLAC'="AA":4,1:3)
+ D STATUS^HLTF0(HLDA,HLAC,$G(HLMSG))
  Q
  ;
 STUB772(FLD01,OS) ;
@@ -159,18 +200,14 @@ STUB772(FLD01,OS) ;
  N IEN
  I '$L($G(OS)) N OS S OS=$G(^%ZOSF("OS"))
  ;
- I OS'["DSM",OS'["OpenM" D
+ ; patch HL*1.6*120, protect Else command
+ ; I OS'["DSM",OS'["OpenM" D
+ I OS'["DSM",OS'["OpenM" D  I 1
  .F  L +^HLCS(869.3,1,772):10 S IEN=+$G(^HLCS(869.3,1,772))+1,^HLCS(869.3,1,772)=IEN S:$D(^HL(772,IEN)) IEN=0,^HLCS(869.3,1,772)=($O(^HL(772,":"),-1)\1) L -^HLCS(869.3,1,772) Q:IEN
  E  D
  .F  S IEN=$I(^HLCS(869.3,1,772),1) S:$D(^HL(772,IEN)) IEN=0,^HLCS(869.3,1,772)=($O(^HL(772,":"),-1)\1) Q:IEN
- ;
- ; patch HL*1.6*122: MPI-client/server start
- F  L +^HL(772,IEN):10 Q:$T  H 1
  S ^HL(772,IEN,0)=$G(FLD01)_"^"
  I $L($G(FLD01)) S ^HL(772,"B",FLD01,IEN)=""
- L -^HL(772,IEN)
- ; patch HL*1.6*122: MPI-client/server end
- ;
  Q IEN
  ;
 STUB773(FLD01,OS) ;
@@ -183,16 +220,12 @@ STUB773(FLD01,OS) ;
  N IEN
  I '$L($G(OS)) N OS S OS=$G(^%ZOSF("OS"))
  ;
- I OS'["DSM",OS'["OpenM" D
+ ; patch HL*1.6*120, protect Else command
+ ; I OS'["DSM",OS'["OpenM" D
+ I OS'["DSM",OS'["OpenM" D  I 1
  .F  L +^HLCS(869.3,1,773):10 S IEN=+$G(^HLCS(869.3,1,773))+1,^HLCS(869.3,1,773)=IEN S:$D(^HLMA(IEN)) IEN=0,^HLCS(869.3,1,773)=($O(^HLMA(":"),-1)\1) L -^HLCS(869.3,1,773) Q:IEN
  E  D
  .F  S IEN=$I(^HLCS(869.3,1,773),1) S:$D(^HLMA(IEN)) IEN=0,^HLCS(869.3,1,773)=($O(^HLMA(":"),-1)\1) Q:IEN
- ;
- ; patch HL*1.6*122: MPI-client/server start
- F  L +^HLMA(IEN):10 Q:$T  H 1
  S ^HLMA(IEN,0)=$G(FLD01)_"^"
  I $L($G(FLD01)) S ^HLMA("B",FLD01,IEN)=""
- L -^HLMA(IEN)
- ; patch HL*1.6*122: MPI-client/server end
- ;
  Q IEN

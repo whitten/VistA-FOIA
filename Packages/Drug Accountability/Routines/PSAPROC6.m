@@ -1,14 +1,11 @@
 PSAPROC6 ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data - CONT'D ;10/7/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,21,34,50**; 10/24/97
- ;
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,21,34**; 10/24/97
+ ;References to ^PSDRUG( are covered by IA #2095
  ;This routine allows the user to edit invoices by selecting the
  ;invoice's line item number.
  ;
- ;References to ^PSDRUG( are covered by IA #2095
- ;
 SEL ;Loops thru selected invoices
  F PSAPC=1:1 S PSAMENU=$P(PSASEL,",",PSAPC) Q:'PSAMENU!(PSAOUT)  D CORR Q:PSAOUT  D CHECK
- Q  ;; <= *50  TO QUIT PROPERLY
  ;
 CHECK ;Looks to see if all line items are processed
  S (PSACS,PSAERR,PSALINE,PSALINES,PSALNCNT,PSALNSU,PSAOUT,PSASUP)=0
@@ -32,7 +29,6 @@ CHG ;Asks if invoice's status should be changed to verified. If so, status
  S DIR("??")="^D CHGYN^PSAPROC6" D ^DIR K DIR
  I 'Y!($G(DIRUT)) S PSACHG=0,$P(^XTMP("PSAPV",PSACTRL,"IN"),"^",8)="" W !!,"** The invoice's status has not been changed to Processed." Q
  S PSACHG=+Y,$P(^XTMP("PSAPV",PSACTRL,"IN"),"^",8)="P"
- K PSAERR(PSAMENU) ;*50 rid select (1-0)
  W !!,"The invoice status has been changed to Processed!"
  ;
  ;PSA*3*21 (1/3/01 - file data in 58.811)
@@ -64,10 +60,6 @@ LINES S PSADONE=0 F  W !!,"Line Item Numbers: " D  Q:PSAOUT!(PSADONE)
  .S PSANDC=$P($P(PSADATA,"^",4),"~"),PSAVSN=$P($P(PSADATA,"^",5),"~"),PSASUB=+$P(PSADATA,"^",7),PSASUP=0
  .S PSALOC=$S($P(PSADATA,"^",19)="CS":+$P(PSAIN,"^",12),1:+$P(PSAIN,"^",7))
  .D EDITDISP^PSAUTL1 W !,PSASLN,!
- .D EDITITEM ;*50 ready for patch *54 make an entry point
- Q
-EDITITEM        ;perform edit and checks on an item *50 to be ready for *54
- D
  .W "1. Drug",!,"2. Quantity Received",!,"3. Order Unit",!,"4. Dispense Units per Order Unit" S PSACHO=4
  .I +$P($G(^PSD(58.8,PSALOC,0)),"^",14) W !,"5. Stock Level",!,"6. Reorder Level" S PSACHO=6
  .W ! S DIR(0)="LO^1:"_PSACHO,DIR("A")="Edit fields",DIR("?")="Enter the number(s) of the data to be edited",DIR("??")="^D DQOR^PSAPROC6"

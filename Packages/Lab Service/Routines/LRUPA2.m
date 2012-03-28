@@ -1,4 +1,5 @@
-LRUPA2 ;AVAMC/REG/WTY - LAB ACCESSION LIST BY PAT ;9/25/00
+LRUPA2 ;AVAMC/REG/WTY - LAB ACCESSION LIST BY PAT ;MAY 06, 2009 9:58 AM
+ ;;5.2T1;LAB SERVICE;**1002,1018,1026**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**72,248**;Sep 27, 1994
  ;
  ;Reference to ^DIC( supported by IA #916
@@ -23,11 +24,23 @@ L Q:LR("Q")!($P($G(^LAB(60,Z,0)),"^",4)="WK")
  ;
 XT S M=0 F Y=0:0 S M=$O(^TMP($J,V,M)) Q:M=""!(LR("Q"))  D A
  Q
-A D:$Y>(IOSL-8) H Q:LR("Q")  W !,$J(B,3),")",?6,$P(M,"-",3),?12,V I LRSS="BB" W !?12,M," " S X=$O(^TMP($J,V,M,0)) S:X X=^(X),X=$P(X,"^",2),X=^LR(X,0) W " ",$P(X,"^",5)," ",$P(X,"^",6)
+A ;D:$Y>(IOSL-8) H Q:LR("Q")  W !,$J(B,3),")",?6,$P(M,"-",3),?12,V I LRSS="BB" W !?12,M," " S X=$O(^TMP($J,V,M,0)) S:X X=^(X),X=$P(X,"^",2),X=^LR(X,0) W " ",$P(X,"^",5)," ",$P(X,"^",6)
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ D:$Y>(IOSL-8) H Q:LR("Q")  W !,$J(B,3),")",?5,M,?12,V I LRSS="BB" W !?12,M,"    " S X=$O(^TMP($J,V,M,0)) S:X X=^(X),X=$P(X,"^",2),X=^LR(X,0) W " ",$P(X,"^",5),"        ",$P(X,"^",6)  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  S N=0 F B(2)=0:1 S N=$O(^TMP($J,V,M,N)) Q:'N!(LR("Q"))  S B(3)=^(N),B(4)=$P(B(3),"^"),LRI=$P(B(3),"^",3),LRDFN=$P(B(3),"^",2) D C
  Q
-C D:$Y>(IOSL-8) H1 Q:LR("Q")  W:B(2)>0 ! D:LRSS="BB" D W ?33,$J(N,4),?38,B(4) D:"AUEMSPCY"[LRSS B I "SPCYEMAU"'[LRSS D W
+C ; D:$Y>(IOSL-8) H1 Q:LR("Q")  W:B(2)>0 ! D:LRSS="BB" D W ?33,$J(N,4),?38,$E(B(4),1,17) D:"AUEMSPCY"[LRSS B I "SPCYEMAU"'[LRSS D W
+ ; ----- BEGIN IHS/OIT/MKK MODIFICATION LR*5.2*1026
+ D:$Y>(IOSL-8) H1 Q:LR("Q")
+ W:B(2)>0 !
+ D:LRSS="BB" D
+ W ?33,$J(N,4),?38,$E(B(4),1,17)   ;  SITE/SPEC cannot be > 17 characters
+ D:"AUEMSPCY"[LRSS B
+ I "SPCYEMAU"'[LRSS D W
+ ; ----- END IHS/OIT/MKK MODIFICATION LR*5.2*1026
  Q
+ ;
 B S LRDFN=$P(B(3),"^",2),LRI=$P(B(3),"^",3)
  D:"SPCYEM"[LRSS O
  Q:LR("Q")  W:LRSS="AU" ?40,LRI Q
@@ -39,24 +52,48 @@ PRT Q:'$D(^LRO(68,LRAA,1,LRAD,1,N,3))  S X=^(3),A(3)=$P(X,"^",3)
  Q:'$D(^LR(LRDFN,0))  S X=^(0),DA=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2)
  S DIC="^DIC(",DIC(0)="Z" D ^DIC Q:Y=-1
  S P(0)=Y(0,0) K DIC,Y
- S DIC=^DIC(X,0,"GL"),DIC(0)="NZ",X=DA D ^DIC Q:Y=-1
+ ; S DIC=^DIC(X,0,"GL"),DIC(0)="NZ",X=DA D ^DIC Q:Y=-1
+ ; ----- BEGIN IHS/OIT/MKK MODIFICATION LR*5.2*1026 -- DO NOT use special lookup
+ S DIC=^DIC(X,0,"GL"),DIC(0)="INZ",X=DA D ^DIC Q:Y=-1
+ ; ----- END IHS/OIT/MKK MODIFICATION LR*5.2*1026
  S SSN=$P(Y(0),"^",9),LRP=$P(Y(0),"^") K DIC,DA,Y
  D SSN^LRU
- S:P(0)'="PATIENT" LRP="#"_LRP
- I LRSS="AU",$D(^LR(LRDFN,"AU")) D
- .S X=^("AU"),B(5)=$S($P(X,"^",3):"",1:"%") S Y=+X D D^LRU S LRI=Y
+ ; ----- BEGIN IHS/OIT/MKK MODIFICATION LR*5.2*1026
+ ; S:P(0)'="PATIENT" LRP="#"_LRP   ; Comment out this line
+ ; ----- END IHS/OIT/MKK MODIFICATION LR*5.2*1026
+ ;I LRSS="AU",$D(^LR(LRDFN,"AU")) D
+ ;.S X=^("AU"),B(5)=$S($P(X,"^",3):"",1:"%") S Y=+X D D^LRU S LRI=Y
+ ;----- BEGIN IHS MODIFICATIONS ;R*5.2*1018
+ S:P(0)'="VA PATIENT" LRP="#"_LRP I LRSS="AU",$D(^LR(LRDFN,"AU")) S X=^("AU"),B(5)=$S($P(X,"^",3):"",1:"%") S Y=+X D D^LRU S LRI=Y  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  I "CYSPEM"[LRSS S B(5)="" D
  .I $D(^LR(LRDFN,LRSS,LRI,0)),'$P(^(0),"^",3) S B(5)="%"
- S ^TMP($J,$E(LRP,1,20),SSN,N)=B(5)_"^"_LRDFN_"^"_LRI
- S (B(5),LRDFN,LRI)=""
+ ;S ^TMP($J,$E(LRP,1,20),SSN,N)=B(5)_"^"_LRDFN_"^"_LRI
+ ;S (B(5),LRDFN,LRI)=""
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ ; S ^TMP($J,$E(LRP,1,20),HRCN,N)=B(5)_"^"_LRDFN_"^"_LRI S (B(5),LRDFN,LRI,DFN,HRCN)="" Q  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
+ ; ----- BEGIN IHS/OIT/MKK MODIFICATIONS LR*5.2*1026 -- SITE/SPEC should only 16 Chars
+ S ^TMP($J,$E(LRP,1,20),HRCN,N)=$E(B(5),1,16)_"^"_LRDFN_"^"_LRI
+ S (B(5),LRDFN,LRI,DFN,HRCN)="" Q  ;IHS/ANMC/CLS 08/18/96
+ ; ----- END IHS/OIT/MKK MODIFICATIONS LR*5.2*1026
  Q
 D S Y=+^LR($P(B(3),"^",2),"BB",$P(B(3),"^",3),0) D DT^LRU S B(4)=Y Q
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,LRO(68)," ACCESSIONS for ",Z(1),"  BY PATIENT"
- W !,"# =Not VA patient",?36,$S("AUBBCYEMSP"[LRSS:"% =Incomplete",1:"")
+ ; W !,"# =Not VA patient",?36,$S("AUBBCYEMSP"[LRSS:"% =Incomplete",1:"")
+ ; ----- BEGIN IHS/OIT/MKK MODIFICATION LR*5.2*1026 -- Don't use VA heading
+ W !,"# =Not IHS patient",?36,$S("AUBBCYEMSP"[LRSS:"% =Incomplete",1:"")
+ ; ----- END IHS/OIT/MKK MODIFICATION LR*5.2*1026
  W !,"Count",?7,"ID",?12,"Patient",?35,"ACC#" W ?36 W:"AUBBCYEMSP"'[LRSS "Specimen" W:LRSS="BB" "Specimen date" W:"AUCYEMSP"'[LRSS ?50,"Test",?76,"Tech" W:"CYEMSP"[LRSS ?43,"Organ/tissue" W:LRSS="AU" ?40,"Date/time of Autopsy"
  W !,LR("%") Q
 H1 D H Q:LR("Q")  S B(2)=0 W !,$J(B,3),")",?6,$P(M,"-",3),?12,V Q
-H2 D H Q:LR("Q")  W !,$J(B,3),")",?6,$P(M,"-",3),?12,V,?33,$J(N,4) S E=0 Q
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ D H Q:LR("Q")  S B(2)=0 W !,$J(B,3),")",?5,M,?12,V Q  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
+H2 ;D H Q:LR("Q")  W !,$J(B,3),")",?6,$P(M,"-",3),?12,V,?33,$J(N,4) S E=0 Q
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ D H Q:LR("Q")  W !,$J(B,3),")",?5,M,?12,V,?33,$J(N,4) S E=0 Q  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  ;
 END D V^LRU Q

@@ -1,5 +1,5 @@
 IBDF18C ;ALB/CJM/AAS - ENCOUNTER FORM - form ID utilities ;04-OCT-94
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**5,9**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 FID(DFN,APPT,SOURCE,FORMTYPE,CLIN) ; -- Form ID Tracking
  ; -- create record in the ENCOUNTER FORM TRACKING file
@@ -34,7 +34,7 @@ FID(DFN,APPT,SOURCE,FORMTYPE,CLIN) ; -- Form ID Tracking
  ;
  L +^IBD(357.97,1,.02):3
  S ID=+$P($G(^IBD(357.97,1,0)),"^",2)
- F ID=ID+1:1 L:$D(^IBD(357.96,(ID-1))) -^IBD(357.96,(ID-1)) I ID>0,'$D(^IBD(357.96,ID)) L +^IBD(357.96,ID):1 I $T,'$D(^IBD(357.96,ID)) S (X,DINUM)=ID D FILE^DICN I +Y>0 L -^IBD(357.96,ID) Q
+ F ID=ID+1:1 L:$D(^IBD(357.96,(ID-1))) -^IBD(357.96,(ID-1)) I ID>0,'$D(^IBD(357.96,ID)) L +^IBD(357.96,ID):1 I $T,'$D(^IBD(357.96,ID)) S (X,DINUM)=ID D FILE^DICN Q:+Y>0
  S $P(^IBD(357.97,1,0),"^",2)=ID
  L -^IBD(357.97,1,.02)
  ;
@@ -130,7 +130,7 @@ FINDID(DFN,APPT,FORM,DUP) ; -- Find a form id for a patient and appointment
  .I $G(FORM) S I=$G(^IBD(357.96,X,0)) I $P(I,"^",4)=FORM!($P(I,"^",8)=FORM) S ID=X Q
  ;
  I $G(DUP) S X=0 F  S X=$O(^IBD(357.96,"APTAP",DFN,APPT,X)) Q:'X  D
- .I +$P($G(^IBE(357,+$P($G(^IBD(357.95,+$P($G(^IBD(357.96,X,0)),"^",4),0)),"^",21),0)),"^",12)<1 Q
+ .I +$P($G(^IBE(357,+$P($G(^IBD(357.95,+$P($G(^IBD(357.96,X,0)),"^",4)),0),"^",21),0)),"^",12)<1 Q
  .I CLN,CLN'=$P($G(^IBD(357.96,X,0)),"^",10) Q  ;form for canceled appt.
  .S ORIGIN=$P($G(^IBD(357.95,+$P($G(^IBD(357.96,X,0)),"^",4),0)),"^",21) Q:'ORIGIN
  .I '$G(FORM) D

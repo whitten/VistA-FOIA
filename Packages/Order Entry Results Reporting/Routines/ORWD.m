@@ -1,10 +1,10 @@
-ORWD ; SLC/KCM - Utilities for Windows Dialogs ;7/2/01  13:31
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**243,280**;Dec 17, 1997;Build 85
+ORWD ; SLC/KCM - Utilities for Windows Dialogs ;7/26/96  17:53 [ 11/19/96  4:27 PM ]
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;;Dec 17, 1997
  ;
 DT(Y,X) ; Returns internal Fileman Date/Time
  N %DT S %DT="TS" D ^%DT
  Q
-PROVKEY(VAL,USERID) ; Returns 1 if user possesses the provider key
+PROVKEY(VAL,USERID)       ; Returns 1 if user possesses the provider key
  N NAM S NAM=$P(^VA(200,USERID,0),U,1)
  S VAL=$D(^VA(200,"AK.PROVIDER",NAM,USERID))
  Q
@@ -51,7 +51,7 @@ DEF(Y,DLG) ; Return format mapping for a dialog
  . . . S CHLD=CHLD_$P(^ORD(101.41,DLG,10,K,0),U,2)_"~"
  . S $P(Y(N),U,8)=CHLD
  Q
-FORMID(VAL,ORIFN) ; procedure
+FORMID(VAL,ORIFN)  ; procedure
  ; Returns the Dialog Form ID
  N X
  S VAL=0,X=$P(^OR(100,+ORIFN,0),U,5)
@@ -80,6 +80,16 @@ EXTDT(X) ; Return an external date time that can be interpreted by %DT
  I $E(X)="T" Q "TODAY"_$E(X,2,255)
  I $E(X)="V" Q "NEXT VISIT"_$E(X,2,255)
  Q ""
+WRLST(Y,TYP) ; Return list of dialogs for writing orders
+ ; .Y(n): DlgName^ListBox Text
+ ;   TYP: 'I' = inpatient, 'O' = outpatient
+ N PAR,ERR,SEQ,IEN,I,X
+ S PAR=$S(TYP="I":"ORW ADDORD INPT",1:"ORW ADDORD OUTPT")
+ D GETLST^XPAR(.X,"ALL",PAR,"Q",.ERR) Q:ERR
+ S I=0 F  S I=$O(X(I)) Q:'I  D
+ . S SEQ=$P(X(I),U,1),IEN=$P(X(I),U,2)
+ . S Y(SEQ)=$P(^ORD(101.41,IEN,0),U,1)_U_$P($G(^(5)),U,4)
+ Q
 SAVE(Y,DFN,ORNP,LOC,DLG,ORWDACT,RSP) ; procedure
  ; Save order
  N ORDIALOG,ORL,ORVP,ORIFN,ORDUZ,ORSTS,ORDG,OREVENT,ORCAT,ORDA
@@ -112,12 +122,12 @@ SIGN(ERRLST,DFN,ORNP,LOC,ORWSIGN) ; procedure
  . S ORWSIGN(IDX)=$P(ORWSIGN(IDX),U)
  D PRINTS^ORWD1(.ORWSIGN,LOC)
  Q
-VALIDACT(VAL,ORIFN,ACTION) ;procedure
+VALIDACT(VAL,ORIFN,ACTION)      ;procedure
  ; Return 1 if action is valid for this order, otherwise 0^error
  S VAL=$$VALID^ORCACT0(ORIFN,ACTION,.ERR)
  I VAL=0 S VAL=VAL_U_ERR
  Q
-SAVEACT(LST,ORIFN,ACTION,REASON,DFN,ORNP,LOC) ;procedure
+SAVEACT(LST,ORIFN,ACTION,REASON,DFN,ORNP,LOC)       ;procedure
  ; Save this action for the order (it is still unsigned/unreleased)
  N ORDIALOG,ORL,ORVP,ORDUZ,ORSTS,ORDG,OREVENT,ACTDA,SIGSTS,RELSTS,ASTS
  S ORVP=DFN_";DPT(",ORL(2)=LOC_";SC("
@@ -128,7 +138,7 @@ SAVEACT(LST,ORIFN,ACTION,REASON,DFN,ORNP,LOC) ;procedure
  I ACTION="DC",((ASTS=10)!(ASTS=11)) D  Q       ; exit here if DELETE
  . D GETBYIFN^ORWORR(.LST,ORIFN)
  . S $P(LST(1),U,1)="~0",LST(2)="tDELETED - "_$E(LST(2),2,245)
- . D CANCEL^ORCSAVE2(ORIFN)
+ . D DELETE^ORCSAVE2(ORIFN)
  ;
  ; the only valid action for ActDA>1 is deletion, so only orders 
  ; identified by ORIFN;1 should reach this point

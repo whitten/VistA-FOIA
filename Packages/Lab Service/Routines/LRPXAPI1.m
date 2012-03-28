@@ -1,5 +1,6 @@
-LRPXAPI1 ;SLC/STAFF Lab Extract API code ;10/28/03  11:29
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXAPI1 ;VA/SLC/STAFF - Lab Extract API code ;10/28/03  11:29
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 TESTS(TESTS,DFN,MAX,NEXT,COND,DATE1,DATE2) ; from LRPXAPI
  ; returns lab tests on a patient

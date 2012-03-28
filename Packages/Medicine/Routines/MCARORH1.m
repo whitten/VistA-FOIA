@@ -1,4 +1,4 @@
-MCARORH1 ; GENERATED FROM 'MCRHHIST' PRINT TEMPLATE (#1000) ; 10/04/96 ; (continued)
+MCARORH1 ; GENERATED FROM 'MCRHHIST' PRINT TEMPLATE (#3724) ; 11/29/04 ; (continued)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,54 +11,6 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- D N:$X>39 Q:'DN  W ?39 W "TIREDNESS:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,50) W:Y]"" $S($D(DXS(27,Y)):DXS(27,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "TROUBLE REMEMBERING/THINKING:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,51) W:Y]"" $S($D(DXS(28,Y)):DXS(28,Y),1:Y)
- D T Q:'DN  D N D N D N:$X>0 Q:'DN  W ?0 W "Gastrointestinal Tract:"
- D N:$X>39 Q:'DN  W ?39 W "Skin:"
- D N:$X>0 Q:'DN  W ?0 W "LOSS OF APPETITE:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,28) W:Y]"" $S($D(DXS(29,Y)):DXS(29,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "EASY BRUISING:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,52) W:Y]"" $S($D(DXS(30,Y)):DXS(30,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "DIFFICULTY SWALLOWING:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,23) W:Y]"" $S($D(DXS(31,Y)):DXS(31,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "FACIAL SKIN TIGHTENING:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,53) W:Y]"" $S($D(DXS(32,Y)):DXS(32,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "NAUSEA:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,71) W:Y]"" $S($D(DXS(33,Y)):DXS(33,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "HIVES OR WELTS:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,54) W:Y]"" $S($D(DXS(34,Y)):DXS(34,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "HEARTBURN,INDIGESTION,BELCHING:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,25) W:Y]"" $S($D(DXS(35,Y)):DXS(35,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "LOSS OF HAIR:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,12) W:Y]"" $S($D(DXS(36,Y)):DXS(36,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "VOMITING:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,31) W:Y]"" $S($D(DXS(37,Y)):DXS(37,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "ITCHING:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,55) W:Y]"" $S($D(DXS(38,Y)):DXS(38,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "PAIN/DISCOMFORT UPPER ABDOMEN:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,30) W:Y]"" $S($D(DXS(39,Y)):DXS(39,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "RASH:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,56) W:Y]"" $S($D(DXS(40,Y)):DXS(40,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "JAUNDICE:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,26) W:Y]"" $S($D(DXS(41,Y)):DXS(41,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "RASH OVER CHEEKS:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,57) W:Y]"" $S($D(DXS(42,Y)):DXS(42,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "LIVER:"
- S X=$G(^MCAR(701,D0,1)) W ?0,$J($P(X,U,2),29)
- D N:$X>39 Q:'DN  W ?39 W "SKIN COLOR CHANGE IN FINGERS:"
- S X=$G(^MCAR(701,D0,0)) D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,58) W:Y]"" $S($D(DXS(43,Y)):DXS(43,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "PAIN/CRAMPS LOWER ABDOMEN:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,29) W:Y]"" $S($D(DXS(44,Y)):DXS(44,Y),1:Y)
- D N:$X>39 Q:'DN  W ?39 W "SUN SENSITIVITY:"
- D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,59) W:Y]"" $S($D(DXS(45,Y)):DXS(45,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "DIARRHEA(FREQUENT,WATERY):"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,22) W:Y]"" $S($D(DXS(46,Y)):DXS(46,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "CONSTIPATION:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,21) W:Y]"" $S($D(DXS(47,Y)):DXS(47,Y),1:Y)
- D N:$X>0 Q:'DN  W ?0 W "BLK/TARRY STOOL(NOT FROM IRON:"
- D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,20) W:Y]"" $S($D(DXS(48,Y)):DXS(48,Y),1:Y)
  D T Q:'DN  D N D N D N:$X>0 Q:'DN  W ?0 W "Genitourinary:"
  D N:$X>39 Q:'DN  W ?39 W "Blood:"
  D N:$X>0 Q:'DN  W ?0 W "URINE PROTEIN:"
@@ -69,4 +21,26 @@ BEGIN ;
  S X=$G(^MCAR(701,D0,0)) D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,32) W:Y]"" $S($D(DXS(51,Y)):DXS(51,Y),1:Y)
  D N:$X>39 Q:'DN  W ?39 W "LOW PLATELETS:"
  S X=$G(^MCAR(701,D0,10)) D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,2) W:Y]"" $S($D(DXS(52,Y)):DXS(52,Y),1:Y)
- G ^MCARORH2
+ D N:$X>0 Q:'DN  W ?0 W "BURNING ON URINATION:"
+ S X=$G(^MCAR(701,D0,0)) D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,33) W:Y]"" $S($D(DXS(53,Y)):DXS(53,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "LOW RED BLOOD COUNT:"
+ S X=$G(^MCAR(701,D0,10)) D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,3) W:Y]"" $S($D(DXS(54,Y)):DXS(54,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "KIDNEY PROBLEMS:"
+ S X=$G(^MCAR(701,D0,1)) W ?0,$J($P(X,U,4),19)
+ D T Q:'DN  D N D N D N:$X>0 Q:'DN  W ?0 W "Females Only:"
+ D N:$X>0 Q:'DN  W ?0 W "PREGNANT:"
+ S X=$G(^MCAR(701,D0,0)) D N:$X>33 Q:'DN  W ?33 S Y=$P(X,U,34) W:Y]"" $S($D(DXS(55,Y)):DXS(55,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "Males Only:"
+ D N:$X>39 Q:'DN  W ?39 W "DISCHARGE FROM PENIS:"
+ D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,60) W:Y]"" $S($D(DXS(56,Y)):DXS(56,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "Other:"
+ D N:$X>39 Q:'DN  W ?39 W "IMPOTENCE:"
+ D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,61) W:Y]"" $S($D(DXS(57,Y)):DXS(57,Y),1:Y)
+ D N:$X>0 Q:'DN  W ?0 W "OTHER:"
+ S X=$G(^MCAR(701,D0,1)) W ?0,$J($P(X,U,10),30)
+ D N:$X>39 Q:'DN  W ?39 W "RASH/ULCERS ON PENIS:"
+ S X=$G(^MCAR(701,D0,0)) D N:$X>71 Q:'DN  W ?71 S Y=$P(X,U,62) W:Y]"" $S($D(DXS(58,Y)):DXS(58,Y),1:Y)
+ K Y
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

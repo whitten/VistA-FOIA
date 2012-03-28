@@ -1,5 +1,5 @@
-IBDF1C ;ALB/CJM - ENCOUNTER FORM (print sample form) ; FEB 11,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**42**;APR 24, 1997
+IBDF1C ;ALB/CJM - ENCOUNTER FORM (print sample form);FEB 11,1992
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
  ;This print routine forces queueing - so that allocation problems do not occur.
  ;
@@ -27,8 +27,6 @@ DEVICE ;
  ;queuing is automatic - the device is not opened
  K %IS,%ZIS,IOP S %ZIS="N0Q",%ZIS("A")="Printer to queue to: ",%ZIS("B")="",%ZIS("S")="I $E($P($G(^%ZIS(2,+$G(^%ZIS(1,Y,""SUBTYPE"")),0)),U),1,2)=""P-""" D ^%ZIS
  Q:POP
- I $D(IO("S")) D  G DEVICE
- .W !!,"** Printer can not be a slave printer please try again.**",!
  S ZTRTN="QUEUED^IBDF1C",ZTSAVE("IBFORM")="",ZTDESC="ENCOUNTER FORM",ZTDTH=$H D ^%ZTLOAD W !,$S($D(ZTSK):"REQUEST QUEUED TASK="_ZTSK,1:"REQUEST CANCELLED")
  Q
  ;

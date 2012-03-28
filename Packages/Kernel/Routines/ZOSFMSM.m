@@ -1,5 +1,8 @@
 ZOSFMSM ;SFISC/AC - SETS UP ^%ZOSF FOR MSM-UNIX SYSTEMS ;8/1/94  11:16
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1016**;APR 1, 2003;Build 5
  ;;8.0;KERNEL;;JUL 03, 1995
+ ;THIS ROUTINE CONTAINS AN IHS MODIFICATION BY IHS/MFD
+ ;IHS/MFD fixed TEST node for MSM
  S %Y=1 K ^%ZOSF("MASTER"),^%ZOSF("SIGNOFF")
  I '$D(^%ZOSF("VOL")) S ^%ZOSF("VOL")=$P($ZU(0),",",2)
  K ZO F I="MGR","PROD","VOL" S:$D(^%ZOSF(I)) ZO(I)=^%ZOSF(I)
@@ -90,7 +93,7 @@ Z ;;
  ;;SS
  ;;D ^%SS
  ;;TEST
- ;;I $D(^ (X))
+ ;;I $S($E(X)'="%":$D(^ (X)),1:$D(^[$G(^%ZOSF("MGR"))] (X)))
  ;;TMK
  ;;S Y=$ZA\128#2
  ;;TRAP

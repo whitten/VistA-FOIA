@@ -1,24 +1,21 @@
 PSGOU ;BIR/CML3,MV-PROFILE UTILITIES ;19 SEP 96 / 3:59 PM
- ;;5.0; INPATIENT MEDICATIONS ;**34,110,181**;16 DEC 97;Build 190
+ ;;5.0; INPATIENT MEDICATIONS ;**34**;16 DEC 97
  ;
- ; Reference to ^PS(51.1 is supported by DBIA# 2177
+ ; Reference to ^PS(51.1 is supported by DBIA 2177
  ; Reference to ^PS(55 is supported by DBIA# 2191.
  ;
 ECHK ;
  D NOW^%DTC N PSGDT S PSGDT=% ;***Store PSGDT with seconds.
- S C="A",ON=O_"U" G:SD>PSGDT DS S ND=$G(^PS(55,PSGP,5,O,0)) G:$S($P(ND,"^",9)="":1,1:"DE"'[$P(ND,"^",9)) DS S ND4=$G(^(4))
+ S C="A" G:SD>PSGDT DS S ND=$G(^PS(55,PSGP,5,O,0)) G:$S($P(ND,"^",9)="":1,1:"DE"'[$P(ND,"^",9)) DS S ND4=$G(^(4))
  I ST'="O",SD'<PSGODT,$P(ND,"^",9)="E",$P(ND4,"^",16) G DS
  I ST="O",$P(ND,"^",9)'["D",$S('$P(ND4,"^",UDU):1,SD<PSGODT:0,1:$P(ND4,"^",16)) G DS
- I PSGOL="S",(SD>$P($G(PSJDCEXP),U,2)) S C="DF" G DS
  Q:PSGOL="S"  S C="O"
  ;
 DS ;
  NEW DRUGNAME D DRGDISP^PSJLMUT1(PSGP,+O_"U",80,0,.DRUGNAME,1) S DRG=DRUGNAME(1)
  ;
 SET ;
- I ON["P",$G(P("PRNTON"))]"",$G(PRNTON)=+P("PRNTON") Q
- I ON["P",$G(P("PRNTON"))]"" S PRNTON=+P("PRNTON"),ON=+P("PRNTON")
- S ^TMP("PSG",$J,C,ST,DRG_"^"_ON)=$G(NF)
+ S ^UTILITY("PSG",$J,C,ST,DRG_"^"_O)=$G(NF)
  Q
  ;
 ENS F S=0:0 R !!,"Sort by DATE or MEDICATION:  M// ",PSGOS:DTIME D SCHK Q:CHK
@@ -47,32 +44,30 @@ LCHK ;
 LM W !!?3,"Enter 'SHORT' (or 'S', or press the RETURN key) to exclude this patient's",!,"discontinued and expired orders in the following profile.  Enter 'LONG' (or 'L') to include those orders."
  W "  Enter 'NO' (or 'N') to bypass the profile com-",!,"pletely.  Enter '^' if you wish to go no further with this patient." Q
  ;
-ENU ; update status field to reflect expired orders, if necessary
+ENU ; update staus field to reflect expired orders, if necessary
  W !!,"...a few moments, I have some updating to do..."
 ENUNM ;
  D NOW^%DTC S PSGDT=%
- S PSJDCEXP=$$RECDCEXP^PSJP()
  F PSGO2=+PSJPAD:0 S PSGO2=$O(^PS(55,PSGP,5,"AUS",PSGO2)) Q:'PSGO2  Q:PSGO2>PSGDT  F PSGO3=0:0 S PSGO3=$O(^PS(55,PSGP,5,"AUS",PSGO2,PSGO3)) Q:'PSGO3  S PSGO4=$G(^PS(55,PSGP,5,PSGO3,0)) D
  .I PSGO4]"",$S($E($G(PSGALO),1,2)="10":"AHR"[$E($P(PSGO4,"^",9)),1:"AR"[$E($P(PSGO4,"^",9))) D ENUH
  K PSGO1,PSGO2,PSGO3,PSGO4,UD Q
  ;
 ENGORD ; get and sort orders
- D NOW^%DTC S PSGDT=%,X1=$P(%,"."),X2=-2 D C^%DTC S PSGODT=X_(PSGDT#1),HDT=$$ENDTC^PSGMI(PSGDT),UDU=$S($P(PSJSYSU,";",3)>1:3,1:1) K ^TMP("PSG",$J)
+ D NOW^%DTC S PSGDT=%,X1=$P(%,"."),X2=-2 D C^%DTC S PSGODT=X_(PSGDT#1),HDT=$$ENDTC^PSGMI(PSGDT),UDU=$S($P(PSJSYSU,";",3)>1:3,1:1) K ^UTILITY("PSG",$J)
  W:'$D(PSGPR) !!,"...a few moments, please..." D ENUNM
  F ST="C","O","OC","P","R" F SD=+PSJPAD:0 S SD=$O(^PS(55,PSGP,5,"AU",ST,SD)) Q:'SD  F O=0:0 S O=$O(^PS(55,PSGP,5,"AU",ST,SD,O)) Q:'O  D ECHK
  Q:$D(PSGONNV)
  NEW DRUGNAME
- N PRNTON F SD="I","N" S (PRNTON,O)=0 F  S O=$O(^PS(53.1,"AS",SD,PSGP,O)) Q:'O  S ON=+O_"P",ND=$G(^PS(53.1,O,0)) I $P(ND,"^",4)="U" D
- . S ST=$P(ND,"^",7),P("PRNTON")=$P($G(^PS(53.1,O,.2)),"^",8) S:ST="" ST="z"
+ F SD="I","N" S O=0 F  S O=$O(^PS(53.1,"AS",SD,PSGP,O)) Q:'O  D
+ . S ND=$G(^PS(53.1,O,0)),ST=$P(ND,"^",7) S:ST="" ST="z"
  . D DRGDISP^PSJLMUT1(PSGP,+O_"P",80,0,.DRUGNAME,1) S DRG=DRUGNAME(1)
- . S C=$S(P("PRNTON")]"":"BD",1:"BA") D SET
+ . S C="BA" D SET
  Q:+PSJSYSU'=3  S SD="P",O=0
- N PRNTON F  S (PRNTON,O)=$O(^PS(53.1,"AS",SD,PSGP,O)) Q:'O  S ON=+O_"P",ND=$G(^PS(53.1,O,0)) I $P(ND,"^",4)="U" D
- . S ST=$P(ND,"^",7),P("PRNTON")=$P($G(^PS(53.1,O,.2)),"^",8) S:ST="" ST="z"
+ F  S O=$O(^PS(53.1,"AS",SD,PSGP,O)) Q:'O  S ND=$G(^PS(53.1,O,0)) I $P(ND,"^",4)="U" D
+ . S ST=$P(ND,"^",7) S:ST="" ST="z"
  . D DRGDISP^PSJLMUT1(PSGP,+O_"P",80,0,.DRUGNAME,1) S DRG=DRUGNAME(1)
  . S C=$$CKPC^PSGOU(PSGP,$P(ND,U,25),O)
  . I C="CB",$P($G(^PS(53.1,O,.2)),U,4)="S" S C="CA"
- . I P("PRNTON")]"" S C="CD"
  . D SET
  Q
  ;

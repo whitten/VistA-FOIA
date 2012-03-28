@@ -1,4 +1,5 @@
 LR7OB0 ;slc/dcm - Build message, backdoor from Lab ;8/11/97
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**121,187**;Sep 27, 1994
  ;
 NEW(ORD,CONTROL,NAT) ;Create OE/RR order from Lab order #
@@ -23,7 +24,10 @@ NEW1(ODT,SN,CONTROL,NAT) ;Create OE/RR order from Lab order date & LRSN
  . D EN1(ODT,SN,CONTROL),CALL
  Q
 FIRST S LOC="",ROOM=""
- I $P(LRDPF,"^",2)="DPT(" D INP^VADPT I VAIN(1) S ROOM=VAIN(5),LOC=$S($G(CONTROL)="ZC":+$P(^TMP("LRX",$J,69),"^",7),1:+$G(^DIC(42,+VAIN(4),44)))
+ ;I $P(LRDPF,"^",2)="DPT(" D INP^VADPT I VAIN(1) S ROOM=VAIN(5),LOC=$S($G(CONTROL)="ZC":+$P(^TMP("LRX",$J,69),"^",7),1:+$G(^DIC(42,+VAIN(4),44)))
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ I $P(LRDPF,"^",2)="DPT(" D @$S($$ISPIMS^BLRUTIL:"INP^VADPT",1:"INP^BLRDPT") I VAIN(1) S ROOM=VAIN(5),LOC=$S($G(CONTROL)="ZC":+$P(^TMP("LRX",$J,69),"^",7),1:+$G(^DIC(42,+VAIN(4),44)))
+ ;----- END IHS MODIFICATIONS
  S MSG(1)=$$MSH^LR7OU0("ORM")
  S MSG(2)=$$PID^LR7OU0(LRDPF)
  S MSG(3)=$$PV1^LR7OU0(LOC,$G(ROOM),"")

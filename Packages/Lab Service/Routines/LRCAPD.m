@@ -1,5 +1,5 @@
 LRCAPD ;SLC/AM/DALOI/FHS - WORKLOAD CODE LIST REPORT;1/16/91 15:34
- ;;5.2;LAB SERVICE;**105,163,153,278**;Sep 27, 1994
+ ;;5.2T9;LR;**105,163,153,278,1018**;Nov 17, 2004
 EN ;
  W !!?5,"I will produce a list of WKLD codes in your file 60 "
  K %ZIS,DX S %ZIS="QN",%ZIS("A")="Printer Name " D ^%ZIS G:POP CLEAN

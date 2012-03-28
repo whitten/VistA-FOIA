@@ -39,7 +39,7 @@ SEARCH ;Search for possible duplicates and locate in ^TMP("GMPLDUP")
  .S IEN=0 F  S IEN=$O(^AUPNPROB("AC",PATIENT,IEN)) Q:IEN=""  D
  ..Q:$P($G(^AUPNPROB(IEN,1)),"^",2)="H"
  ..S ICD=$P($G(^AUPNPROB(IEN,0)),"^",1)
- ..S PROBLEM=$P($G(^AUPNPROB(IEN,1)),"^",1)
+ ..S PROBLEM=$P($G(^AUPNPROB(IEN,1)),"^",1) Q:'PROBLEM  ;IHS/PLS 08/05/2001
  ..S CNT=CNT+1
  ..I '$D(^TMP("GMPLD",$J,PATIENT,ICD,PROBLEM)) D
  ...S ^TMP("GMPLD",$J,PATIENT,ICD,PROBLEM,IEN)=""

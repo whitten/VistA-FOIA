@@ -1,5 +1,11 @@
-SCRPO1 ;BP-CIOFO/KEITH - Historical Patient Position Assignment Listing ; 20 Aug 99  7:49 AM
+SCRPO1 ;BP-CIOFO/KEITH - Historical Patient Position Assignment Listing ; 20 Aug 99  7:49 AM [ 11/02/2000  8:40 AM ]
  ;;5.3;Scheduling;**177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed 132 column message
+ ;                        added call to list template & header
+ ;                        moved IO variables kill to list template
+ ;                        changed footer code for list template
+ ;                        moved spacing of columns
+ ;                        removed elig & means test from summary
  ;
 EN ;Queue report
  N LIST,SORT,SCSP,RTN,DESC
@@ -32,12 +38,15 @@ PROMPT(LIST,SORT,SCSP,SCRTN,SCDESC) ;Prompt for report parameters, queue report
  G:'$$SORT^SCRPO(.SC,SORT,SCSP) END
  S SCT(1)="**** Report Parameters Selected ****" D SUBT^SCRPW50(SCT(1))
  G:'$$PPAR^SCRPO(.SC,1,.SCT) END
- W !!,"This report requires 132 column output!"
+ ;W !!,"This report requires 132 column output!"  ;IHS/ANMC/LJF 11/2/2000
+ W !!,"This report, when printed on paper, requires wide paper or condensed print!"  ;IHS/ANMC/LJF 11/2/2000
  W ! N ZTSAVE S ZTSAVE("^TMP(""SC"",$J,")="",ZTSAVE("SC")=""
  D EN^XUTMDEVQ(SCRTN,SCDESC,.ZTSAVE)
 END K ^TMP("SC",$J) D DISP0^SCRPW23,END^SCRPW50 Q
  ;
 RUN ;Print report
+ I $E(IOST,1,2)="C-" D ^BSDSCO1 Q   ;IHS/ANMC/LJF 11/2/2000
+IHS ;EP; entry point for list template ;IHS/ANMC/LJF 11/2/2000
  N SCFMT,SCTITL,SCTITL2,SCLINE,SCPAGE,SCOUT,SCFF,SCX,SCFF,SCLINE,SCPAGE
  N SC1,SC2,SC3,SC4,SC5,SC6,SC7,SCN,SCASP,SCUNP,SCI,SCPNOW
  S SCFMT=$E(^TMP("SC",$J,"FMT")),(SCFF,SCOUT,SCUNP)=0
@@ -68,8 +77,10 @@ RUN ;Print report
  .......S SC7=""
  .......F  S SC7=$O(^TMP("SCRPT",$J,2,SCN,SC4,SC5,SC6,SC7)) Q:SC7=""!SCOUT  D
  ........S SCX=^TMP("SCRPT",$J,2,SCN,SC4,SC5,SC6,SC7)
- ........I $Y>(IOSL-9) D FOOT1,HDR^SCRPO(.SCTITL,132),SHDR("D") Q:SCOUT
- ........S SCY="0^20^27^39^43^57^73^89^94^110^122" W !
+ ........;I $Y>(IOSL-9) D FOOT1,HDR^SCRPO(.SCTITL,132),SHDR("D") Q:SCOUT  ;IHS/ANMC/LJF 11/2/2000
+ ........I '$G(VALM),$Y>(IOSL-9) D FOOT1,HDR^SCRPO(.SCTITL,132),SHDR("D") Q:SCOUT  ;IHS/ANMC/LJF 11/2/2000
+ ........;S SCY="0^20^27^39^43^57^73^89^94^110^122" W !  ;IHS/ANMC/LJF 11/2/2000
+ ........S SCY="0^20^28^38^43^57^73^89^94^110^122" W !  ;IHS/ANMC/LJF 11/2/2000
  ........F SCI=1:1:11 W ?($P(SCY,U,SCI)),$P(SCX,U,SCI)
  .......Q
  ......Q
@@ -82,9 +93,11 @@ RUN ;Print report
  G:SCOUT EXIT
  S SCTITL(2)=$$HDRX("S") D HDR^SCRPO(.SCTITL,132),SHDR("S") G:SCOUT EXIT
  S SCASP=^TMP("SCRPT",$J,0,"ASSIGNMENTS")
- F SCI="PRIMARY ELIGIBILITY","MEANS TEST CATEGORY","GENDER","AGE GROUP","NATIONAL ENROLLMENT PRIORITY","TEAM","PRIMARY CARE","ASSIGNED PROVIDER","PRECEPTOR PROVIDER","DIVISION" D  Q:SCOUT
+ ;F SCI="PRIMARY ELIGIBILITY","MEANS TEST CATEGORY","GENDER","AGE GROUP","NATIONAL ENROLLMENT PRIORITY","TEAM","PRIMARY CARE","ASSIGNED PROVIDER","PRECEPTOR PROVIDER","DIVISION" D  Q:SCOUT  ;IHS/ANMC/LJF 11/2/2000
+ F SCI="GENDER","AGE GROUP","TEAM","PRIMARY CARE","ASSIGNED PROVIDER","PRECEPTOR PROVIDER","DIVISION" D  Q:SCOUT  ;IHS/ANMC/LJF 11/2/2000
  .Q:'$D(^TMP("SCRPT",$J,0,SCI))
- .D:$Y>(IOSL-9) FOOT2,HDR^SCRPO(.SCTITL,132),SHDR("S") Q:SCOUT
+ .;D:$Y>(IOSL-9) FOOT2,HDR^SCRPO(.SCTITL,132),SHDR("S") Q:SCOUT  ;IHS/ANMC/LJF 11/2/2000
+ .I '$G(VALM) D:$Y>(IOSL-9) FOOT2,HDR^SCRPO(.SCTITL,132),SHDR("S") Q:SCOUT  ;IHS/ANMC/LJF 11/2/2000
  .W ! D SLINE("--"_SCI_"--") S SCX=""
  .F  S SCX=$O(^TMP("SCRPT",$J,0,SCI,SCX)) Q:SCX=""!SCOUT  D
  ..S SCY=^TMP("SCRPT",$J,0,SCI,SCX)
@@ -100,7 +113,8 @@ RUN ;Print report
  ;
 EXIT I $E(IOST)="C",'$G(SCOUT) N DIR S DIR(0)="E" D ^DIR
  F SCI="SC","SCARR","SCRPT" K ^TMP(SCI,$J)
- K SC D END^SCRPW50 Q
+ ;K SC D END^SCRPW50 Q  ;IHS/ANMC/LJF 11/2/2000
+ K SC Q     ;IHS/ANMC/LJF 11/2/2000 call to END^SCRPW50 in ^BSDSCO1
  ;
 SLINE(SCX,SCY,SCZ) ;Print summary line
  ;Input: SCX=element
@@ -111,6 +125,7 @@ SLINE(SCX,SCY,SCZ) ;Print summary line
  Q
  ;
 SHDR(SCX) ;Print report subheader
+ D SHDR^BSDSCO1(SCX) Q  ;IHS/ANMC/LJF 11/2/2000
  ;Input: SCX='D' for detail, 'S' for summary
  Q:SCOUT
  I SCX="S" D  Q
@@ -213,7 +228,8 @@ BTPOS(SCTP,SCDIV,SCTEAM,SCPOS,SCLINIC,SCFMT) ;Build list of patients for a posit
  ;
 FOOT1 ;Detail report footer
  N SCI
- F SCI=1:1:80 W ! Q:$Y>(IOSL-7)
+ ;F SCI=1:1:80 W ! Q:$Y>(IOSL-7)             ;IHS/ANMC/LJF 11/2/2000
+ I '$G(VALM) F SCI=1:1:80 W ! Q:$Y>(IOSL-7)  ;IHS/ANMC/LJF 11/2/2000
  W !,SCLINE
  W !,"NOTE: More than one provider may be associated with a single patient position assignment.  This output returns a separate output"
  W !?6,"line for each related provider during the date range selected."
@@ -223,7 +239,8 @@ FOOT1 ;Detail report footer
  ;
 FOOT2 ;Summary report footer
  N SCI
- F SCI=1:1:80 W ! Q:$Y>(IOSL-7)
+ ;F SCI=1:1:80 W ! Q:$Y>(IOSL-7)              ;IHS/ANMC/LJF 11/2/2000
+ I '$G(VALM) F SCI=1:1:80 W ! Q:$Y>(IOSL-7)   ;IHS/ANMC/LJF 11/2/2000
  W !,SCLINE
  W !,"NOTE: More than one provider may be associated with a single patient position assignment.  The sum of assignments related to"
  W !?6,"providers detailed in this summary is likely to be greater than the actual number of patient position assignments"

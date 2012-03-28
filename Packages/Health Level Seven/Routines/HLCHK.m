@@ -1,5 +1,13 @@
-HLCHK ;AISC/SAW-Validate HL7 Messages Received ;3/24/2004  14:09
- ;;1.6;HEALTH LEVEL SEVEN;**1,108**;Oct 13, 1995
+HLCHK ;AISC/SAW-Validate HL7 Messages Received ;7/10/2008 16:52
+ ;;1.6;HEALTH LEVEL SEVEN;**1,108,1006**;Oct 13, 1995
+ ;
+ ; Modified - IHS/CNI/TPF - 02/25/03 - Lines ACK+2 & REPLY+15
+ ; IHS/CNI/VEN/TOAD - 10 July 2008 - explanation of mod by Rick Marshall,
+ ; VISTA Expertise Network: This modification improves support for TCP
+ ; connections for MSM & Cache systems by branching to IHS's SEND^HLZTCP
+ ; instead of VA's SEND^HLLP. Tim Frazier of IHS/Chickasaw Nation
+ ; Industries developed this mod.
+ ;
  ;This routine is used for the Version 1.5 Interface Only
  D CHK D IN^HLTF(HLMTN,HLMID,HLTIME) S HLMT=$S(HLMTN="QRY":"ORF",HLMTN="ORM":"ORR",1:"ACK") D MSH G ACK:$D(HLERR)
  K HLDATA,HLL,HLMSA,HLMT,HLMTP,^TMP("HLR",$J) I HLROU="^NONE"!(HLROU="^") D KILL Q
@@ -49,7 +57,13 @@ CHK ;Validate Data in Header Segment of an HL7 Message
  S:HLROU'["^" HLROU="^"_HLROU Q
 ACK ;Create and Send 'AR' Error Type Acknowledgement Message
  K HLDATA,HLL,^TMP("HLR",$J) S HLSDATA(2)="MSA"_HLFS_"AR"_HLFS_HLMID_HLFS_HLERR
- K HLERR D SEND^HLLP,KILL
+ ;
+ ; ** IHS mod ** IHS/CNI/TPF - 02/25/03 - Support TCP connection for MSM & Cache
+ ;K HLERR D SEND^HLLP,KILL
+ K HLERR
+ D @$S($D(HLZTCP):"SEND^HLZTCP",1:"SEND^HLLP")
+ D KILL
+ ;
  Q
  ;
 REPLY ;Send a Reply/Ack to a HL7 Message Received
@@ -68,7 +82,12 @@ REPLY ;Send a Reply/Ack to a HL7 Message Received
  . I '$D(HLSDT) S I="",I=$O(HLSDATA(I)),$P(HLSDATA(I),HLFS,8)=HLSEC
  ;
  K HLERR
- D SEND^HLLP,KILL
+ ;
+ ; ** IHS mod ** IHS/CNI/TPF - 02/25/03 - Support TCP connection for MSM & Cache
+ ;D SEND^HLLP,KILL
+ D @$S($D(HLZTCP):"SEND^HLZTCP",1:"SEND^HLLP")
+ D KILL
+ ;
  K ^TMP("HLS",$J)
  Q
  ;

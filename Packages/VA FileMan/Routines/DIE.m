@@ -61,7 +61,7 @@ M S Y=$P(DQ(DQ),U,2)_U_DG G DC:DW<9
  E  S D=$O(^(0)) S:D="" D=-1
 DE I D>0 S Y=Y_U_D I DP(0)-Y!($P(DP(0),U,2)-DK),$D(^(+D,0)) S DE(DQ)=$P(^(0),U) ;Default value if this isn't same multiple we were down in before
 DC S DC=$P(^DD(+Y,0),U,4)_U_Y,%=DQ(DQ),Y=^(.01,0)
-MUL I $P(Y,U,2)'["W" S DQ(DQ)=$P($$EZBLD^DIALOG(8042,$G(DQ(DQ,"CAPTION"),$P(Y,U))),": ")_U_1_$P(Y,U,2,99) D DIE1N G D ;MULTIPLE-FIELD LABEL
+MUL I $P(Y,U,2)'["W" S DQ(DQ)=$P($$EZBLD^DIALOG(8042,$G(DQ(DQ,"CAPTION"),$P(Y,U))),":")_U_1_$P(Y,U,2,99) D DIE1N G D ;MULTIPLE-FIELD LABEL
  I DQ>1 K DQ(DQ) G E:$D(DE(DQ,0)),H
  D
  .Q:DH'[$C(126)

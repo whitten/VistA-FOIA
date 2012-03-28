@@ -1,6 +1,5 @@
-HLOAPI4 ;ALB/CJM-HL7 - Developer API's for sending & receiving messages(continued) ;08/19/2009
- ;;1.6;HEALTH LEVEL SEVEN;**131,134,146**;Oct 13, 1995;Build 16
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOAPI4 ;ALB/CJM-HL7 - Developer API's for sending & receiving messages(continued) ;02/04/2004
+ ;;1.6;HEALTH LEVEL SEVEN;**131**;Oct 13, 1995;Build 10
  ;
 SETTS(SEG,VALUE,FIELD,COMP,REP) ;
  ;Sets a value that is a timestamp in FM format into the segment in HL7
@@ -46,7 +45,7 @@ SETTS(SEG,VALUE,FIELD,COMP,REP) ;
  ..S TIME=$E($$LJ^XLFSTR(+TIME,12,0),1,12)_TZ
  .E  I VALUE("PRECISION")="S" D
  ..S TIME=$E($$LJ^XLFSTR(+TIME,14,0),1,14)_TZ
- S SEG(FIELD,REP,COMP,1)=TIME
+ S SEG(FIELD+1,REP,COMP,1)=TIME
  Q
  ;
 SETDT(SEG,VALUE,FIELD,COMP,REP) ;
@@ -83,7 +82,7 @@ SETDT(SEG,VALUE,FIELD,COMP,REP) ;
  ..S TIME=$E(TIME,1,6)
  .E  I VALUE("PRECISION")="D" D
  ..S TIME=$E(TIME,1,8)
- S SEG(FIELD,REP,COMP,1)=TIME
+ S SEG(FIELD+1,REP,COMP,1)=TIME
  Q
  ;
 SETCE(SEG,VALUE,FIELD,COMP,REP) ;
@@ -112,12 +111,12 @@ SETCE(SEG,VALUE,FIELD,COMP,REP) ;
  .S VAR="COMP",SUB=1
  E  D
  .S VAR="SUB"
- S @VAR=1,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("ID"))
- S @VAR=2,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("TEXT"))
- S @VAR=3,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("SYSTEM"))
- S @VAR=4,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("ALTERNATE ID"))
- S @VAR=5,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("ALTERNATE TEXT"))
- S @VAR=6,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("ALTERNATE SYSTEM"))
+ S @VAR=1,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("ID"))
+ S @VAR=2,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("TEXT"))
+ S @VAR=3,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("SYSTEM"))
+ S @VAR=4,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("ALTERNATE ID"))
+ S @VAR=5,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("ALTERNATE TEXT"))
+ S @VAR=6,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("ALTERNATE SYSTEM"))
  Q
  ;
 SETHD(SEG,VALUE,FIELD,COMP,REP) ;
@@ -143,9 +142,9 @@ SETHD(SEG,VALUE,FIELD,COMP,REP) ;
  .S VAR="COMP",SUB=1
  E  D
  .S VAR="SUB"
- S @VAR=1,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("NAMESPACE ID"))
- S @VAR=2,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("UNIVERSAL ID"))
- S @VAR=3,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("UNIVERSAL ID TYPE"))
+ S @VAR=1,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("NAMESPACE ID"))
+ S @VAR=2,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("UNIVERSAL ID"))
+ S @VAR=3,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("UNIVERSAL ID TYPE"))
  Q
  ;
 SETCNE(SEG,VALUE,FIELD,COMP,REP) ;
@@ -224,48 +223,12 @@ SETAD(SEG,VALUE,FIELD,COMP,REP) ;
  .S VAR="COMP",SUB=1
  E  D
  .S VAR="SUB"
- S @VAR=1,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("STREET1"))
- S @VAR=2,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("STREET2"))
- S @VAR=3,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("CITY"))
- S @VAR=4,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("STATE"))
- S @VAR=5,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("ZIP"))
- S @VAR=6,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("COUNTRY"))
- S @VAR=7,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("TYPE"))
- S @VAR=8,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("OTHER"))
+ S @VAR=1,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("STREET1"))
+ S @VAR=2,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("STREET2"))
+ S @VAR=3,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("CITY"))
+ S @VAR=4,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("STATE"))
+ S @VAR=5,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("ZIP"))
+ S @VAR=6,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("COUNTRY"))
+ S @VAR=7,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("TYPE"))
+ S @VAR=8,SEG(FIELD+1,REP,COMP,SUB)=$G(VALUE("OTHER"))
  Q
- ;
- ;** P146 START CJM
-SETXPN(SEG,VALUE,FIELD,COMP,REP) ;
- ;Sets an XPN data type (extended person name) into the segment in the specified field.
- ;IF the component is specified, then the data type is 'demoted' to a component, and its components are 'demoted' to subcomponents.
- ;
- ;Input:
- ;  SEG - (required, pass by reference) The array where the seg is being built.
- ;  VALUE  (required, pass-by-reference) These subscripts may be passed:
- ;    "FAMILY"
- ;    "GIVEN" first name
- ;    "SECOND" second and further names or initials
- ;    "SUFFIX" (e.g., JR)
- ;    "PREFIX" (e.g., DR)
- ;    "DEGREE" (e.g., MD)
- ;  FIELD (required) the sequence # of the field
- ;  COMP (optional) If specified, the data type is 'demoted' to a component value.
- ;  REP - the occurrence# (optional, defaults to 1)  For a non-repeating fields, this parameter is not necessary.
- ;Output: 
- ;   SEG - segment that is being built
- ;
- N SUB,VAR
- Q:'$G(FIELD)
- S:'$G(REP) REP=1
- I '$G(COMP) D
- .S VAR="COMP",SUB=1
- E  D
- .S VAR="SUB"
- S @VAR=1,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("FAMILY"))
- S @VAR=2,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("GIVEN"))
- S @VAR=3,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("SECOND"))
- S @VAR=4,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("SUFFIX"))
- S @VAR=5,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("PREFIX"))
- S @VAR=6,SEG(FIELD,REP,COMP,SUB)=$G(VALUE("DEGREE"))
- Q
- ;**P146 END CJM

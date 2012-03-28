@@ -1,5 +1,5 @@
-XPDMENU ;SFISC/RWF,RSD - Manage Menu items ;07/03/2003  09:12
- ;;8.0;KERNEL;**21,302**;Jul 10, 1995
+XPDMENU ;SFISC/RWF,RSD - Manage Menu items ;07/03/2003  09:12 [ 03/19/2004  12:04 PM ]
+ ;;8.0;KERNEL;**21,302,1009**;Jul 10, 1995
  Q
  ;
  ;MENU=option to add to,  OPT=option to add to MENU, SYN=synonym

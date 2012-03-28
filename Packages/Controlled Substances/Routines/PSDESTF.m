@@ -1,10 +1,9 @@
-PSDESTF ;BIR/BJW-Add Non-CS Drug to Holding file ; 26 Feb 98
- ;;3.0; CONTROLLED SUBSTANCES ;**8,66,69**;13 Feb 97;Build 13
+PSDESTF ;BIR/BJW-Add Non-CS Drug to Holding file ;26-Apr-2004 09:31;PLS
+ ;;3.0; CONTROLLED SUBSTANCES ;**8**;13 Feb 97
  ;**Y2K compliance**;display 4 digit year on va forms
- ;References to ^PSD(58.86, supported by DBIA4472
- ;
+ ; Modified - IHS/CIA/PLS - 01/28/04 - Removed references to VA FORM
  I '$D(PSDSITE) D ^PSDSET Q:'$D(PSDSITE)
- I '$D(^XUSEC("PSJ RPHARM",DUZ)),'$D(^XUSEC("PSD TECH ADV",DUZ)) W !!,"Please contact your Pharmacy Coordinator for access to",!,"destroy Controlled Substances.",!!,"PSJ RPHARM or PSD TECH ADV security key required.",! G END
+ I '$D(^XUSEC("PSJ RPHARM",DUZ)) W !!,"Please contact your Pharmacy Coordinator for access to",!,"destroy Controlled Substances.",!!,"PSJ RPHARM security key required.",! G END
  S PSDUZ=DUZ,PSDOUT=0 D NOW^%DTC S PSDT=+$E(%,1,12)
  W !!,?5,"NOTE: This Holding for Destruction transaction WILL NOT update your",!,?5,"Controlled Substances inventory balance.",!!
 ASKD ;ask disp location
@@ -40,7 +39,7 @@ ASKY ;ask ok to continue
  D ^DIR K DIR I $D(DIRUT) D MSG G END
  I 'Y G DIR
  W !!,"Creating an entry in the Destructions file..."
- F  L +^PSD(58.86,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.86,0):0 I  Q
  ;5/7/95 Fld 14 added, 7/28/95 Fld 18 added
 FIND S PSDHLD=$P(^PSD(58.86,0),"^",3)+1 I $D(^PSD(58.86,PSDHLD)) S $P(^PSD(58.86,0),"^",3)=PSDHLD G FIND
  K DA,DIC,DLAYGO S (DIC,DLAYGO)=58.86,DIC(0)="L",(X,DINUM)=PSDHLD D ^DIC K DIC,DINUM,DLAYGO
@@ -51,7 +50,9 @@ FIND S PSDHLD=$P(^PSD(58.86,0),"^",3)+1 I $D(^PSD(58.86,PSDHLD)) S $P(^PSD(58.86
  S RQTY=$P($G(^PSD(58.86,PSDHLD,0)),"^",3),PSDRN=$P($G(^(1)),"^")
  S PSDOK=1
 PRINT ;print 2321
- W !!,"Number of copies of VA FORM 10-2321? " R NUM:DTIME I '$T!(NUM="^")!(NUM="") W !!,"No copies printed!!",!! Q
+ ; IHS/CIA/PLS - 01/28/04 - Remove reference to VA FORM #
+ ;W !!,"Number of copies of VA FORM 10-2321? " R NUM:DTIME I '$T!(NUM="^")!(NUM="") W !!,"No copies printed!!",!! Q
+ W !!,"Number of copies of form? " R NUM:DTIME I '$T!(NUM="^")!(NUM="") W !!,"No copies printed!!",!! Q
  I NUM'?1N!(NUM=0)  W !!,"Enter a whole number between 1 and 9",! G PRINT
  S Y=PSDT X ^DD("DD") S PSDYR=$P(Y,",",2),PSDYR=$E(PSDYR,1,4)
  S PG=0,RECDT=$E(PSDT,4,5)_"/"_$E(PSDT,6,7)_"/"_PSDYR I EXP S (EXP1,EXPD)=$$FMTE^XLFDT(EXP,"5D") S:'$P(EXP1,"/",2) EXPD=$P(EXP1,"/")_"/"_$P(EXP1,"/",3)

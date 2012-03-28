@@ -1,11 +1,13 @@
-PSORENW ;BIR/SAB-renew main driver ;4/25/07 8:42am
- ;;7.0;OUTPATIENT PHARMACY;**11,27,30,46,71,96,100,130,148,206**;DEC 1997;Build 39
+PSORENW ;BIR/SAB-renew main driver ;25-Jan-2011 06:50;SM
+ ;;7.0;OUTPATIENT PHARMACY;**11,27,30,46,71,96,100,130,1004,1009,1010**;DEC 1997
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External references L, UL, PSOL, and PSOUL^PSSLOCK supported by DBIA 2789
  ;External reference to LK^ORX2 and ULK^ORX2 supported by DBIA 867
  ;External reference to ^PS(50.7 supported by DBIA 2223
  ;External reference to MAIN^TIUEDIT supported by DBIA 2410
- ;
+ ;Modified - IHS/CIA/DKM - 10/11/2005 - Line RENEW
+ ;           IHS/MSC/JDS - 11/20/2010 - Line RENEW+7
+ ;           IHS/MSC/JDS - 01/25/2011 - Line OERR+5
 ASK ;
  K PSORENW("FILL DATE") D FILLDT^PSODIR2(.PSORENW) S:$G(PSORENW("DFLG")) VALMSG="Renew Rx request canceled",VALMBCK="R"
  I PSORENW("DFLG")!('$D(PSORENW("FILL DATE"))) S PSORENW("QFLG")=1,PSORENW("DFLG")=0 G ASKX
@@ -27,11 +29,12 @@ EOJ ;
  K PSONOTE
  Q
 OERR ;entry for renew backdoor
- I $$LMREJ^PSOREJU1($P(PSOLST(ORN),"^",2),,.VALMSG,.VALMBCK) Q
  S PSOPLCK=$$L^PSSLOCK(PSODFN,0) I '$G(PSOPLCK) D LOCK^PSOORCPY S VALMSG=$S($P($G(PSOPLCK),"^",2)'="":$P($G(PSOPLCK),"^",2)_" is working on this patient.",1:"Another person is entering orders for this patient.") K PSOPLCK S VALMBCK="" Q
  K PSOPLCK S X=PSODFN_";DPT(" D LK^ORX2 I 'Y S VALMSG="Another person is entering orders for this patient.",VALMBCK="" D UL^PSSLOCK(PSODFN) Q
  K PSOID,PSOFDMX,PSORX("FILL DATE"),PSORENW("FILL DATE"),PSORX("QS"),PSORENW("QS"),PSOBARCD,COPY
  D PSOL^PSSLOCK($P(PSOLST(ORN),"^",2)) I '$G(PSOMSG) S VALMSG=$S($P($G(PSOMSG),"^",2)'="":$P($G(PSOMSG),"^",2),1:"Another person is editing this order."),VALMBCK="" K PSOMSG D ULPAT Q
+ ;IHS/MSC/JDS - 01/25/2011
+ I '$$SCREEN^APSPMULT(+$P($G(^PSRX(+$P(PSOLST(ORN),"^",2),0)),"^",6),,1) S VALMSG="Drug is not currently available in this facility",VALMBCK="" D ULPAT Q
  S PSOBCKDR=1,PSOFROM="NEW",PSORENW("OIRXN")=$P(PSOLST(ORN),"^",2),PSOOPT=3,(PSORENW("DFLG"),PSORENW("QFLG"),PSORX("DFLG"))=0
  S PSONEW("DAYS SUPPLY")=$P(^PSRX(PSORENW("OIRXN"),0),"^",8),PSONEW("# OF REFILLS")=$P(^(0),"^",9)
  D FULL^VALM1,ASK D:PSORENW("QFLG") KLIB^PSORENW1 D:PSORENW("QFLG") ULPAT D:PSORENW("QFLG") PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2)) G:PSORENW("QFLG") EOJ D ^PSORENW0
@@ -39,25 +42,32 @@ OERR ;entry for renew backdoor
  Q
 ULPAT K PSOMSG D UL^PSSLOCK(PSODFN) S X=PSODFN_";DPT(" D ULK^ORX2
  Q
-RENEW(PLACER,PSOCPDRG) ;passes flag to CPRS for front door renews
+ ; IHS/CIA/DKM - 10/11/2005 - Added DAYS parameter to extrinsic.
+RENEW(PLACER,PSOCPDRG,DAYS) ;passes flag to CPRS for front door renews
  ;-1=couldn't find order, 0=unable to renew, 1=renewable
  ;Placer=Pharmacy number
  N PSOSURX,PSORFRM,PSOLC,PSODRG,PSODRUG0,RXN,ST,PSONEWOI,PSOOLDOI,PSOIFLAG,PSOINA
  I $G(PLACER)["S"!('$G(PLACER)) Q "-1^Not a Valid Outpatient Medication Order."
  S RXN=PLACER I '$D(^PSRX(RXN,0)) Q "-1^Not a Valid Outpatient Medication Order."
  S RX0=^PSRX(RXN,0),PSODRG=+$P(^PSRX(RXN,0),"^",6),ST=+^("STA"),PSODRUG0=^PSDRUG(PSODRG,0)
+ I '$$SCREEN^APSPMULT(PSODRG,,1) Q "0^Sorry, this drug is not currently available in this facility"  ;IHS/MSC/JDS - 11/20/10
  S PSOIFLAG=0,PSOOLDOI=+$P($G(^PSRX(RXN,"OR1")),"^"),PSONEWOI=+$P($G(^PSDRUG(+$G(PSODRG),2)),"^") I PSONEWOI,PSONEWOI'=PSOOLDOI S PSOIFLAG=1
  S PSOINA=$P($G(^PS(50.7,PSONEWOI,0)),"^",4)
  I PSOINA,DT>PSOINA Q "0^This Orderable Item has been Inactivated."
  I ST=5 S PSOSURX=$O(^PS(52.5,"B",RXN,0)) I PSOSURX,$P($G(^PS(52.5,PSOSURX,0)),"^",7)="L" Q "0^Rx loading into a CMOP Transmission."
- S X1=DT,X2=-120 D C^%DTC I $P($G(^PSRX(RXN,2)),"^",6)<X Q "0^Prescription Expired more than 120 Days."
- S X1=DT,X2=-120 D C^%DTC I $P($G(^PSRX(RXN,3)),"^",5),$P($G(^(3)),"^",5)<X,$P(^("STA"),"^")=12 Q "0^Prescription Discontinued more than 120 Days."
+ ; IHS/CIA/DKM - 10/11/2005 - Modified next 2 lines to use DAYS parameter
+ ;S X1=DT,X2=-120 D C^%DTC I $P($G(^PSRX(RXN,2)),"^",6)<X Q "0^Prescription Expired more than 120 Days."
+ ;S X1=DT,X2=-120 D C^%DTC I $P($G(^PSRX(RXN,3)),"^",5),$P($G(^(3)),"^",5)<X,$P(^("STA"),"^")=12 Q "0^Prescription Discontinued more than 120 Days."
+ S:'$G(DAYS) DAYS=120
+ S X=$$FMADD^XLFDT(DT,-DAYS) I $P($G(^PSRX(RXN,2)),"^",6)<X Q "0^Prescription Expired more than "_DAYS_" Days."
+ S X=$$FMADD^XLFDT(DT,-DAYS) I $P($G(^PSRX(RXN,3)),"^",5),$P($G(^(3)),"^",5)<X,$P(^("STA"),"^")=12 Q "0^Prescription Discontinued more than "_DAYS_" Days."
  I $G(PSOCPDRG),$G(PSOCPDRG)'=$G(PSODRG) Q "0^Drug Mismatch, Non-Renewable."
  N PSOOCPRX,PSOOLPF,PSOOLPD,PSONOSIG S PSOOCPRX=RXN D CDOSE^PSORENW0 I PSOOLPF Q "0^Non-Renewable, invalid Dosage of "_$G(PSOOLPD)
  I PSONOSIG Q "0^Non-Renewable, missing Sig."
  I $P($G(^PSDRUG(PSODRG,2)),"^",3)'["O" Q "0^Drug is No longer used by Outpatient Pharmacy."
  I $G(^PSDRUG(PSODRG,"I"))]"",DT>$G(^("I")) Q "0^This Drug has been Inactivated."
- I ($P(PSODRUG0,"^",3)[1)!($P(PSODRUG0,"^",3)[2)!($P(PSODRUG0,"^",3)["W") Q "0^Non-Renewable "_$S($P(PSODRUG0,"^",3)["A":"Drug Narcotic.",1:"Drug.")
+ I $P(PSODRUG0,"^",3)["A",$P(PSODRUG0,"^",3)'["B" Q "0^Non-Renewable Drug Narcotic."
+ I $P(PSODRUG0,"^",3)["W" Q "0^Non-Renewable Drug."
  I $D(^PS(53,+$P(RX0,"^",3),0)),'$P(^(0),"^",5) Q "0^Non-Renewable Prescription."
  S PSOLC=$P(RX0,"^"),PSOLC=$E(PSOLC,$L(PSOLC)) I $A(PSOLC)'<90 Q "0^Max number of renewals (26) has been reached."
  I ST,ST'=2,ST'=5,ST'=6,ST'=11,ST'=12,ST'=14 Q "0^Prescritpion is in a Non-Renewable Status."
@@ -65,6 +75,8 @@ RENEW(PLACER,PSOCPDRG) ;passes flag to CPRS for front door renews
  I $O(^PS(52.41,"AQ",RXN,0)) Q "0^Duplicate Rx Renewal Request."
  K PSORFRM,PSOLC,PSODRG,PSODRUG0,RXN,ST
  Q 1_$S($G(PSOIFLAG):"^"_$G(PSONEWOI),1:"")
+ ;
+ Q
  ;
 INST1 ;Set Pharmacy Instructions array
  N PSOTZ

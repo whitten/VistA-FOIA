@@ -1,5 +1,7 @@
-XDRRMRG2 ;SF-IRMFO/GB,JLI - GET PATIENT HEALTH SUMMARY ;06/26/98  13:35
- ;;7.3;TOOLKIT;**23,29**;Apr 25, 1995
+XDRRMRG2 ;SF-IRMFO/GB,JLI - GET PATIENT HEALTH SUMMARY ;06/26/98  13:35 [ 04/02/2003   8:47 AM ]
+ ;;7.3;TOOLKIT;**23,29,1001,1003**;Apr 03, 1995
+ ;IHS/OIT/LJF 07/27/2006 PATCH 1003 use IHS merge type as default HS
+ ;                       PATCH 1003 change default on using browser to NO
  ;;
 ASK(QLIST,ABORT) ; Report-specific questions
  N DIC,Y,DTOUT,DUOUT
@@ -15,6 +17,9 @@ ASK(QLIST,ABORT) ; Report-specific questions
  ; Which Health Summary Type?
  S DIC="^GMT(142,"
  S DIC(0)="AEQM"
+ ;
+ I $$GET^XPAR("PKG","BPM USE IHS LOGIC") S DIC("B")="BPM MERGE"    ;IHS/OIT/LJF 07/27/2006 PATCH 1003 added default
+ ;
  S DIC("A")="Select Health Summary Type Name:  "
  ;S DIC("?")="Choose one, if you aren't sure, experiment!"
  D ^DIC I $D(DTOUT)!($D(DUOUT))!(Y<0) S ABORT=1 Q
@@ -33,6 +38,10 @@ PRINT2 ;Prints the record pair using the Browser of to a device.
  W ! S DIR(0)="Y",DIR("A",1)="Would you like to use the FM Browser to"
  S DIR("A")="view the record pair"
  S DIR("B")="YES",DIR("?")="You may use FM Browser to view the record pair else you will be prompted to select a device for each record."
+ ;
+ ;IHS/OIT/LJF 07/27/2006 PATCH 1003 changed default to NO
+ I $$GET^XPAR("PKG","BPM USE IHS LOGIC") S DIR("B")="NO"
+ ;
  D ^DIR S:Y=1 XDRIOP=1 Q:$D(DIRUT)
  K ^TMP("XDRRMRG1",$J),^TMP("XDRRMRG",$J)
  ;S IOP="XDRBROWSER1" D ^%ZIS Q:POP  ;Old code, delete after testing

@@ -1,12 +1,8 @@
 PSUUD0 ;BIR/TJH,PDW;PBM UNIT DOSE CONTROL POINT;07/08/1998
- ;;4.0;PHARMACY BENEFITS MANAGEMENT;;MARCH, 2005
+ ;;3.0;PHARMACY BENEFITS MANAGEMENT;**19**;Oct 15, 1998
 EN ; Entry point for processing
- ;
- ;
  D ^PSUUD1 ; Collect all data
- I '$D(^XTMP("PSU_"_PSUJOB,"PSUFLAG")) D
- .D ^PSUUD3        ; Mail reports
- .D EN^PSUUD7      ; Mail AMIS summary reports
+ I '$D(^XTMP("PSU_"_PSUJOB,"PSUFLAG")) D ^PSUUD3 ; Mail reports
  ;
  ;pt. demographics summary reports
  D PULL^PSUCP
@@ -24,7 +20,6 @@ EN ; Entry point for processing
  ;
  K ^XTMP("PSU_"_PSUJOB,"PSUFLAG1")
  D CLEAN
- K UDAM,SPEC,AMIS,DOSE,DOSTOT,DIVTOT,GTOT
  Q
 PRINT ; Entry point for printing function
  D ^PSUUD5 ; Print summary reports

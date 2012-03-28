@@ -1,5 +1,5 @@
 %ZOSV ;SFISC/AC,PUG/TOAD,HOU/DHW - View commands & special functions. ;09/15/08  16:41
- ;;8.0;KERNEL;**275,425,499**;Jul 10, 1995;Build 14
+ ;;8.0;KERNEL;**275,425,499**;Jul 10, 1995;Build 24
  ;
 ACTJ() ; # active jobs
  I $G(^XUTL("XUSYS","CNT")) Q $G(^XUTL("XUSYS","CNT"))

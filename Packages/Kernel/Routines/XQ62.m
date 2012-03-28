@@ -1,4 +1,5 @@
-XQ62 ;SEA/MJM - Generalized file look-up utility ;8/2/89  09:53;5/13/93  11:53 AM
+XQ62 ;SEA/MJM - Generalized file look-up utility ;8/2/89  09:53;5/13/93  11:53 AM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  S U="^" K ^TMP($J)
 MENU W !!,?5,"Please choose the information you would like to examine by number",!!,?10,$S($D(XQ6):"1.  The key file",1:"1.  Help Frame File"),!!,?10,"2.  Current ",$S($D(XQ6):"holders of a key",1:"editors of a help frame")

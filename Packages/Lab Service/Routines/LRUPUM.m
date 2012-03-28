@@ -1,4 +1,6 @@
-LRUPUM ;AVAMC/REG - USER MANUAL ;3/9/94  13:31
+LRUPUM ; IHS/DIR/FJE - USER MANUAL 13:31 ; [ 3/9/94 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END S DIC="^LAB(68.45,",DIC(0)="AEQM" D ^DIC K DIC G:Y<1 END S LRI=+Y,LRN=$P(Y,U,2)
  I '$O(^LAB(68.45,LRI,1,0)) W $C(7),!,"No data elements selected for ",LRN G END

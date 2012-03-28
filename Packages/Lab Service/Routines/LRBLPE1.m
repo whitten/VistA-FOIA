@@ -1,6 +1,6 @@
-LRBLPE1 ;AVAMC/REG/CYM - PATIENT DRUG LIST ;6/13/96  15:41
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPE1 ; IHS/DIR/AAB - PATIENT DRUG LIST 15:41 ; [ 6/13/96 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  K ^TMP($J) S R="" W @IOF,$C(7),$P(LRP,"^"),?30,$P(LRP,"^",9),!,"Patient has positive direct AHG(BS) test  MEDICATIONS:" S A(1)=$Y+21
  F X=0:0 S X=$O(^PS(55,DFN,"P",X)) Q:'X  I $D(^(X,0)) S Y=+^(0) I $D(^PSRX(Y,0)) S ^TMP($J,+$P(^(0),"^",6))=0
  F X=0:0 S X=$O(^TMP($J,X)) Q:'X  I $D(^PSDRUG(X,0)) D:$Y>A(1)!'$Y R Q:R[U  W !,"OUTPATIENT PHARMACY ITEM: ",$P(^(0),"^")

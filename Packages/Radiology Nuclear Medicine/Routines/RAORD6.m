@@ -1,46 +1,28 @@
-RAORD6 ;HISC/CAH - AISC/RMO-Print A Request Cont. ;05/20/09  07:28
- ;;5.0;Radiology/Nuclear Medicine;**5,10,15,18,27,45,41,75,85,99**;Mar 16, 1998;Build 5
- ; 3-p75 10/12/2006 GJC RA*5*75 print Reason for Study
- ; 4-p75 10/12/2006 KAM RA*5*75 display the request print date in the header
- ; 5-p75 10/12/2006 KAM RA*5*75 update header "Age" to "Age at req"
- ; 6-p85 06/20/2007 KAM RA*5*85 Reason for Study/Bar Code print issue
- ;                              Remedy Call - 193859
- ;Supported IA #10104 reference to ^XLFSTR
- ;Supported IA #10060 reference to ^VA(200
+RAORD6 ;HISC/CAH,FPT,GJC AISC/RMO-Print A Request Cont. ;2/2/98  15:28
+ ;;5.0;Radiology/Nuclear Medicine;**5,10,15,18,27**;Mar 16, 1998
  D HD Q:RAX["^"
- I $$PTSEX^RAUTL8(RADFN)="F" D  ;display pregnancy status for females ptch 45
- .W !,"Pregnant at time of order entry: ",?22,$S($P(RAORD0,"^",13)="y":"YES",$P(RAORD0,"^",13)="n":"NO",1:"UNKNOWN")
- .Q:'$D(RAOIFN)
- .Q:'$D(^RADPT("AO",$G(RAOIFN),RADFN))
- .N RAINVDT,RA5
- .S RAINVDT=$O(^RADPT("AO",RAOIFN,RADFN,0))
- .Q:'$G(RAINVDT)
- .S RA5=$O(^RADPT("AO",RAOIFN,RADFN,RAINVDT,0))
- .Q:'$G(RA5)
- .N R3,RAPCOMM S R3=$G(^RADPT(RADFN,"DT",$G(RAINVDT),"P",$G(RA5),0))
- .S RAPCOMM=$G(^RADPT(RADFN,"DT",+$G(RAINVDT),"P",+$G(RA5),"PCOMM"))
- .W:$P(R3,U,32)'="" !,"Pregnancy Screen: ",$S($P(R3,"^",32)="y":"Patient answered yes",$P(R3,"^",32)="n":"Patient answered no",$P(R3,"^",32)="u":"Patient is unable to answer or is unsure",1:"")
- .W:$P(R3,U,32)'="n"&$L(RAPCOMM) !,"Pregnancy Screen Comment: ",RAPCOMM
- .Q
+ N RAPRGST S RAPRGST=$P(RAORD0,"^",13)
+ I RAPRGST]"",(RAPRGST'="n") D
+ . W !!?18,$S(RAPRGST="y":"**** Patient is Pregnant ****",1:"**** Pregnancy Status is Unknown ****")
+ . Q
  W:$P(RAORD0,"^",24)="y" !!?12,"*** Universal Isolation Precautions ***"
  W:$D(RA("VDT")) !!?8,"** Note Request Associated with Visit on ",RA("VDT")," **"
- W !!,"Requested:",?18,RA("PRC INFO")
+ W !!,"Requested:",?18,RA("PRC INFO"),!
  I $D(^TMP($J,"RA DIFF PRC")),('$D(RAFOERR)),('$D(RAOPT("REG"))),('$D(RAOPT("ORDEREXAM"))),('$D(RAOPT("ADDEXAM"))) D  Q:RAX["^"
  . ; don't print registered procedure info (CPT, Proc Type, Imaging
  . ; Type) if entering through 'Request An Exam', 'Register Patient
  . ; for Exams' or 'Add Exams To Last Visit'.  Don't print if ordered
  . ; through ANY version of OE/RR.  If ordered through OE/RR, RAFOERR
  . ; will be defined. (Set in RAORD1 & RAO7RO)
- . N RAT,RA18NLIN S RAT="",RA18NLIN=0 W !,"Registered:"
+ . N RAT,RA18NLIN S RAT="",RA18NLIN=0 W "Registered:"
  . F  S RAT=$O(^TMP($J,"RA DIFF PRC",RAT)) Q:RAT=""  D  Q:RAX["^"
+ .. S:($Y+6)>IOSL RA18NLIN=1
  .. D HD:($Y+6)>IOSL Q:RAX["^"
- .. W:RA18NLIN ! W ?12,RAT
- .. S RA18NLIN=1
+ .. I RA18NLIN'=0 W ! S RA18NLIN=0
+ .. W ?12,RAT,!
  .. Q
  . Q
- I $G(RACMFLG("O"))'="" W !?12,"** The requested procedure has contrast media assigned **"
- I $G(RACMFLG("R"))'="" W !?12,"** A registered procedure uses contrast media **"
- W:$D(RA("MOD")) !,"Procedure Modifiers:",?22,RA("MOD")
+ W:$D(RA("MOD")) "Procedure Modifiers:",?22,RA("MOD")
  I RA("PRC MSG") D  Q:RAX["^"
  . N A,B,C,X S (A,C)=0 W !,"Procedure Message: ",!
  . F  S A=$O(^RAMIS(71,+$P(RAORD0,"^",2),3,A)) Q:A'>0!(RAX["^")  D
@@ -106,19 +88,14 @@ RAORD6 ;HISC/CAH - AISC/RMO-Print A Request Cont. ;05/20/09  07:28
 BAR ;Print bar-coded SSN on request form if term type has bar code setup
  I $G(RASSN)'?3N1"-"2N1"-".E G CONT
  S X3=$E(RASSN,1,3)_$E(RASSN,5,6)_$E(RASSN,8,11)
- ; 06/20/2007 KAM/BAY RA*5*85 Added 2 line feeds
- D PSET^%ZISP I IOBARON]"",(IOBAROFF]"") W !!!?49,@IOBARON,X3,@IOBAROFF,!
+ D PSET^%ZISP I IOBARON]"",(IOBAROFF]"") W !?49,@IOBARON,X3,@IOBAROFF,!
  D PKILL^%ZISP
  ;
-CONT D HD:($Y+6)>IOSL Q:RAX["^"  D ODX^RABWUTL(RAOIFN) ; * Billing Aware *
- D HD:($Y+6)>IOSL Q:RAX["^"
- ; 06/20/2007 KAM/BAY RA*5*85 Added line feed to the next line
- I $L(RA("STY_REA")) W ! D DIWP^RAUTL5(1,68,"Reason for Study: "_RA("STY_REA")) ;3-p75
- D HD:($Y+6)>IOSL Q:RAX["^"  K ^UTILITY($J,"W"),^(1) W !,"Clinical History:",! K RAXX F RAV=0:0 S RAV=$O(^RAO(75.1,RAOIFN,"H",RAV)) Q:'RAV  I $D(^(RAV,0)) S RAXX=^(0) D HD:($Y+6)>IOSL Q:RAX["^"  S X=RAXX D ^DIWP
+CONT D HD:($Y+6)>IOSL Q:RAX["^"  K ^UTILITY($J,"W"),^(1) W !!,"Clinical History:",! K RAXX F RAV=0:0 S RAV=$O(^RAO(75.1,RAOIFN,"H",RAV)) Q:'RAV  I $D(^(RAV,0)) S RAXX=^(0) D HD:($Y+6)>IOSL Q:RAX["^"  S X=RAXX D ^DIWP
  Q:RAX["^"  D HD:($Y+6)>IOSL Q:RAX["^"  D ^DIWW:$D(RAXX),HD:($Y+6)>IOSL Q:RAX["^"  D WORK ;always print bottom section of form 012601
  W ! S BOT=IOSL-($Y+4) S:($E(IOST,1,6)="P-BROW"&($D(DDBRZIS))) BOT=5 F BT=1:1:BOT W !
  K BOT,BT
- W !,"VA Form 519a-ADP"
+ ;W !,"VA Form 519a-ADP"  ;IHS/ITSC/CLS 02/09/2004
  Q
  ;
 WORK W !,RALNE,!,"Date Performed: ________________________",?46
@@ -131,25 +108,46 @@ WORK W !,RALNE,!,"Date Performed: ________________________",?46
  D HD:($Y+6)>IOSL Q:RAX["^"
  W !,"Comments:"
  ;
-TC D EN30^RAO7PC1(RAOIFN),TC^RAORD61 Q:RAX["^"
+TC D EN30^RAO7PC1(RAOIFN)
+ N RA18FL,RA18ARR,RA18EX,RA18CNI,RA18DTI,RA18PRC,RA18ND,RA18TC S RA18EX=0,RA18CNI=0
+ S RA18DTI=$O(^RADPT("AO",RAOIFN,RADFN,0)) G:RA18DTI="" DASHLN
+ F  S RA18CNI=$O(^TMP($J,"RAE2",RADFN,RA18CNI)) Q:+RA18CNI=0  D  Q:RAX["^"
+ . S RA18PRC=""
+ . F  S RA18PRC=$O(^TMP($J,"RAE2",RADFN,RA18CNI,RA18PRC)) Q:RA18PRC=""  D  Q:RAX["^"
+ .. ;case info
+ .. W !,"Case No: "_$P($G(^RADPT(RADFN,"DT",RA18DTI,"P",RA18CNI,0)),"^")
+ .. S RA18FL=0,RA18ARR("FT")=""
+ .. S RA18TC=0 F  S RA18TC=$O(^RADPT(RADFN,"DT",RA18DTI,"P",RA18CNI,"F",RA18TC)) Q:RA18TC=""  S RA18ARR("F")=$G(^RADPT(RADFN,"DT",RA18DTI,"P",RA18CNI,"F",RA18TC,0),0) D  Q:$L(RA18ARR("FT"))>32
+ ... I RA18ARR("F")'=0 S RA18ARR("FT")=RA18ARR("FT")_$P($G(RA18ARR("F")),"^",2)_"-"_$P($G(^RA(78.4,$P($G(RA18ARR("F")),"^",1),0)),"^",1)_";"
+ .. S RA18TC=0 F  S RA18TC=$O(^RADPT(RADFN,"DT",RA18DTI,"P",RA18CNI,"TC",RA18TC)) Q:RA18TC=""  S RA18ARR("T",RA18TC,0)=$G(^RADPT(RADFN,"DT",RA18DTI,"P",RA18CNI,"TC",RA18TC,0),0) D
+ ... I RA18ARR("T",RA18TC,0)'=0 W:RA18FL>0 ! W ?14,"Tech: " I RA18ARR("T",RA18TC,0)'="" S RA18ARR("N")=$$GET1^DIQ(200,RA18ARR("T",RA18TC,0),.01) W $E($P(RA18ARR("N"),"^",1),1,18)
+ ... W:(RA18FL'>0) ?38,"  Film: "_$E(RA18ARR("FT"),1,32)
+ ... S RA18FL=RA18FL+1
+ .. I '$D(RA18ARR("T")) W ?14,"Tech: ",?38,"  Film: "_$E(RA18ARR("FT"),1,32)
+ .. K RA18ARR("T"),RA18ARR("F"),RA18ARR("N")
+ .. I $O(^TMP($J,"RAE2",RADFN,RA18CNI,RA18PRC,"TCOM",0))>0 D  Q
+ ... ;tech comm
+ ... W !
+ ... S RA18EX=$$TXTOUT^RAUTL11(^TMP($J,"RAE2",RADFN,RA18CNI,RA18PRC,"TCOM",1),1,70,-1,"",4,1,1,1)
+ ... D HD:($Y+6)>IOSL
+ Q:RAX["^"
  ;
 DASHLN W ! F I=1:1:5 D HD:($Y+6)>IOSL Q:RAX["^"  W !,RALNE ;P18
+ W:($Y+6)'>IOSL !!,RALNE1 S RACONT="" D HD:($Y+8)>IOSL Q:RAX["^"  D EXAM^RADEM1 K RACONT W !,RALNE1 ;IHS/ITSC/CLS 02/09/2004 print last 5 exams/orders
  Q
  ;
 HD S:'$D(RAPGE) RAPGE=0 D CRCHK Q:$G(RAX)["^"  S RATAB=$S($D(RA("ILC")):1,1:16)
- ;10/12/2006 KAM Remedy tk 162508 Changed next line added "Printed:"
- W:$Y @IOF W !?RATAB,">>"_$S($D(RACRHD):"Discontinued ",1:"")_"Rad/NM Consultation" W:$D(RA("ILC")) " for ",$E(RA("ILC"),1,17) W "<<Printed:" S X="NOW",%DT="T" D ^%DT K %DT D D^RAUTL W ?52,Y ;P18 4-P74
+ W:$Y @IOF W !?RATAB,">>"_$S($D(RACRHD):"Discontinued ",1:"")_"Rad/Nuc Med Consultation" W:$D(RA("ILC")) " for ",$E(RA("ILC"),1,17) W "<<" S X="NOW",%DT="T" D ^%DT K %DT D D^RAUTL W ?52,Y ;P18
  S RAPGE=RAPGE+1 W ?71,"Page ",RAPGE ;P18
  W !,RALNE1,!,"Name         : ",RA("NME"),?46,"Urgency    : ",RA("OUG") W:$D(RA("PORTABLE")) "  *PORTABLE*"
  W !,"Pt ID Num    : ",RASSN,?46,"Transport  : ",RA("TRAN")
  S Y=RA("DOB") D D^RAUTL W !,"Date of Birth: ",Y,?46,"Patient Loc: ",$E(RA("HLC"),1,20)
- ;10/12/2006 KAM Remedy Ticket 162508 changed next line
- W !,"Age at req   : ",RA("AGE"),?46,"Phone Ext  : ",RA("HPH") ;5-P75
+ W !,"Age          : ",RA("AGE"),?46,"Phone Ext  : ",RA("HPH")
  W !,"Sex          : ",$S(RA("SEX")="M":"MALE",1:"FEMALE") W:$D(RA("ROOM-BED")) ?46,"Room-Bed   : ",RA("ROOM-BED") W !,RALNE1
  W:$P(RAORD0,U,5)=1 !,"***C A N C E L L E D***",?56,"***C A N C E L L E D***"
  Q
  ;
-CRCHK I RAPGE,$E(IOST)="C" W !!,$C(7),"Press RETURN to continue or '^' to stop " R X:DTIME S RAX=X
+CRCHK I RAPGE,$E(IOST)="C" W !!,*7,"Press RETURN to continue or '^' to stop " R X:DTIME S RAX=X
  Q
 ID(X,Y) ; Checks for the following condition:
  ; 1) Attending Phy. Current & Attending Phy. At Order are the same.

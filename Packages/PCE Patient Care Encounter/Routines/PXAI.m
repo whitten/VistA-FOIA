@@ -1,22 +1,22 @@
-PXAI ;ISL/JVS,ISA/KWP,ESW - PCE DRIVING RTN FOR 'DATA2PCE' API ;6/20/03 11:15am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**15,74,69,102,111,112,130,164,168**;Aug 12, 1996;Build 14
+PXAI ;ISL/JVS,ISA/KWP,ESW - PCE DRIVING RTN FOR 'DATA2PCE' API ; 6/20/03 11:15am
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**15,74,69,102,111,112**;Aug 12, 1996
  Q
  ;
  ;+  1       2       3        4        5       6      7      8       9
-DATA2PCE(PXADATA,PXAPKG,PXASOURC,PXAVISIT,PXAUSER,PXANOT,ERRRET,PXAPREDT,PXAPROB,PXACCNT) ;+API to pass data for add/edit/delete to PCE.
+DATA2PCE(PXADATA,PXAPKG,PXASOURC,PXAVISIT,PXAUSER,PXANOT,ERRRET,PXAPREDT,PXAPROB) ;+API to pass data for add/edit/delete to PCE.
  ;+  PXADATA  (required)
  ;+  PXAPKG   (required)
  ;+  PXASOURC (required)
  ;+  PXAVISIT (optional) is pointer to a visit for which the data is to
- ;+        be related.  If the visit is not known then there must be
+ ;+        be related.  If the visit is not know then there must be
  ;+        the ENCOUNTER nodes needed to lookup/create the visit.
  ;+  PXAUSER  (optional) this is a pointer to the user adding the data.
  ;+  PXANOT   (optional) set to 1 if errors are to be displayed to the screen should only be set while writing and debugging the initial code.
  ;+  ERRRET   (optional) passed by reference.  If present will return PXKERROR
  ;+                      array elements to the caller.
- ;+  PXAPREDT  (optional) Set to 1 if you want to edit the Primary Provider
- ;+            only use if for the moment that editing is being done. (dangerous)
- ;+  PXAPROB   (optional) A dotted variable name. When errors and
+ ;+  PXAPREDT  (optional) Set to 1 if you want to edit the Primary Provder
+ ;+            only use if for the moment that editing is being done. (dangeous)
+ ;+  .PXAPROB   (optional) A dotted variable name. When errors and
  ;+             warnings occur, They will be passed back in the form
  ;+            of an array with the general description of the problem.
  ;+ IF ERROR1 - (GENERAL ERRORS)
@@ -34,12 +34,9 @@ DATA2PCE(PXADATA,PXAPKG,PXASOURC,PXAVISIT,PXAUSER,PXANOT,ERRRET,PXAPREDT,PXAPROB
  ;+      PXAPROB($J,1,"WARNING3","ENCOUNTER",1,"SC")=REASON
  ;+      PXAPROB($J,1,"WARNING3","ENCOUNTER",1,"MST")=REASON
  ;+      PXAPROB($J,1,"WARNING3","ENCOUNTER",1,"HNC")=REASON
- ;+      PXAPROB($J,1,"WARNING3","ENCOUNTER",1,"CV")=REASON
- ;+      PXAPROB($J,1,"WARNING3","ENCOUNTER",1,"SHAD")=REASON
  ;+ IF ERROR4 - (PROBLEM LIST ERRORS)
  ;+      PXAPROB($J,6,"ERROR4","PX/DL",(SUBSCRIPT FROM PXADATA))=REASON
- ;+ PXACCNT    (optional)  passed by reference.  Returns the PFSS Account Reference if known.
- ;              Returned as null if the PFSS Account Reference is located in the Order file(#100)
+ ;+
  ;+
  ;+
  ;+ Returns:
@@ -84,6 +81,11 @@ PRV ;--PROVIDER
  . D PRV^PXAIPRV I $G(PXAERRF) D ERR
  K PRI ;--FLAG FOR PRIMARY PROVIDER
  K PXAERR
+CPT ;--PROCEDURE
+ S PXAK=0 F  S PXAK=$O(@PXADATA@("PROCEDURE",PXAK))  Q:PXAK=""  D
+ . D CPT^PXAICPT I $G(PXAERRF) D ERR
+ K PXAERR
+ ;
 POV ;--DIAGNOSIS
  S (PXAK,PRIMFND)=0
  F  S PXAK=$O(@PXADATA@("DX/PL",PXAK)) Q:(PXAK="")  D  Q:PRIMFND
@@ -92,11 +94,6 @@ POV ;--DIAGNOSIS
  I $D(@PXADATA@("DX/PL")) D POVPRM(PXAVISIT,PRIMFND,.PXADATA) D
  .S PXAK=0 F  S PXAK=$O(@PXADATA@("DX/PL",PXAK))  Q:PXAK=""  D
  ..D POV^PXAIPOV I $G(PXAERRF) D ERR
- K PXAERR
- ;
-CPT ;--PROCEDURE
- S PXAK=0 F  S PXAK=$O(@PXADATA@("PROCEDURE",PXAK))  Q:PXAK=""  D
- . D CPT^PXAICPT I $G(PXAERRF) D ERR
  K PXAERR
  ;
 EDU ;--PATIENT EDUCATION
@@ -133,7 +130,6 @@ SKIN ;--SKIN TEST
  . M ERRRET=PXKERROR
  . D PRIM^PXAIPRV K PRVDR
  . D EVENT^PXKMAIN
- S PXACCNT=$P($G(^AUPNVSIT(PXAVISIT,0)),"^",26) ;PX*1.0*164 ;Sets the PFSS Account Reference, if any
  K ^TMP("PXK",$J),PXAERR,PXKERROR
  Q $S($G(PXAERRF):-1,1:1)
  ;

@@ -1,4 +1,5 @@
-LRUPAD ;AVAMC/REG/WTY - LAB ACCESSION LIST BY DATE ;9/25/00
+LRUPAD ;AVAMC/REG/WTY - LAB ACCESSION LIST BY DATE ;DEC 09, 2008 8:30 AM
+ ;;5.2;LAB SERVICE;**1002,1018,1025**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**72,248**;Sep 27, 1994
  ;
  ;Reference to ^%DT supported by IA #10003
@@ -26,10 +27,17 @@ H ;from LRUPAD1
  I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU
  W !,LRO(68)," (",LRSTR,"-",LRLST,")",! W:$D(C)#2 "Collection Sample: ",C,!
- W "# = Not VA patient  ",$S(LRSS="CY":"* = Reviewed by pathologist",1:""),?57,$S("AUSPCYEMMI"[LRSS:"% =Incomplete",1:"")
+ ;W "# = Not VA patient  ",$S(LRSS="CY":"* = Reviewed by pathologist",1:""),?57,$S("AUSPCYEMMI"[LRSS:"% =Incomplete",1:"")
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ W "# = Not IHS patient  ",$S(LRSS="CY":"* = Reviewed by pathologist",1:""),?57,$S("AUSPCYEMMI"[LRSS:"%  =Incomplete",1:"")  ;IHS/ANMC/CLS 08/18/96
+ ;----- EN DIHS MODIFICATIONS
  W ?60,$S("CH"[LRSS:"%=Test not verified",1:"") I LRSS="CY" W ?72,"Slide"
+ ; I "CHMI"[LRSS W ?62,"Test",?76,"Tech",!,LR("%") Q
  W !,"Acc #",?8,"Date",?14,$S(LRSS="MI":"Patient/Source",1:"Patient"),?34,"ID",?40,"Loc" W:LRSS'="AU" ?46,$S("SPCYEM"[LRSS:"Physician",1:"Spec/sample") I LRSS="CY" W ?72,"Count"
- I "CHMI"[LRSS W ?62,"Test",?76,"Tech",!,LR("%") Q
+ ; I "CHMI"[LRSS W ?62,"Test",?76,"Tech",!,LR("%") Q
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1025 MODIFICATION -- Need $G to prevent <UNDEFINED> error
+ I "CHMI"[LRSS W ?62,"Test",?76,"Tech",!,$G(LR("%")) Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1025 MODIFICATION
  W:LRSS="AU" ?46,"Date/time of Autopsy" W !,LR("%") Q
 S W !!,"Enter following letter for appropriate listing:"
  W !?5,"'A'  for listing by accession number"

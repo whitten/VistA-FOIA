@@ -1,5 +1,5 @@
 XINDX7 ;ISC/RWF - SETUP ENVITOMENT ;04/22/08  15:12
- ;;7.3;TOOLKIT;**20,27,48,68,110**;Apr 25, 1995;Build 11
+ ;;7.3;TOOLKIT;**20,27,48,68,110**;Apr 25, 1995;Build 16
  ;To call XINDEX from elsewere.
  ;D SETUP^XINDX7 then load routines into ^UTILITY($J,1,<rtn name>,0,n,0)
  ;with @root@(0)='line count' and @root@(n,0)=a routine line

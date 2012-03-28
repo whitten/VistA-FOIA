@@ -1,4 +1,5 @@
 XPDIGP ;SFISC/RSD - load Global Distribution ;05/17/2006
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1008,1016**;APR 1, 2003;Build 5
  ;;8.0;KERNEL;**41,422**;Jul 10, 1995;Build 2
  ;XPDT is undefine if PKG^XPDIL1 aborted, need to close device
  I '$D(XPDT) D ^%ZISC Q
@@ -34,8 +35,14 @@ DISP ;display the contents
  Q
 GPI ;global package input
  N DIRUT,GP,GR,X,XPDSEQ,Y,Z
- ;start reading the HFS again,  rwf, changed all read timeout from 0 to 1.
- U IO R X:10,Y:10
+ ;start reading the HFS again
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1008
+ ;The line below is commented out and replaced by new line to remove
+ ;the timeouts on the READ to prevent a timing problem in Cache when
+ ;reading from a host file.  Original mod by IHS/ITSC/AEF/04/23/03
+ ;U IO R X:0,Y:0
+ U IO R X,Y
+ ;----- END IHS MODIFICATION - XU*8.0*1008
  ;the next read must be the GLOBAL
  I X'="**GLOBAL**" U IO(0) W !!,"ERROR in HFS file format!" S XPDQUIT=1 Q
  U IO(0) D BMES^XPDUTL(" "_Y) U IO
@@ -44,7 +51,13 @@ GPI ;global package input
  K:XPDT("GP",GP) @Y
  ;X=global ref, Y=global value. DIRUT is when user is prompted for
  ;next disk in NEXTD and they abort
- F  R X:10,Y:10 Q:X="**END**"  D  I $D(DIRUT) S XPDQUIT=1 Q
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1008
+ ;The line below is commented out and replace by new line to remove
+ ;the timeouts on the READ to prevent a timing problem in Cache when
+ ;reading from a host file.  Original mod by  IHS/ITSC/AEF/04/23/03
+ ;F  R X:0,Y:0 Q:X="**END**"  D  I $D(DIRUT) S XPDQUIT=1 Q
+ F  R X,Y Q:X="**END**"  D  I $D(DIRUT) S XPDQUIT=1 Q
+ .;----- END IHS MODIFIVATION - XU*8.0*1008
  .;new global
  .I X="**GLOBAL**" D  Q
  ..;completes last global check point

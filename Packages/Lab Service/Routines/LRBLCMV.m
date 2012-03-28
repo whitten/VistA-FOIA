@@ -1,6 +1,7 @@
-LRBLCMV ;AVAMC/REG - UNIT PHENOTYPE BY ABO/RH ;9/13/89  19:30 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLCMV ; IHS/DIR/FJE - UNIT PHENOTYPE BY ABO/RH 9/13/89 19:30 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END W !!?20,"CMV ANTIBODY tested units" S:'$D(DTIME) DTIME=60 S C(9)="POSNEG"
 SEL W !!,"Select CMV ANTIBODY: NEG// " R X:DTIME G:X[U!'$T END S:X="" X="NEG"
  I X'?1"N".U&(X'?1"P".U)!($L(X)>3)!(C(9)'[X) W $C(7),!,"Enter 'POS' for CMV ANTIBODY POSITIVE units",!,"Enter 'NEG' for CMV ANTIBODY NEGATIVE units." G SEL

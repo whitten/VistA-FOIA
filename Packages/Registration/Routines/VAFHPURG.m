@@ -1,5 +1,5 @@
-VAFHPURG ;ALB/JLU;Purging routine. ; 8/9/04 11:00am
- ;;5.3;Registration;**91,219,530,604**;Jun 06, 1996
+VAFHPURG ;ALB/JLU;Purging routine.
+ ;;5.3;Registration;**91,219**;Jun 06, 1996
  ;
  ;This routine will delete all entries from the ADT/HL7 PIVOT
  ;(#391.71) file that are older than number of days specified
@@ -21,8 +21,7 @@ EN ;entry point
  D DD^%DT
  W:'$D(ZTQUEUED) !!,"All ADT/HL7 PIVOT entries older than ",Y," will be deleted!",!
  D KIL1
- ;iofo-bay pines;vmp;teh; modification to quit logical to prevent null subscript.
- F VAFHX=0:0 S VAFHX=$O(^VAT(391.71,"B",VAFHX)) Q:VAFHX>VAFHEDT!(VAFHX="")  D DELETE
+ F VAFHX=0:0 S VAFHX=$O(^VAT(391.71,"B",VAFHX)) Q:VAFHX>VAFHEDT  D DELETE
  D EXIT
  ;D CLEAN
  ;D EXIT
@@ -33,8 +32,6 @@ DELETE ;this will do that actual deletion.
  N DA,DIK,EVENT,MOVE,OUT
  S DA=0
  F  S DA=+$O(^VAT(391.71,"B",VAFHX,DA)) Q:('DA)  D
- .;DG*604 - skip if no zero node
- .I '$D(^VAT(391.71,DA,0)) Q
  .;don't delete inpatient event records before discharge
  .S EVENT=+$P(^VAT(391.71,DA,0),U,4)
  .I EVENT=1 D  Q:OUT

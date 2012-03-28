@@ -1,14 +1,15 @@
-PSOREF ;BIR/SAB-refill data entry ;4/25/07 8:45am
- ;;7.0;OUTPATIENT PHARMACY;**1,23,27,36,46,78,130,131,148,206**;DEC 1997;Build 39
+PSOREF ;BIR/SAB-refill data entry ;21-Nov-2010 19:42;SM
+ ;;7.0;OUTPATIENT PHARMACY;**1,23,27,36,46,78,130,131,1001,1006,1009**;DEC 1997
  ;External reference to ^PSDRUG supported by DBIA 221
  ;External references PSOL and PSOUL^PSSLOCK supported by DBIA 2789
  ;
+ ; Modified - IHS/CIA/PLS - 10/27/04 - Line SPEED+16
+ ;            IHS/MSC/PLS - 11/20/2010 - Line REFILL+6
 EOJ ;
  K PSOMSG,PSOREF,PSORX("BAR CODE"),PSOLIST,LFD,MAX,MIN,NODE,PS,PSOERR,REF,RF,RXO,RXN,RXP,RXS,SD,VAERR,PSORX("FILL DATE")
  D PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2))
  Q
 OERR ;single refil
- I $$LMREJ^PSOREJU1($P(PSOLST(ORN),"^",2),,.VALMSG,.VALMBCK) Q
  I $D(RXRP($P(PSOLST(ORN),"^",2))) S VALMBCK="",VALMSG="A Reprint Label has been requested!" Q
  I $D(RXPR($P(PSOLST(ORN),"^",2))) S VALMBCK="",VALMSG="A Partial has already been requested!" Q
  I $D(RXRS($P(PSOLST(ORN),"^",2))) S VALMBCK="",VALMSG="Rx is being pulled from suspense!" Q
@@ -28,7 +29,7 @@ SPEED ;speed refill
  K PSOREF,PSOFDR,DIR,DUOUT,DIRUT S DIR("A")="Select Orders by number",DIR(0)="LO^1:"_PSOCNT D ^DIR I $D(DTOUT)!($D(DUOUT)) K DIR,DIRUT,DTOUT,DUOUT S VALMBCK="" Q
  K DIR,DIRUT,DTOUT,PSOOELSE,DTOUT I +Y S (ASK,SPEED,PSOOELSE)=1 D FULL^VALM1 S LST=Y D  G:$G(PSOREF("DFLG"))!($G(PSOREF("QFLG"))) SPEEDX
  .F ORD=1:1:$L(LST,",") Q:$P(LST,",",ORD)']""!($G(PSOREF("QFLG")))  S ORN=$P(LST,",",ORD) D:+PSOLST(ORN)=52
- ..I $$LMREJ^PSOREJU1($P(PSOLST(ORN),"^",2)) W $C(7),!!,"Rx "_$$GET1^DIQ(52,$P(PSOLST(ORN),"^",2),.01)_" has OPEN/UNRESOLVED 3rd Party Payer Reject!" K DIR D PAUSE^VALM1 Q
+ ..;F ORD=1:1:$L(LST,",") Q:$P(LST,",",ORD)']""  S ORN=$P(LST,",",ORD) D:+PSOLST(ORN)=52
  ..D PSOL^PSSLOCK($P(PSOLST(ORN),"^",2)) I '$G(PSOMSG) W $C(7),!!,$S($P($G(PSOMSG),"^",2)'="":$P($G(PSOMSG),"^",2),1:"Another person is editing Rx "_$P(^PSRX($P(PSOLST(ORN),"^",2),0),"^")),! D PAUSE^VALM1 K PSOMSG Q
  ..K PSOMSG I $D(RXRP($P(PSOLST(ORN),"^",2))) W $C(7),!!,"A Reprint Label has been requested!" D ULK D PAUSE^VALM1 Q
  ..I $D(RXPR($P(PSOLST(ORN),"^",2))) W $C(7),!!,"A Partial has already been requested!" D ULK D PAUSE^VALM1 Q
@@ -36,7 +37,12 @@ SPEED ;speed refill
  ..K PSOXFLAG I $D(RXRS($P(PSOLST(ORN),"^",2))) W $C(7),!!,"Rx is being pulled from suspense!" D ULK D PAUSE^VALM1 Q
  ..I $P($G(^PSRX($P(PSOLST(ORN),"^",2),"STA")),"^")=11 D  D ULK Q
  ...W $C(7),!!?5,"RX "_$P($G(^PSRX($P(PSOLST(ORN),"^",2),0)),"^")_" is in an EXPIRED status." W ! K DIR S DIR(0)="E",DIR("A")="Press Return to Continue" D ^DIR K DIR
- ..S PSOREF("IRXN")=$P(PSOLST(ORN),"^",2) I ASK D ^PSOREF1 S ASK=0 D:$G(PSOREF("QFLG")) ULK Q:$G(PSOREF("QFLG"))
+ ..; IHS/CIA/PLS - 10/27/04 - Added call to IHSSET for each successive prescription refill
+ ..;S PSOREF("IRXN")=$P(PSOLST(ORN),"^",2) I ASK D ^PSOREF1 S ASK=0 D:$G(PSOREF("QFLG")) ULK Q:$G(PSOREF("QFLG"))
+ ..S PSOREF("IRXN")=$P(PSOLST(ORN),"^",2)
+ ..I ASK D  Q:$G(PSOREF("QFLG"))
+ ...D ^PSOREF1 S ASK=0 D:$G(PSOREF("QFLG")) ULK
+ ..E  D IHSSET^PSOREF1
  ..N RXN D FULL^VALM1 S:$G(PSOFROM)'="NEW" PSOFROM="REFILL" S PSOREF("DFLG")=0,PSOREF("IRXN")=$P(PSOLST(ORN),"^",2)
  ..I PSOREF("DFLG") D EOJ S VALMBCK="R" Q
  ..D ^PSOREF0 D ULK
@@ -58,7 +64,6 @@ ASK S DIR(0)="FO^5:245^K:X'?3N1""-""1.N X",DIR("A")="WAND BARCODE"
  .K DIR,DIRUT,DTOUT,PSOOELSE,DTOUT
  .S (BCREF,ASK,SPEED,PSOOELSE)=1 D FULL^VALM1 D
  ..F ORD=1:1:$L(LST,",") Q:$P(LST,",",ORD)']""!($G(PSOREF("QFLG")))  S ORN=$P(LST,",",ORD) D:+PSOLST(ORN)=52
- ...I $$LMREJ^PSOREJU1($P(PSOLST(ORN),"^",2)) W $C(7),!!,"Rx "_$$GET1^DIQ(52,$P(PSOLST(ORN),"^",2),.01)_" has OPEN/UNRESOLVED 3rd Party Payer Reject!" K DIR D PAUSE^VALM1 Q
  ...D PSOL^PSSLOCK($P(PSOLST(ORN),"^",2)) I '$G(PSOMSG) W $C(7),!!,$S($P($G(PSOMSG),"^",2)'="":$P($G(PSOMSG),"^",2),1:"Another person is editing Rx "_$P(^PSRX($P(PSOLST(ORN),"^",2),0),"^")),! D PAUSE^VALM1 K PSOMSG Q
  ...K PSOMSG I $D(RXRP($P(PSOLST(ORN),"^",2))) W $C(7),!!,"A Reprint Label has been requested for Rx "_$P(^PSRX($P(PSOLST(ORN),"^",2),0),"^"),! D ULK D PAUSE^VALM1 Q
  ...I $D(RXPR($P(PSOLST(ORN),"^",2))) W $C(7),!!,"A Partial has already been requested for Rx "_$P(^PSRX($P(PSOLST(ORN),"^",2),0),"^"),! D ULK D PAUSE^VALM1 Q
@@ -80,11 +85,12 @@ REFILL(PLACER) ;passes flag to CPRS for front door refill request
  I $G(PLACER)["S"!('$G(PLACER)) Q "-1^Not a Valid Outpatient Medication Order."
  S RXN=PLACER I '$D(^PSRX(RXN,0)) Q "-1^Not a Valid Outpatient Medication Order."
  S RX0=^PSRX(RXN,0),PSODRG=$P(^PSRX(RXN,0),"^",6),ST=+^("STA"),PSODRUG0=^PSDRUG(PSODRG,0),PSODEA=$P($G(^(0)),"^",3),DIV=$P(^PSRX(RXN,2),"^",9),PSORFRM=$P(RX0,"^",9)
+ I '$$SCREEN^APSPMULT(PSODRG,,1) Q "0^Sorry, this drug is not currently available in this facility"  ;IHS/MSC/JDS - 11/20/2010
  I PSODEA["2" Q "0^Schedule 2 Drug. Order cannot be refilled."
  I '$P($G(^PSRX(RXN,"OR1")),"^"),'$P($G(^PSDRUG(PSODRG,2)),"^") Q "0^Cannot Refill. Drug not matched to a Pharmacy Orderable Item."
  I '$P($G(^PSRX(RXN,"OR1")),"^"),$P($G(^PSDRUG(PSODRG,2)),"^") S $P(^PSRX(RXN,"OR1"),"^")=$P(^PSDRUG(PSODRG,2),"^")
  S CLOZPAT=$S($P($G(^PSDRUG(PSODRG,"CLOZ1")),"^")="PSOCLO1":1,1:0)
- I 'CLOZPAT I PSODEA["A"&(PSODEA'["B")!(PSODEA["F")!(PSODEA[1)!(PSODEA[2) Q "0^"_$S(PSODEA["A":"Narcotic Drug. ",1:"")_"Order Non-Refillable."
+ I 'CLOZPAT I PSODEA["A"&(PSODEA'["B")!(PSODEA["F") Q "0^"_$S(PSODEA["F":"",1:"Narcotic Drug. ")_"Order Non-Refillable."
  K CLOZPAT I DT>$P($G(^PSRX(RXN,2)),"^",6) Q "0^Non-Refillable.  Prescription has Expired."
  I $P(^PSRX(RXN,3),"^",2)>$P(^PSRX(RXN,2),"^",6) Q "0^Next Refill Date Past Expiration Date.  New Order Required."
  I '$P($G(^PS(59,DIV,1)),"^",11),$G(^PSDRUG(PSODRG,"I"))]"",DT>$G(^("I")) Q "0^Inactive Drug, Non Refillable."
@@ -95,6 +101,7 @@ REFILL(PLACER) ;passes flag to CPRS for front door refill request
  I $P(^PSRX(RXN,3),"^"),DT=$P(^PSRX(RXN,3),"^") Q "0^Can't Refill, Fill Date already exists for "_$E($P(^PSRX(RXN,3),"^"),4,5)_"/"_$E($P(^PSRX(RXN,3),"^"),6,7)_"/"_$E($P(^PSRX(RXN,3),"^"),2,3)_"."
  I $P(^PSRX(RXN,3),"^"),DT<$P(^PSRX(RXN,3),"^") Q "0^Can't Refill, later Refill Date already exists for "_$E($P(^PSRX(RXN,3),"^"),4,5)_"/"_$E($P(^PSRX(RXN,3),"^"),6,7)_"/"_$E($P(^PSRX(RXN,3),"^"),2,3)_"."
  I $O(^PS(52.41,"ARF",RXN,0)) Q "0^Pending Refill Request already exists."
+ I $P($G(^PSRX(RXN,999999921)),U,3) Q "0^Outside Pharmacy prescriptions can't be refilled."  ;IHS/MSC/PLS - 10/17/07
  Q 1
  ;
 ULK D PSOUL^PSSLOCK($P(PSOLST(ORN),"^",2))

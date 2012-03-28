@@ -1,14 +1,12 @@
-PSJXR52 ; COMPILED XREF FOR FILE #55.01 ; 10/28/97
+PSJXR52 ; COMPILED XREF FOR FILE #55.01 ; 11/17/04
  ; 
  S DA(1)=DA S DA=0
 A1 ;
- I $D(DIKILL) K DIKLM S:$D(DA(1)) DIKLM=1 G:$D(DA(1)) 1 S DA(1)=DA,DA=0 G @DIKM1
+ I $D(DIKILL) K DIKLM S:DIKM1=1 DIKLM=1 G @DIKM1
 0 ;
 A S DA=$O(^PS(55,DA(1),"IV",DA)) I DA'>0 S DA=0 G END
 1 ;
  S DIKZ(0)=$G(^PS(55,DA(1),"IV",DA,0))
- S X=$P(DIKZ(0),U,1)
- I X'="" K ^PS(55,DA(1),"IV","B",$E(X,1,30),DA)
  S X=$P(DIKZ(0),U,2)
  I X'="" X ^DD(55.01,.02,1,1,2)
  S X=$P(DIKZ(0),U,2)
@@ -43,5 +41,7 @@ A S DA=$O(^PS(55,DA(1),"IV",DA)) I DA'>0 S DA=0 G END
  I X'="" K:X'="N" ^PS(55,"ANVO",DA(1),DA)
  S X=$P(DIKZ(0),U,17)
  I X'="" K:X'="D"&($D(^PS(55,DA(1),"IV",DA,"ADC"))) ^PS(55,"ADC",^PS(55,DA(1),"IV",DA,"ADC"),DA(1),DA)
+ S X=$P(DIKZ(0),U,1)
+ I X'="" K ^PS(55,DA(1),"IV","B",$E(X,1,30),DA)
  G:'$D(DIKLM) A Q:$D(DIKILL)
 END G ^PSJXR53

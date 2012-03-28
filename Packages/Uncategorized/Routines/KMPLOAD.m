@@ -1,4 +1,5 @@
-KMPLOAD ;SF/KAK - Manager UCI Loader Routine ;16 JUL 1998  3:35 pm
+KMPLOAD ;SF/KAK - Manager UCI Loader Routine ;16 JUL 1998  3:35 pm [ 04/02/2003   8:51 AM ]
+ ;;8.0;KERNEL;**1005,1007**;APR 1, 2003
  ;;1.0;CAPACITY MANAGEMENT;;Jul 21, 1998
 EN ;
  S:'$D(DTIME) DTIME=120 S X=""

@@ -1,6 +1,6 @@
-LRBLPCS1 ;AVAMC/REG/CYM - COMPONENT SELECTION CK PT SPEC ;7/22/97  08:13 ;
- ;;5.2;LAB SERVICE;**1,72,90,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPCS1 ; IHS/DIR/AAB - COMPONENT SELECTION CK PT SPEC 7/22/97 08:13 ; [ 05/28/98 2:04 PM ]
+ ;;5.2;LR;**1002,1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**1,72,90**;Sep 27, 1994
  S (H,M)=0
  S X=$P(^LAB(66,C,0),"^",16) S:'X X=72 S Z=X*60,X="N",%DT="T" D ^%DT K %DT S X=Y,X(1)=Y_"000" D H^%DTC S %H=%H-(Z\1440),Z=Z#1440 I Z S %H=%H-1,Z=1440-Z,H=Z\60,M=Z#60
  I 'H,'M S H=$E(X(1),9,10),M=$E(X(1),11,12)
@@ -29,7 +29,8 @@ EN ;
 B I '$D(^LRO(69.2,LRAA,8,66,1,A,0)) S ^(0)=A(1),X=^LRO(69.2,LRAA,8,66,1,0),^(0)=$P(X,"^",1,2)_"^"_A_"^"_($P(X,"^",4)+1),^LRO(69.2,LRAA,8,66,1,"B",A(1),A)=""
  S:'$D(^LRO(69.2,LRAA,8,66,1,A,1,0)) ^(0)="^69.321DA^^" S X(1)=^(0),X=$P(X(1),"^",4)
 A S X=X+1 G:$D(^LRO(69.2,LRAA,8,66,1,A,1,X,0)) A
- S ^LRO(69.2,LRAA,8,66,1,A,1,0)=$P(X(1),"^",1,2)_"^"_X_"^"_($P(X(1),"^",4)+1),^(X,0)=A(3)_"^"_PNM_"^"_SSN,^(1,0)="^69.3211A^^"
+ ;S ^LRO(69.2,LRAA,8,66,1,A,1,0)=$P(X(1),"^",1,2)_"^"_X_"^"_($P(X(1),"^",4)+1),^(X,0)=A(3)_"^"_PNM_"^"_SSN,^(1,0)="^69.3211A^^"
+ S ^LRO(69.2,LRAA,8,66,1,A,1,0)=$P(X(1),"^",1,2)_"^"_X_"^"_($P(X(1),"^",4)+1),^(X,0)=A(3)_"^"_PNM_"^"_HRCN,^(1,0)="^69.3211A^^"  ;IHS/DIR TUC/AAB 04/29/98
  S ^LRO(69.2,LRAA,8,66,1,A,1,X,1,1,0)="Pre-op:"_$S($P(X(2),"^",2):"Yes",1:"No"),^LRO(69.2,LRAA,8,66,1,A,1,X,1,2,0)="Date wanted: "_Y_"  #Units:"_$P(X(2),"^",4)_"  Requestor:"_$P(X(2),"^",9)
  S ^LRO(69.2,LRAA,8,66,1,A,1,X,1,3,0)="Request entered by: "_$P(^VA(200,DUZ,0),"^")
  S X(3)=0,X(4)=3

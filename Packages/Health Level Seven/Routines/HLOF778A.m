@@ -1,6 +1,5 @@
-HLOF778A ;ALB/CJM-HL7 - Saving messages to file 778 (continued) ;07/17/2008
- ;;1.6;HEALTH LEVEL SEVEN;**126,134,137,138**;Oct 13, 1995;Build 34
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOF778A ;ALB/CJM-HL7 - Saving messages to file 778 (continued) ;02/04/2004
+ ;;1.6;HEALTH LEVEL SEVEN;**126**;Oct 13, 1995
  ;
  ;
 NEW(HLMSTATE) ;
@@ -46,9 +45,7 @@ NEW(HLMSTATE) ;
  .;for outgoing set these x-refs now, for incoming msgs set them later
  .S ^HLB("B",ID,IEN)=""
  .S ^HLB("C",HLMSTATE("BODY"),IEN)=""
- .I ($G(@STAT)="ER") D
- ..S ^HLB("ERRORS",$S($L($G(HLMSTATE("HDR","RECEIVING APPLICATION"))):HLMSTATE("HDR","RECEIVING APPLICATION"),1:"UNKNOWN"),HLMSTATE("DT/TM CREATED"),IEN)=""
- ..D COUNT^HLOESTAT("OUT",$G(HLMSTATE("HDR","RECEIVING APPLICATION")),$G(HLMSTATE("HDR","SENDING APPLICATION")),$S(HLMSTATE("BATCH"):"BATCH",1:$G(HLMSTATE("HDR","MESSAGE TYPE"))),$G(HLMSTATE("HDR","EVENT")))
+ .I ($G(@STAT)="SE") S ^HLB("ERRORS","SE",$S($L($G(HLMSTATE("HDR","RECEIVING APPLICATION"))):HLMSTATE("HDR","RECEIVING APPLICATION"),1:"UNKNOWN"),HLMSTATE("DT/TM CREATED"),IEN)=""
  .;
  .;save some space for the ack
  .S:($G(HLMSTATE("HDR","ACCEPT ACK TYPE"))="AL") ^HLB(IEN,4)="^^^                                                                 "
@@ -69,9 +66,6 @@ NEW(HLMSTATE) ;
  ;
  ;The "SEARCH" x-ref will be created asynchronously
  S ^HLTMP("PENDING SEARCH X-REF",$J,HLMSTATE("DT/TM CREATED"),IEN)=""
- ;
- ;sequence q?
- I HLMSTATE("DIRECTION")="OUT",$G(@STAT@("SEQUENCE QUEUE"))'="" S ^HLB(IEN,5)=@STAT@("SEQUENCE QUEUE")
  ;
  Q IEN
  ;
@@ -122,22 +116,22 @@ GETWORK(WORK) ; Used by the Process Manager.
  S (OLD,DOLLARJ)=$G(WORK("DOLLARJ"))
  F  S DOLLARJ=$O(^HLTMP("PENDING SEARCH X-REF",DOLLARJ)) Q:DOLLARJ=""  D  Q:SUCCESS
  .N TIME S TIME=$O(^HLTMP("PENDING SEARCH X-REF",DOLLARJ,""))
- .S:(NOW-$$SEC^XLFDT(TIME)>10) SUCCESS=1
+ .S:(NOW-$$SEC^XLFDT(TIME)>100) SUCCESS=1
  ;
  I OLD'="",'SUCCESS F  S DOLLARJ=$O(^HLTMP("PENDING SEARCH X-REF",DOLLARJ)) Q:DOLLARJ=""  Q:DOLLARJ>OLD  D  Q:SUCCESS
  .N TIME S TIME=$O(^HLTMP("PENDING SEARCH X-REF",DOLLARJ,""))
- .S:(NOW-$$SEC^XLFDT(TIME)>10) SUCCESS=1
+ .S:(NOW-$$SEC^XLFDT(TIME)>100) SUCCESS=1
  S WORK("DOLLARJ")=DOLLARJ,WORK("NOW")=NOW
  Q:WORK("DOLLARJ")]"" 1
  L -^HLTMP("PENDING SEARCH X-REF")
  Q 0
  ;
 DOWORK(WORK) ;Used by the Process Manager
- ;Sets the "SEARCH" x-ref, running 10 seconds behind when the message record was created.
+ ;Sets the "SEARCH" x-ref, running 100 seconds behind when the message record was created.
  ;
  N MSGIEN,TIME
  S TIME=0
- F  S TIME=$O(^HLTMP("PENDING SEARCH X-REF",WORK("DOLLARJ"),TIME)) Q:'TIME  Q:((WORK("NOW")-$$SEC^XLFDT(TIME))<10)  D
+ F  S TIME=$O(^HLTMP("PENDING SEARCH X-REF",WORK("DOLLARJ"),TIME)) Q:'TIME  Q:((WORK("NOW")-$$SEC^XLFDT(TIME))<100)  D
  .S MSGIEN=0
  .F  S MSGIEN=$O(^HLTMP("PENDING SEARCH X-REF",WORK("DOLLARJ"),TIME,MSGIEN)) Q:'MSGIEN  D
  ..N MSG
@@ -167,8 +161,8 @@ SET(MSG) ;
  .S VALUE=$P(MSG("HDR",2),FS,4)
  .S MSG("MESSAGE TYPE")=$P(VALUE,CS)
  .S MSG("EVENT")=$P(VALUE,CS,2)
- S:MSG("MESSAGE TYPE")="" MSG("MESSAGE TYPE")="<none>"
- S:MSG("EVENT")="" MSG("EVENT")="<none>"
+ Q:MSG("MESSAGE TYPE")=""
+ Q:MSG("EVENT")=""
  S IEN=MSG("IEN")
  I MSG("BATCH") S IEN=IEN_"^"_MSG("BATCH","CURRENT MESSAGE")
  S ^HLB("SEARCH",MSG("DIRECTION"),MSG("DT/TM CREATED"),APP,MSG("MESSAGE TYPE"),MSG("EVENT"),IEN)=""

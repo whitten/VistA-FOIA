@@ -1,5 +1,5 @@
 XUSTERM1 ;SEA/WDE - DEACTIVATE USER ;06/08/09  15:06
- ;;8.0;KERNEL;**102,180,208,222,274,313,332,360,384,436,514**;Jul 10, 1995;Build 8
+ ;;8.0;KERNEL;**102,180,208,222,274,313,332,360,384,436,514**;Jul 10, 1995;Build 14
 ENALL ;Interactive scan all
  S U="^",DTIME=$G(DTIME,60)
  W !!,"This option can purge all access & verify codes, mail baskets, messages,",!,"authorized senders access, keys, and electronic signature codes of users who have been terminated."

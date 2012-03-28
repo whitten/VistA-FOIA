@@ -1,5 +1,7 @@
-SCRPO5 ;BP-CIOFO/KEITH - Historical Patient Assignment Detail ; 01 Jul 99  9:30 PM
- ;;5.3;Scheduling;**177,505**;AUG 13, 1993;Build 20
+SCRPO5 ;BP-CIOFO/KEITH - Historical Patient Assignment Detail ; 01 Jul 99  9:30 PM [ 11/01/2000  4:19 PM ]
+ ;;5.3;Scheduling;**177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/01/2000 changed SSN to HRCN
+ ;                        added call to list template
  ;
 PTDET N DIC,SC,DFN,SCPT0,X,Y,SCDT,DTOUT,DUOUT
  D TITL^SCRPW50("Historical Patient Assignment Detail")
@@ -11,9 +13,10 @@ PTDET N DIC,SC,DFN,SCPT0,X,Y,SCDT,DTOUT,DUOUT
 EXIT D DISP0^SCRPW23,END^SCRPW50 Q
  ;
 RUN ;Print report
+ I $E(IOST,1,2)="C-" D ^BSDSCO5 Q    ;IHS/ANMC/LJF 11/1/2000
+IHS ;EP; entry point for list template ;IHS/ANMC/LJF 11/1/2000
  N SCI,SCPNOW,SCLINE,SCPAGE,SCSUB,SCFF,SCFOUND,SCLN,SCAGE,SCDATA
  N SCDOB,SCGEND,SCIFN,SCOUT,SCPNAME,SCREC,SCSH,SCSSN,SCTITL,SCDT
- N SCEU,SCEUNM,SCLEBNM,SCLEDT,SCSTAT,SCSTNM,SCX,SCY
  K ^TMP("SCRPT",$J) M SCDT=SC("DTR") S SCDT="SCDT"
  S SCI=$$GETALL^SCAPMCA(DFN,.SCDT),SCSUB="",(SCFF,SCLN,SCFOUND,SCOUT)=0
  F  S SCSUB=$O(^TMP("SC",$J,DFN,SCSUB)) Q:SCSUB=""!(SCSUB]"PCTM")  D
@@ -30,10 +33,7 @@ RUN ;Print report
  ..Q:'$L(SCREC)
  ..S SCUSER=$P(SCREC,U,SCX(7))  ;user duz
  ..S SCDENT=$P(SCREC,U,SCX(9))  ;date entered
- ..S SCEU=$P(SCREC,U,6),SCEUNM=$$GET1^DIQ(200,SCEU_",",.01)  ;editing user
- ..S SCSTAT=$P(SCREC,U,12),SCSTNM=$$GET1^DIQ(404.43,SCIFN_",",.12)  ;status
- ..S SCLEDT=$P(SCREC,U,8),SCLEBNM=$$GET1^DIQ(200,SCLEDT_",",.01)  ;last edited by
- ..D SLINE(SCX(1),SCNAME,SCACT,SCINAC,SCUSER,SCDENT,SCEUNM,SCSTNM,SCLEBNM,.SCLN)
+ ..D SLINE(SCX(1),SCNAME,SCACT,SCINAC,SCUSER,SCDENT,.SCLN)
  ..Q
  .Q
  S SCTITL(1)="<*>  HISTORICAL PATIENT ASSIGNMENT DETAIL  <*>"
@@ -41,6 +41,7 @@ RUN ;Print report
  S SCLINE="",$P(SCLINE,"-",81)="",SCPAGE=1
  S Y=$$NOW^XLFDT() X ^DD("DD") S SCPNOW=$P(Y,":",1,2)
  S SCPNAME=$P(SCPT0,U),SCSSN=$P(SCPT0,U,9)
+ S SCSSN=$$HRCN^BDGF2(DFN,+$G(DUZ(2)))  ;IHS/ANMC/LJF 11/1/2000
  S SCGEND=$S($P(SCPT0,U,2)="M":"MALE",1:"FEMALE")
  S (Y,SCAGE)=$P(SCPT0,U,3) X ^DD("DD") S SCDOB=Y
  S SCAGE=$E(DT,1,3)-$E(SCAGE,1,3)-($E(DT,4,7)<$E(SCAGE,4,7))
@@ -56,10 +57,6 @@ RUN ;Print report
  ...D:$Y>(IOSL-3) HDR^SCRPO(.SCTITL,80),SHDR,SSHDR(SCSH,1) Q:SCOUT
  ...S SCX=^TMP("SCRPT",$J,SCSUB,SCACT,SCI)
  ...W !,$P(SCX,U),?28,$P(SCX,U,2),?40,$P(SCX,U,3),?52,$P(SCX,U,4)
- ...I SCSUB=3 D
- ....W !,"User Entering: ",$P(SCX,U,6)
- ....W !,"Last Edited By: ",$P(SCX,U,7)
- ....W !,"Status: ",$P(SCX,U,5)
  ...Q
  ..Q
  .Q
@@ -68,7 +65,8 @@ RUN ;Print report
  ;
 SHDR ;Subheader
  Q:SCOUT
- W !,"Patient: ",$E(SCPNAME,1,18),?29,"SSN: ",SCSSN,?46,"DOB: ",SCDOB
+ ;W !,"Patient: ",$E(SCPNAME,1,18),?29,"SSN: ",SCSSN,?46,"DOB: ",SCDOB  ;IHS/ANMC/LJF 11/1/2000
+ W !,"Patient: ",$E(SCPNAME,1,18),?29,"ID: ",SCSSN,?46,"DOB: ",SCDOB  ;IHS/ANMC/LJF 11/1/2000
  W ?64,"AGE: ",SCAGE,?74,$J(SCGEND,6),!,SCLINE
  Q:'SCFOUND
  W !,"Assignment",?28,"Active",?40,"Inactive",?52,"Assigned by/date"
@@ -81,22 +79,19 @@ SSHDR(X,CONT) ;Subheader
  W !,X,$S($G(CONT):" (cont.)",1:""),":"
  Q
  ;
-SLINE(SCORD,SCNAME,SCACT,SCINAC,SCUSER,SCDENT,SUNM,SCTNM,SCBNM,SCLN) ;Set report global
+SLINE(SCORD,SCNAME,SCACT,SCINAC,SCUSER,SCDENT,SCLN) ;Set report global
  ;Input: SCORD=output order
  ;Input: SCNAME=provider/position/team name
  ;Input: SCACT=active date
  ;Input: SCINAC=inactive date
  ;Input: SCUSER=user duz
  ;Input: SCDENT=date entered
- ;Input: SUNM=entered by
- ;Input: SCTNM=status
- ;Input: SCBNM=last edited by
  ;
- ;N SCX,SCY
+ N SCX,SCY
  S SCFOUND=1,SCLN=SCLN+1
  S SCX=$E(SCNAME,1,25)_U_$$SDT(SCACT)_U_$$SDT(SCINAC),SCY=$$SDT(SCDENT)
  S:$L(SCY) SCY=" ("_SCY_")"
- S SCX=SCX_U_$E($P($G(^VA(200,+SCUSER,0)),U),1,(28-$L(SCY)))_SCY_U_SCTNM_U_SUNM_U_SCBNM
+ S SCX=SCX_U_$E($P($G(^VA(200,+SCUSER,0)),U),1,(28-$L(SCY)))_SCY
  S ^TMP("SCRPT",$J,SCORD,-SCACT,SCLN)=SCX
  Q
  ;

@@ -1,4 +1,6 @@
-LRAPTT1 ;AVAMC/REG/CYM - TURNAROUND TIME PATH ;2/13/98  09:42 ;
+LRAPTT1 ; IHS/DIR/AAB - TURNAROUND TIME PATH 2/13/98 09:42 ; [ 07/09/1998 9:14 AM ]
+ ;;5.2;LR;**1002,1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**72,201**;Sep 27, 1994
  I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
  D F^LRU W !,$S('$D(LR("AU")):"",LR("AU")=1:"PAD",1:"FAD")," Turnaround time for ",LRO(68)," (",LRABV,")" W:LRL " (Exceeding ",LRB," ",$S(LRB=1:"day",1:"days"),")" W !,"From: ",LRSTR,"  To: ",LRLST,?57,"Lab work"

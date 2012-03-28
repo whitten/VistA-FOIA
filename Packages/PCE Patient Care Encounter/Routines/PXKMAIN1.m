@@ -1,5 +1,5 @@
 PXKMAIN1 ;ISL/JVS,ISA/Zoltan - Main Routine for Data Capture ;5/6/1999
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,73,124,178**;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,73**;Aug 12, 1996
  ;+This routine is responsible for:
  ;+ - creating new entries in PCE files,
  ;+ - processing modifications to existing entries,
@@ -73,7 +73,7 @@ AUD12 ;--Set both audit fields
  S DR=""
  S PXKAUDIT=$P($T(GLOBAL^@PXKRTN),";;",2)_"(DA,801)"
  S PXKAUDIT=$P($G(@PXKAUDIT),"^",2)_PXKSORR_";"
- I $L(PXKAUDIT,";")>5 S $P(PXKAUDIT,";",2,$L(PXKAUDIT,";"))="+;"_$P(PXKAUDIT,";",4,$L(PXKAUDIT,";")) ;PX*1*124   Change 8 to 5
+ I $L(PXKAUDIT,";")>8 S $P(PXKAUDIT,";",2,$L(PXKAUDIT,";"))="+;"_$P(PXKAUDIT,";",4,$L(PXKAUDIT,";"))
  S PXKNOD=801
  S DR=""
  F PXKPCE=1,2 D EN1^@PXKRTN S DR=DR_PXKER
@@ -84,7 +84,7 @@ AUD2 ;--Set second audit fields
  S DR=""
  S PXKAUDIT=$P($T(GLOBAL^@PXKRTN),";;",2)_"(DA,801)"
  S PXKAUDIT=$P($G(@PXKAUDIT),"^",2)_PXKSORR_";"
- I $L(PXKAUDIT,";")>5 S $P(PXKAUDIT,";",2,$L(PXKAUDIT,";"))="+;"_$P(PXKAUDIT,";",4,$L(PXKAUDIT,";")) ;PX*1*124   Change 8 to 5
+ I $L(PXKAUDIT,";")>8 S $P(PXKAUDIT,";",2,$L(PXKAUDIT,";"))="+;"_$P(PXKAUDIT,";",4,$L(PXKAUDIT,";"))
  S PXKNOD=801
  S DR=""
  S PXKPCE=2
@@ -143,7 +143,6 @@ DELETE ;+Use FM ^DIK call to delete entry identified by PXKPIEN.
 DUP ;+Code to check for duplicates
  I PXKCAT="VST" Q
  I PXKCAT="CPT" Q
- I PXKCAT="HF" Q
  N PXKRTN
  I '$D(PXKPIEN) N PXKPIEN S PXKPIEN=""
  S PXKNOD=0

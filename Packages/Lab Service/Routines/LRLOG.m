@@ -1,5 +1,6 @@
-LRLOG ;SLC/STAFF - Edit Log ;10/15/03  09:08
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRLOG ;VA/SLC/STAFF - Edit Log ;10/15/03  09:08
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 TIMESTMP(PAT,SUB,CDT,USER,TIMESTMP) ; set a timestamp entry in edit log
  ; from LRPX,LRPXRM

@@ -1,15 +1,17 @@
 LRAUDA ;AVAMC/REG/WTY/KLL - AUTOPSY PATH DATA ENTRY ;08/20/01
- ;;5.2;LAB SERVICE;**72,248,259,322**;Sep 27, 1994
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**72,248,259**;Sep 27, 1994
  ;
 L ;Define AU Section
  S LRDICS="AU",LRQUIT=0,XPAD=""
  D ^LRAP
  I '$D(Y) D
  .S LRQUIT=1
+ .D END
  Q
 P ;Autopsy Protocol
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  D PDR
  S LRSOP="P",LR(6)=1
  D EDIT
@@ -22,7 +24,7 @@ PDR ;Entry for resetting DR string
  Q
 PAD ;Provisional Anatomic Diagnoses
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  K DR S DR="13.01///^S X=LRWHO;32.2;32.3;14.9"
  ;KLL-S XPAD=D TO KEEP PAD SEPARATE FROM PROTOCOL
  S XPAD="D"
@@ -33,7 +35,7 @@ PAD ;Provisional Anatomic Diagnoses
  ;
 S ;Special Studies
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  K DR
  S DR="N LRREL D RELEASE^LRAPUTL(.LRREL,LRDFN,LRSS) "
  S DR=DR_"I LRREL(1) D VMSG^LRAUDA S Y=0;32"
@@ -42,7 +44,7 @@ S ;Special Studies
  Q
 B ;Autopsy Report/SNOMED Coding
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  S LR(2)=1
  D BDR
  D EDIT
@@ -57,7 +59,7 @@ BDR ;Entry for resetting DR string
  ;
 A ;Autopsy Report/ICD9CM Coding
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  D ADR
  S LRSOP="A"
  D EDIT
@@ -67,21 +69,21 @@ ADR ;Entry for resetting DR string
  Q
 R ;Autopsy Supplementary Report
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  S LRSOP="R",LRSFLG="S"
  D EDIT
  K LRSFLG
  Q
 I ;ICD9CM coding
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  I '$D(Y) D END Q
  S DR=80,LRSOP="I"
  D EDIT
  Q
 F ;Final Anatomic DX Date
  D L
- I LRQUIT D END Q
+ Q:LRQUIT
  K DR S DR="13.1;83.1;83.2"
  S LRSOP="F"
  D EDIT

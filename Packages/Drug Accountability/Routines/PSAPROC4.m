@@ -1,5 +1,5 @@
 PSAPROC4 ;BIR/JMB-Process Uploaded Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,21,63**; 10/24/97;Build 10
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,21**; 10/24/97
  ;References to ^PSDRUG( are covered by IA #2095
  ;References to ^DIC(51.5 are covered by IA #1931
  ;This routine allows the user to edit invoices with errors or missing
@@ -51,19 +51,13 @@ KILL K PSASAME,PSAFND
  Q
  ;
 LIST Q:PSANODE=""!($P($G(^PSDRUG(PSAIEN50,0)),"^")="")
- ;3*63 RJS
- N PSAPPOU,PSADUOU,PSAPPDU,PSAVEND,PSAOU,PSACPPDU,X,PSANDC,PSADU,PSASYNM,PSAVSN
- S X=PSANODE
- S PSASYNM=$P(X,U,1),PSANDC=$P(X,U,2),PSAVSN=$P(X,U,4),PSAOU=+$P(X,U,5),PSAPPOU=$P(X,U,6)
- S PSADUOU=$P(X,U,7),PSAPPDU=$P(X,U,8),PSAVEND=$P(X,U,9)
- S PSADU=$$GET1^DIQ(50,PSAIEN50,14.5),PSAOU=$P($G(^DIC(51.5,PSAOU,0)),"^")
- S PSACPPDU=$S('PSADUOU:"BLANK",1:(PSAPPOU*1000/PSADUOU\1/1000)) ;recalculate PPDU, file doesn't reset PPDU
  W !?1,PSAMENU_".",?4,$P($G(^PSDRUG(PSAIEN50,0)),"^") I $D(^PSDRUG(PSAIEN50,"I")) W ?60,"(INACTIVE)"
- I PSANDC="",PSAVSN="" W !,?19,"SYN #",PSASYN,": ",PSASYNM,! Q
- W !,?4,"NDC: ",PSANDC,?25,"Order Unit: ",PSAOU,?46,"Price Per Order Unit: $",$FN(PSAPPOU,",",2)
- W !,?4,"VSN: ",PSAVSN,?19,"SYN #",PSASYN,": ",PSASYNM,?42,"Dose Unit Per Order Unit: ",PSADUOU
- W !,?4,"Vendor: ",PSAVEND,?47,"Price Per Dose Unit: ",$FN(PSACPPDU,","),!
- ;3*63 end
+ ;NOIS CTX-1200-71091 (PSA*3*21 Dave B)
+ I $P(PSANODE,"^",2)'="" W !,?4,"NDC : "_$P(PSANODE,"^",2)
+ I +$P(PSANODE,"^",5),$P($G(^DIC(51.5,+$P(PSANODE,"^",5),0)),"^")'="" W !?4,"Order Unit: "_$P(^DIC(51.5,+$P(PSANODE,"^",5),0),"^"),?45,"Price Per Order Unit   : $"_$S(+$P(PSANODE,"^",6):$P(PSANODE,"^",6),1:"(Blank)")
+ E  I +$P(PSANODE,"^",6) W !?4,"Price Per Order Unit: $"_$P(PSANODE,"^",6)
+ I $P(PSANODE,"^",9)'="" W !?4,"Vendor: "_$P(PSANODE,"^",9),?45,"VSN: "_$S($P(PSANODE,"^",4)'="":$P(PSANODE,"^",4),1:"(Blank)")
+ E  I $P(PSANODE,"^",4)'="" W !?4,"VSN: "_$S($P(PSANODE,"^",4)'="":$P(PSANODE,"^",4),1:"(Blank)")
  Q
  ;
 CHOOSE S PSAMENU=PSAMENU+1

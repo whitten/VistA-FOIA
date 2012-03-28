@@ -1,4 +1,5 @@
-LRWRKLS1 ;DALOI/CJS/DRH - LRWRKLST, CONT. ;2/7/91  14:29
+LRWRKLS1 ;DALOI/CJS/DRH - LRWRKLST, CONT. ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**1003,1004,1018,1025,1027**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**121,153,185,268**;Sep 27, 1994
  ;
 LST1 ;from LRWRKLST
@@ -25,12 +26,28 @@ LST1 ;from LRWRKLST
  Q:$G(LRSTOP)
  ;
  W !,"ACCESSION: ",LRACC,?40,"PATIENT: ",PNM
- W !,"  ORDER #: ",LRCE,?41,"SSN/ID: ",SSN,!
+ ;W !,"  ORDER #: ",LRCE,?41,"SSN/ID: ",SSN,!
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ W !,"  ORDER #: ",LRCE,?43,"HRCN: ",HRCN,!
+ ;----- END IHS MODIFICATIONS - NOTE- COULD NOT COPY DIRECT FROM IHS RTN
  S X=$P($G(^LRO(68,LRAA,1,LRAD,1,LRAN,.3)),"^")
  W:X'="" ?6,"UID: ",X
  W ?44,"DOB: ",$$FMTE^XLFDT(DOB,"5MZ")
  W !," LOCATION: ",$E($P(LRDX,"^",7),1,19)
- W:$L(LRDTO) ?35,"DATE ORDERED: ",LRDTO,!
+ ; W:$L(LRDTO) ?35,"DATE ORDERED: ",LRDTO,!
+ ; ----- BEGIN IHS LR*5.2*1025 MODIFICATION
+ ; I $D(LRCE)>0 D                                            ; Does Order exist
+ I +$G(LRCE)>0 D                            ; Does Order exist -- LR*5.2*1027
+ . NEW DTTORD,FMDTORD,LRORDIEN
+ . S FMDTORD=+$O(^LRO(69,"C",LRCE,""))                     ; Date Ordred
+ . I FMDTORD<1 Q                                           ; If null, skip
+ . S LRORDIEN=+$O(^LRO(69,"C",LRCE,FMDTORD,""))            ; LRAN of Order
+ . I LRORDIEN<1 Q                                          ; If null, skip
+ . S DTTORD=+$P($G(^LRO(69,FMDTORD,1,LRORDIEN,0)),"^",5)   ; Date/Time of Order
+ . I $D(DTTORD)<1 Q                                        ; If null, skip
+ . ;
+ . W ?40,"ORDERED: ",$$FMTE^XLFDT(DTTORD,"5MZ"),!
+ ; ----- END IHS LR*5.2*1025 MODIFICATION
  W:$P(LRDX,U,6) "    IDENTITY: ",$P(LRDX,U,6)
  W:$L(LRDLC) ?38,"COLLECTED: ",LRDLC
  ;

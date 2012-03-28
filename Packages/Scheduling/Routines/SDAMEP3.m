@@ -1,5 +1,8 @@
-SDAMEP3 ;ALB/CAW - Extended Display (Appt. Event Log) ; 16 May 2001  6:31 PM
- ;;5.3;Scheduling;**20,241**;Aug 13, 1993
+SDAMEP3 ;ALB/CAW - Extended Display (Appt. Event Log) ; 16 May 2001  6:31 PM [ 09/08/2004  8:42 AM ]
+ ;;5.3;Scheduling;**20,241,1001,1005**;Aug 13, 1993
+ ;IHS/ANMC/LJF 12/13/2000 added display of date routing slip printed
+ ;IHS/ITSC/WAR 08/19/2004 PATCH 1001 quit added by pass VA wait time display
+ ;IHS/OIT/LJF  12/30/2005 PATCH 1005 added code to wrap long cancel remarks
  ;
 APLOG ;
  D SET^SDAMEP1("                       *** Appointment Event Log ***")
@@ -7,6 +10,9 @@ APLOG ;
  D SET^SDAMEP1($$EVENT("Event","Date","User"))
  D SET^SDAMEP1($$EVENT("-----","----","----"))
  D SET^SDAMEP1($$EVENT("Appt Made",$S($G(SDSC(44.003,SDDA,8))]"":SDSC(44.003,SDDA,8),1:$G(SDPT(2.98,SDT,20))),$S($G(SDSC(44.003,SDDA,7))]"":SDSC(44.003,SDDA,7),1:$G(SDPT(2.98,SDT,19)))))
+ ;
+ D SET^SDAMEP1($$EVENT("Routing Slip Printed",$$FMTE^XLFDT($P(^DPT(DFN,"S",SDT,0),U,13)),""))  ;IHS/ANMC/LJF 12/13/2000
+ ;
  D SET^SDAMEP1($$EVENT("Check In",$G(SDSC(44.003,SDDA,309)),$G(SDSC(44.003,SDDA,302))))
  D SET^SDAMEP1($$EVENT("Check Out",$G(SDSC(44.003,SDDA,303)),$G(SDSC(44.003,SDDA,304))))
  D SET^SDAMEP1($$EVENT("Check Out Entered",$G(SDSC(44.003,SDDA,306)),""))
@@ -24,13 +30,20 @@ APLOG ;
  ;
  S X=""
  S X=$$SETSTR^VALM1("  Cancel Remark:",X,5,SDWIDTH)
- S X=$$SETSTR^VALM1(SDPT(2.98,SDT,17),X,SDFSTCOL+5,50)
- D SET^SDAMEP1(X)
+ ;
+ ;IHS/OIT/LJF 12/30/2005 PATCH 1005 wrap to multiple lines if longer than 60 characters
+ ;S X=$$SETSTR^VALM1(SDPT(2.98,SDT,17),X,SDFSTCOL+5,50)
+ ;D SET^SDAMEP1(X)
+ NEW BSDR,I,BSDSAV S BSDSAV=X D WRAP^BDGF(SDPT(2.98,SDT,17),50,.BSDR)
+ S X=BSDSAV,X=$$SETSTR^VALM1(BSDR(1),X,SDFSTCOL+5,50) D SET^SDAMEP1(X)   ;first line as before
+ F I=2:1 Q:'$D(BSDR(I))  S X=$$REPEAT^XLFSTR(" ",SDWIDTH),X=$$SETSTR^VALM1(BSDR(I),X,SDFSTCOL+5,50) D SET^SDAMEP1(X)
+ ;PATCH 1005 end of changes
  ;
  S X=""
  S X=$$SETSTR^VALM1("  Rebooked Date:",X,5,SDWIDTH)
  S X=$$SETSTR^VALM1(SDPT(2.98,SDT,12),X,SDFSTCOL+5,20)
  D SET^SDAMEP1(X)
+ Q  ;IHS/ITSC/WAR 8/19/2004 PATCH #1001 quit was needed
 CWT ;Clinic Wait Time Information
  N SDCWT,SDCWT1,SDCWT2
  ;Get internal data values

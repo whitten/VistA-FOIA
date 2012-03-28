@@ -1,4 +1,4 @@
-MCAROHF ; GENERATED FROM 'MCARHEMF' PRINT TEMPLATE (#987) ; 10/07/98 ; (FILE 694, MARGIN=80)
+MCAROHF ; GENERATED FROM 'MCARHEMF' PRINT TEMPLATE (#3711) ; 11/29/04 ; (FILE 694, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,8 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(987,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3711,"DXS")
+ S I(0)="^MCAR(694,",J(0)=694
  D N:$X>0 Q:'DN  W ?0 W " "
  D N:$X>25 Q:'DN  W ?25 X DXS(1,9) K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>7 Q:'DN  W ?7 W "CELLULARITY: "
@@ -27,24 +28,25 @@ BEGIN ;
  S I(1)=5,J(1)=694.01 F D1=0:0 Q:$O(^MCAR(694,D0,5,D1))'>0  X:$D(DSC(694.01)) DSC(694.01) S D1=$O(^(D1)) Q:D1'>0  D:$X>60 T Q:'DN  D A1
  G A1R
 A1 ;
- S X=$G(^MCAR(694,D0,5,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693,Y,0))#2:$P(^(0),U,1),1:Y) S X=Y D ^DIWP
- D A^DIWW
+ S X=$G(^MCAR(694,D0,5,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693,Y,0))#2:$P(^(0),U),1:Y) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
  Q
 A1R ;
- S I(1)=7,J(1)=694.054 F D1=0:0 Q:$O(^MCAR(694,D0,7,D1))'>0  S D1=$O(^(D1)) D:$X>9 T Q:'DN  D B1
+ S I(1)=7,J(1)=694.054 F D1=0:0 Q:$O(^MCAR(694,D0,7,D1))'>0  S D1=$O(^(D1)) D:$X>81 T Q:'DN  D B1
  G B1R
 B1 ;
  S X=$G(^MCAR(694,D0,7,D1,0)) S DIWL=7,DIWR=76 D ^DIWP
  Q
 B1R ;
- D 0^DIWW K DIP K:DN Y
- S X=1 X "F I=1:1:X "_$S($D(^UTILITY($J,"W")):"S X="" |TAB|"" D L^DIWP",1:"W !") S X="" K DIP K:DN Y W X
+ D 0^DIWW
  D ^DIWW
+ S X=1 X "F I=1:1:X "_$S($D(^UTILITY($J,"W")):"S X="" |TAB|"" D L^DIWP",1:"W !") S X="" K DIP K:DN Y W X
  D N:$X>4 Q:'DN  W ?4 W "COMPLICATIONS: "
  S I(1)=2,J(1)=694.055 F D1=0:0 Q:$O(^MCAR(694,D0,2,D1))'>0  X:$D(DSC(694.055)) DSC(694.055) S D1=$O(^(D1)) Q:D1'>0  D:$X>21 T Q:'DN  D C1
  G C1R
 C1 ;
- S X=$G(^MCAR(694,D0,2,D1,0)) D N:$X>20 Q:'DN  W ?20 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(696.9,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,40)
+ S X=$G(^MCAR(694,D0,2,D1,0)) D N:$X>20 Q:'DN  W ?20 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(696.9,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  Q
 C1R ;
  S X=1 X "F I=1:1:X "_$S($D(^UTILITY($J,"W")):"S X="" |TAB|"" D L^DIWP",1:"W !") S X="" K DIP K:DN Y W X
@@ -52,8 +54,9 @@ C1R ;
  S I(1)=8,J(1)=694.035 F D1=0:0 Q:$O(^MCAR(694,D0,8,D1))'>0  X:$D(DSC(694.035)) DSC(694.035) S D1=$O(^(D1)) Q:D1'>0  D:$X>31 T Q:'DN  D D1
  G D1R
 D1 ;
- S X=$G(^MCAR(694,D0,8,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(697.5,Y,0))#2:$P(^(0),U,1),1:Y) S X=Y D ^DIWP
- D A^DIWW
+ S X=$G(^MCAR(694,D0,8,D1,0)) D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(697.5,Y,0))#2:$P(^(0),U),1:Y) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
  Q
 D1R ;
  S I(1)=3,J(1)=694.041 F D1=0:0 Q:$O(^MCAR(694,D0,3,D1))'>0  S D1=$O(^(D1)) D:$X>81 T Q:'DN  D E1
@@ -62,15 +65,17 @@ E1 ;
  S X=$G(^MCAR(694,D0,3,D1,0)) S DIWL=7,DIWR=76 D ^DIWP
  Q
 E1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "SUMMARY: "
  S X=$G(^MCAR(694,D0,.2)) S Y=$P(X,U,1) W:Y]"" $S($D(DXS(9,Y)):DXS(9,Y),1:Y)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "PROCEDURE SUMMARY: "
  D N:$X>9 Q:'DN  S DIWL=10,DIWR=79 S Y=$P(X,U,2) S X=Y D ^DIWP
- D 0^DIWW K DIP K:DN Y
- W ?9 S MCFILE=694 D DISP^MCMAG K DIP K:DN Y
- W ?20 K MCFILE K DIP K:DN Y
- D ^DIWW K Y K DIWF
+ D 0^DIWW
+ D ^DIWW
+ D T Q:'DN  W ?2 S MCFILE=694 D DISP^MCMAG K DIP K:DN Y
+ W ?13 K MCFILE K DIP K:DN Y
+ K Y K DIWF
  Q
 HEAD ;
  W !,"--------------------------------------------------------------------------------",!!

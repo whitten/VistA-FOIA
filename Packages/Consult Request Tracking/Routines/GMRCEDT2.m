@@ -1,8 +1,5 @@
-GMRCEDT2 ;SLC/JFR,DCM - RESUBMIT A CANCELLED CONSULT ;04/23/09  12:09
- ;;3.0;CONSULT/REQUEST TRACKING;**1,5,12,15,22,33,66**;DEC 27, 1997;Build 30
- ;
- ;ICRs in use: #2053 (DIE), #2056 (GET1^DIQ), #872 (ORD(101))
- ;
+GMRCEDT2 ;SLC/JFR,DCM - RESUBMIT A CANCELLED CONSULT ;1/4/99 00:27
+ ;;3.0;CONSULT/REQUEST TRACKING;**1,5,12,15,22**;DEC 27, 1997
 EN(GMRCO,COMNO) ;entry point into the routine
  ;COMNO=CMDA from ^GMRCEDT2=comments array IEN from ^GMR(123,IEN,40,
  ;GMRCO=IEN of the consult from file 123
@@ -14,10 +11,6 @@ EN(GMRCO,COMNO) ;entry point into the routine
  .Q
  N MSG S MSG=$$EDRESOK(GMRCO)
  I '+MSG D EXAC^GMRCADC($P(MSG,U,2)) Q
- I '$$PDOK^GMRCEDT4(GMRCO) D  Q
- . D EXAC^GMRCADC("Can't resubmit!")
- . S GMRCRSUB=1
- . Q
  I '$D(GMRCGUIF) W !,"Resubmitting Consult ... One moment please ..."
  K ^TMP("GMRCSUB",$J) S ^TMP("GMRCSUB",$J)=0
  I $D(GMRCEDT(1)) S ^TMP("GMRCSUB",$J,1)="GMRCSS^"_+GMRCEDT(1)
@@ -33,20 +26,17 @@ EN(GMRCO,COMNO) ;entry point into the routine
  I $D(GMRCED(4)) D
  . I $P(GMRCED(4),U)=$P(^GMR(123,+GMRCO,0),U,10) K GMRCED(4) Q
  . S ^TMP("GMRCSUB",$J,5)="GMRCPL^"_$P(GMRCED(4),U)
- I $D(GMRCED(5)) D  ;wat/66 add early date
- . I $P(GMRCED(5),U)=$P(^GMR(123,+GMRCO,0),U,24) K GMRCED(5) Q
- . S ^TMP("GMRCSUB",$J,6)="GMRCERDT^"_$P(GMRCED(5),U)
+ I $D(GMRCED(5)) D
+ . I $P(GMRCED(5),U)=$P(^GMR(123,+GMRCO,0),U,11) K GMRCED(5) Q
+ . I '$L($P(GMRCED(5),U)) S $P(GMRCED(5),U)="@"
+ . S ^TMP("GMRCSUB",$J,6)="GMRCATN^"_$P(GMRCED(5),U)
  I $D(GMRCED(6)) D
- . I $P(GMRCED(6),U)=$P(^GMR(123,+GMRCO,0),U,11) K GMRCED(6) Q
- . I '$L($P(GMRCED(6),U)) S $P(GMRCED(6),U)="@"
- . S ^TMP("GMRCSUB",$J,7)="GMRCATN^"_$P(GMRCED(6),U)
- I $D(GMRCED(7)) D
- . I GMRCED(7)=$G(^GMR(123,+GMRCO,30)) K GMRCED(7) Q
- . I $P(GMRCED(7),U)_" ("_$P(GMRCED(7),U,2)_")"=$G(^GMR(123,GMRCO,30)) K GMRCED(7) Q
- . I '$L($P(GMRCED(7),U)) S $P(GMRCED(7),U,1,2)="@"
- . I $L($P(GMRCED(7),U,2)),$P(GMRCED(7),U,2)'="@" D
- .. S $P(GMRCED(7),U)=$P(GMRCED(7),U)_" ("_$P(GMRCED(7),U,2)_")"
- . S ^TMP("GMRCSUB",$J,8)="GMRCDIAG^"_GMRCED(7)
+ . I GMRCED(6)=$G(^GMR(123,+GMRCO,30)) K GMRCED(6) Q
+ . I $P(GMRCED(6),U)_" ("_$P(GMRCED(6),U,2)_")"=$G(^GMR(123,GMRCO,30)) K GMRCED(6) Q
+ . I '$L($P(GMRCED(6),U)) S $P(GMRCED(6),U,1,2)="@"
+ . I $L($P(GMRCED(6),U,2)),$P(GMRCED(6),U,2)'="@" D
+ .. S $P(GMRCED(6),U)=$P(GMRCED(6),U)_" ("_$P(GMRCED(6),U,2)_")"
+ . S ^TMP("GMRCSUB",$J,7)="GMRCDIAG^"_GMRCED(6)
  I $D(^TMP("GMRCED",$J,20)) S ^TMP("GMRCSUB",$J,20)="GMRCRFQ^" D
  . N ND S ND=0
  . F  S ND=$O(^TMP("GMRCED",$J,20,ND)) Q:'ND  D

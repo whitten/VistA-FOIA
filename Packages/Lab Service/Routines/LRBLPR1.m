@@ -1,6 +1,6 @@
-LRBLPR1 ;AVAMC/REG - BLOOD BANK PT RECORD-COND'T ;9/11/95  07:30 ;
- ;;5.2;LAB SERVICE;**1,72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLPR1 ; IHS/DIR/AAB - BLOOD BANK PT RECORD-COND'T 9/11/95 07:30 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**1,72**;Sep 27, 1994
  D E S LR(9)=0 F LRZ=0:1 S LR(9)=$O(^LR(LRDFN,3,LR(9))) Q:'LR(9)!(LR("Q"))  D:$Y>(IOSL-6) H^LRBLPR,H Q:LR("Q")  S X=^LR(LRDFN,3,LR(9),0) D ^DIWP
  Q:LR("Q")  D:LRZ ^DIWW
  D S Q:LR("Q")

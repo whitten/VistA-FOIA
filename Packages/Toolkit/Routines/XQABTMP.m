@@ -1,7 +1,7 @@
-XQABTMP ;ISC-SF.SEA/JLI - temporary routine for clean up ;04/16/96  10:49
+XQABTMP ;ISC-SF.SEA/JLI - temporary routine for clean up ;04/16/96  10:49 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**28**;Jul 10, 1995
  ;This routine can be used to remove Packages from Alpha/Beta testing
-EN ;ask for Package name and remove A/B testing
  N DA,DIC,DIK,DIR,DIRUT,DIROUT,X,XQ1,XQ2,XQ3,XQ4,XQA,XQDA,XQID,Y
  S DIC="^XTV(8989.3,1,""ABPKG"",",DIC(0)="AEMQZ"
  ;don't allow if there is an address, this can be used to only show

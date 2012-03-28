@@ -1,4 +1,5 @@
-XQSRV2 ;SEA/MJM - Server Task handler ;11/19/93  10:55 ;4/9/92  11:14 AM
+XQSRV2 ;SEA/MJM - Server Task handler ;11/19/93  10:55 ;4/9/92  11:14 AM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 AUDIT ;If audit is required fill in the data (AUDIT #2) the results.

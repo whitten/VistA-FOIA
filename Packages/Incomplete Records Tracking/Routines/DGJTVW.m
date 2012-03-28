@@ -1,5 +1,5 @@
 DGJTVW ;ALB/MAF - DISPLAY SCREENS FOR INCOMPLETE RECORDS TRACKING (LIST PROCESSOR) ; JAN 31,1989@900
- ;;1.0;Incomplete Records Tracking;;Jun 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
 EN2 D HDR^DGJTEE S DGJTVIEW=1 K DIC D EN^DGJTVW1 Q
  ;Display coded by and date coded on screens.
 CODDT S DGJVAL="        "_$S('$D(DGJTVIEW):"*",1:"")_"Date Coded: "

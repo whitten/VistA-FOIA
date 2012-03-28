@@ -1,5 +1,5 @@
 GMTSOBI ; SLC/KER - HS Object - Import/Install    ; 01/06/2003
- ;;2.7;Health Summary;**58,89**;Oct 20, 1995;Build 61
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;                      
  ; External References
  ;   DBIA 10096  ^%ZOSF("DEL"
@@ -101,13 +101,7 @@ HSO ; Install Health Summary Object
  S GMTSRT="^GMT(142.5,DA,"_GMTSTR_")",DA=GMTSDAO,DIK="^GMT(142.5,"
  S $P(GMTSNDD,"^",3)=+($G(GMTSDAT)),$P(GMTSNDD,"^",17)=+($G(GMTSUSR))
  S $P(GMTSNDD,"^",18)=$$NOW^XLFDT H 1 S $P(GMTSNDD,"^",19)=$$NOW^XLFDT
- S $P(GMTSNDD,"^",20)=0,@GMTSRT=GMTSNDD
- ;AGP CHANGE FOR NEW SUBSCRIPT
- S GMTSTXT=$$TX^GMTSOBU(GMTSRTN,"OBJ",3),GMTSNDD=GMTSTXT
- S GMTSTR=$P(GMTSNDD,";",2),GMTSNDD=$P(GMTSNDD,";",3,299)
- S GMTSRT="^GMT(142.5,DA,"_GMTSTR_")"
- S @GMTSRT=GMTSNDD
- D IX1^DIK
+ S $P(GMTSNDD,"^",20)=0,@GMTSRT=GMTSNDD D IX1^DIK
  Q
 DELERR ; Delete on Error
  I +($G(GMTSDAT))>0,+($G(GMTSDAO))'>0 D
@@ -136,8 +130,6 @@ DONE ; Completed
  . . H 1 I $L(GMTSTN),$L(GMTSON) D  Q
  . . . W !!," Object '",GMTSON,"' installed using Health Summary Type '",GMTSTN,"'"
  . . W !," Object Installed"
- ;AGP ADDED TO CLEAN-UP ROUTINE GMTSOBX
- D DEL(GMTSRTN)
  Q
 DEL(X) ;   Delete Routine X
  S X=$G(X) Q:'$L(X)  Q:$L(X)>8  Q:$$ROK^GMTSOBU(X)=0  X ^%ZOSF("DEL") Q

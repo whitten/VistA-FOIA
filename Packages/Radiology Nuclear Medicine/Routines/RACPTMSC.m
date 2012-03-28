@@ -1,5 +1,5 @@
 RACPTMSC ;HISC/SWM - CPT Mod screen, misc. ;5/30/00  11:02
- ;;5.0;Radiology/Nuclear Medicine;**10,19,38**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;**10,19**;Mar 16, 1998
  Q
 SCRN(Y) ;screen entry of cpt mod
  ; called from file 70.03's field 135's screen
@@ -47,7 +47,7 @@ ACTCODE(RA1,RA2) ;outputs CPT code active status
  ; RA2 = date to check CPT Code 
  N RA
  S RA=$$CPT^ICPTCOD(RA1,RA2)
- I $P(RA,"^",7)=1 Q 1
+ I DT>$P(RA,"^",6),$P(RA,"^",7)=1 Q 1
  Q 0
 NAMCODE(RA1,RA2) ;outputs flds #.01 and #2  of CPT record
  ; RA1 = CPT CODE, internal or external
@@ -61,18 +61,6 @@ BASICMOD(RA1,RA2) ; outputs basic modifier info
  ; RA1 = CPT MODIFIER, internal is used here
  ; RA2 = date to check CPT Modifier
  Q $$MOD^ICPTMOD(RA1,"I",RA2)
-ACTMOD(RA1,RA2) ; outputs active status of CPT modifier
- ; RA1 = CPT MODIFIER, internal is used here
- ; RA2 = date to check CPT Modifier
- ; output: 
- ;        RA3 = 0 is inactive, >0 is active
- ;        RAMODSTR returned from call to MOD^ICPTMOD
- N RA3
- S RAMODSTR=$$MOD^ICPTMOD(RA1,"I",RA2)
- S RA3=+RAMODSTR
- S:RA3<0 RA3=0
- S:'$P(RAMODSTR,U,7) RA3=0
- Q RA3
 SETDEFS ; set default CPT Modifiers, called by [RA REGISTER]
  ; 1st choice, defaults from file 71
  ; 2nd choice, defaults from file 79.1
@@ -89,7 +77,6 @@ LOOP1 K RAFDA,RAIEN,RAMSG ;clear arrays each time
  ; use DT because we're just getting the external value
  S RA3=$$BASICMOD(RA3,DT)
  G:+RA3<0 LOOP1 ; skip invalid CPT Modifier
- G:'$P(RA3,U,7) LOOP1 ; skip inactive CPT Modifier
  S RAFDA(70.3135,"+2,"_RA2_",",.01)=$P(RA3,U,2)
  D UPDATE^DIE("E","RAFDA","RAIEN","RAMSG")
  G:'$D(RAMSG) LOOP1
@@ -102,8 +89,7 @@ DISCMOD ; display existing CPT Modifiers
 LOOP2 S RA1=$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"CMOD",RA1)) Q:'RA1  S RA2=+^(RA1,0)
  S RA3=$$BASICMOD(RA2,DT)
  S:+RA3<0 RA3=""
- ; need parse with "  " to rid trailing blanks
- W !?6,$P(RA3,"^",2),?9,"(",$P($P(RA3,"^",3),"  "),") (",$S($P(RA3,"^",7)=1:"",1:"in"),"active)"
+ W !?6,$P(RA3,"^",2),?9,"(",$P($P(RA3,"^",3),"  "),")"
  G LOOP2
 SDP(Y) ; SCREEN DEFAULT cpt mod for a PROCEDURE
  ; called from file 71's field 135's screen
@@ -118,8 +104,8 @@ SDL(Y) ; SCREEN DEFAULT cpt mod for a LOCATION
  ; called from file 79.1's field 135's screen
  ; Y    = ien of file 81.3
  ; RAX  = screen's outcome; 0=failed
- N RAX,RAMODSTR
- S RAX=$$ACTMOD(Y,DT) S:RAX<0 RAX=0
+ N RAX
+ S RAX=$$BASICMOD(Y,DT) S:RAX<0 RAX=0
  Q RAX
 DISDCM ;display existing Default CPT Modifers for procedure or location
  ; file 71 used if called from [RA PROCEDURE EDIT]

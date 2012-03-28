@@ -1,5 +1,5 @@
 IBDF2F1 ;ALB/CJM - ENCOUNTER FORM - PRINT FORM(sends to printer) ;NOV 16,1992
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**3**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 REGISTER(PAGE) ;registration for scanning, form # and patient at bottom
  N PAGECHK,TYPECHK,IDCHK,VA
@@ -9,23 +9,19 @@ REGISTER(PAGE) ;registration for scanning, form # and patient at bottom
  ..S PAGECHK=(3*PAGE)#29,TYPECHK=(3*IBFORM("TYPE"))#997,IDCHK=(3*(+$G(IBPFID)))#997
  .;set top margin to top of page
  .W $C(27),"&l0E"
- .W $C(27),"&a0v0H",!
  .;
- .I IBFORM("SCAN") D ANCHORS^IBDF2F2
+ .I IBFORM("SCAN") D ANCHORS
  .;
- .;I $G(IBFORM("SCAN",PAGE)) D
- .; -- black box used to determine if page has data for scanning
- .;    but not for sample forms
- .;I '$G(IBDSAMP) W $C(27),"&a7576v3400H",$C(27),"&f1y2X",$C(27)
- .;I '$G(IBDSAMP) W $C(27),"&a7576v3400H",$C(27),"*c140h140v0P",$C(27)
+ .I $G(IBFORM("SCAN",PAGE)) D
+ ..; -- black box used to determine if page has data for scanning
+ ..;    but not for sample forms
+ ..I '$G(IBDSAMP) W $C(27),"&a7576v3400H",$C(27),"*c140h140v0P",$C(27)
  .;
  .;define font for OCR'd text
  .W $C(27),")s1p10h14v0s0b3T"
  .;define font for non-OCR' text
  .W $C(27)_"(s0p16.67h8.5v0s0b0T"
  .;print the form identifiers
- .W $C(27),"&a330h300V",! ; new line needed to get rest of line to print okay
- .W ! ; new line needed to get rest of line to print okay
  .W $C(27),"&a330h300V",$C(15),"FORM:",$C(27),"&a650H",$C(14),IBFORM("TYPE")
  .W $C(27),"&a1470H",$C(15),"ID:",$C(27),"&a1700H",$C(14),$G(IBPFID)
  .W $C(27),"&a4830H",$C(15),"PAGE:",$C(27),"&a5150H",$C(14),PAGE
@@ -72,23 +68,21 @@ NAM .;print form id, etc. on bottom of form
  I '(IBFORM("SCAN")&IBDEVICE("PCL")),IBDEVICE("RASTER") S (DX,DY)=0 X IOXY K DX,DY
  Q
  ;
- ;this call replaced by call to achors^ibdf2f2
-ANCHORS ; -- print anchors, anchors composed of two narrow rectangles
- ;    escape &a positions cursor at specified vert and horiz decipoints
- ;    escape *c prints rectangle of specified vert and horiz decipoints
- ;           0P is for complete fill.
- ;
- Q
+ANCHORS ;draws the anchors
+ ;; - leave middle anchors in for time being.  removing causes
+ ;; - printing problems in the first line on the page.  We will need
+ ;; - to visit this at a later time.
  W !
- ; -- top left corner (ANCHOR 1)
- W $C(27),"&a184v4H",$C(27),"*c12h120v0P",$C(27),"*c124h12v0P"
- ;
- ; -- top right (ANCHOR 3)
- W $C(27),"&a184v5534H",$C(27),"*c116h12v0P",$C(27),"&a184v5650H",$C(27),"*c12h120v0P"
- ;
- ; -- bottom left (ANCHOR 4)
- W !,$C(27),"&a7732v4H",$C(27),"*c124h12v0P",$C(27),"&a7615v4H",$C(27),"*c12h121v0P"
- ;
- ; -- bottom right (ANCHOR 6)
- W $C(27),"&a7732v5534H",$C(27),"*c116h12v0P",$C(27),"&a7616v5650H",$C(27),"*c12h120v0P"
+ ;top left corner (ANCHOR 1)
+ W $C(27),"&a184v4H",$C(27),"*c4h120v0P",$C(27),"*c124h4v0P"
+ ;top middle (ANCHOR 2)
+ W $C(27),"&a184v2876H",$C(27),"*c4h120v0P",$C(27),"*c124h4v0P"
+ ;bottom left (ANCHOR 4)
+ W $C(27),"&a7732v4H",$C(27),"*c124h4v0P",$C(27),"&a7615v4H",$C(27),"*c4h121v0P"
+ ;top right (ANCHOR 3)
+ W $C(27),"&a184v5534H",$C(27),"*c116h4v0P",$C(27),"&a184v5650H",$C(27),"*c4h120v0P"
+ ;bottom middle (ANCHOR 5)
+ W !,$C(27),"&a7732v2876H",$C(27),"*c123h4v0P",$C(27),"&a7615v2876H",$C(27),"*c4h121v0P"
+ ;bottom right (ANCHOR 6)
+ W $C(27),"&a7732v5534H",$C(27),"*c116h4v0P",$C(27),"&a7616v5650H",$C(27),"*c4h120v0P"
  Q

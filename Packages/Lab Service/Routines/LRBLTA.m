@@ -1,6 +1,7 @@
-LRBLTA ;AVAMC/REG - TRANSFUSION REACTION COUNTS ;7/2/93  07:05 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLTA ; IHS/DIR/FJE - TRANSFUSION REACTION COUNTS 7/2/93 07:05 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END,B^LRU G:Y<0 END W !!,"List patients " S %=2,LRF=0 D YN^LRU G:%<1 END S:%=1 LRF=1 W !
  S ZTRTN="QUE^LRBLTA" D BEG^LRUTL G:POP!($D(ZTSK)) END
 QUE U IO K ^TMP($J) S LRSDT=9999998.9-LRSDT,LRLDT=9999997.9-LRLDT
@@ -16,12 +17,15 @@ A F LRC=0:0 S LRC=$O(^TMP($J,LRR,LRC)) Q:'LRC!(LR("Q"))  D:$Y>(IOSL-6) H1 Q:LR("
  Q
 B S LRDFN=0 F  S LRDFN=$O(^TMP($J,LRR,LRC,LRDFN)) Q:'LRDFN!(LR("Q"))  D N,C
  Q
-C S LRI=0 F  S LRI=$O(^TMP($J,LRR,LRC,LRDFN,LRI)) Q:'LRI!(LR("Q"))  S LRX=^(LRI) D:$Y>(IOSL-6) H2 Q:LR("Q")  W !,SSN,?5,LRP,?36 S Y=+LRX D DT^LRU W Y,?67,$P(LRX,"^",2)
+C ;S LRI=0 F  S LRI=$O(^TMP($J,LRR,LRC,LRDFN,LRI)) Q:'LRI!(LR("Q"))  S LRX=^(LRI) D:$Y>(IOSL-6) H2 Q:LR("Q")  W !,SSN,?5,LRP,?36 S Y=+LRX D DT^LRU W Y,?67,$P(LRX,"^",2)
+ S LRI=0 F  S LRI=$O(^TMP($J,LRR,LRC,LRDFN,LRI)) Q:'LRI!(LR("Q"))  S LRX=^(LRI) D:$Y>(IOSL-6) H2 Q:LR("Q")  W !,HRCN,?5,LRP,?36 S Y=+LRX D DT^LRU W Y,?67,$P(LRX,"^",2)  ;IHS/ANMC/CLS 11/1/95
  Q
-N S X=^LR(LRDFN,0),Y=$P(X,"^",3),X=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$E($P(X,"^",9),6,9) Q
+N ;S X=^LR(LRDFN,0),Y=$P(X,"^",3),X=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$E($P(X,"^",9),6,9) Q
+ S X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),X=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU Q  ;IHS/ANMC/CLS 11/1/95
  ;
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
- D F^LRU W !,"TRANSFUSION REACTION COUNTS FROM ",LRSTR," TO ",LRLST,!,"REACTION",?31,"COUNT",?41,"COMPONENT",?51,"SUBCOUNT" W:LRF !,"SSN",?5,"Patient",?36,"Transfusion Date",?67,"Unit ID" W !,LR("%") Q
+ ;D F^LRU W !,"TRANSFUSION REACTION COUNTS FROM ",LRSTR," TO ",LRLST,!,"REACTION",?31,"COUNT",?41,"COMPONENT",?51,"SUBCOUNT" W:LRF !,"SSN",?5,"Patient",?36,"Transfusion Date",?67,"Unit ID" W !,LR("%") Q
+ D F^LRU W !,"TRANSFUSION REACTION COUNTS FROM ",LRSTR," TO ",LRLST,!,"REACTION",?31,"COUNT",?41,"COMPONENT",?51,"SUBCOUNT" W:LRF !,"HRCN",?10,"Patient",?36,"Transfusion Date",?67,"Unit ID" W !,LR("%") Q  ;IHS/ANMC/CLS 11/1/95
 H1 D H Q:LR("Q")  W !,LRR(1) Q
 H2 D H1 Q:LR("Q")  W ?41,LRE Q
  ;

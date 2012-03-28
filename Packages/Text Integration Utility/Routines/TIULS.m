@@ -1,5 +1,6 @@
-TIULS ; SLC/JER - String Library functions ;10/7/94  17:18 [1/5/04 11:29am]
- ;;1.0;TEXT INTEGRATION UTILITIES;**178**;Jun 20, 1997
+TIULS ; SLC/JER - String Library functions ;26-Feb-2010 11:56;MGH
+ ;;1.0;TEXT INTEGRATION UTILITIES;**178,1007**;Jun 20, 1997;Build 5
+ ;IHS/MSC/MGH IHS mods reintroduced on name lookup on upload
  ;
  ;                   **** WARNING ****
  ;
@@ -41,7 +42,8 @@ NAME(X,FMT) ; Call with X="LAST,FIRST MI", FMT=Return Format ("LAST, FI")
 NAMEX Q FMT
 INAME(X) ; Call with X="FIRST MI[.] LAST[,M.D.]", RETURNS "LAST,FIRST MI"
  N LAST,FIRST,MIDDLE,NAME,MI
- I X'?1.A1" ".E S NAME=X G INAMEX
+ S X=$$STRIP^XLFSTR(X,".")           ;IHS/ITSC/LJF 02/26/2003 added
+ ;I X'?1.A1" ".E S NAME=X G INAMEX   ;IHS/ITSC/LJF 02/26/2003 commented out
  S NAME=$P(X,","),FIRST=$P(NAME," "),MIDDLE=$S($L(NAME," ")=3:$P(NAME," ",2),1:"")
  S LAST=$P(NAME," ",$L(NAME," ")),MI=$S($L(MIDDLE):$E(MIDDLE),1:"")
  S NAME=LAST_","_FIRST_$S($L(MI):" "_MI,1:"")

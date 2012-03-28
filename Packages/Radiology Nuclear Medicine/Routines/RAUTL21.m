@@ -1,5 +1,5 @@
 RAUTL21 ;HOIFO/SWM,CRT;list & delete unneeded ^RARPT("ASTF" & "ARES" ;2/12/99  16:01
- ;;5.0;Radiology/Nuclear Medicine;**26,45**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;**26**;Mar 16, 1998
  ;
 EN1 N RA1,RA2,RACNT,RAKILREF,RALL,RATOT
  S U="^"
@@ -79,29 +79,4 @@ WAIT ;
  S (DIR("?"),DIR("??"))=""
  D ^DIR K DIR
  I Y=""!(Y=0) S WAIT="^"
- Q
- ;
-CHGPRC(RAOPRC,RANPRC,DA) ;If a procedure is changed during
- ;exam edits, ensure that CM associations of the "changed to"
- ;procedure are associated with the exam. If the "changed to"
- ;procedure does not have CM associations, make sure the exam
- ;does not have CM associations from the "changed from" procedure.
- ;
- ;called from the RA STATUS CHANGE & RA EXAM EDIT input templates
- ;Input: RAOPRC=the IEN of the "changed from" procedure
- ;       RANPRC=the IEN of the "changed to" procedure
- ;        DA(2)=the IEN of the patient in the PATIENT (#2) file (RADFN)
- ;        DA(1)=the inverse date/time of the exam (RADTI)
- ;           DA=the IEN of case (RACNI)
- ;
- I +$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"CM",0)) D
- .W !!?3,"Deleting the contrast media with this exam for procedure:",!?3,"'"_$P($G(^RAMIS(71,RAOPRC,0)),U)_"'."
- .K ^RADPT(DA(2),"DT",DA(1),"P",DA,"CM") ;kills both data and 'B' xref
- .D UPXCM^RAMAINU(.DA,"N") ;set CONTRAST MEDIA USED field to 'no'
- .Q
- I +$O(^RAMIS(71,RANPRC,"CM",0)) D
- .W !!?3,"Adding the contrast media to this exam for procedure:",!?3,"'"_$P($G(^RAMIS(71,RANPRC,0)),U)_"'."
- .D STUFCM70^RAMAINU(.DA,RANPRC)
- .D UPXCM^RAMAINU(.DA,"Y") ;set CONTRAST MEDIA USED field to 'yes'
- .Q
  Q

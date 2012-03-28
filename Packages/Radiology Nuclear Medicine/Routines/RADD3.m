@@ -1,33 +1,15 @@
 RADD3 ;HISC/SWM-Radiology Data Dictionary Utility Routine ;9/11/97  16:23
- ;;5.0;Radiology/Nuclear Medicine;**18,65**;Mar 16, 1998;Build 8
- ;
- ;Supported IA #2056 reference to GET1^DIQ
- ;Supported IA #10142 reference to EN^DDIOL
- ;Supported IA #2053 reference to UPDATE^DIE, FILE^DIE
- ;Supported IA #10103 reference to NOW^XLFDT
- ;
+ ;;5.0;Radiology/Nuclear Medicine;**18**;Mar 16, 1998
 PAIR ;
- ; called from file 71.9's field SOURCE
- ; SOURCE may be added normally via the "RA NM EDIT LOT" option,
- ; or it may be added via one of the 3 exam edits when the LOT
- ; prompt appears for the case's Radiopharm.  This LOT prompt
- ; allows adding new LOT on-the-fly, which causes the LOT's
- ; associated SOURCE, EXPIRATION DATE, KIT # to be prompted
- ; and the current case's Radiopharm to be stuffed into the new LOT's
- ; Radiopharm field.  The SOURCE field invokes this subroutine to:
- ;   re-set DR string to stuff matching radiopharm
- ;   not allow spacebar return for radioph
- ; RA*5*65 removed the Fileman Identifier for file 79.1's RADIOPHARM
- ; so by default, the DR will just be "2;3;4;" without the "5;".
- ;
- N RA1,RA2,RA3
+ ; if editing SOURCE for new (laygo) LOT entry in file 71.9
+ ; then re-set DR string to stuff matching radiopharm
+ ; and don't allow spacebar return for radioph
  I $D(RAOPT("EDITPT"))!($D(RAOPT("EDITCN")))!($D(RAOPT("STATRACK"))) D
- . S RA1=$$EN1^RAPSAPI(RAPSDRUG,.01)
- . I $G(DR)'[";5",$G(DIE)="^RAMIS(71.9,",+$G(RAPSDRUG),RA1]"" S DR=DR_"5///"_RA1 K ^DISV(DUZ,"^RAMIS(71.9,")
+ . I $G(DR)[";5",$G(DIE)="^RAMIS(71.9,",+$G(RAPSDRUG),$P($G(^PSDRUG(+$G(RAPSDRUG),0)),U)]"" S DR=$P(DR,";5")_";5///"_$P($G(^PSDRUG(+$G(RAPSDRUG),0)),U)_$P(DR,";5",2,99) K ^DISV(DUZ,"^RAMIS(71.9,")
  . Q
  ; check pairing of number/id with source
  ; called by input transform of file 71.9'S field 2 (source)
- S (RA1,RA2,RA3)=""
+ N RA1,RA2,RA3 S (RA1,RA2,RA3)=""
  Q:$G(DA)=""  Q:$G(D)=""
  F  S RA1=$O(^RAMIS(71.9,"B",$P(D,U),RA1)) Q:'RA1  I DA'=RA1 S:$P(^RAMIS(71.9,RA1,0),U,2)=+Y RA2=1 ;found a match so set ra2=1
  W:RA2 !!,"** There's already a NUMBER/ID=",$P(D,U),"  and SOURCE=",$P(Y,U,2)," **",!

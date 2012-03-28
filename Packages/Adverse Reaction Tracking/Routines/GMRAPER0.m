@@ -1,7 +1,7 @@
-GMRAPER0 ;HIRMFO/WAA-REACTIONS SELECT ROUTINE ;6/9/05  11:12
- ;;4.0;Adverse Reaction Tracking;**7,21,23**;Mar 29, 1996
+GMRAPER0 ;HIRMFO/WAA-REACTIONS SELECT ROUTINE ;01-Feb-2011 10:00;DU
+ ;;4.0;Adverse Reaction Tracking;**7,21,23,1002**;Mar 29, 1996;Build 32
 EN1 ; ENTRY POINT TO SELECT SIGNS/SYMPTOMS
- K GMRARAD,GMRAROT,GMRARDL,GMRAROTD S GMRAR10(11)=GMRAOTH_"^OTHER SIGN/SYMPTOM"
+ K GMRARAD,GMRAROT,GMRAWHO,GMRARDL,GMRAROTD S GMRAR10(11)=GMRAOTH_"^OTHER SIGN/SYMPTOM"
 LIST ; Display Signs/Symptoms
  W #
  I $O(GMRARPR(""))="" W !!,"No signs/symptoms have been specified.  Please add some now."
@@ -12,7 +12,7 @@ RELIST D DSPREAC
  I 'GMRAOUT,($O(GMRARPR(""))=""&($P(GMRAPA(0),U,6)="o")) W !!,$C(7),"SIGNS/SYMPTOMS MUST BE SPECIFIED.  THIS IS A REQUIRED RESPONSE." G RELIST
  G:'GMRAOUT LIST S:GMRAOUT GMRAOUT=2-GMRAOUT
 Q1 ; Exit from program
- K %,DIC,GMADATE,GMRACTR,GMRADO,GMRAOK,GMRAPC,GMRAR10,GMRADATE,GMRAREAC,GMRARECN,GMRARPR,GMRAX,GMRAY,GMRARADD,GMRAROTT,X,Y
+ K %,DIC,GMADATE,GMRACTR,GMRADO,GMRAOK,GMRAPC,GMRAR10,GMRADATE,GMRAREAC,GMRARECN,GMRARPR,GMRAX,GMRAY,GMRARADD,GMRAWHOD,GMRAROTT,GMRASRC,X,Y
  Q
 DSPREAC ; Display all the patient reactions
  I $O(GMRARPR(""))="" G NOREAC
@@ -70,6 +70,14 @@ NOREAC D ADREAC
  ..S $P(GMRAROT(GMRAX),U,2)=GMADATE,GMRAROTT("DONE",GMRAX)="" ;entries processed will not be overwritten by other sign/symptoms during same editing session
  ..S $P(GMRARPR($P(GMRAROT(GMRAX),U),GMRAOTH),U,3)=GMADATE
  .Q
+ D SOURCE(.GMRASRC) Q:GMRAOUT  D
+ .N GMRAX
+ .;IHS/MSC/MGH Add the source to the new reaction
+ .S GMRAX="" F  S GMRAX=$O(GMRAWHO(GMRAX)) Q:GMRAX=""  D
+ ..I $P(GMRAWHO(GMRAX),U,2)'=""!($D(GMRAWHOD("DONE",GMRAX))) Q  ;Src already added or processed has already been processed.
+ ..S $P(GMRAWHO(GMRAX),U,2)=GMRASRC,GMRAWHOD("DONE",GMRAX)="" ;entries processed will not be overwritten by other sign/symptoms during same editing session
+ ..S $P(GMRARPR($P(GMRAWHO(GMRAX),U),GMRAX),U,4)=GMRASRC
+ .Q
  K GMADATE ;Delete date associated with this sign/symptom
  Q
 ADREAC ;This is the site parameter's top ten most common signs/symptoms
@@ -120,7 +128,7 @@ ADD ;
 SETT ;
  Q:'$L(Y)
  S GMRAREAC=$P(Y,U,2),GMRARECN=$P(Y,U) K GMRARDL(GMRARECN)
- S:'$D(GMRARPR(GMRAREAC,GMRARECN)) GMRARAD(GMRARECN)=GMRAREAC,GMRARPR(GMRAREAC,GMRARECN)=GMRAREAC
+ S:'$D(GMRARPR(GMRAREAC,GMRARECN)) GMRARAD(GMRARECN)=GMRAREAC,GMRARPR(GMRAREAC,GMRARECN)=GMRAREAC,GMRAWHO(GMRARECN)=GMRAREAC
  Q
 STRIN ;This will handle a string input
  W !!,"Enter OTHER SIGN/SYMPTOM: " R X:DTIME S:'$T X="^^" I "^^"[X S:X="^^"!(X=U) GMRAOUT=1 Q
@@ -148,4 +156,13 @@ DATE(DATE,ASK) ; Enter the date for a reaction
  S:$P(GMRAPA(0),U,6)="o" %DT("B")=$S(DATE="":"NOW",1:$$FMTE^XLFDT(DATE,1))
  S %DT(0)="-NOW" D ^%DT  I "^^"[X S GMRAOUT=$L(X) Q
  S DATE=Y,ASK=1
+ Q
+SOURCE(SRC) ;Get the source
+ N DA,DIC,DR,Y
+ S DIC=90460.05
+ S DIC(0)="AEMQ"
+ S DIC("S")="I $P(^(0),U,2)=""S"""
+ S DIC("A")="Select source: "
+ D ^DIC  I $D(DIRUT) K DIRUT S GMRAOUT=1
+ S SRC=Y
  Q

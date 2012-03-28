@@ -1,4 +1,4 @@
-XPDH ;SFISC/XAK,RSD - help for answering install questions ;03/27/2008  09:11
+XPDH ;SFISC/XAK,RSD - help for answering install questions ;03/27/2008 09:11
  ;;8.0;KERNEL;**58,95,108,399**;Jul 10, 1995;Build 12
 REP ;changing your file name
  W !!?5,"If YES, then the incoming file name and Data Dictionary will"

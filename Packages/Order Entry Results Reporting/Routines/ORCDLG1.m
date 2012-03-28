@@ -1,6 +1,5 @@
-ORCDLG1 ; SLC/MKB - Order dialogs cont ;12/15/2006
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**60,71,95,110,243**;Dec 17, 1997;Build 242
- ;Per VHA Directive 2004-038, this routine should not be modified.
+ORCDLG1 ; SLC/MKB - Order dialogs cont ;11/21/01  08:03
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**60,71,95,110**;Dec 17, 1997
 EN(ITM,INST) ; -- ask each ITM prompt where
  ;    ORDIALOG(PROMPT,#) = internal form of each response
  ;
@@ -85,7 +84,6 @@ ONE(ORI,REQD) ; -- ask single-valued prompt
  . I X="" S DONE=1 Q
  . I X?1"^".E D UJUMP Q
  . I X="@" D DELETE Q
- . I $E(DIR(0))="N",Y<1,$E(Y,1,2)'="0." S Y=0_Y
  . S ORDIALOG(PROMPT,ORI)=$P(Y,U),DONE=1
  . X:$L($G(^ORD(101.41,+ORDIALOG,10,ITM,5))) ^(5) I '$G(DONE) D RESET Q  ; validate - if failed, K DONE to reask
  . D:$D(^ORD(101.41,+ORDIALOG,10,"DAD",PROMPT)) CHILDREN(PROMPT,ORI) I '$G(DONE),'FIRST D DELCHILD(PROMPT,ORI),RESET Q

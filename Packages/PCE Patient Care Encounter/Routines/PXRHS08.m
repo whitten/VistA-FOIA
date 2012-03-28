@@ -1,5 +1,7 @@
 PXRHS08 ;ISL/SBW - PCE Visit Patient Education data extract ;2/14/97
  ;;1.0;PCE PATIENT CARE ENCOUNTER;**13,16**;Aug 12, 1996
+ ;IHS/ITSC/LJF 9/26/2003 use IHS format for AA xref
+ ;
 EDUC(DFN,ENDDT,BEGDT,OCCLIM,CATCODE) ; Control branching
  ;INPUT  : DFN      - Pointer to PATIENT file (#2)
  ;         ENDDT    - Ending date/time in internal FileMan format
@@ -54,17 +56,21 @@ EDUC(DFN,ENDDT,BEGDT,OCCLIM,CATCODE) ; Control branching
  S IBEGDT=9999999-ENDDT,IENDDT=9999999-BEGDT
  K ^TMP("PXPE",$J)
  I OCCLIM="R" D  Q  ;Get each most recent topic for time period
- . S PXIED=""
- . F  S PXIED=$O(^AUPNVPED("AA",DFN,PXIED)) Q:PXIED=""  D
- . . S PXIVD=$O(^AUPNVPED("AA",DFN,PXIED,""))
- . . I (PXIVD'<IBEGDT)&(PXIVD'>IENDDT) D
- . . . S PXIFN=$O(^AUPNVPED("AA",DFN,PXIED,PXIVD,""))
- . . . D GETDATA
- ;
- ;. S CNT=0,PXIVD=IBEGDT
- ;. F  S PXIVD=$O(^AUPNVPED("AA",DFN,PXIVD)) Q:PXIVD'>0!(PXIVD>IENDDT)  D  Q:CNT'<OCCLIM
- ;. . S PXIFN=0
- ;. . F  S PXIFN=$O(^AUPNVPED("AA",DFN,PXIVD,PXIFN)) Q:PXIFN'>0  D GETDATA
+ . ;
+ . ;IHS/ITSC/LJF 9/26/2003 use IHS format for AA xref
+ . ;S PXIED=""
+ . ;F  S PXIED=$O(^AUPNVPED("AA",DFN,PXIED)) Q:PXIED=""  D
+ . ;. S PXIVD=$O(^AUPNVPED("AA",DFN,PXIED,""))
+ . ;. I (PXIVD'<IBEGDT)&(PXIVD'>IENDDT) D
+ . ;. . S PXIFN=$O(^AUPNVPED("AA",DFN,PXIED,PXIVD,""))
+ . ;. . D GETDATA
+ . ;
+ . ;IHS/ITSC/LJF 9/26/2003 uncomment lines below
+ . S CNT=0,PXIVD=IBEGDT
+ . F  S PXIVD=$O(^AUPNVPED("AA",DFN,PXIVD)) Q:PXIVD'>0!(PXIVD>IENDDT)  D  Q:CNT'<OCCLIM
+ . . S PXIFN=0
+ . . F  S PXIFN=$O(^AUPNVPED("AA",DFN,PXIVD,PXIFN)) Q:PXIFN'>0  D GETDATA
+ ;IHS/ITSC/LJF 9/26/2003 end of IHS mods
  ;
  I OCCLIM>0 D  Q
  . S PXED=""

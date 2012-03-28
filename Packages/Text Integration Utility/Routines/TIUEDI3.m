@@ -1,5 +1,5 @@
-TIUEDI3 ; SLC/MAM - Additional Edit Code ;4/19/05
- ;;1.0;TEXT INTEGRATION UTILITIES;**100,113,184**;Jun 20, 1997
+TIUEDI3 ; SLC/MAM - Additional Edit Code ;3/16/01
+ ;;1.0;TEXT INTEGRATION UTILITIES;**100**;Jun 20, 1997
  ;
 GETRECNW(DFN,TIU,TIUTYP1,TIUNEW,TIUDPRM,TIUINQ,PERSON,EDIT) ; New GETREC.
  ;  Code rewritten from the old GETREC^TIUEDI1.
@@ -116,7 +116,6 @@ EXIST(DFN,TIUTYPDA,TIUVSTR,REQEDIT,PERSON) ; If a docmt already
  ;EXISTS for the given patient, title, and visit, then return it.
  ; Ignore: - docmts of status deleted or retracted
  ;         - all docmts if run across a docmt w/ requesting pkg
- ;         - all docmts if Title is PRF Title
  ;         - I REQEDIT, then also ignore docmts PERSON cannot edit.
  ; If there are more than one, get the smallest DA.
  ; Receives TIUVSTR = LOC;VDT;VTYP
@@ -126,7 +125,6 @@ EXIST(DFN,TIUTYPDA,TIUVSTR,REQEDIT,PERSON) ; If a docmt already
  S REQEDIT=+$G(REQEDIT)
  I '$G(PERSON) S PERSON=DUZ
  S (REQUEST,TIUI,DA)=0
- I $$ISPFTTL^TIUPRFL(TIUTYPDA) G EXISTEX
 LOOP ; -- Find existing docmt for given patient, title, & visit:--
  F  S TIUI=+$O(^TIU(8925,"APTLD",DFN,TIUTYPDA,TIUVSTR,TIUI)) Q:'TIUI  D  Q:REQUEST  Q:DA
  . ; -- If TIUI doesn't exist, reject it and keep looking: --
@@ -166,12 +164,12 @@ CREATREC(DFN,TIU,TIUTYP1) ; Create document record - Returns DA
  S X=""""_"`"_TIUTYPDA_"""" D ^DIC
  I +Y'>0 W !,TIUTYPNM," record could not be created.",! G CREXIT
  ; -- Stuff patient, visit, parent doc type, status,
- ;    visit type, hosp loc, visit loc, division: --
+ ;    visit type, hosp loc, visit loc: --
  S DA=+Y
  N DIE,DR S DIE=8925
  S TIUVTYP=$P($G(TIUVSTR),";",3)
  S TIUVISIT=$S(+$G(TIU("VISIT")):+$G(TIU("VISIT")),1:"")
- S DR=".02////"_DFN_";.03////"_TIUVISIT_";.04////"_$$DOCCLASS^TIULC1(+$P(Y,U,2))_";.05///"_$$UP^XLFSTR($$STATUS^TIULC(DA))_";.13////"_TIUVTYP_";1205////"_$P($G(TIU("LOC")),U)_";1211////"_$P($G(TIU("VLOC")),U)_";1212////"_$P($G(TIU("INST")),U)
+ S DR=".02////"_DFN_";.03////"_TIUVISIT_";.04////"_$$DOCCLASS^TIULC1(+$P(Y,U,2))_";.05///"_$$UP^XLFSTR($$STATUS^TIULC(DA))_";.13////"_TIUVTYP_";1205////"_$P($G(TIU("LOC")),U)_";1211////"_$P($G(TIU("VLOC")),U)
  D ^DIE
  ; -- [Mark record for deferred crediting of stop code (fld #.11)]: --
  I +$G(TIU("STOP")) D DEFER^TIUVSIT(DA,+$G(TIU("STOP")))

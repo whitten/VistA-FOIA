@@ -1,5 +1,5 @@
-XPARDD ; SLC/KCM - DD Logic for Parameters (8989.5) ;05/14/2003  07:28
- ;;7.3;TOOLKIT;**26,35,39,63,69**;Apr 25, 1995
+XPARDD ; SLC/KCM - DD Logic for Parameters (8989.5) ;05/14/2003  07:28 [ 12/18/2003  4:58 PM ]
+ ;;7.3;TOOLKIT;**26,35,39,63,69,1002**;Apr 25, 1995
  ;
 ALLOW(ENT,PAR) ; function
  ; Screen for PARAMETER (.02) field

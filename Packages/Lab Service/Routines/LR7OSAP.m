@@ -1,4 +1,5 @@
 LR7OSAP ;slc/dcm/wty - Silent AP rpt (compare to LRAPCUM) ;3/27/2002
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**121,187,230,256,259,317**;Sep 27, 1994
  ;
 GET I '$D(^LR(LRDFN,LRSS)) Q

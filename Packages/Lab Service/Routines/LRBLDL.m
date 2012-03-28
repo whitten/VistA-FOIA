@@ -1,6 +1,7 @@
-LRBLDL ;AVAMC/REG - BLOOD DONOR LIST ;2/18/93  08:55 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDL ; IHS/DIR/FJE - BLOOD DONOR LIST 2/18/93 08:55 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END
  W @IOF,!?28,"BLOOD DONOR LISTS/LABELS"
  S LR(2)="",LR=0,%DT="AEX",%DT(0)="-N",%DT("A")="Date since last donation: " D ^%DT K %DT G:Y<1 END S LRSDT=9999998-Y D D^LRU S LRSTR=Y

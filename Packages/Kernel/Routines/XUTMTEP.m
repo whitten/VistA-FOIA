@@ -1,4 +1,5 @@
-XUTMTEP ;SEA/RDS - TaskMan: Toolkit, Edit Priority ; ;
+XUTMTEP ;SEA/RDS - TaskMan: Toolkit, Edit Priority ; ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 EDIT ;Edit task's priority

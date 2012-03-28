@@ -1,17 +1,28 @@
-PSOREF0 ;IHS/JCM - REFILL CON'T ; 1/18/05 8:23am
- ;;7.0;OUTPATIENT PHARMACY;**14,152,180,186,204,306,382**;DEC 1997;Build 9
+PSOREF0 ;IHS/JCM - REFILL CON'T ;21-Nov-2010 19:44;SM
+ ;;7.0;OUTPATIENT PHARMACY;**14,152,180,1003,1005,1009**;DEC 1997
  ;External reference to ^PSDRUG supported by DBIA 221
- ;
- ;PSO*186 add check for DEA Special handling field refill restrictions
+ ; Modified - IHS/CIA/PLS - 01/06/04 - Line PROCESS+5 and PROCESS+8
+ ;                          08/30/05 - Line PROCESS+7
+ ;                          01/22/07 - Line PROCESS+6
+ ;                          01/25/07 - Line PROCESS+10 - Added XFROM conditional
+ ;                          11/20/10 - Line CHECK+3
 PROCESS ;
  K PSODF S PSOREF("RX0")=^PSRX(PSOREF("IRXN"),0),PSOREF("RX2")=^(2),PSOREF("RX3")=^(3),PSOREF("STA")=+$G(^("STA")),PSOREF("SIG")=$P($G(^("SIG")),"^"),PSOREF("PSODFN")=$P(PSOREF("RX0"),"^",2)
  S PSOREF("DAYS SUPPLY")=$P(PSOREF("RX0"),"^",8)
  I $D(PSORX("BAR CODE")),PSODFN'=PSOREF("PSODFN") D NEWPT
  W !,"Now refilling Rx# ",$P(PSOREF("RX0"),"^")_"   Drug: "_$P(^PSDRUG($P(PSOREF("RX0"),"^",6),0),"^")
- K ZD(PSOREF("IRXN"))   ;*306
+ ; IHS/MSC/PLS - 01/22/07 - Added next line - Patch 1005
+ W !,"Patient: "_$$GET1^DIQ(2,PSODFN,.01)_"   HRN: "_$$HRN^AUPNPAT(PSODFN,DUZ(2))_"   LFDT: "_$$FMTE^XLFDT(+PSOREF("RX3"),"5Z")
+ D PRINT^APSQLAB   ; IHS/CIA/PLS - 01/06/04 - Display appropriate lab results
  S PSOREF("DFLG")=0 D DSPLY G:PSOREF("DFLG") PROCESSX
- I $G(PSOHRC) S PSOREF("QS")="S",PSOREF("MAIL/WINDOW")="M",PSORX("MAIL/WINDOW")="M",PSOHRCF=1 K VALMHDR
+ ;IHS/CIA/PLS - 08/30/205 - Added logic to populate IHS fields
+ ;IHS/MSC/PLS - 01/25/2007 - Added XFROM condition for AudioCare processing
+ D:$G(XFROM)="BATCH"!('$D(PSOREF("AWP"))) IHSSET^PSOREF1
  D CHECK G:$G(PSODF) PROCESS G:PSOREF("DFLG") PROCESSX D EN^PSOR52(.PSOREF)
+ ; IHS/CIA/PLS - 02/10/04 - Paperless refill
+ ;               04/29/05 - PCC logic moved to APSP namespace
+ ;S X="CIAZPRX1" X ^%ZOSF("TEST") I $T D EN^CIAZPRX1(PSOREF("PSODFN"),PSOREF("IRXN"))
+ D EN^APSPPCC1(PSOREF("PSODFN"),PSOREF("IRXN"))
  S:$G(PSOREF("MAIL/WINDOW"))["W" BINGRTE="W",BINGCRT=1
 PROCESSX D:$G(PSOREF("OLD FILL DATE"))]"" SUSDATEK^PSOUTIL(.PSOREF)
  Q
@@ -25,6 +36,7 @@ DSPLYX Q
 CHECK ;
  I '$P(PSOPAR,"^",11),$G(^PSDRUG($P(PSOREF("RX0"),"^",6),"I"))]"",DT>$G(^("I")) D  G CKQ
  .W $C(7),!!," *** Drug is inactive for Rx # "_$P(PSOREF("RX0"),"^")_" cannot be refilled ***",!
+ I '$$SCREEN^APSPMULT(+$P(PSOREF("RX0"),"^",6),,1) W $C(7),!!,"** Drug is not selectable for Rx # "_$P(PSOREF("RX0"),"^")_" cannot be refilled ***",! G CKQ  ;IHS/MSC/JDS - 11/20/10
  I '$D(PSORX("BAR CODE")),PSOREF("PSODFN")'=PSODFN W !!,?5,$C(7),"Can't refill Rx # "_$P(PSOREF("RX0"),"^")_", it is not for this patient." G CKQ
  S (PSOX,PSOY,STA)=""
  I $G(PSOSD) F  S STA=$O(PSOSD(STA)) Q:STA=""  F  S PSOX=$O(PSOSD(STA,PSOX)) Q:PSOX']""!(PSOREF("DFLG"))  I PSOREF("IRXN")=+PSOSD(STA,PSOX) S PSOY=PSOSD(STA,PSOX) I $P(PSOY,"^",4)]"" D
@@ -43,15 +55,6 @@ CHECK ;
  . W !,$C(7),"Rx is in "_PSOY_" status, cannot be refilled" S PSOREF("DFLG")=1
  D CHKDIV G:PSOREF("DFLG") CHECKX
  D NUMBER I PSOREF("NUMBER")>$P(PSOREF("RX0"),"^",9) W !?5,"Can't refill, no refills remaining." S PSOREF("DFLG")=1 G CHECKX
- ;
- ;PSO*7*186  check DEA, SPEC HNDLG field, in case changed, and apply
- N PSODRG,PSODEA,PSODAY
- S PSODRG=$G(^PSDRUG($P(PSOREF("RX0"),U,6),0)),PSODEA=$P(PSODRG,U,3)
- S PSODAY=$P(PSOREF("RX0"),U,8)
- I $$DEACHK^PSOUTLA1(PSOREF("IRXN"),PSODEA,PSODAY) D  G CHECKX
- . W $C(7),!!,"This drug has been changed, No refills allowed",!
- . S PSOREF("DFLG")=1
- ;
  D DATES
 CHECKX Q
 CKQ ;
@@ -60,10 +63,9 @@ CKQ ;
  ;
 CHKDIV G:$P(PSOREF("RX2"),"^",9)=+PSOSITE CHKDIVX
  W !?5,$C(7),"RX # ",$P(PSOREF("RX0"),"^")," is for (",$P(^PS(59,$P(PSOREF("RX2"),"^",9),0),"^"),") division."
- I '$P($G(PSOSYS),"^",2) S (PSOREF("DFLG"),PSOMHV)=1 W !,"********* Not Refilled *********" G CHKDIVX
+ I '$P($G(PSOSYS),"^",2) S PSOREF("DFLG")=1 G CHKDIVX
  D:$P($G(PSOSYS),"^",3) DIR
 CHKDIVX Q
- ;
 NUMBER K PSOX,PSOY S PSOREF("# OF REFILLS")=0
  I $G(^PSRX(PSOREF("IRXN"),1,0))]"" F PSOX=0:0 S PSOX=$O(^PSRX(PSOREF("IRXN"),1,PSOX)) Q:'PSOX  S PSOREF("# OF REFILLS")=PSOX
  S PSOREF("NUMBER")=PSOREF("# OF REFILLS")+1
@@ -89,15 +91,15 @@ EDATE S PSOREF("LAST REFILL DATE")=$P(PSOREF("RX3"),"^",1)
  . S PSOX1=(PSOREF("NUMBER")+1)*PSOREF("DAYS SUPPLY")-10
  . W !?5,$C(7),"LESS THAN ",PSOX1," DAYS FOR ",PSOREF("NUMBER")+1," FILLS",! D DIR K PSOX1
  I '$P(PSOPAR,"^",6),$G(PSOREF("EAOK"))=0,$P(PSOREF("RX3"),"^",2)>PSOREF("FILL DATE") D
- . S Y=$P(PSOREF("RX3"),"^",2) D DD^%DT W !!,$C(7),"Cannot be refilled until "_Y_"." S (PSOREF("DFLG"),PSOMHV)=1 K Y
+ . S Y=$P(PSOREF("RX3"),"^",2) D DD^%DT W !!,$C(7),"Cannot be refilled until "_Y_"." S PSOREF("DFLG")=1 K Y
 DATESX Q
 DIR K DIR,X,Y S DIR(0)="Y",DIR("A")="Continue ",DIR("B")="N",DIR("?")="Answer YES to Refill, NO to bypass"
- D ^DIR K DIR S:$D(DIRUT)!('Y) (PSOREF("DFLG"),PSOMHV)=1 K DIRUT,DTOUT,DUOUT,X,Y
+ D ^DIR K DIR S:$D(DIRUT)!('Y) PSOREF("DFLG")=1 K DIRUT,DTOUT,DUOUT,X,Y
  Q
 NEWPT S PSOQFLG=0,(DFN,PSODFN)=PSOREF("PSODFN") D ^PSOPTPST I PSOQFLG S PSOREF("DFLG")=1,PSOQFLG=0 G NEWPTX
  D PROFILE^PSOREF1
 NEWPTX Q
  ;
-EN(PSOREF)         ; Entry Point for Batch Barcode Option
+EN(PSOREF) ; Entry Point for Batch Barcode Option
  D PROCESS K DRUG,PSODF
  Q

@@ -1,8 +1,5 @@
 RANMED1 ;HISC/SWM-Nuclear Medicine Enter/Edit Routine ;1/21/97  11:07
- ;;5.0;Radiology/Nuclear Medicine;**65**;Mar 16, 1998;Build 8
- ;
- ;Supported IA #10142 reference to EN^DDIOL
- ;DBIA: 4551  DIC^PSSDI  looks up & screens records from file #50
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 ROUTE ; Enter/Edit file 71.6
  W ! N RA1,RA2 S RA1=0
  S DIC="^RAMIS(71.6,",DIC(0)="AEQLMZ" D ^DIC
@@ -29,19 +26,10 @@ SOURCE ; Enter/Edit file 71.8
  G:+Y<1 EXIT S DA=+Y S DIE=DIC,DR=".01:999" D ^DIE
  G SOURCE
 LOT ; Enter/Edit file 71.9
- ;RA*5*65 SG
- N DA,DIC,DIDEL,DIE,DINUM,DLAYGO,DR,DTOUT,DUOUT,EXIT,TMP,X,Y
- S EXIT=0
- F  D  Q:EXIT
- . ;--- Select a record
- . S DIC="^RAMIS(71.9,",DIC(0)="AEQLMSZ"
- . W !  D ^DIC
- . I Y'>0  S EXIT=1  Q
- . ;--- Edit the record
- . S DA=+Y,DIE=DIC
- . S DR=".01:4;5///^S X=$$RXEDIT^RAPSAPI3(""R"","""_DA_","",71.9,5,DT);6"
- . D ^DIE
- Q
+ W !
+ S DIC="^RAMIS(71.9,",DIC(0)="AEQLMSZ" D ^DIC
+ G:+Y<1 EXIT  S DA=+Y S DIE=DIC,DR=".01:999" D ^DIE
+ G LOT
 WARN ; Warn if dose is out-of-range, called from [RA EXAM EDIT]
  Q:'$D(RADTI)!('$D(RADFN))
  N RA1,RAXDIV,RADOT S RA1=0 ; RAXDIV=exam's division
@@ -54,8 +42,6 @@ WARN ; Warn if dose is out-of-range, called from [RA EXAM EDIT]
  Q
 EXIT K DIC,DIE,DIR,DA,DR,DIRUT
  K C,D,D0,DDH,DG,DI,DISYS,DQ,DST,DUOUT,I,POP
- K RA719IEN,RAFDA,DIE,DA,DR,RAVACL,RAYN,RAENTRY,RA50IEN,RANODEL,RASTUFF
- K RAHLP3,RAFIN
  Q
 DUPL ;check for duplicate entry into file 71.9
  Q:'$O(^RAMIS(71.9,"B",X,0))

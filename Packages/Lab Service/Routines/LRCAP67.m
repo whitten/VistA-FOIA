@@ -1,4 +1,6 @@
-LRCAP67 ;DALISC/FHS - PURGE 67.9 FILE   LMIP PHASE 5
+LRCAP67 ; IHS/DIR/AAB - PURGE 67.9 FILE LMIP PHASE 5 ;
+ ;;5.2;LR;**1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**201**;Sep 27, 1994
 EN ;
  D ^LRPARAM I '$P($G(LRLABKY),U,3) W !!,"Sorry you do not have the proper security Key",!! G END

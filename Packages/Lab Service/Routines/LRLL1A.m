@@ -1,4 +1,6 @@
-LRLL1A ;SLC/RWF - LOAD LIST CONTROL ; 2/23/89  17:29 ;
+LRLL1A ; IHS/DIR/FJE - LOAD LIST CONTROL 2/23/89 17:29 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 L1 W !,"All urgencys" S %=1,LRURX="I 1" D YN^DICN G END:%=-1 I %=0 W !,"Build the list with all urgencys or with a range." G L1
  I %=2 S DIC="^LAB(62.05,",DIC("S")="I '$P(^(0),U,3)",DIC(0)="AEMQ",DIC("A")="Most Urgent:" D ^DIC G END:Y<.1 S L1=+Y,DIC("A")="Least Urgent:" D ^DIC G END:Y<.1 S LRURX="I LRUS'<"_+L1_"&(LRUS'>"_+Y_")"

@@ -1,4 +1,5 @@
-XUTMQ3 ;SEA/RDS - TaskMan: Option, ZTMINQ, Part 5 (Modules) ;03/09/2000  12:58
+XUTMQ3 ;SEA/RDS - TaskMan: Option, ZTMINQ, Part 5 (Modules) ;03/09/2000  12:58 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**136**;Jul 10, 1995
  ;
 ENTRY G ^XUTMQ

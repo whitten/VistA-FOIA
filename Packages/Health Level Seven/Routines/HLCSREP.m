@@ -1,7 +1,5 @@
-HLCSREP ;ALB/MFK - HL7 QUEUE MANAGEMENT ;10/17/2007  08:56
- ;;1.6;HEALTH LEVEL SEVEN;**109,122**;Oct 13, 1995;Build 14
- ;Per VHA Directive 2004-038, this routine should not be modified.
- ;
+HLCSREP ;ALB/MFK - HL7 QUEUE MANAGEMENT - 10/4/94 1pm
+ ;;1.6;HEALTH LEVEL SEVEN;**109**;Oct 13, 1995
 REPMSG ;Duplicate messages on a queue
  ; INPUT:  MSG   - Array which contains the queue and the
  ;                 message numbers for msgs to be re-queued
@@ -35,12 +33,7 @@ ENQUE(LINK,DIR,IEN773) ;
  Q:'$G(LINK)
  I DIR'="I",DIR'="O" Q
  Q:'$G(IEN773)
- ;
- ; patch HL*1.6*122: MPI-client/server
- F  L +^HLMA("AC",DIR,LINK,IEN773):10 Q:$T  H 1
  S ^HLMA("AC",DIR,LINK,IEN773)=""
- L -^HLMA("AC",DIR,LINK,IEN773)
- ;
  S $P(^HLMA(+IEN773,0),U,17)=+LINK ; HL*1.6*109 - lja
  I DIR="O" D LLCNT^HLCSTCP(LINK,3)
  Q
@@ -55,10 +48,5 @@ DEQUE(LINK,DIR,IEN773) ;
  Q:'$G(LINK)
  I DIR'="I",DIR'="O" Q
  Q:'$G(IEN773)
- ;
- ; patch HL*1.6*122: MPI-client/server
- F  L +^HLMA("AC",DIR,LINK,IEN773):10 Q:$T  H 1
  K ^HLMA("AC",DIR,LINK,IEN773)
- L -^HLMA("AC",DIR,LINK,IEN773)
- ;
  Q

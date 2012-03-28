@@ -1,6 +1,7 @@
-LRBLJA1 ;AVAMC/REG - BB INVENTORY WORKLOAD ;11/5/93  07:35
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJA1 ; IHS/DIR/FJE - BB INVENTORY WORKLOAD 07:35 ; [ 11/5/93 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D S^LRBLW
  S:'$D(^LRD(65,LR,99,0)) ^(0)="^65.3PA^^" I '$D(^(LRT,0)) S ^(0)=LRT,X=^LRD(65,LR,99,0),^(0)=$P(X,"^",1,2)_"^"_LRT_"^"_($P(X,"^",4)+1)
  K LRG D DT^LRBLU

@@ -1,4 +1,5 @@
 LRLABEL6 ;SLC/FHS - BAR CODE LABELS FOR THE INTERMEC PRINTER ;8/29/94 12:36
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**161**;Sep 27, 1994
  ;This routine is similar to automated instrument
  ;*R are use to read the printer's response, not a user's input.

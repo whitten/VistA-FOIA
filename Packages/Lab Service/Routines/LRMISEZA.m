@@ -1,4 +1,6 @@
-LRMISEZA ;AVAMC/REG/SLC/BA - MICROBIOLOGY INF CONTROL DATA ; 10/9/87  16:18 ;
+LRMISEZA ; IHS/DIR/FJE - MICROBIOLOGY INF CONTROL DATA 10/9/87 16:18 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  ;from LRMISEZ
 ASK1 F I=0:0 S %=2 W !!,"Will all reports be for a single bacterium" D YN^DICN Q:%'=0  W !,"Do you want all survey data for just one organism?"

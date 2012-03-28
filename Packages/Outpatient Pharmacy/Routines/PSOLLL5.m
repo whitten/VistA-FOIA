@@ -1,6 +1,7 @@
-PSOLLL5 ;BIR/RJS - LASER LABEL CONTINUED ;11/14/05 10:09am
- ;;7.0;OUTPATIENT PHARMACY;**120,161,230,200,326,350**;DEC 1997;Build 4
+PSOLLL5 ;BIR/RJS - LASER LABEL CONTINUED ;09-Mar-2004 09:29;PLS
+ ;;7.0;OUTPATIENT PHARMACY;**120**;DEC 1997
  ;
+ ; Modified - IHS/CIA/PLS - 03/06/04
 START ;
  N TEXT,BLNKLIN
  S $P(BLNKLIN,"_",90)="_"
@@ -12,17 +13,16 @@ START ;
  S TEXT="Write address changes in the blanks, sign the form, and return to" D PRINT(TEXT,0)
  S TEXT="your pharmacy." D PRINT(TEXT,0)
  S X=$S($D(^DPT(DFN,0))#2:^(0),1:""),PNM=$P(X,"^")
- D PID^VADPT6,ADD^VADPT S SSNP=""
+ ; IHS/CIA/PLS - 03/06/04 - Set to full HRN
+ ;D PID^VADPT6,ADD^VADPT S SSNP=$E(VA("PID"),5,12)
+ D PID^VADPT6,ADD^VADPT S SSNP=VA("PID")
  S PSOY=PSOY+PSOYI,TEXT=PNM_"  "_SSNP D PRINT(TEXT,0)
  I $G(VAPA(1))="" G ALLERGY
  F I=1:1:3 I $G(VAPA(I))]"" S TEXT=$G(VAPA(I))_$E(BLNKLIN,1,80-$L(VAPA(I))) D PRINT(TEXT,0)
  S A=+$G(VAPA(5)) I A S A=$S($D(^DIC(5,A,0)):$P(^(0),"^",2),1:"UNKNOWN")
  S B=$G(VAPA(4))_", "_A_"  "_$S($G(VAPA(11)):$P(VAPA(11),"^",2),1:$G(VAPA(6)))
  S TEXT=B_$E(BLNKLIN,1,80-$L(B)) D PRINT(TEXT,0)
- S B=VAPA(8)
- S TEXT=B_$E(BLNKLIN,1,80-$L(B)) D PRINT(TEXT,0)
- S:$G(VAPA(3))="" PSOY=PSOY+PSOYI
- S TEXT="[   ] Permanent                     [   ] Temporary until ____/____/____" D PRINT(TEXT,0)
+ S PSOY=PSOY+PSOYI,TEXT="[   ] Permanent                     [   ] Temporary until ____/____/____" D PRINT(TEXT,0)
  S PSOY=$G(PSOFY),TEXT="Signature "_$E(BLNKLIN,1,45) D PRINT(TEXT,0)
  ;
 ALLERGY ;ALLERGIES & REACTIONS
@@ -40,18 +40,14 @@ ALLERGY ;ALLERGIES & REACTIONS
  S ALCNT=0,^TMP($J,"PSOAPT",5)="Non-Verified Adverse Reactions"
  S (PSOLG,PSOLGA)="" F  S PSOLG=$O(^TMP($J,"PSOALWA",2,2,PSOLG)) Q:PSOLG=""  F  S PSOLGA=$O(^TMP($J,"PSOALWA",2,2,PSOLG,PSOLGA)) Q:PSOLGA=""  S ALCNT=ALCNT+1,^TMP($J,"PSOAPT",5,ALCNT)=PSOLGA
  I $G(PSOIO("ALI"))]"" X PSOIO("ALI")
- S XFONT=$E($G(PSOFONT),2,99)
- S OFONT=PSOFONT,PSOFONT=$G(PSOHFONT,PSOFONT) S TEXT=^TMP($J,"PSOAPT",1) D PRINT(TEXT,1) S PSOFONT=OFONT
- I $$GET1^DIQ(44,$P(RXY,"^",5),2,"I")="W" S TEXT="INPATIENT" D PRINT(TEXT,0)
- F CCC=3,4,5 I '$O(^TMP($J,"PSOAPT",CCC,0)) K ^TMP($J,"PSOAPT",CCC)
- D ASSESS
- I CCC="NKA" S ^TMP($J,"PSOAPT",2,1)="No Known Allergies" K ^TMP($J,"PSOAPT",3)
+ S XFONT=$E($G(PSOFONT),2,99),TEXT=^TMP($J,"PSOAPT",1) D PRINT(TEXT,0)
  S CCC=1,OUT=0
  F  S CCC=$O(^TMP($J,"PSOAPT",CCC)) Q:CCC=""  D  Q:OUT
  .S TEXT=$G(^TMP($J,"PSOAPT",CCC))
  .I $G(PSOIO(PSOFONT))]"" X PSOIO(PSOFONT)
- .S PSOY=PSOY+PSOYI D PRINT(TEXT,0,1)
- .I TEXT="No Assessment Made" Q
+ .I $G(PSOIO("FWU"))]"" X PSOIO("FWU")
+ .S PSOY=PSOY+PSOYI D PRINT(TEXT,0)
+ .I $G(PSOIO("FDU"))]"" X PSOIO("FDU")
  .I PSOY>PSOYM S OUT=1 Q
  .S (TEXT,PTEXT,CCC2)="",LENGTH=0
  .F  S CCC2=$O(^TMP($J,"PSOAPT",CCC,CCC2)) Q:CCC2=""  S TEXT=^(CCC2) D  Q:OUT
@@ -73,11 +69,10 @@ SUSPEN S PSODFN=DFN,(SPPL,RXX,STA)="",XXS=1
  I SPPL="" Q
 SUSP1 I $G(PSOIO("SPI"))]"" X PSOIO("SPI")
  S TOF=0,TEXT=PNM_" "_SSNP_" "_$G(PSONOW) D PRINT(TEXT,0)
- S TEXT="The following prescription(s) have been requested and will be" D PRINT(TEXT,0)
- S TEXT="mailed to you on or after the date indicated." D PRINT(TEXT,0)
+ S TEXT="The following prescriptions will be mailed to you on or after the" D PRINT(TEXT,0)
+ S TEXT="date indicated." D PRINT(TEXT,0)
  S PSOY=PSOY+PSOYI,TEXT="Rx#                                          Date                                        "
  D PRINT(TEXT,0,1)
- N RX
  F XX=XXS:1 Q:$P(SPPL,",",XX)=""  S RX=$P(SPPL,",",XX) D  Q:TOF
  . S SPNUM=$O(^PS(52.5,"B",RX,0)) I SPNUM S SPDATE=$P($G(^PS(52.5,SPNUM,0)),"^",2) S Y=SPDATE X ^DD("DD") S SPDATE=Y
  . S T=$P(^PSRX(RX,0),"^") D PRINT(T,0)
@@ -97,12 +92,4 @@ PRINT(T,B,UL) ;
  I UL,$G(PSOIO("FDU"))]"" X PSOIO("FDU")
  I $G(PSOIO("ET"))]"" X PSOIO("ET")
  I BOLD,$G(PSOIO(PSOFONT))]"" X PSOIO(PSOFONT) ;TURN OFF BOLDING
- Q
-ASSESS ;
- N FLG3,FLG4,FLG5
- S CCC=$G(^TMP($J,"PSOAPT",2,1))
- S FLG3=$G(^TMP($J,"PSOAPT",3,1))
- S FLG4=$G(^TMP($J,"PSOAPT",4,1))
- S FLG5=$G(^TMP($J,"PSOAPT",5,1))
- I CCC="",FLG3="",FLG4="",FLG5="" S ^TMP($J,"PSOAPT",2,1)="No Assessment Made" K ^TMP($J,"PSOAPT",3)
  Q

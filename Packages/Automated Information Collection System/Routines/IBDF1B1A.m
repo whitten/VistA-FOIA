@@ -1,5 +1,5 @@
 IBDF1B1A ;ALB/CJM - ENCOUNTER FORM PRINT (IBDF1B continued - user options for printing- continuation of IBDF1B1); 3/1/93
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**25**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 ENCL ;for every clinic choosen find patient appointments on DATE
  N DFN,CLNCNAME,IBCLINIC,PNAME,TDIGIT,IBAPPT,IBAPTYP,IBX,Y,IBDIV,FIRST4
@@ -33,8 +33,8 @@ ENCL ;for every clinic choosen find patient appointments on DATE
  ...;case of sort by clinic,patient
  ...;
  ...;**** when the new SAC standards go into effect, increasing the allowable global subscript length, this line should be substituted for the line following it ****
- ...I IBSRT=1 S CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",IBDIV,CLNCNAME,IBCLINIC,$E(PNAME,1,15),DFN,+IBAPPT)=""
- ...; old way ;I IBSRT=1 S CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",$E(IBDIV,1,20),$E(CLNCNAME,1,10),IBCLINIC,$E(PNAME,1,10),DFN,+IBAPPT)=""
+ ...;I IBSRT=1 S CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",IBDIV,CLNCNAME,IBCLINIC,$E(PNAME,1,10),DFN,+IBAPPT)=""
+ ...I IBSRT=1 S CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",$E(IBDIV,1,20),$E(CLNCNAME,1,10),IBCLINIC,$E(PNAME,1,10),DFN,+IBAPPT)=""
  ...;
  ...;case of sort by terminal digit
  ...I IBSRT=2 D
@@ -48,8 +48,8 @@ ENCL ;for every clinic choosen find patient appointments on DATE
  ...;case of sort by clinic/terminal digits
  ...;
  ...;**** when the new SAC standards go into effect, increasing the allowable global subscript length, this line should be substituted for the line following it ****
- ...I IBSRT=3 S TDIGIT=$$TDG(DFN),CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",IBDIV,CLNCNAME,IBCLINIC,TDIGIT,DFN,+IBAPPT)=""
- ...; this is the old way ;I IBSRT=3 S TDIGIT=$$TDG(DFN),CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",$E(IBDIV,1,20),$E(CLNCNAME,1,10),IBCLINIC,TDIGIT,DFN,+IBAPPT)=""
+ ...;I IBSRT=3 S TDIGIT=$$TDG(DFN),CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",IBDIV,CLNCNAME,IBCLINIC,TDIGIT,DFN,+IBAPPT)=""
+ ...I IBSRT=3 S TDIGIT=$$TDG(DFN),CLNCNAME=$P($G(^SC(IBCLINIC,0)),"^") Q:CLNCNAME=""  S ^TMP("IBDF",$J,"P",$E(IBDIV,1,20),$E(CLNCNAME,1,10),IBCLINIC,TDIGIT,DFN,+IBAPPT)=""
  ;
  ;don't need the list of clinics anymore
  K ^TMP("IBDF",$J,"C")

@@ -1,4 +1,4 @@
-MCAROK ; GENERATED FROM 'MCAREKG1' PRINT TEMPLATE (#976) ; 03/26/01 ; (FILE 691.5, MARGIN=80)
+MCAROK ; GENERATED FROM 'MCAREKG1' PRINT TEMPLATE (#3700) ; 11/29/04 ; (FILE 691.5, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,7 +11,7 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 M DXS=^DIPT(976,"DXS")
+ I $D(DXS)<9 M DXS=^DIPT(3700,"DXS")
  S I(0)="^MCAR(691.5,",J(0)=691.5
  D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(691.5,D0,8)):^(8),1:"") S X="WARD/CLINIC: "_$S('$D(^SC(+$P(DIP(1),U,1),0)):"",1:$P(^(0),U,1)) K DIP K:DN Y W X
  D N:$X>4 Q:'DN  W ?4 W "AGE: "
@@ -35,19 +35,19 @@ BEGIN ;
  S I(1)=3,J(1)=691.54 F D1=0:0 Q:$O(^MCAR(691.5,D0,3,D1))'>0  X:$D(DSC(691.54)) DSC(691.54) S D1=$O(^(D1)) Q:D1'>0  D:$X>22 T Q:'DN  D A1
  G A1R
 A1 ;
- S X=$G(^MCAR(691.5,D0,3,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693.3,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(691.5,D0,3,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693.3,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  Q
 A1R ;
  S I(1)=5,J(1)=691.55 F D1=0:0 Q:$O(^MCAR(691.5,D0,5,D1))'>0  X:$D(DSC(691.55)) DSC(691.55) S D1=$O(^(D1)) Q:D1'>0  D:$X>53 T Q:'DN  D B1
  G B1R
 B1 ;
- S X=$G(^MCAR(691.5,D0,5,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693.3,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(691.5,D0,5,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693.3,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  Q
 B1R ;
  S I(1)=6,J(1)=691.56 F D1=0:0 Q:$O(^MCAR(691.5,D0,6,D1))'>0  X:$D(DSC(691.56)) DSC(691.56) S D1=$O(^(D1)) Q:D1'>0  D:$X>53 T Q:'DN  D C1
  G C1R
 C1 ;
- S X=$G(^MCAR(691.5,D0,6,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693.3,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(691.5,D0,6,D1,0)) D N:$X>21 Q:'DN  W ?21 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(693.3,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  Q
 C1R ;
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "INSTRUMENT DX: "
@@ -57,31 +57,34 @@ D1 ;
  S X=$G(^MCAR(691.5,D0,9,D1,0)) S DIWL=21,DIWR=78 D ^DIWP
  Q
 D1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "CONFIRMATION STATUS: "
  S X=$G(^MCAR(691.5,D0,0)) S Y=$P(X,U,12) W:Y]"" $S($D(DXS(3,Y)):DXS(3,Y),1:Y)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "COMPARISON: "
- S X=$G(^MCAR(691.5,D0,1)) S DIWL=1,DIWR=60 S Y=$P(X,U,1) S X=Y D ^DIWP
- D A^DIWW
+ S X=$G(^MCAR(691.5,D0,1)) S DIWL=19,DIWR=78 S Y=$P(X,U,1) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "COMMENTS: "
  S I(1)=7,J(1)=691.517 F D1=0:0 Q:$O(^MCAR(691.5,D0,7,D1))'>0  S D1=$O(^(D1)) D:$X>16 T Q:'DN  D E1
  G E1R
 E1 ;
- S X=$G(^MCAR(691.5,D0,7,D1,0)) S DIWL=1,DIWR=65 D ^DIWP
+ S X=$G(^MCAR(691.5,D0,7,D1,0)) S DIWL=5,DIWR=69 D ^DIWP
  Q
 E1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "HEART MEDS:"
  S I(1)=2,J(1)=691.53 F D1=0:0 Q:$O(^MCAR(691.5,D0,2,D1))'>0  X:$D(DSC(691.53)) DSC(691.53) S D1=$O(^(D1)) Q:D1'>0  D:$X>17 T Q:'DN  D F1
  G F1R
 F1 ;
- S X=$G(^MCAR(691.5,D0,2,D1,0)) D N:$X>17 Q:'DN  W ?17 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(691.5,D0,2,D1,0)) D N:$X>17 Q:'DN  W ?17 S Y=$P(X,U,1) S Y=$S(Y="":Y,$D(^MCAR(695,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^PSDRUG(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,40)
  S DIP(1)=$S($D(^MCAR(691.5,D0,2,D1,0)):^(0),1:"") S X=" "_$P(DIP(1),U,2) K DIP K:DN Y W X
  S DIP(1)=$S($D(^MCAR(691.5,D0,2,D1,0)):^(0),1:"") S X=" "_$P(DIP(1),U,3) K DIP K:DN Y W X
  Q
 F1R ;
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "INTERPRETED BY: "
- S X=$G(^MCAR(691.5,D0,0)) S Y=$P(X,U,13) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(691.5,D0,0)) S Y=$P(X,U,13) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  K Y K DIWF
  Q
 HEAD ;

@@ -1,5 +1,5 @@
-VSITHLP ;ISD/RJP - Visit Information ;6/6/05
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,111,130,168**;Aug 12, 1996;Build 14
+VSITHLP ;ISD/RJP - Visit Information ;8/8/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,111**;Aug 12, 1996
  ; Patch PX*1*76 changes the 2nd line of all VSIT* routines to reflect
  ; the incorporation of the module into PCE.  For historical reference,
  ; the old (VISIT TRACKING) 2nd line is included below to reference VSIT
@@ -76,8 +76,6 @@ TXT ;
  ;; 80003 - VSIT("IR")  ; IONIZING RADIATION EXPOSURE (set)
  ;; 80004 - VSIT("EC")  ; PERSIAN GULF EXPOSURE (set)
  ;; 80006 - VSIT("HNC") ; HEAD AND/OR NECK CANCER (set)
- ;; 80007 - VSIT("CV")  ; COMBAT VET (set)
- ;; 80008 - VSIT("SHAD")  ; PROJ 112/SHAD (set)
  ;; 81101 - VSIT("COM") ; COMMENTS (free text)
  ;; 81202 - VSIT("PKG") ; PACKAGE (pointer to PACKAGE file #9.4)
  ;; 81203 - VSIT("SOR") ; DATA SOURCE (pointer to PCE DATA SOURCE

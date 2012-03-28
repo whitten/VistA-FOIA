@@ -1,5 +1,5 @@
 DGJTDEL ;ALB/MAF - DELETE OPTION FOR INCOMPLETE RECORDS TRACKING ; JAN 31,1989@900
- ;;1.0;Incomplete Records Tracking;;Jun 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
 EN D QUIT
  I $D(^DG(43,1,"GL")) S X=$P(^DG(43,1,"GL"),"^",2) I X=1 S DIR(0)="393,.06",DIR("A")="Select DIVISION " D ^DIR G QUIT:Y="^"!($D(DTOUT)) S DGJTDV=Y
  I '$D(DGJTDV) S X=$O(^DG(40.8,0)) S DGJTDV=X_"^"_$P(^DG(40.8,+X,0),"^")

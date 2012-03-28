@@ -1,5 +1,5 @@
 PSADRUGP ;BIR/LTL,JMB-Enter/Edit a Drug ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,21,60,64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,21**; 10/24/97
  ;
  ;References to ^PSDRUG( are covered by IA #2095
  ;References to ^PS(52.6, are covered by IA #270
@@ -34,16 +34,14 @@ DRUG S DIE="^PSD(58.8,"_PSALOC_",1,",DA(1)=PSALOC,DA=PSADRG,DR="3Enter total "_$
  I '$P(^PSD(58.8,PSALOC,1,PSADRG,0),"^",4) D
  .W !!,"Once an initial quantity is entered, it can only be updated by receiving,",!,"dispensing, adjusting, or transferring."
  .W:+$P(PSA660,"^",2) " The Current Inventory from the",!,"DRUG file is only offered as an initial balance and and is NOT updated."
- F  L +^PSD(58.8,PSALOC,1,PSADRG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,PSALOC,1,PSADRG,0):0 I  Q
  W ! D ^DIE L -^PSD(58.8,PSALOC,1,PSADRG,0) K DA,DIE G:$D(Y) LOC
  S PSAQTY=X
  I +$P($G(^PSD(58.8,PSALOC,0)),"^",14) D
  .S DIE="^PSD(58.8,"_PSALOC_",1,",DA(1)=PSALOC,DA=PSADRG,DR="2Stock Level: ;4Reorder Level: "
- .F  L +^PSD(58.8,PSALOC,1,PSADRG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ .F  L +^PSD(58.8,PSALOC,1,PSADRG,0):0 I  Q
  .D ^DIE L -^PSD(58.8,PSALOC,1,PSADRG,0) K DA,DIE
-DISP ;
- S:'$D(PSA660) PSA660=$G(^PSDRUG(PSADRG,660)) ;*60
- W !!,"Current balance:  "_+$P($G(^PSD(58.8,PSALOC,1,PSADRG,0)),"^",4)," ",$P(PSA660,"^",8)
+DISP W !!,"Current balance:  "_+$P($G(^PSD(58.8,PSALOC,1,PSADRG,0)),"^",4)," ",$P(PSA660,"^",8)
  ;PSA*3*21 (Give option of inactivation - Dave B)
  S DIE="^PSD(58.8,"_PSALOC_",1,",DA(1)=PSALOC,DA=PSADRG,DR="13;14" D ^DIE K DIE,DR
  S PSAIT=PSADRG,PSAIT(2)=PSADRGN,PSAIT(4)=$G(^PSDRUG(PSAIT,660)) D:$O(^PS(52.6,"AC",PSADRG,0))!($O(^PS(52.7,"AC",PSADRG,0))) ^PSAPSI4
@@ -53,7 +51,7 @@ MON S:'$D(^PSD(58.8,PSALOC,1,PSADRG,5,0)) ^PSD(58.8,PSALOC,1,PSADRG,5,0)="^58.80
  I '$D(^PSD(58.8,PSALOC,1,PSADRG,5,+($E(DT,1,5)*100),0)) S DIC="^PSD(58.8,"_PSALOC_",1,"_PSADRG_",5,",DIC(0)="LM",(X,DINUM)=($E(DT,1,5)*100),DA(2)=PSALOC,DA(1)=PSADRG,DLAYGO=58.8 D ^DIC K DA,DIC,DLAYGO
  S DIE="^PSD(58.8,"_PSALOC_",1,"_PSADRG_",5,",DA(2)=PSALOC,DA(1)=PSADRG,DA=($E(DT,1,5)*100),DR="1////^S X=PSAQTY;7////^S X=PSAQTY" D ^DIE K DA,DIE
  W !!,"Updating beginning balance and transaction history."
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.81,0):0 I  Q
 FIND S PSAT=$P(^PSD(58.81,0),"^",3)+1 I $D(^PSD(58.81,PSAT)) S $P(^PSD(58.81,0),"^",3)=$P(^PSD(58.81,0),"^",3)+1 G FIND
  S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSAT D ^DIC
  L -^PSD(58.81,0) K DIC,DLAYGO

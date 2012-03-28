@@ -1,5 +1,5 @@
 PXAPIUTL ;ISL/dee - some of PCE's utilities used by PCE's API ;3/14/97
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**27,186**;Aug 12, 1996;Build 3
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**27**;Aug 12, 1996
  Q
  ;
 SOURCE(X) ;Get IEN of data source in the PCE Data Source file
@@ -29,5 +29,5 @@ PRVCLASS(PROVIDER,VISITDT) ;See if this is a good provider
  N PXACTIVE
  S PXACTIVE=$P(^VA(200,PROVIDER,0),"^",11)
  I PXACTIVE'="",PXACTIVE<VISITDT Q -1
- Q $$GET^XUA4A72(PROVIDER,$P(VISITDT,"."))
+ Q $$GET^XUA4A72(PROVIDER,VISITDT)
  ;

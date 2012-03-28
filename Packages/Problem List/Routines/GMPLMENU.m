@@ -1,5 +1,5 @@
 GMPLMENU ; SLC/MKB -- VALM Utilities for Add Menu sub-list ;5/26/94  15:55
- ;;2.0;Problem List;**11**;Aug 25, 1994
+ ;;2.0;Problem List;;Aug 25, 1994
 HDR ; -- header code
  N PAT,NUM,LIST S NUM=GMPLCNT_" problem(s) added"
  S PAT=$P(GMPDFN,U,2)_"  ("_$P(GMPDFN,U,3)_")"
@@ -88,5 +88,5 @@ ITQ I $D(GMPSAVED) D  D HDR
  ;
 CLU ; -- add problem not on menu, from CLU
  N GMPSAVED W !!!,">>> Adding a problem not on the menu ..."
- W @IOF D FULL^VALM1,ADD^GMPL1 S VALMBCK="R" I $D(GMPSAVED) S GMPREBLD=1,GMPLCNT=GMPLCNT+1 K VALMHDR
+ D ADD^GMPL1 I $D(GMPSAVED) S GMPREBLD=1,GMPLCNT=GMPLCNT+1 K VALMHDR
  Q

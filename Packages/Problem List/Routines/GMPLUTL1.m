@@ -1,5 +1,5 @@
 GMPLUTL1 ; SLC/MKB/KER -- PL Utilities (cont)               ; 04/15/2002
- ;;2.0;Problem List;**3,8,7,9,26,35,39**;Aug 25, 1994;Build 7
+ ;;2.0;Problem List;**3,8,7,9,26**;Aug 25, 1994
  ;
  ; External References
  ;   DBIA   446  ^AUTNPOV(
@@ -20,8 +20,6 @@ GMPLUTL1 ; SLC/MKB/KER -- PL Utilities (cont)               ; 04/15/2002
  ;    EC           GMPGULF
  ;    HNC          GMPHNC
  ;    MST          GMPMST
- ;    CV           GMPCV
- ;    SHD          GMPSHD
  ;                   
  Q
 DIAGNOSI ; ICD Diagnosis Pointer
@@ -36,7 +34,6 @@ LEXICON ; Clinical Lexicon Pointer
  S GMPQUIT=1,PLY(0)="Invalid Lexicon term"
  Q
 DUPLICAT ; Problem Already on the List 
- N DUPL
  Q:$P($G(^GMPL(125.99,1,0)),U,6)'=1
  S:'$L($G(PL("DIAGNOSIS"))) PL("DIAGNOSIS")=$$NOS^GMPLX
  I '$D(^AUPNPROB("B",+PL("DIAGNOSIS")))!('$D(^AUPNPROB("AC",GMPDFN))) Q
@@ -50,7 +47,7 @@ DUPLICAT ; Problem Already on the List
  ;
 LOCATION ; Hospital Location (Clinic) Pointer
  S:'$D(PL("LOCATION")) PL("LOCATION")="" Q:'$L(PL("LOCATION"))
- I $D(^SC(+PL("LOCATION"),0)) S:$P(^(0),U,3)'="C" PL("LOCAATION")="" Q
+ I $D(^SC(+PL("LOCATION"),0)),$P(^(0),U,3)="C" Q
  S GMPQUIT=1,PLY(0)="Invalid hospital location"
  Q
  ;
@@ -125,14 +122,4 @@ MST ; MST exposure flag (Requires GMPMST)
  S:'$D(PL("MST")) PL("MST")=""
  I "^^1^0^"'[(U_PL("MST")_U) S GMPQUIT=1,PLY(0)="Invalid MST flag" Q
  I 'GMPMST,+PL("MST") S GMPQUIT=1,PLY(0)="Invalid MST flag"
- Q
-CV ; CV exposure flag (Requires GMPCV)
- S:'$D(PL("CV")) PL("CV")=""
- I "^^1^0^"'[(U_PL("CV")_U) S GMPQUIT=1,PLY(0)="Invalid CV flag" Q
- I 'GMPCV,+PL("CV") S GMPQUIT=1,PLY(0)="Invalid CV flag"
- Q
-SHD ; SHD exposure flag (Requires GMPSHD)
- S:'$D(PL("SHD")) PL("SHD")=""
- I "^^1^0^"'[(U_PL("SHD")_U) S GMPQUIT=1,PLY(0)="Invalid SHD flag" Q
- I 'GMPSHD,+PL("SHD") S GMPQUIT=1,PLY(0)="Invalid SHD flag"
  Q

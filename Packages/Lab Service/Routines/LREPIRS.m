@@ -1,4 +1,5 @@
-LREPIRS ;DALOI/CKA - EPI-LOCAL REPORT/SPREADSHEET ; 5/14/03
+LREPIRS ;VA/DALOI/CKA - EPI-LOCAL REPORT/SPREADSHEET ; 5/14/03
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**281**;Sep 27, 1994
  ; Reference to ^ORD(101 supported by IA #872
  ;USED TO PRINT REPORT OR SPREADSHEET 
@@ -138,7 +139,7 @@ SEG ;CHOOSE SEGMENTS FOR SPREADSHEET
  .K DIR,DIRUT
  .S DIR(0)="L^1:7"
  .D ^DIR
- .Q:$D(DIRUT) 
+ .Q:$D(DIRUT)
  .F I=1:1:7 I Y[I S LRSEG("PV1",I)=""
  I LRY[3 S LRSEG("DG1")=1 D
  .W !,"Choose the fields from the DG1 segment to capture for ",$S(LRREP=1:"report.",1:"spreadsheet.")

@@ -1,4 +1,6 @@
-LRCAPAM2 ;DALISC/FHS/JBM - PHASE 2 OF LMIP DATA COLLECTION 67.9 TO ^LAH(
+LRCAPAM2 ; IHS/DIR/AAB - PHASE 2 OF LMIP DATA COLLECTION 67.9 TO ^LAH( ;
+ ;;5.2;LR;**1006**;SEP 01, 1998
+ ;
  ;;5.2;LAB SERVICE;**105,201**;Sep 27, 1994
 EN ;
  ;Screening data based on the ^(2) node for LMIP billable procedures.

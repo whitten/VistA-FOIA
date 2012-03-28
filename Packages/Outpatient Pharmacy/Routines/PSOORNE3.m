@@ -1,8 +1,14 @@
-PSOORNE3 ;ISC-BHAM/SAB - display pending orders from backdoor ;2/3/05 1:59pm
- ;;7.0;OUTPATIENT PHARMACY;**11,9,39,59,46,103,124,139,152,194**;DEC 1997
- ;Ext ref to ^SC (File #44) (DBIA 10040),^PSXOPUTL (DBIA 2200)
- ;^PS(50.606 (DBIA 2174),^PS(50.7 DBIA 2223),^PS(55,DBIA 2228)
- ;^PSDRUG (DBIA 221)
+PSOORNE3 ;ISC-BHAM/SAB - display pending orders from backdoor ;23-Jan-2009 13:10;PLS
+ ;;7.0;OUTPATIENT PHARMACY;**11,9,39,59,46,103,124,139,152,1005,1006,1008**;DEC 1997
+ ;External reference to ^SC (File #44) (DBIA 10040)
+ ;External reference to ^PSXOPUTL (DBIA 2200)
+ ;External reference to ^PS(50.606 (DBIA 2174)
+ ;External reference to ^PS(50.7 (DBIA 2223)
+ ;External reference to ^PS(55 (DBIA 2228)
+ ;External reference to ^PSDRUG (DBIA 221)
+ ; Modified - IHS/CIA/PLS 01/27/04 - Added display of IHS Fields DSP+14 and PSOORNE3+44
+ ;            IHS/MSC/PLS - 03/13/08 - Added line PSOORNE3+53 and DSP+24
+ ;                          01/23/09 - Added line PSOORNE3+54 and DSP+25
  K ^TMP("PSOPO",$J) S ORD=$P(PSOLST(ORN),"^",2) D ORD^PSOORFIN Q
  S PSODRUG("OI")=$P(OR0,"^",8),PSODRUG("OIN")=$P(^PS(50.7,$P(OR0,"^",8),0),"^")
  I $P($G(OR0),"^",9) S DREN=$P(OR0,"^",9) S POERR=1 D DRG^PSOORDRG K POERR ;D POST^PSODRG
@@ -38,14 +44,24 @@ PSOORNE3 ;ISC-BHAM/SAB - display pending orders from backdoor ;2/3/05 1:59pm
  I $G(PSONEW("REMARKS"))]"" D
  .F SG=1:1:$L(PSONEW("REMARKS")) S:$L(^TMP("PSOPO",$J,IEN,0)_" "_$P(PSONEW("REMARKS")," ",SG))>80 IEN=IEN+1,$P(^TMP("PSOPO",$J,IEN,0)," ",20)=" " D
  ..S:$P(PSONEW("REMARKS")," ",SG)'="" ^TMP("PSOPO",$J,IEN,0)=$G(^TMP("PSOPO",$J,IEN,0))_" "_$P(PSONEW("REMARKS")," ",SG)
+ ; IHS/CIA/PLS - 01/26/04 - Add IHS Fields to display
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="Enter a zero (0) to edit IHS specific fields."
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                  NDC: "_$$GET1^DIQ(52,RXN,27)
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                  AWP: "_$$GET1^DIQ(52,RXN,9999999.06)_"       Unit Cost: "_$$GET1^DIQ(52,RXN,17)   ; IHS/CIA/PLS - 01/15/04
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Triplicate #: "_$$GET1^DIQ(52,RXN,9999999.14)   ; IHS/CIA/PLS - 01/15/04
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="          Bill Status: "_$$EXTERNAL^DILFD(52,9999999.07,,$S($G(PSONEW("BST")):$G(PSONEW("BST")),1:$G(PSORX("BST"))))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Manufacturer: "_$G(PSONEW("MANUFACTURER"))_"   Lot #: "_$G(PSONEW("LOT #"))_"  ExpDate: "_$$FMTE^XLFDT($G(PSONEW("EXPIRATION DATE")))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="          Chronic Med: "_$S($D(PSONEW("CM")):$G(PSONEW("CM")),$G(RXN):$$GET1^DIQ(52,RXN,9999999.02),1:$G(PSORX("CM")))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Substitution: "_$$EXTERNAL^DILFD(52,9999999.25,,$G(PSONEW("DAW")))  ;IHS/MSC/PLS - 03/13/08
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="             Cash Due: "_$$EXTERNAL^DILFD(52,9999999.26,,$G(PSONEW("CASH DUE")))  ; IHS/MSC/PLS - 01/23/09
+ ;S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="              Insurer: "_$G(PSONEW("INSURER"))
+ ; End IHS Fields
  S $P(RN," ",35)=" ",IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="   Entry By: "_$P(^VA(200,$P(OR0,"^",4),0),"^")_$E(RN,$L($P(^VA(200,$P(OR0,"^",4),0),"^"))+1,35)
  S Y=$P(OR0,"^",12) X ^DD("DD") S ^TMP("PSOPO",$J,IEN,0)=^TMP("PSOPO",$J,IEN,0)_"Entry Date: "_$E($P(OR0,"^",12),4,5)_"/"_$E($P(OR0,"^",12),6,7)_"/"_$E($P(OR0,"^",12),2,3)_" "_$P(Y,"@",2) K RN
  G ^PSOLMPO
  Q
 DSPL ;backdoor
  K ^TMP("PSOPO",$J) D DIN^PSONFI(PSODRUG("OI"),$S($G(PSODRUG("IEN")):PSODRUG("IEN"),1:"")) ;NFI
- I $D(RX0),$D(PSODRUG("IEN")) D
- .I PSODRUG("IEN")=$P(RX0,"^",6)!($P(PSLST,",",2)) D RST
  S IEN=0,IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="      Orderable Item: "_$P(^PS(50.7,PSODRUG("OI"),0),"^")_" "_$P(^PS(50.606,$P(^(0),"^",2),0),"^")_NFIO
  S:NFIO["DIN" NFIO=IEN_","_($L(^TMP("PSOPO",$J,IEN,0))-4)
  I $G(PSODRUG("NAME"))]"" D  G PST
@@ -74,9 +90,6 @@ PST S:$G(PSODRUG("TRADE NAME"))]"" IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="          T
  .S X=PSONEW("SIG") D SIGONE^PSOHELP S SIG=$E($G(INS1),2,250)
  .F SG=1:1:$L(SIG) S:$L(^TMP("PSOPO",$J,IEN,0)_" "_$P(SIG," ",SG))>80 IEN=IEN+1,$P(^TMP("PSOPO",$J,IEN,0)," ",21)=" " S:$P(SIG," ",SG)'="" ^TMP("PSOPO",$J,IEN,0)=$G(^TMP("PSOPO",$J,IEN,0))_" "_$P(SIG," ",SG)
 DSP S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="  (7)    Days Supply: "_PSONEW("DAYS SUPPLY")_$S($L(PSONEW("DAYS SUPPLY"))=1:" ",1:"")
- I '$D(PSONEW("FLD")),$D(RX0) S PSONEW("QTY")=$P(RX0,"^",7)
- ;if sched PSONEW("FLD") not def. qty reset
- ;if qty PSONEW("FLD")=7, qty NOT reset
  S ^TMP("PSOPO",$J,IEN,0)=^TMP("PSOPO",$J,IEN,0)_"                     (8)   QTY"_$S($G(PSODRUG("UNIT"))]"":" ("_PSODRUG("UNIT")_")",1:" ( )")_": "_PSONEW("QTY")
  I $P($G(^PSDRUG(+$G(PSODRUG("IEN")),5)),"^")]"" D
  .S $P(RN," ",79)=" ",IEN=IEN+1
@@ -90,6 +103,21 @@ DSP S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="  (7)    Days Supply: "_PSONEW("DAYS SUP
  .F SG=1:1:$L(PSONEW("REMARKS")) S:$L(^TMP("PSOPO",$J,IEN,0)_" "_$P(PSONEW("REMARKS")," ",SG))>80 IEN=IEN+1,$P(^TMP("PSOPO",$J,IEN,0)," ",21)=" " D
  ..S:$P(PSONEW("REMARKS")," ",SG)'="" ^TMP("PSOPO",$J,IEN,0)=$G(^TMP("PSOPO",$J,IEN,0))_" "_$P(PSONEW("REMARKS")," ",SG)
  I $G(PSORXED("IRXN")),'$G(PSOSIGFL) S RXN=PSORXED("IRXN") D:'$G(COPY) PC1^PSOORNE5 K RXN
+ ; IHS/CIA/PLS - 01/26/04 - Add IHS Fields to display
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="Enter a zero (0) to edit IHS specific fields."
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="                  NDC: "_$S($D(PSONEW("NDC")):$G(PSONEW("NDC")),$G(PSORXED("IRXN")):$$GET1^DIQ(52,PSORXED("IRXN"),27),$D(PSODRUG("NDC")):$G(PSODRUG("NDC")),1:"")
+ S IEN=IEN+1 D
+ .S ^TMP("PSOPO",$J,IEN,0)="                  AWP: "_$S($D(PSONEW("AWP")):$G(PSONEW("AWP")),$G(PSORXED("IRXN")):$$GET1^DIQ(52,PSORXED("IRXN"),9999999.06),1:"")
+ .S ^TMP("PSOPO",$J,IEN,0)=^TMP("PSOPO",$J,IEN,0)_"       Unit Cost: "_$S($D(PSONEW("COST")):$G(PSONEW("COST")),$G(PSORXED("IRXN")):$$GET1^DIQ(52,PSORXED("IRXN"),17),1:"")   ; IHS/CIA/PLS - 01/15/04
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="         Triplicate #: "_$S($D(PSONEW("TRIP")):$G(PSONEW("TRIP")),$G(PSORXED("IRXN")):$$GET1^DIQ(52,PSORXED("IRXN"),9999999.14),1:"")   ; IHS/CIA/PLS - 01/15/04,10/10/07
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="        Bill Status: "_$$EXTERNAL^DILFD(52,9999999.07,,$S($D(PSORX("BST")):$G(PSORX("BST")),$D(PSONEW("BST")):$G(PSONEW("BST")),1:""))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="       Manufacturer: "_$G(PSONEW("MANUFACTURER"))_"   Lot #: "_$G(PSONEW("LOT #"))_"  ExpDate: "_$$FMTE^XLFDT($G(PSONEW("EXPIRATION DATE")))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="        Chronic Med: "_$$EXTERNAL^DILFD(52,9999999.02,,$S($D(PSONEW("CM")):$G(PSONEW("CM")),1:$G(PSORX("CM"))))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="       Substitution: "_$$EXTERNAL^DILFD(52,9999999.25,,$G(PSONEW("DAW")))  ;IHS/MSC/PLS - 03/13/08
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="           Cash Due: "_$$EXTERNAL^DILFD(52,9999999.26,,$G(PSONEW("CASH DUE")))  ; IHS/,SC/PLS - 01/23/09
+ ;S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="            Insurer: "_$G(PSONEW("INSURER"))
+ S IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="  "
+ ; End IHS Fields
  S $P(RN," ",35)=" ",IEN=IEN+1,^TMP("PSOPO",$J,IEN,0)="   Entry By: "_$P(^VA(200,DUZ,0),"^")_$E(RN,$L($P(^VA(200,DUZ,0),"^"))+1,35)
  D NOW^%DTC S PSONEW("LOGIN DATE")=% K %,X S Y=PSONEW("LOGIN DATE") X ^DD("DD")
  S ^TMP("PSOPO",$J,IEN,0)=^TMP("PSOPO",$J,IEN,0)_"Entry Date: "_$P(Y,"@")_" "_$P(Y,"@",2) K RN,PSOFDR
@@ -102,10 +130,6 @@ CMOP ;
  .S PSOCMOP=$S($G(PSXZ(PSXZ("L")))=0!($G(PSXZ(PSXZ("L")))=2):"Transmitted",$G(PSXZ(PSXZ("L")))=1:"Released",$G(PSXZ(PSXZ("L")))=3:"Not Dispensed",1:"")
  .I $G(PSXZ(PSXZ("L")))=3 F LBL=0:0 S LBL=$O(^PSRX(RXN,"L",LBL)) Q:'LBL  I $P(^PSRX(RXN,"L",LBL,0),"^",2)=PSXZ("L"),'$P(^(0),"^",5),$P(^(0),"^",3)'["INTERACTION" S PSOCMOP="Local"
  .K PSXZ
- Q
-RST ;
- S PSODRUG("IEN")=$P(RX0,"^",6),PSODRUG("OI")=$P(^PSDRUG(($P(RX0,"^",6)),2),"^")
- S PSODRUG("NAME")=$P(^PSDRUG(($P(RX0,"^",6)),0),"^")
  Q
 RMK ;
  I $P(RX3,"^",7)]"" D

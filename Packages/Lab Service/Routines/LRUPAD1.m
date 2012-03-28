@@ -1,9 +1,12 @@
-LRUPAD1 ;AVAMC/REG/WTY - LAB ACCESSION LIST COND'T ;9/25/00
+LRUPAD1 ;AVAMC/REG/WTY - LAB ACCESSION LIST COND'T ;9/25/00 [ 04/15/2003  9:28 AM ]
+ ;;5.2;LR;**1018,1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**248**;Sep 27, 1994
  ;
  ;Reference to ^DIC( supported by IA #916
  ;Reference to ^VA(200 supported by IA #10060
  ;Reference to DIC supported by IA #10006
+ ;
+ Q:'$D(^LRO(68,LRAA,1,I,1,N,0))        ; IHS/OIT/MKK - LR*5.2*1030 -- Skip malformed Accessions
  ;
  S X=$S($D(^LRO(68,LRAA,1,I,1,N,5,1,0)):^(0),1:""),C(3)=+X
  S:'C(3) C(3)=LRU(1) S C(2)=$P(X,"^",2) S:'C(2) C(2)=LRU(1)
@@ -16,19 +19,28 @@ LRUPAD1 ;AVAMC/REG/WTY - LAB ACCESSION LIST COND'T ;9/25/00
  Q:'$D(^LR(LRIFN,0))  S X=^(0),DA=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2)
  S DIC="^DIC(",DIC(0)="Z" D ^DIC Q:Y=-1
  S P(0)=Y(0,0) K DIC,Y
- S DIC=^DIC(X,0,"GL"),DIC(0)="NZ",X=DA D ^DIC Q:Y=-1
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018 IHS -- Ignore Lookup routine
+ ; S DIC=^DIC(X,0,"GL"),DIC(0)="NZ",X=DA D ^DIC Q:Y=-1
+ S DIC=^DIC(X,0,"GL"),DIC(0)="CINZ",X=DA D ^DIC Q:Y=-1
+ ;----- END IHS MODIFICATIONS LR*5.2*1018 IHS
  S SSN=$P(Y(0),"^",9),LRP=$P(Y(0),"^") K DIC,DA,Y
  D SSN^LRU
  S:LRSS="CY" Q(2)=Q(2)+N(6),Q(1)=Q(1)+$P(N(6),"^",2) D V
  W:$L(LRC(5)) !?4,LRC(5)
  Q
 V D:$Y>(IOSL-8) H Q:LR("Q")  W !,$J(N,5)
- I LRSS'="AU",'$D(^LR(LRIFN,LRSS,LRI,0)) D  Q
- .W ?8,$J(A(3),5),?14 W:P(0)'="PATIENT" "#"
- .W $E(LRP,1,20),?34,SSN(1)
- .W " Data NOT in lab results file #63 !!!"
- W ?8,$J(A(3),5),?14 W:P(0)'="PATIENT" "#"
- W $E(LRP,1,20),?34,SSN(1),?40,$E(A(7),1,5)
+ ;I LRSS'="AU",'$D(^LR(LRIFN,LRSS,LRI,0)) D  Q
+ ;.W ?8,$J(A(3),5),?14 W:P(0)'="PATIENT" "#"
+ ;.W $E(LRP,1,20),?34,SSN(1)
+ ;.W " Data NOT in lab results file #63 !!!"
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ I LRSS'="AU",'$D(^LR(LRIFN,LRSS,LRI,0)) W ?8,$J(A(3),5),?14 W:P(0)'="VA PATIENT" "#" W $E(LRP,1,18),?33,HRCN W " Data NOT in lab results file #63 !!!" Q  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
+ ;W ?8,$J(A(3),5),?14 W:P(0)'="PATIENT" "#"
+ ;W $E(LRP,1,20),?34,SSN(1),?40,$E(A(7),1,5)
+ ;----- BEGIN IHS MODIFICATIONS
+ W ?8,$J(A(3),5),?14 W:P(0)'="VA PATIENT" "#" W $E(LRP,1,18),?33,HRCN,?40,$E(A(7),1,5)  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS LR*5.2*1018
  I LRSS="AU" Q:'$D(^LR(LRIFN,"AU"))  S X=^("AU") D  Q
  .W ?45,$S('$P(X,"^",3):"%",1:"")
  .S Y=+X D:Y D^LRU W ?47,Y

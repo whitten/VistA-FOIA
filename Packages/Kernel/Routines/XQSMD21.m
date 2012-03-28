@@ -1,4 +1,5 @@
-XQSMD21 ; SEA/MJM,JLI - Secure Menu delegation (Part IV) ;11/20/91  10:33 ;5/15/91  3:01 PM
+XQSMD21 ; SEA/MJM,JLI - Secure Menu delegation (Part IV) ;11/20/91  10:33 ;5/15/91  3:01 PM [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  Q
  ;

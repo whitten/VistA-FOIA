@@ -1,7 +1,7 @@
-ORWDXM  ; SLC/KCM/JLI - Order Dialogs, Menus;10:42 AM  3/29/02 10:47AM  4/3/2002 11AM  4/5/2002 4:30PM
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,132**;Dec 17, 1997
- ;
-MENU(LST,DLG)   ; Return menu contents for an order dialog
+ORWDXM ; SLC/KCM/JLI - Order Dialogs, Menus;26-Jan-2011 00:16;PLS
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,132,1007**;Dec 17, 1997
+ ;Modified - IHS/MSC/PLS - 01/25/2011 - Line MENU+15
+MENU(LST,DLG) ; Return menu contents for an order dialog
  ; LST(0)=name^# cols^path switch^^^ Key Variables (pieces 6-20)
  ; LST(n)=col^row^type^ien^formid^autoaccept^display text^mnemonic
  ;        ^displayonly
@@ -16,12 +16,13 @@ MENU(LST,DLG)   ; Return menu contents for an order dialog
  . I COL>NUMCOL S NUMCOL=COL
  . S IEN=+$P(X,U,2),MNE=$P(X,U,3),DON=$P(X,U,5),X=$P(X,U,4)
  . S X0=$G(^ORD(101.41,IEN,0)),X5=$G(^(5))
+ . I $E(X0,1,2)="PS",$T(QUICK^APSPMULT)]"" Q:'$$QUICK^APSPMULT(IEN)   ;IHS/MSC/JDS - 01/25/2011 - screen drugs
  . S TYP=$P(X0,U,4),FID=+$P(X5,U,5),AUT=$P(X5,U,8)
  . I '$L(X) S X=$P($G(^ORD(101.41,IEN,0)),U,2)
  . S ILST=ILST+1,LST(ILST)=COL_U_ROW_U_TYP_U_IEN_U_FID_U_AUT_U_X_U_MNE_U_DON
  S $P(LST(0),U,2)=NUMCOL
  Q
-PROMPTS(LST,DLG)        ; Return prompting info for generic dialog
+PROMPTS(LST,DLG) ; Return prompting info for generic dialog
  ; LST(n)=ID^REQ^HID^PROMPT^TYPE^DOMAIN^DEFAULT^IDFLT^HELP^XREF^SCR
  N I,X,ILST,SEQ,REQ,HID,ITM,IDX,PRMT,HLP,DFLT,IDFLT,TYP,DOM,ID,WP,SCR
  S ILST=0
@@ -54,7 +55,7 @@ XDFLT(CODE,TYPE,DOMAIN,IVAL,EVAL) ; return internal, external default values
  I TYPE="S",$L(IVAL) S EVAL=$P($P(DOMAIN,IVAL_":",2),";",1)
  I TYPE="Y",$L(IVAL) S EVAL=$S(IVAL=1:"YES",1:"NO")
  Q
-DLGNAME(VAL,DLG)        ; Return name(s) of dialog & base dialog given IEN
+DLGNAME(VAL,DLG) ; Return name(s) of dialog & base dialog given IEN
  ; VAL=InternalName^DisplayName^BaseDialogIEN^BaseDialogName
  N INT,EXT,BIEN,BNAM
  S INT=$P($G(^ORD(101.41,DLG,0)),U),EXT=$P($G(^(0)),U,2)
@@ -73,10 +74,10 @@ FORMID(VAL,DLG) ; Return the FormID for a dialog
  I 'VAL,$P($G(^ORD(101.41,DLG,0)),U,7)=$O(^DIC(9.4,"C","OR",0)) D
  . S VAL=152  ; use generic "on the fly" form
  Q
-MSTYLE(VAL)     ; Return the menu style for the system
+MSTYLE(VAL) ; Return the menu style for the system
  S VAL=+$$GET^XPAR("SYS","ORWDXM ORDER MENU STYLE",1,"I")
  Q
-LOADSET(LST,DLG)        ; Return the contents of an order set
+LOADSET(LST,DLG) ; Return the contents of an order set
  ; LST(0): SetDisplayText^Key Variables
  ; LST(n): DlgIEN^DlgType^DisplayText^OrderableItemIENs(OIIEN;OIIEN;..)
  N SEQ,DA,ITM,TYP,ILST,X,OIENS,PKGINFO
@@ -110,7 +111,7 @@ OIIFN(DLG) ; Get Orderable Item IENs based on the DLG
  S:OINODE OINUM=$P(^ORD(101.41,DLG,6,OINODE,0),U,3)
  I OINUM  F OI0=1:1:OINUM  S OIIENS=OIIENS_^(OI0)_";"
  Q OIIENS
-AUTOACK(REC,ORVP,ORNP,ORL,ORIT)       ; Place a quick order without verify step
+AUTOACK(REC,ORVP,ORNP,ORL,ORIT) ; Place a quick order without verify step
  N ORDG,ORDUZ,ORSTS,OREVENT,ORCAT,ORDA,ORTS,ORNEW,ORCHECK,ORLOG
  N ORDIALOG,ORIFN,ORLEAD,ORTRAIL
  S ORVP=ORVP_";DPT(",ORL(2)=ORL_";SC(",ORL=ORL(2)
@@ -124,7 +125,7 @@ AUTOACK(REC,ORVP,ORNP,ORL,ORIT)       ; Place a quick order without verify step
  D EN^ORCSAVE
  S REC="" I ORIFN D GETBYIFN^ORWORR(.REC,ORIFN)
  Q
-ALLRSP(QUIK)    ; Return 1 if quick order has values for all responses
+ALLRSP(QUIK) ; Return 1 if quick order has values for all responses
  N ALLOK,DLG,ITM,PRMT
  S ALLOK=1,DLG=+$$DEFDLG^ORWDXQ(+$P($G(^ORD(101.41,QUIK,0)),U,5))
  S ITM=0 F  S ITM=$O(^ORD(101.41,DLG,10,ITM)) Q:'ITM  D  Q:'ALLOK
@@ -132,9 +133,8 @@ ALLRSP(QUIK)    ; Return 1 if quick order has values for all responses
  . S PRMT=$P(^ORD(101.41,DLG,10,ITM,0),U,2)
  . I '$$HASRSP(QUIK,PRMT) S ALLOK=0
  Q ALLOK
-HASRSP(QUIK,PRMT)    ; Return 1 if quick order has response for prompt
+HASRSP(QUIK,PRMT) ; Return 1 if quick order has response for prompt
  N FND,RSP S FND=0
  S RSP=0 F  S RSP=$O(^ORD(101.41,QUIK,6,RSP)) Q:'RSP  D  Q:FND
  . I $P(^ORD(101.41,QUIK,6,RSP,0),U,2)=PRMT S FND=1
  Q FND
-  

@@ -1,5 +1,5 @@
-LA7SBCR1 ;DALOI/JMC - Shipping Barcode Reader Utility ; 23 Feb 2004
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,46,64**;Sep 27, 1994
+LA7SBCR1 ;VA/DALOI/JMC - Shipping Barcode Reader Utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,46,64,1027**;NOV 01, 1997
  Q
  ;
 PT(LA7,LA7PROM,LA7SCFG) ; Setup patient/ordering site info from barcode.

@@ -1,5 +1,5 @@
 RARTUVR ;HISC/FPT,SWM AISC/RMO-Unverified Reports ;8/19/97  11:01
- ;;5.0;Radiology/Nuclear Medicine;**29,56**;Mar 16, 1998;Build 3
+ ;;5.0;Radiology/Nuclear Medicine;**29**;Mar 16, 1998
  ;
  ; This routine displays the total number of reports that have a status
  ; other than V(erify) and the report is linked to a Resident, Staff or
@@ -75,11 +75,9 @@ START ; start processing
  ;
  S RASTATUS="",RAOUT=0
  F  S RASTATUS=$O(^RARPT("ASTAT",RASTATUS)) Q:RASTATUS=""!(RAOUT)  D
+ . Q:RASTATUS="V"
  . S RARPT=0,RAOUT=0
  . F  S RARPT=$O(^RARPT("ASTAT",RASTATUS,RARPT)) Q:RARPT'>0!(RAOUT)  D
- ..;use Report Status to exclude, as Verf'd rpt may have leftover "ASTAT"
- ..;exclude Verified, Deleted, and Electronically Filed reports
- .. Q:"^V^X^EF^"[("^"_$P($G(^RARPT(RARPT,0)),U,5)_"^")
  .. S RARPTENT=$P($G(^RARPT(RARPT,0)),U,6)
  .. Q:RARPTENT<BEGDATE!(RARPTENT>ENDDATE)
  .. I $D(ZTQUEUED) D STOPCHK^RAUTL9 S:$G(ZTSTOP)=1 RAOUT=1 Q:RAOUT=1

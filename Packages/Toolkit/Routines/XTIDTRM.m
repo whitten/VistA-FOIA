@@ -1,5 +1,5 @@
 XTIDTRM ;BPFO/JRP - API set for VUID-Term/Concepts in VistA ;05/16/2008
- ;;7.3;TOOLKIT;**111**;Apr 25, 1995;Build 2
+ ;;7.3;TOOLKIT;**111**;Apr 25, 1995;Build 7
  ; Per VHA Directive 2004-038, this routine should not be modified.
  ; IA #5078 governs the APIs in this routine
  ; IA #5067 allows this routine to check and traverse ^DD(.

@@ -1,8 +1,14 @@
-LRPXSXRB ; SLC/PKR - Build indexes for Lab Microbiology. ;1/29/04  14:36
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXSXRB ;VA/SLC/PKR - Build indexes for Lab Microbiology. ;1/29/04  14:36
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  Q
  ;===============================================================
 MICRO ; from LRPXSXRL
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  ;Build the indexes for LAB DATA - MICROBIOLOGY.
  N AB,ABDN,ACC,ANUMS,DATE,DNUM,DFN,END,ENTRIES,ERR,GLOBAL,IND,ITEM
  N LRDFN,LRIDT,NE,NERROR,NODE,NUM,ORG,ORGNUM,SPEC,START,SUB
@@ -45,7 +51,7 @@ MICRO ; from LRPXSXRL
  . F  S LRIDT=$O(^LR(LRDFN,"MI",LRIDT)) Q:LRIDT<1  D
  .. S DATE=+$G(^LR(LRDFN,"MI",LRIDT,0))
  .. I 'DATE Q
- .. I '$$MIVER^LRPXRM(LRDFN,LRIDT) Q
+ .. ; I '$$MIVER^LRPXRM(LRDFN,LRIDT) Q           ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  .. S SPEC=+$P(^LR(LRDFN,"MI",LRIDT,0),U,5)
  .. I 'SPEC Q
  .. S ITEM="M;S;"_SPEC
@@ -95,27 +101,37 @@ MICRO ; from LRPXSXRL
  S TEXT=NE_" LAB DATA (MICRO) results indexed."
  D MES^XPDUTL(TEXT)
  S END=$H
- D DETIME^PXRMSXRM(START,END) ; dbia 4113
+ ; D DETIME^PXRMSXRM(START,END) ; dbia 4113                     ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  ;If there were errors send a message.
- I NERROR>0 D ERRMSG^PXRMSXRM(NERROR,GLOBAL) ; dbia 4113
+ ; I NERROR>0 D ERRMSG^PXRMSXRM(NERROR,GLOBAL) ; dbia 4113      ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  ;Send a MailMan message with the results.
- D COMMSG^PXRMSXRM(GLOBAL,START,END,NE,NERROR) ; dbia 4113
- S ^PXRMINDX(63,"GLOBAL NAME")=$P(GLOBAL,"""",1) ; dbia 4114
- S ^PXRMINDX(63,"BUILT BY")=DUZ ; dbia 4114
- S ^PXRMINDX(63,"DATE BUILT")=$$NOW^XLFDT ; dbia 4114
+ ; D COMMSG^PXRMSXRM(GLOBAL,START,END,NE,NERROR) ; dbia 4113    ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
+ ; S ^PXRMINDX(63,"GLOBAL NAME")=$P(GLOBAL,"""",1) ; dbia 4114  ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
+ ; S ^PXRMINDX(63,"BUILT BY")=DUZ ; dbia 4114                   ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
+ ; S ^PXRMINDX(63,"DATE BUILT")=$$NOW^XLFDT ; dbia 4114         ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  Q
  ;
 MISET(DFN,ITEM,DATE,NODE) ;
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  I '$P(ITEM,";",3) D
  . N ETEXT
  . S ETEXT=NODE_" missing test"
- . D ADDERROR^PXRMSXRM("LR(MICRO",ETEXT,.NERROR) ; dbia 4113
+ . ; D ADDERROR^PXRMSXRM("LR(MICRO",ETEXT,.NERROR) ; dbia 4113  ; IHS/OIT/MKK - LR*5.2*1030 - Commented out for XINDEX
  E  D
  . D SLAB^LRPX(DFN,DATE,ITEM,NODE)
  . S NE=NE+1
  Q
  ;
 AANUMS(ANUMS) ; from LRPXSXRA
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  N AA,ABREV K ANUMS
  S AA=0
  F  S AA=$O(^LRO(68,AA)) Q:AA<1  D
@@ -124,6 +140,11 @@ AANUMS(ANUMS) ; from LRPXSXRA
  Q
  ;
 ACC(TESTS,ACC,BDN,ANUMS,ERR) ; from LRPXSXRA
+ ; ----- BEGIN IHS/OIT/MKK - LR*5.2*1030
+ ;       RPMS Lab does not use Clinical Reminders.
+ ;       None of the following code will be used.
+ Q
+ ; ----- END IHS/OIT/MKK - LR*5.2*1030
  ; returns TESTS from micro accession, ACC, BDN required
  ; BDN is beginning date number
  ; ANUMS is array of accession name numbers (avoids lookup on repeated calls)

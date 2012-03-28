@@ -1,4 +1,4 @@
-XQSRV3 ;SEA/MJM - Server to Mailman utilities; [5/16/02 12:48pm]
+XQSRV3 ;SEA/MJM - Server to Mailman utilities; [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**231,235**;Jul 10, 1995
  ;
 HERE ;Find the name of this place

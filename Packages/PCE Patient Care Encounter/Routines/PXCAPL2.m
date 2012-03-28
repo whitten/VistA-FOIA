@@ -1,5 +1,5 @@
-PXCAPL2 ;ISL/dee & LEA/Chylton - Translates data from the PCE Device Interface for "DIAGNOSIS/PROBLEM" into a call to update Problem List ;6/6/05
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**33,115,130,168**;Aug 12, 1996;Build 14
+PXCAPL2 ;ISL/dee & LEA/Chylton - Translates data from the PCE Device Interface for "DIAGNOSIS/PROBLEM" into a call to update Problem List ;7/19/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**33,115**;Aug 12, 1996
  Q
  ;   PXCADXPL  Copy of a Problem node of the PXCA array
  ;   PXCAPRV   Pointer to the provider (200)
@@ -40,8 +40,6 @@ PROBLIST ;Problem List
  .. ;Add MST & HNC
  .. S PXCAPL("MST")=$P(PXCADXPL,"^",15)
  .. S PXCAPL("HNC")=$P(PXCADXPL,"^",16)
- .. S PXCAPL("CV")=$P(PXCADXPL,"^",17)
- .. S PXCAPL("SHAD")=$P(PXCADXPL,"^",18)
  .. S PXCAPL("NARRATIVE")=$P(PXCADXPL,"^",13)
  .. S:'PXCAPL("PROBLEM") PXCAPL("RECORDED")=$P($P(PXCA("ENCOUNTER"),"^"),".") ;Only if new problem
  .. D UPDATE^GMPLUTL(.PXCAPL,.PXCARES)

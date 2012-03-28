@@ -1,4 +1,6 @@
-LRSETUP ;SLC/CJS/DALISC/FHS - REINITIALIZE DATA FILES ;2/6/91  14:34 ;
+LRSETUP ; IHS/DIR/FJE - REINITIALIZE DATA FILES 2/6/91 14:34 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !!,">> I WILL DO SOME FILE CHECKING AND THIS MAY TAKE A LITTLE WHILE <<",!!
  I $D(^LAB(62.4,1,0))[0 D
@@ -38,5 +40,7 @@ POST W !!,"This procedure will purge/kill all entries in the ^LR( global"
  S X=$P(^LRO(69.1,0),U,1,2) K ^LRO(69.1) S ^LRO(69.1,0)=X
  S X=$P(^LRO(69.2,0),U,1,2) K ^LRO(69.2) S ^LRO(69.2,0)=X
  S X=$P(^LRO(64.1,0),U,1,2) K ^LRO(64.1) S ^LRO(64.1,0)=X
+ S X=$P(^BLRTXLOG(0),U,1,2) K ^BLRTXLOG S ^BLRTXLOG(0)=X
+ S X=$P(^BLRSITE(0),U,1,2) K ^BLRSITE S ^BLRSITE(0)=X
  W !!?10,"Your files have been purged to day 1 status",!!
  Q

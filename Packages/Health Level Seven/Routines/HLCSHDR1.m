@@ -1,5 +1,5 @@
-HLCSHDR1 ;SFIRMFO/RSD - Make HL7 header for TCP ;04/17/2007
- ;;1.6;HEALTH LEVEL SEVEN;**19,57,59,72,80,93,120,133,122**;Oct 13, 1995;Build 14
+HLCSHDR1 ;SFIRMFO/RSD - Make HL7 header for TCP ;09/13/2006
+ ;;1.6;HEALTH LEVEL SEVEN;**19,57,59,72,80,93,120,133**;Oct 13, 1995;Build 13
  ;Per VHA Directive 2004-038, this routine should not be modified.
 HEADER(IEN,CLIENT,HLERROR) ; Create an HL7 MSH segment
  ;
@@ -146,13 +146,6 @@ VAR ;Check input
  S PROT=$$TYPE^HLUTIL2(HLPROT)
  S:'ACKTO MSGTYPE=$P(PROT,U,2),EVNTYPE=$P(PROT,U,3),MSGEVN=$P(PROT,U,4)
  S ACCACK=$P(PROT,U,7),APPACK=$P(PROT,U,8)
- ;
- ; patch HL*1.6*122
- ; setting the MSH-15 and MSH-16 from subscriber protocol
- I HLPROTS,$P($G(^ORD(101,HLPROTS,773)),"^",5) D
- . S ACCACK=$P(PROTS,U,7)
- . S APPACK=$P(PROTS,U,8)
- ;
 PID ;Processing ID
  ;I PID not 'debug' get from site params
  ;If event driver set to 'debug' get from protocol

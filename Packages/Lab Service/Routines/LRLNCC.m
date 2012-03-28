@@ -1,5 +1,6 @@
-LRLNCC ;DALOI/CA-LOINC COMMON CODE;1-JAN-2001 ; 5/10/07 2:31pm
- ;;5.2;LAB SERVICE;**232,280,334**;Sep 27, 1994;Build 12
+LRLNCC ;VA/DALOI/CA-LOINC COMMON CODE;1-JAN-2001 ; 5/10/07 2:31pm
+ ;;5.2;LAB SERVICE;**1028**;NOV 01, 1997;Build 53
+ ;;5.2;LAB SERVICE;**232,280,334**;Sep 27, 1994;Build 45
  ;============================================================
  ;Not valid entry call
  Q

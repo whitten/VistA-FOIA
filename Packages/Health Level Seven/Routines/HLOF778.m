@@ -1,6 +1,5 @@
-HLOF778 ;ALB/CJM-HL7 - Saving messages to file 778 ;07/31/2008
- ;;1.6;HEALTH LEVEL SEVEN;**126,134,137,138**;Oct 13, 1995;Build 34
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOF778 ;ALB/CJM-HL7 - Saving messages to file 778 ;02/04/2004
+ ;;1.6;HEALTH LEVEL SEVEN;**126**;Oct 13, 1995
  ;
  ;
 SAVEMSG(HLMSTATE) ;
@@ -92,6 +91,7 @@ SAVEMSG(HLMSTATE) ;
  .S ACKTO("ACK BY")=$S(HLMSTATE("BATCH"):HLMSTATE("HDR","BATCH CONTROL ID"),1:HLMSTATE("HDR","MESSAGE CONTROL ID"))
  .D ACKTO(.HLMSTATE,.ACKTO)
  .S HLMSTATE("ACK TO","DONE")=1 ;so the update isn't done again
+ ;
  Q HLMSTATE("IEN")
  ;
 NEXTMSG(HLMSTATE,MSG) ;
@@ -119,33 +119,27 @@ NEXTMSG(HLMSTATE,MSG) ;
  S HLMSTATE("BATCH","CURRENT MESSAGE")=SUBIEN
  Q SUBIEN
  ;
-ACKTO(HLMSTATE,ACKTO) ;if this is an application ack, update the original message - but do not overlay if already valued
+ACKTO(HLMSTATE,ACKTO) ;if this is an application ack, update the original message
  ;ACKTO = (msgid of msg being ack'd)
  ;        uses these subscripts ("IEN"=ien^subien),("ACK BY"=msgid of acking msg),("STATUS"=status for the initial msg determined by the ack)
  ;
- N STATUS,IEN,SUBIEN,NODE,SKIP
- S SKIP=0
+ N STATUS,IEN,SUBIEN,NODE
  S STATUS=$G(ACKTO("STATUS"))
  S IEN=+ACKTO("IEN"),SUBIEN=$P(ACKTO("IEN"),"^",2)
  S NODE=$G(^HLB(IEN,0))
  I 'SUBIEN D
  .;ack is to a message NOT in a batch
- .I $P(NODE,"^",7)'="",$P(NODE,"^",7)'=ACKTO("ACK BY") S SKIP=1 Q
  .I STATUS="" S STATUS="SU"
  .S $P(NODE,"^",7)=ACKTO("ACK BY")
- .S $P(NODE,"^",18)=1
  .S $P(NODE,"^",20)=STATUS
- .S $P(NODE,"^",21)=$G(ACKTO("ERROR TEXT"))
  .S ^HLB(IEN,0)=NODE
  E  D
  .;ack is to a message that IS in a batch
  .S $P(^HLB(IEN,3,SUBIEN,0),"^",4)=$G(ACKTO("ACK BY"))
  .S $P(^HLB(IEN,3,SUBIEN,0),"^",5)=STATUS
- I (STATUS="ER"),'SKIP D
- .N APP
- .S APP=HLMSTATE("HDR","RECEIVING APPLICATION")
- .I APP="" S APP="UNKNOWN"
- .S ^HLB("ERRORS",APP,$$NOW^XLFDT,ACKTO("IEN"))=""
- .;don't count the error - the app ack was already counted as an error.
- .D COUNT^HLOESTAT("IN",$G(HLMSTATE("HDR","RECEIVING APPLICATION")),$G(HLMSTATE("HDR","SENDING APPLICATION")),$S(HLMSTATE("BATCH"):"BATCH",1:$G(HLMSTATE("HDR","MESSAGE TYPE"))),$G(HLMSTATE("HDR","EVENT")))
+ I (STATUS="AE"),HLMSTATE("HDR","SENDING APPLICATION")]"" D
+ .N TIME,BODY
+ .S BODY=$P(NODE,"^",2)
+ .S:BODY TIME=+$G(^HLA(BODY,0))
+ .I $G(TIME) S ^HLB("ERRORS","AE",HLMSTATE("HDR","SENDING APPLICATION"),TIME,ACKTO("IEN"))=""
  Q

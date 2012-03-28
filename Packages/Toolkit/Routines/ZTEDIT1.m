@@ -1,4 +1,5 @@
-ZTEDIT1 ;SF/RWF - VA EDITOR edit single lines ;10/5/89  09:53 ;
+ZTEDIT1 ;SF/RWF - VA EDITOR edit single lines ;10/5/89  09:53 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;7.3;TOOLKIT;**16,120**;Apr 25, 1995
  F %J=1:1 S %A=$T(%+%J),%T=$P(%A," ",1),%B=$P(%A," ",2,256) Q:%T="END"  I $L(%T) S ^%Z(%T)=%B
  G ^ZTEDIT2

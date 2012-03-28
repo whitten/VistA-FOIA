@@ -1,5 +1,5 @@
-PXAIVSTV ;ISL/JVS,ISA/KWP - VALIDATE THE VISIT DATA ;4/23/04 11:54am
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**9,15,19,74,111,116,130,124,168**;Aug 12, 1996;Build 14
+PXAIVSTV ;ISL/JVS,ISA/KWP - VALIDATE THE VISIT DATA ;04/28/99
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**9,15,19,74,111**;Aug 12, 1996
  ;
  ;
  Q
@@ -7,7 +7,7 @@ VALSCC ;--VALIDATE SERVICE CONNECTIVENESS
  N ERR,ERR1
  D SCC^PXUTLSCC($G(PXAA("PATIENT")),$G(PXAA("ENC D/T")),$G(PXAA("HOS LOC")),$G(PXAVISIT),$G(AFTER800),.AFTER8A,.ERR)
  ;PX*1*111 - Add HNC
- I $P(ERR,"^",1)=0,$P(ERR,"^",2)=0,$P(ERR,"^",3)=0,$P(ERR,"^",4)=0,$P(ERR,"^",5)=0,$P(ERR,"^",6)=0,$P(ERR,"^",7)=0,$P(ERR,"^",8)=0 Q
+ I $P(ERR,"^",1)=0,$P(ERR,"^",2)=0,$P(ERR,"^",3)=0,$P(ERR,"^",4)=0,$P(ERR,"^",5)=0,$P(ERR,"^",6)=0 Q
  S PXADI("DIALOG")=8390001.003
  S PXAERRF=1
  S PXAERR("1W")=$S($P(AFTER800,"^",1)']"":"NULL",1:$P(AFTER800,"^",1))
@@ -17,8 +17,6 @@ VALSCC ;--VALIDATE SERVICE CONNECTIVENESS
  S PXAERR("5W")=$S($P(AFTER800,"^",5)']"":"NULL",1:$P(AFTER800,"^",5))
  ;PX*1*111 - Add HNC
  S PXAERR("16W")=$S($P(AFTER800,"^",6)']"":"NULL",1:$P(AFTER800,"^",6))
- S PXAERR("19W")=$S($P(AFTER800,"^",7)']"":"NULL",1:$P(AFTER800,"^",7))
- S PXAERR("22W")=$S($P(AFTER800,"^",8)']"":"NULL",1:$P(AFTER800,"^",8))
  S ERR1=$P(ERR,"^",1),PXAERR("6W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
  S ERR1=$P(ERR,"^",2),PXAERR("7W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
  S ERR1=$P(ERR,"^",3),PXAERR("8W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
@@ -26,8 +24,6 @@ VALSCC ;--VALIDATE SERVICE CONNECTIVENESS
  S ERR1=$P(ERR,"^",5),PXAERR("10W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
  ;PX*1*111 - Add HNC
  S ERR1=$P(ERR,"^",6),PXAERR("17W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
- S ERR1=$P(ERR,"^",7),PXAERR("20W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
- S ERR1=$P(ERR,"^",8),PXAERR("23W")=$S(ERR1=1:"Should be a YES or NO!, not NULL",ERR1=0:"No error",ERR1=-1:"Not a valid value",ERR1=-2:"Value must be NULL",ERR1=-3:"Must be NULL because Service Connected is yes",1:"")
  S PXAERR("11W")=$S($P(AFTER8A,"^",1)']"":"NULL",1:$P(AFTER8A,"^",1))
  S PXAERR("12W")=$S($P(AFTER8A,"^",2)']"":"NULL",1:$P(AFTER8A,"^",2))
  S PXAERR("13W")=$S($P(AFTER8A,"^",3)']"":"NULL",1:$P(AFTER8A,"^",3))
@@ -35,8 +31,6 @@ VALSCC ;--VALIDATE SERVICE CONNECTIVENESS
  S PXAERR("15W")=$S($P(AFTER8A,"^",5)']"":"NULL",1:$P(AFTER8A,"^",5))
  ;PX*1*111 - Add HNC
  S PXAERR("18W")=$S($P(AFTER8A,"^",6)']"":"NULL",1:$P(AFTER8A,"^",6))
- S PXAERR("21W")=$S($P(AFTER8A,"^",7)']"":"NULL",1:$P(AFTER8A,"^",7))
- S PXAERR("24W")=$S($P(AFTER8A,"^",8)']"":"NULL",1:$P(AFTER8A,"^",8))
  D ERR^PXAI K PXAERRF
  Q
  ;
@@ -93,7 +87,7 @@ VAL ;--VALIDATE ENOUGH DATA
  .S PXAERR(12)="This value is not a pointer to file PATIENT/IHS file # 9000001"
  ;
  ;---Missing required information
- I $G(PXAA("OUTSIDE LOCATION"))']"",$G(PXAA("HOS LOC"))']"",$G(PXAA("SERVICE CATEGORY"))'="E" D  Q:$G(STOP)
+ I $G(PXAA("OUTSIDE LOC"))']"",$G(PXAA("HOS LOC"))']"",$G(PXAA("SERVICE CATEGORY"))'="E" D  Q:$G(STOP)
  .S STOP=1
  .S PXAERRF=1
  .S PXADI("DIALOG")=8390001.001
@@ -111,15 +105,14 @@ VAL ;--VALIDATE ENOUGH DATA
  ..S PXAERR(11)=$G(PXAA("HOS LOC"))
  ..S PXAERR(12)="This HOSPITAL LOCATION is not a pointer to the HOSPITAL LOCATION file #44"
  ;---hospital location is the dispositioning location
- ;Allow a dispositioning location to be used
- ;I $D(PXAA("HOS LOC")) D  Q:$G(STOP)   ;PX*1.0*116
- ;.I $D(^PX(815,1,"DHL","B",$G(PXAA("HOS LOC")))) D  Q:$G(STOP)
- ;..S STOP=1
- ;..S PXAERRF=1
- ;..S PXADI("DIALOG")=8390001.001
- ;..S PXAERR(9)="HOS LOC"
- ;..S PXAERR(11)=$G(PXAA("HOS LOC"))
- ;..S PXAERR(12)="This HOSPITAL LOCATION is a dispositioning location and connot be used. Refer to entries in file#815 PCE PARAMETERS"
+ I $D(PXAA("HOS LOC")) D  Q:$G(STOP)
+ .I $D(^PX(815,1,"DHL","B",$G(PXAA("HOS LOC")))) D  Q:$G(STOP)
+ ..S STOP=1
+ ..S PXAERRF=1
+ ..S PXADI("DIALOG")=8390001.001
+ ..S PXAERR(9)="HOS LOC"
+ ..S PXAERR(11)=$G(PXAA("HOS LOC"))
+ ..S PXAERR(12)="This HOSPITAL LOCATION is a dispositioning location and connot be used. Refer to entries in file#815 PCE PARAMETERS"
  ;--Not a service category
  I '$D(PXAA("SERVICE CATEGORY")) D  Q:$G(STOP)
  .S STOP=1

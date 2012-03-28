@@ -1,5 +1,7 @@
-VADPT6 ;ALB/MJK - PATIENT ID VARIABLES ; 12 AUG 89 @1200
- ;;5.3;Registration;;Aug 13, 1993
+VADPT6 ;ALB/MJK - PATIENT ID VARIABLES ; 12 AUG 89 @1200 [ 09/14/2000  9:04 AM ]
+ ;;5.3;Registration;**1004**;Aug 13, 1993
+ ;IHS/ANMC/LJF 4/27/2000 reset ID to chart #; added HRCN variable
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
  ;
 PID ;
 13 ; -- Returns the patient id variables for DFN patient
@@ -19,6 +21,9 @@ PID ;
  I $D(VAPTYP),$D(^DPT(DFN,"E",+VAPTYP,0)) S X=^(0),L=$P(X,"^",3),B=$P(X,"^",4)
  ; -- set default id's
  I L="",$D(^DPT(DFN,.36)) S X=^(.36) I +X S L=$P(X,"^",3),B=$P(X,"^",4)
+ I DUZ("AG")="I"!((DUZ("AG")="E")&$$GET^XPAR("SYS","DG IHS CHART ID"))&(L="") D
+ .S (L,B)=$$HRCN^BDGF2(DFN,+$G(DUZ(2))) S:L="" (L,B)="??"  ;IHS/ITSC/CLS 01/11/2005
+ .S HRCN=B
  I L="" S X=$P(^DPT(DFN,0),"^",9) I X]"" S L=$E(X,1,3)_"-"_$E(X,4,5)_"-"_$E(X,6,10),B=$E(X,6,10)
  ;
 PIDQ S VA("PID")=L,VA("BID")=B Q

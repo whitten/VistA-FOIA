@@ -1,5 +1,5 @@
-ORWPT1 ; SLC/KCM - Patient Lookup Functions (cont) ;01/19/10  05:31
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,109,280**;Dec 17, 1997;Build 85
+ORWPT1 ; SLC/KCM - Patient Lookup Functions (cont) ;3/1/01  10:57 [7/2/01 7:26am]
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**10,109**;Dec 17, 1997
  ;
 SAVDFLT ; continued from ORWPT, save new default patient list
  N DAY,HOLDX S OK=1
@@ -33,12 +33,11 @@ SAVDFLT ; continued from ORWPT, save new default patient list
  Q
 PRCARE(VAL,PATIENT)        ; return Primary Care info
  ; VAL=Primary Care Team^Primary Care Provider^Attending
- N PCT,PCP,ATT,ASS
+ N PCT,PCP,ATT
  S PCT=$P($$OUTPTTM^SDUTL3(PATIENT,DT),U,2)
  S PCP=$P($$OUTPTPR^SDUTL3(PATIENT,DT),U,2)
  S ATT=$G(^DPT(PATIENT,.1041)) I ATT S ATT=$P($G(^VA(200,ATT,0)),U)
- S ASS=$P($$OUTPTAP^SDUTL3(PATIENT,DT),U,2)
- S VAL=PCT_U_PCP_U_ATT_U_ASS
+ S VAL=PCT_U_PCP_U_ATT
  Q
 PCDETAIL(LST,PATIENT)   ; return Primary Care Detail information
  N ILST,X S ILST=0

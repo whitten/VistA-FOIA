@@ -1,5 +1,5 @@
-RASELCT ;HISC/DAD-Generic file entry selector ;7/1/98  15:48
- ;;5.0;Radiology/Nuclear Medicine;**83**;Mar 16, 1998;Build 4
+RASELCT ;HISC/DAD-Generic file entry selector ;10/20/97  14:34
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
  ;*** SELECTS A GROUP OF RECORDS FROM A FILE ***
  ;
@@ -38,8 +38,7 @@ EN1(RADIC,RAUTIL,RAARRY,RAINPUT,RAFLD) ;
  S RAALL=0,RANUM=1 K ^TMP($J,RAUTIL) D HOME^%ZIS
 1 D SETDIC W !!,$S(RANUM>1:"Another one (Select/De-Select): ",1:DIC("A")),$S((RANUM=1)&(RADIC("B")]""):RADIC("B")_"// ",1:"")
  R X:DTIME S:('$T)!($E(X)="^") RAQUIT=1 G:RAQUIT EXIT S:(RANUM=1)&(X="")&(RADIC("B")]"") X=RADIC("B") G:X="" EXIT S RADSEL=$S(X?1"-"1.E:1,1:0) S:RADSEL X=$E(X,2,$L(X))
- ; RA*5*83 require exactly 3 chars when checking for "ALL"
- I $L(X),(($L(X)=3&("Aa"[$E(X))&("Ll"[$E(X,2))&("Ll"[$E(X,3)))!(X["*")) D ALL G EXIT:RAQUIT,1:RAALL
+ I $L(X),(($L(X)<4&("Aa"[$E(X))&("Ll"[$E(X,2))&("Ll"[$E(X,3)))!(X["*")) D ALL G EXIT:RAQUIT,1:RAALL
  D HELP:$E(X)="?"
  I $L($G(DIC("S")))<235 S DIC("S")=$S($G(DIC("S"))]"":DIC("S")_" ",1:"")_"I $$SEL^RASELCT(Y)"
  D ^DIC K DIC G:+Y'>0 1
@@ -83,7 +82,7 @@ ALL ;
  . D BLDPAT
  . Q
  F RAD0=0:0 S RAD0=$O(@(RADIC_"RAD0)")) Q:RAD0'>0  D AL
- W:RANUM=1&'RADSEL " ??",$C(7)
+ W:RANUM=1&'RADSEL " ??",*7
  Q
 AL I RAFSCR]"" D SETDIC I $D(@(RADIC_"RAD0,0)"))#2 S (D0,DA,Y)=RAD0 X RAFSCR Q:'$T
  I RADIC("S")]"" D SETDIC I $D(@(RADIC_"RAD0,0)"))#2 S (D0,DA,Y)=RAD0 X DIC("S") Q:'$T

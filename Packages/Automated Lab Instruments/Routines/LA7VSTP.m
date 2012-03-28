@@ -1,5 +1,5 @@
-LA7VSTP ;DALOI/JMC - HL7 environment setup routine ; 12/3/1997
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,44,51,46,64**;Sep 27, 1994
+LA7VSTP ;VA/DALOI/JMC - HL7 environment setup routine ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**27,44,51,46,64,1027**;NOV 01, 1997
  ; This routine will create LEDI and UNIVERSAL INTERFACE HL7 v1.6 file setups.
  ;
  ; Reference to PROTOCOL file (#101) supported by DBIA #872

@@ -1,9 +1,13 @@
-LRUL ;AVAMC/REG - PATIENT UTILITY LIST ;6/14/92  11:03
+LRUL ;AVAMC/REG - PATIENT UTILITY LIST ;6/14/92  11:03 [ 05/15/2003  12:32 PM ]
+ ;;5.2T9;LR;*1018*;Nov 17, 2004
  ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
  ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
  D S,K
 G W ! K DIC D ^LRDPA Q:DFN=-1  W !,"Is this the patient " S %=1 D YN^LRU G:%'=1 G
- S:'$D(^LRO(69.2,LRAA,7,DUZ,1,0)) ^(0)="^69.3PA^^" I '$D(^(LRDFN,0)) S X=^LRO(69.2,LRAA,7,DUZ,1,0),^(0)=$P(X,"^",1,2)_"^"_LRDFN_"^"_($P(X,"^",4)+1),^(LRDFN,0)=LRDFN_"^"_PNM_"^^^^^^^^"_SSN,^LRO(69.2,LRAA,7,DUZ,1,"C",PNM,LRDFN)=""
+ ;S:'$D(^LRO(69.2,LRAA,7,DUZ,1,0)) ^(0)="^69.3PA^^" I '$D(^(LRDFN,0)) S X=^LRO(69.2,LRAA,7,DUZ,1,0),^(0)=$P(X,"^",1,2)_"^"_LRDFN_"^"_($P(X,"^",4)+1),^(LRDFN,0)=LRDFN_"^"_PNM_"^^^^^^^^"_SSN,^LRO(69.2,LRAA,7,DUZ,1,"C",PNM,LRDFN)=""
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ S:'$D(^LRO(69.2,LRAA,7,DUZ,1,0)) ^(0)="^69.3PA^^" I '$D(^(LRDFN,0)) S X=^LRO(69.2,LRAA,7,DUZ,1,0),^(0)=$P(X,"^",1,2)_"^"_LRDFN_"^"_($P(X,"^",4)+1),^(LRDFN,0)=LRDFN_"^"_PNM_"^^^^^^^^"_HRCN,^LRO(69.2,LRAA,7,DUZ,1,"C",PNM,LRDFN)=""  ;IHS/ANMC/CLS
+ ;----- END IHS MODIFICATIONS
  W !!,"Another patient: " S %=2 D YN^LRU G G:%=1
  Q
 K I $O(^LRO(69.2,LRAA,7,DUZ,1,0)) D L W $C(7),!,"The above entries not yet printed.  Do you want to delete them " S %=2 D YN^LRU I %'=1 S $P(^LRO(69.2,LRAA,7,DUZ,0),U,2)=LRT Q

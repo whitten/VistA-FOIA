@@ -1,5 +1,5 @@
-PXKENC ;ISL/dee,ESW - Builds the array of all encounter data for the event point ; 12/5/02 11:53am  ; 1/5/07 4:54pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**15,22,73,108,143,183**;Aug 12, 1996;Build 3
+PXKENC ;ISL/dee,ESW - Builds the array of all encounter data for the event point ; 12/5/02 11:53am
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**15,22,73,108**;Aug 12, 1996
  Q
  ;
 GETENC(DFN,ENCDT,HLOC) ;Get all of the encounter data
@@ -40,7 +40,6 @@ ENCEVENT(VISITIEN,DONTKILL) ;Create the ^TMP("PXKENC",$J, array of all the
  ;  The encounter is returned in the array
  ;    ^TMP("PXKENC",$J,pointer to visit)
  ;
- I $G(VISITIEN)'>0 Q  ;PX/183
  I '$D(^AUPNVSIT(VISITIEN)) Q
  K:'$G(DONTKILL) ^TMP("PXKENC",$J)
  N PXKCNT,PXKROOT
@@ -90,7 +89,7 @@ PXKNODE(VFILE,FILESTR,IEN,PXKROOT) ;
  . I $E($P($P(PXKROOT,","),"(",2),2,7)="PXKENC" D
  ..; ENCEVENT called
  .. S @PXKROOT@(FILESTR,IEN,PXKNODE)=$G(@VFILE@(IEN,PXKNODE))
- . I $P(PXKROOT,"""",2)="PXKCO",'$D(@PXKROOT@(FILESTR,IEN)) D
+ . E  I $E($P($P(PXKROOT,","),"(",2),2,6)="PXKCO" D
  ..; COEVENT called
  .. F STRR="BEFORE","AFTER" D
  ... S @PXKROOT@(FILESTR,IEN,PXKNODE,STRR)=$G(@VFILE@(IEN,PXKNODE))

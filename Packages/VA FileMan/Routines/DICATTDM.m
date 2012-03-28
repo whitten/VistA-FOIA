@@ -1,5 +1,5 @@
-DICATTDM ;GFT ;04:56 PM  17 Dec 2002
- ;;22.0;VA FileMan;**42,118**;Mar 30, 1999
+DICATTDM ;GFT ;04:56 PM  17 Dec 2002 [ 12/09/2003  4:54 PM ]
+ ;;22.0;VA FileMan;**42,118,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;
 SUBDEF ;

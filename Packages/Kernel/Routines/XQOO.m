@@ -1,5 +1,5 @@
 XQOO ;SEATTLE/LUKE - Out Of Order, Man ;9/13/96  09:21
- ;;8.0;KERNEL;**10,21,47,520**;Jul 03, 1995;Build 5
+ ;;8.0;KERNEL;**10,21,47,520**;Jul 03, 1995;Build 11
  ;Per VHA Directive  2004-038, this routine should not be modified.
 INIT(XQSET) ;Call for Out-of-order set creation, called by KIDS
  ;

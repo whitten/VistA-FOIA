@@ -1,4 +1,5 @@
-XQUTL ;SEA/Luke - Menu System Utilities ;04/27/98  12:36
+XQUTL ;SEA/Luke - Menu System Utilities ;04/27/98  12:36 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1005,1007**;APR 1, 2003 
  ;;8.0;KERNEL;**46**;Jul 10, 1995
  ;
 CSYN(XQUSR) ;Collect XQUSR's menu synonyms in ^XUTL("XQ",$J,"SYN")

@@ -1,4 +1,5 @@
-XPDIA ;SFISC/RSD - Install Pre/Post Actions for Kernel Files ;03/27/2000  12:58
+XPDIA ;SFISC/RSD - Install Pre/Post Actions for Kernel Files ;03/27/2000  12:58 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**10,15,21,28,44,58,68,131,145**;Jul 10, 1995
  Q
 OPTF1 ;options file pre

@@ -1,4 +1,5 @@
-XUTMUSE3 ;SEA/RDS - TaskMan: Option, XUTMUSER, Part 4 (Help) ;9/14/94  10:10
+XUTMUSE3 ;SEA/RDS - TaskMan: Option, XUTMUSER, Part 4 (Help) ;9/14/94  10:10 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 HELP1 ;SELECT^XUTMU Subroutine--Help Message For Action Selection For "?"

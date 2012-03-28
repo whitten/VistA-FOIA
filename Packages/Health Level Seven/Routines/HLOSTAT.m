@@ -1,6 +1,5 @@
-HLOSTAT ;ALB/CJM- HLO STATISTICS- 10/4/94 1pm ;01/05/2007
- ;;1.6;HEALTH LEVEL SEVEN;**130,131,134**;Oct 13, 1995;Build 30
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOSTAT ;ALB/CJM- HLO STATISTICS- 10/4/94 1pm
+ ;;1.6;HEALTH LEVEL SEVEN;**130,131**;Oct 13, 1995;Build 10
  ;
  ;
 COUNT(HLCSTATE,RAP,SAP,TYPE) ;
@@ -42,11 +41,11 @@ TOTAL(WORK) ;totals hours into days and days into months
  ;
  ;total hours into days
  S LIMIT=$$FMADD^XLFDT($$DT^XLFDT,,-48) ;save ~48 hours of hourly data
- F DIR="IN","OUT","EIN","EOUT" D
+ F DIR="IN","OUT" D
  .S TIME=0
  .F  S TIME=$O(^HLSTATS(DIR,"HOURLY",TIME)) Q:'TIME  Q:(TIME>END)  D
  ..D:'(TIME<START)
- ...S:(DIR="IN")!(DIR="OUT") ^HLSTATS(DIR,"DAILY",$P(TIME,"."),"ACCEPT ACK")=$G(^HLSTATS(DIR,"DAILY",$P(TIME,"."),"ACCEPT ACK"))+$G(^HLSTATS(DIR,"HOURLY",TIME,"ACCEPT ACK"))
+ ...S ^HLSTATS(DIR,"DAILY",$P(TIME,"."),"ACCEPT ACK")=$G(^HLSTATS(DIR,"DAILY",$P(TIME,"."),"ACCEPT ACK"))+$G(^HLSTATS(DIR,"HOURLY",TIME,"ACCEPT ACK"))
  ...S SAP=""
  ...F  S SAP=$O(^HLSTATS(DIR,"HOURLY",TIME,SAP)) Q:SAP=""  D
  ....S RAP=""
@@ -60,12 +59,12 @@ TOTAL(WORK) ;totals hours into days and days into months
  ;
  ;total days into months
  S LIMIT=$$FMADD^XLFDT($$DT^XLFDT,-30) ;save ~30 days of daily data
- F DIR="IN","OUT","EIN","EOUT" D
+ F DIR="IN","OUT" D
  .S TIME=0
  .F  S TIME=$O(^HLSTATS(DIR,"DAILY",TIME)) Q:'TIME  Q:(TIME>END)  D
  ..D:'(TIME<START)
  ...S MONTH=$E(TIME,1,5)
- ...S:(DIR="IN")!(DIR="OUT") ^HLSTATS(DIR,"MONTHLY",MONTH,"ACCEPT ACK")=$G(^HLSTATS(DIR,"MONTHLY",MONTH,"ACCEPT ACK"))+$G(^HLSTATS(DIR,"DAILY",TIME,"ACCEPT ACK"))
+ ...S ^HLSTATS(DIR,"MONTHLY",MONTH,"ACCEPT ACK")=$G(^HLSTATS(DIR,"MONTHLY",MONTH,"ACCEPT ACK"))+$G(^HLSTATS(DIR,"DAILY",TIME,"ACCEPT ACK"))
  ...S SAP=""
  ...F  S SAP=$O(^HLSTATS(DIR,"DAILY",TIME,SAP)) Q:SAP=""  D
  ....S RAP=""
@@ -101,6 +100,7 @@ REPORT ;Interactive option for printing the message statistics report
  Q
  ;
 QUE ;entry point for queuing the message statistics report
+ ;
  D PRINT($G(HLOPARMS("STATISTICS TYPE")),$G(HLOPARMS("START DT/TM")),$G(HLOPARMS("END DT/TM")))
  Q
  ;

@@ -1,5 +1,5 @@
 IBDF18E2 ;ALB/AAS - AICS Error Logging Routine ;27-JAN-97
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**25,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 LOGERR(ERRNO,FORMID,DATANO,VALUE,PI,QLFR,TYPEDTA,TXT) ;
  ; -- log aics scanning processing error
@@ -21,7 +21,6 @@ LOGERR(ERRNO,FORMID,DATANO,VALUE,PI,QLFR,TYPEDTA,TXT) ;
  S:$G(XQY0)'="" TEXT(15)=$P(XQY0,"^") ; -- option name
  S TEXT(16)=$G(ERRNO) ; -- entry in dialog file
  S:$G(FORMID("PAGE")) TEXT(17)=$G(FORMID("PAGE"))
- S:$G(FORMID("WSID"))'="" TEXT(18)=$G(FORMID("WSID"))
  ;
  ; -- Build Error Message from Dialog file
  D BLD^DIALOG(ERRNO,.TEXT,.IBDOUT,"IBDERR","S")
@@ -62,8 +61,6 @@ ERRFIL(ERRNO,TEXT,IBDERR) ;
  S:$G(TEXT(13))'="" FDAROOT(359.3,"+1,",.13)=$G(TEXT(13))
  S:$G(TEXT(16))'="" FDAROOT(359.3,"+1,",.16)=$G(TEXT(16))
  S:$G(TEXT(15))'="" FDAROOT(359.3,"+1,",1.01)=$G(TEXT(15))
- S:$G(TEXT(17))'="" FDAROOT(359.3,"+1,",.17)=$G(TEXT(17))
- S:$G(TEXT(18))'="" FDAROOT(359.3,"+1,",.18)=$G(TEXT(18))
  ;
  S CNT=2
  I ERRNO=3570001 D EW^IBDFBK2(.IBDERR,.PXCA,.CNT,1)
@@ -73,9 +70,6 @@ ERRFIL(ERRNO,TEXT,IBDERR) ;
  Q
  ;
 PRT ; -- print error listing
- ;
- W !,?4,"** This option is OUT OF ORDER **" QUIT   ;Code set Versioning
- ;
  I '$D(IOF) D HOME^%ZIS
  W @IOF,?10,"Print List of Scanning Errors and Warnings",!!!
  ;
@@ -88,35 +82,4 @@ PRT ; -- print error listing
  S DIS(0)="I '$P($G(^IBD(359.3,D0,1)),U,2)"
  D EN1^DIP
 PRTQ K DIC,L,FLDS,DIOEND,FR,TO,BY,DHD,X,Y,DUOUT,DIRUT
- Q
- ;
-NOAPP ; -- print no appointment listing
- I '$D(IOF) D HOME^%ZIS
- S IBDCNT=0
- W @IOF,?10,"Print List Patients with Data from Encounter Forms and No appointemnts",!!!
- ;
- S DIC="^IBD(357.96,",L=0,FR="?,?,?,T-1",TO="?,?,?,T-1"
- S BY="[IBD NO APPOINTMENT LIST]"
- S FLDS="[IBD NO APPOINTMENT LIST]"
- ;
- ;S DIPCRIT=1 ; -- print sort criteria on first page.
- S DIS(0)="I 1 S IBDCNT=IBDCNT+1"
- S IOP="HOME"
- D EN1^DIP
-NOAPPQ K DIC,L,FLDS,DIOEND,FR,TO,BY,DHD,X,Y,DUOUT,DIRUT,IBDCNT
- Q
-NOAPP1 ; -- print no appointment listing
- I '$D(IOF) D HOME^%ZIS
- S IBDCNT=0
- W @IOF,?10,"Print List Patients with Data from Encounter Forms and No appointemnts",!!!
- ;
- S DIC="^IBD(357.96,",L=0,FR="?,?,?,T-1",TO="?,?,?,T-1"
- S BY="[IBD NO APPOINTMENT1]"
- S FLDS="[IBD NO APPOINTMENT LIST]"
- ;
- ;S DIPCRIT=1 ; -- print sort criteria on first page.
- S DIS(0)="I 1 S IBDCNT=IBDCNT+1"
- S IOP="HOME"
- D EN1^DIP
-NOAPP1Q K DIC,L,FLDS,DIOEND,FR,TO,BY,DHD,X,Y,DUOUT,DIRUT,IBDCNT
  Q

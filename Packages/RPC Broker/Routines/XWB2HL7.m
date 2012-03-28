@@ -1,5 +1,5 @@
 XWB2HL7 ;ISF/RWF - Remote RPC via HL7 ;08/24/09  14:32
- ;;1.1;RPC BROKER;**12,18,20,22,27,32,39,54**;Mar 28, 1997;Build 5
+ ;;1.1;RPC BROKER;**12,18,20,22,27,32,39,54**;Mar 28, 1997;Build 6
  ;Per VHA Directive 2004-038, this routine should not be modified.
  ;
  Q

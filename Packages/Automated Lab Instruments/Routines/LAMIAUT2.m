@@ -1,4 +1,5 @@
-LAMIAUT2 ;SLC/FHS -  CONTINUE MICRO AUTO INSTRUMENT PROGRAM VITEK ;7/20/90  09:33 ;
+LAMIAUT2 ; IHS/DIR/FJE - CONTINUE MICRO AUTO INSTRUMENT PROGRAM VITEK 7/20/90 09:33 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
 EN ;
  K LRMOVE,LRCNODE,LRORG
@@ -27,8 +28,10 @@ ASK ;
  K X2 I $L($P(^LAH(LRLL,1,LRIFN,3,II,0),U,2)) S X2=$P(^(0),U,2)
  S LREND=0 W !!,"ENTER QUANTITY FOR ( "_LRORGN_" ) : ",$S($D(X2):X2_" // ",1:"  ") R X:DTIME S:'$T!($E(X)="^") LREND=1 Q:LREND  I $D(X2),'$L(X),X'="@" S X=X2
  S:$E(X)="^" LREND=1 Q:LREND  I X="@" S $P(^LAH(LRLL,1,LRIFN,3,II,0),U,2)="" Q
- I $E(X)="?" W !?7,"Enter 2-68 characters or a Lab Description" K DIC S X="?",DIC="^LAB(62.5,",DIC(0)="Q",DIC("S")="I LRMICOMS[$P(^(0),U,4)" D ^DIC K DIC G ASK
- I $L(X) X LRMICOM I '$D(X) W !?7,"Enter 2-68 characters " G ASK
+ ;I $E(X)="?" W !?7,"Enter 2-68 characters or a Lab Description" K DIC S X="?",DIC="^LAB(62.5,",DIC(0)="Q",DIC("S")="I LRMICOMS[$P(^(0),U,4)" D ^DIC K DIC G ASK
+ I $E(X)="?" W !?7,"Enter 1-68 characters or a Lab Description" K DIC S X="?",DIC="^LAB(62.5,",DIC(0)="Q",DIC("S")="I LRMICOMS[$P(^(0),U,4)" D ^DIC K DIC G ASK  ;IHS/ANMC/CLS 11/1/95
+ ;I $L(X) X LRMICOM I '$D(X) W !?7,"Enter 2-68 characters " G ASK
+ I $L(X) X LRMICOM I '$D(X) W !?7,"Enter 1-68 characters " G ASK  ;IHS/ANMC/CLS 11/1/95
  I $L(X) W !,X_"  " S %=1 D YN^DICN G:%'=1 ASK I $L(X) S $P(^LAH(LRLL,1,LRIFN,3,II,0),U,2)=X
  Q
 COM ;Set descriptor block for comments

@@ -1,4 +1,4 @@
-MCOBPS ; GENERATED FROM 'MCPACSURVBRPR' PRINT TEMPLATE (#1034) ; 10/04/96 ; (FILE 698.3, MARGIN=80)
+MCOBPS ; GENERATED FROM 'MCPACSURVBRPR' PRINT TEMPLATE (#3758) ; 11/29/04 ; (FILE 698.3, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,11 +11,12 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(1034,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3758,"DXS")
+ S I(0)="^MCAR(698.3,",J(0)=698.3
  W ?0 W "DATE/TIME: "
  S X=$G(^MCAR(698.3,D0,0)) D N:$X>11 Q:'DN  W ?11 S Y=$P(X,U,1) D DT
  D N:$X>34 Q:'DN  W ?34 W "MEDICAL PATIENT: "
- S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 S DIP(1)=$S($D(^MCAR(698.3,D0,0)):^(0),1:"") S X="BASIC RHYTHM: "_$S('$D(^MCAR(698.9,+$P(DIP(1),U,9),0)):"",1:$P(^(0),U,1)) K DIP K:DN Y W X
  D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(698.3,D0,0)):^(0),1:"") S X="PERCENT OF PACED BEATS: "_$P(DIP(1),U,10) K DIP K:DN Y W X
  D T Q:'DN  D N D N:$X>40 Q:'DN  W ?40 X DXS(1,9) K DIP K:DN Y W X
@@ -53,4 +54,18 @@ BEGIN ;
  D N:$X>4 Q:'DN  W ?4 S DIP(1)=$S($D(^MCAR(698.3,D0,1)):^(1),1:"") S X="SENSITIVITY (ATRIAL MV): "_$P(DIP(1),U,10) K DIP K:DN Y W X
  D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(698.3,D0,2)):^(2),1:"") S X="SENSITIVITY (VENT. MV): "_$P(DIP(1),U,10) K DIP K:DN Y W X
  D N:$X>4 Q:'DN  W ?4 S DIP(1)=$S($D(^MCAR(698.3,D0,1)):^(1),1:"") S X="REFRACTORY PERIOD (ATRIAL): "_$P(DIP(1),U,11) K DIP K:DN Y W X
- G ^MCOBPS1
+ D N:$X>44 Q:'DN  W ?44 S DIP(1)=$S($D(^MCAR(698.3,D0,2)):^(2),1:"") S X="REFRACTORY PERIOD (VENT.): "_$P(DIP(1),U,11) K DIP K:DN Y W X
+ D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "PROCEDURE SUMMARY: "
+ S X=$G(^MCAR(698.3,D0,.2)) S DIWL=26,DIWR=80 S Y=$P(X,U,2) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
+ D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "SUMMARY: "
+ S X=$G(^MCAR(698.3,D0,.2)) S DIWL=16,DIWR=70 S Y=$P(X,U,1) S:Y]"" Y=$S($D(DXS(11,Y)):DXS(11,Y),1:Y) S X=Y D ^DIWP
+ D 0^DIWW
+ D ^DIWW
+ D T Q:'DN  W ?2 S MCFILE=698.3 D DISP^MCMAG K DIP K:DN Y
+ W ?13 K MCFILE K DIP K:DN Y
+ K Y K DIWF
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

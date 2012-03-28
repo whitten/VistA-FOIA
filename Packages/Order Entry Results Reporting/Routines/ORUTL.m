@@ -1,5 +1,5 @@
-ORUTL ; slc/dcm,RWF - Order utilities; ;3/28/08  15:15
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**95,280**Dec 17, 1997;;Build 85
+ORUTL ; slc/dcm,RWF - Order utilities; ;4/24/01  17:14
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**95**Dec 17, 1997
 LOC ;;GET PT. LOCATION
  S C(1)=$S($D(ORL(2))#2:$S(ORL(2)[";":$S($D(@("^"_$P(ORL(2),";",2)_+ORL(2)_",0)")):$P(^(0),"^"),1:""),1:""),1:"")
  I 'OR4,ORVP[";DPT(",$D(ORL(2)),ORL(2) Q
@@ -31,7 +31,3 @@ CHKMNE(X) ;Input transform to not allow use of standard Lmgr Mnemonics
  S Y=$$UP^XLFSTR(X) ;check to make sure mnemonic isn't set to lower case of restricted entries.  List Manager is case insensitive
  I Y="ADPL"!(Y="DN")!(Y="Q")!(Y="FS")!(Y="GO")!(Y="?")!(Y="??")!(Y="LS")!(Y="+")!(Y="-")!(Y="PL")!(Y="PS")!(Y="RD")!(Y="SL")!(Y="<")!(Y=">")!(Y="UP")!(Y="PI")!(Y="CWAD")!(Y="TD")!(Y="EX") Q 1
  Q 0
-PAD(ORX,ORL) ; Pads string to specified length
- N ORY
- S ORY="",$P(ORY," ",(ORL-$L(ORX))+1)=""
- Q ORY

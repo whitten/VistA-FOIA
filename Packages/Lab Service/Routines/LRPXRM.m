@@ -1,5 +1,6 @@
-LRPXRM ;SLC/STAFF Lab reminder index for micro and ap ;5/6/04  13:21
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXRM ;VA/SLC/STAFF - Lab reminder index for micro and ap ;5/6/04  13:21
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 UPDATE(LRDFN,SUB,LRIDT) ; update Micro and AP xrefs in ^PXRMINDX(63
  ; from LRAPDA,LRAPDSR,LRMIEDZ,LRMIEDZ2,LRMISTF1,LRMIV,LRMIV1,LRMIV2

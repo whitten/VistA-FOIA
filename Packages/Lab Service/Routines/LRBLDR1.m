@@ -1,6 +1,7 @@
-LRBLDR1 ;AVAMC/REG - DONOR EXAM,COLLECTION ;2/11/94  07:50 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDR1 ; IHS/DIR/FJE - DONOR EXAM,COLLECTION 2/11/94 07:50 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  I G S Y=G(16) D D^LRU W $C(7),!!!!!!,"Donor is in the file as permanently deferred as of ",Y,".",!,"If you have any questions, please see the physician in charge."
  S LRZ=0 I $D(^LRE(W,9)) S DIWR=IOM-5,DIWL=5,DIWF="W" S A=0 F LRZ=0:1 S A=$O(^LRE(W,9,A)) Q:'A  W:'LRZ !! S LRX=^(A,0) D:$Y>(IOSL-6) H Q:LR("Q")  S X=LRX D ^DIWP
  Q:LR("Q")  D:LRZ ^DIWW W !,LR("%")

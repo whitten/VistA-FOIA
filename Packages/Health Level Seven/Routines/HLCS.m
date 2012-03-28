@@ -1,6 +1,5 @@
-HLCS ;ALB/RJS,MTC,JRP - COMMUNICATIONS SERVER - ;10/04/2007  14:34
- ;;1.6;HEALTH LEVEL SEVEN;**2,9,14,19,43,57,109,132,122**;Oct 13, 1995;Build 14
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLCS ;ALB/RJS,MTC,JRP - COMMUNICATIONS SERVER - ;05/09/2000  11:21
+ ;;1.6;HEALTH LEVEL SEVEN;**2,9,14,19,43,57,109**;Oct 13, 1995
  ;
  ;The SEND function is invoked by the transaction processor.
  ;It's function is to $O through the ITEM multiple of the Event Driver
@@ -43,23 +42,6 @@ SEND(HLMTIEN,HLEID,HLRESULT) ;Send an HL7 message
  ;Deliver message to each subscriber
  S HLEIDS=0
  F  S HLEIDS=$O(HLARY(HLEIDS)) Q:(HLEIDS'>0)  D
- .;
- .;**132 excluded subscribers **
- .N I,EXCLUDE
- .S (EXCLUDE,I)=0
- . ;
- . ; patch HL*1.6*122
- . ; F  S I=$O(HLP("EXCLUDE SUBSCRIBER",I)) Q:'I  I $G(HLP("EXCLUDE SUBSCRIBER",I))=HLEIDS S EXCLUDE=1 Q
- . F  S I=$O(HLP("EXCLUDE SUBSCRIBER",I)) Q:'I  D  Q:EXCLUDE
- .. N TEMP
- .. S TEMP=HLP("EXCLUDE SUBSCRIBER",I)
- .. I 'TEMP,TEMP]"" S TEMP=$O(^ORD(101,"B",TEMP,0))
- .. I TEMP=HLEIDS S EXCLUDE=1
- . ; patch HL*1.6*122
- . ;
- .Q:EXCLUDE
- .;** 132 end **
- .;
  .;Get pointer to receiving application
  .S HLCLIENT=+HLARY(HLEIDS),HL("EIDS")=HLEIDS,HLERROR=""
  .Q:(HLCLIENT'>0)

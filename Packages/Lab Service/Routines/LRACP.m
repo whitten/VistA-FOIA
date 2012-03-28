@@ -1,4 +1,6 @@
-LRACP ;SLC/DCM - CUMULATIVE PURGE ;2/19/91  10:17 ;
+LRACP ; IHS/DIR/FJE - CUMULATIVE PURGE 2/19/91 10:17 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 QUEUE S U="^"
  W !,"This option uses the number of days entered in the GRACE PERIOD FOR CUMULATIVE",!,"field in the LABORATORY SITE file to identify and purge patient lab data from",!,"the cumulative file.",!

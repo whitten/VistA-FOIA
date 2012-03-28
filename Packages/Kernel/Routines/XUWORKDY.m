@@ -1,4 +1,5 @@
-XUWORKDY ;SF/GJL - WORKDAYS Mon-Fri ;09/04/98  13:29
+XUWORKDY ;SF/GJL - WORKDAYS Mon-Fri ;09/04/98  13:29 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**65,71,77,91**;Jul 10, 1995
  ;X,X1 are any two dates (YYYMMDD). X=Working Days Between
 A N %A,%B,%D,%H,%I,%J,%K,%M,%Y,%Z

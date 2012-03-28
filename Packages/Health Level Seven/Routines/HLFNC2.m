@@ -1,5 +1,5 @@
-HLFNC2 ;AISC/SAW-Continuation of HLFNC, Additional Functions/Calls Used for HL7 Messages ;12/17/2002  16:40
- ;;1.6;HEALTH LEVEL SEVEN;**2,26,57,59,101**;Oct 13, 1995
+HLFNC2 ;AISC/SAW-Continuation of HLFNC, Additional Functions/Calls Used for HL7 Messages ;12/17/2002  16:40 [ 12/23/2003  3:12 PM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**2,26,57,59,101,1005**;Oct 13, 1995
 INIT(EID,HL,INT) ;Initialize Variables in HL array for Building a Message
  ;
  ;This is a subroutine call with parameter passing that returns an
@@ -63,7 +63,12 @@ MSH(HL,MID,RESULT,SECURITY) ;Create an MSH Segment for an Outgoing HL7
  ;SECURITY = Security to be included in field #8 of the MSH segment
  ;
  ;Check for required parameters
- I '$D(HL)#2!('$D(MID)) Q ""
+ ;----- BEGIN IHS MODIFICATION
+ ;IHS/TUC/DLR 05/05/97 - fix parameter return bug
+ ;LINE IS COMMENTED OUT AND REPLACED BY NEW LINE
+ ;I '$D(HL)#2!('$D(MID)) Q ""
+ I '$D(HL)#2!('$D(MID)) S RESULT="" Q
+ ;----- END IHS MODIFICATION
  N X,X1,X2
  ;Build MSH segment from HL array variables and other input parameters
  S X="MSH"_HL("FS")_HL("ECH")_HL("FS")_HL("SAN")_HL("FS")_HL("SAF")_HL("FS")_$S($D(HL("RAN")):HL("RAN"),1:"")_HL("FS")_$S($D(HL("RAF")):HL("RAF"),1:"")_HL("FS")_$S($D(HL("DTM")):HL("DTM"),1:"")_HL("FS")

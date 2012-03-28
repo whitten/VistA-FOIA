@@ -1,8 +1,7 @@
-GMRCGUIU ;SLC/DCM,JFR - Utilities for CPRS GUI ;04/23/09  13:25
- ;;3.0;CONSULT/REQUEST TRACKING;**4,12,15,17,22,66**;DEC 27, 1997;Build 30
+GMRCGUIU ;SLC/DCM,JFR - Utilities for CPRS GUI ;10/24/01 15:15
+ ;;3.0;CONSULT/REQUEST TRACKING;**4,12,15,17,22**;DEC 27, 1997
  ;
- ; This routine invokes IA #2757(EN^MCARPS2), #3042 (SINGLE^MCAPI), #3171 (START^ORWRP)
- ;                         #(GET1^DIQ), #3280 (MEDLKUP^MCARUTL3), #10103 (XLFDT)
+ ; This routine invokes IA #2757,#3042,#3122,#3171
  ;
 GUIC ;Kill variables from GMRCGUIC
  K GMRC(0),GMRCA,GMRCATN,GMRCD,GMRCDD,GMRCDIAG,GMRCDT,GMRCED,GMRCEDCM
@@ -14,8 +13,7 @@ GUIC ;Kill variables from GMRCGUIC
  K GMRCDIAG,GMRCDXCD,GMRCPROV,ND,NDX
  K XQAKILL,^TMP("GMRCFLD20",$J)
  Q
-SETDA(GMRCSS,GMRCPROC,GMRCURG,GMRCPL,GMRCATN,GMRCRQT,GMRCION,GMRCERDT,GMRCDIAG,GMRCDXCD)  ;Set DA in ^GMR(123,GMRCO,40
- ;WAT/66 added earliest date
+SETDA(GMRCSS,GMRCPROC,GMRCURG,GMRCPL,GMRCATN,GMRCRQT,GMRCION,GMRCDIAG,GMRCDXCD)  ;Set DA in ^GMR(123,GMRCO,40
  N X
  S X=""
  I +GMRCSS S X="1////^S X=+GMRCSS;.1///@;"
@@ -25,8 +23,7 @@ SETDA(GMRCSS,GMRCPROC,GMRCURG,GMRCPL,GMRCATN,GMRCRQT,GMRCION,GMRCERDT,GMRCDIAG,G
  I +GMRCATN S X=X_"7////^S X=GMRCATN;"
  I $G(GMRCATN)="@" S X=X_"7///@;"
  I $L(GMRCION) S X=X_"14///^S X=GMRCION;"
- I +GMRCERDT S X=X_"17///^S X=GMRCERDT;"
- I $L(GMRCDIAG) D
+ I $L(GMRCDIAG) D 
  . I GMRCDIAG="@" S X=X_"30///@;30.1///@;" Q
  . S X=X_"30////^S X=GMRCDIAG;"
  I $L(GMRCDXCD) S X=X_"30.1////^S X=GMRCDXCD;"
@@ -44,30 +41,30 @@ COMMENT(GMRCO,MSG,ND,GMRCDA)    ;File comments from GUI edits
  . D TRIGR^GMRCIEVT(GMRCO,GMRCDA)
  Q
  ;
-SENDCOMT(GMRCO,ND1)     ;Get comments   ;wat/66 replaced ^VA(200 with $$GET1^DIQ
+SENDCOMT(GMRCO,ND1)     ;Get comments
  N NDX,NDY,CMTDT,SENDR,TYPE
  S NDX=0,CMTDT="",SENDR=""
  S NDX=0 F  S NDX=$O(^GMR(123,GMRCO,40,NDX)) Q:NDX?1A.E!(NDX="")  S TYPE=$P(^GMR(123,GMRCO,40,NDX,0),"^",2) I $S(TYPE=19:1,TYPE=20:1,1:0) S TYPE(TYPE,NDX)=""
  I $O(TYPE(19,0)) S @GLOBAL@(ND1,0)="~DENY COMMENT",ND1=ND1+1 D
  .S NDX=0 F  S NDX=$O(TYPE(19,NDX)) Q:NDX=""   D
- ..S CMTDT=$$FMTE^XLFDT($P(^GMR(123,GMRCO,40,NDX,0),"^",1)),SENDR=$S($L($P(^GMR(123,GMRCO,40,NDX,0),"^",4)):$$GET1^DIQ(200,$P(^(0),"^",4),.01),1:"Missing Data")
+ ..S CMTDT=$$FMTE^XLFDT($P(^GMR(123,GMRCO,40,NDX,0),"^",1)),SENDR=$S($L($P(^GMR(123,GMRCO,40,NDX,0),"^",4)):$P(^VA(200,$P(^(0),"^",4),0),"^",1),1:"Missing Data")
  ..S @GLOBAL@(ND1,0)="t"_"CANCELLED: "_CMTDT_" BY: "_SENDR,ND1=ND1+1,NDY=0
  ..S NDY=0 F  S NDY=$O(^GMR(123,GMRCO,40,NDX,1,NDY)) Q:NDY=""  S @GLOBAL@(ND1,0)="t"_^GMR(123,GMRCO,40,NDX,1,NDY,0),ND1=ND1+1
  ..S @GLOBAL@(ND1,0)="t",$P(@GLOBAL@(ND1,0),"-",81)="",ND1=ND1+1
  ..Q
  .Q
  S NDX=0 F  S NDX=$O(TYPE(20,NDX)) Q:NDX=""  S @GLOBAL@(ND1,0)="~ADDED COMMENT",ND1=ND1+1 D
- .S CMTDT=$$FMTE^XLFDT($P(^GMR(123,GMRCO,40,NDX,0),"^",1)),SENDR=$S($L($P(^GMR(123,GMRCO,40,NDX,0),"^",4)):$$GET1^DIQ(200,$P(^(0),"^",4),.01),1:"UNKNOWN")
+ .S CMTDT=$$FMTE^XLFDT($P(^GMR(123,GMRCO,40,NDX,0),"^",1)),SENDR=$S($L($P(^GMR(123,GMRCO,40,NDX,0),"^",4)):$P(^VA(200,$P(^GMR(123,GMRCO,40,NDX,0),"^",4),0),"^",1),1:"UNKNOWN")
  .S @GLOBAL@(ND1,0)="t"_"COMMENT on "_CMTDT_" BY: "_SENDR,ND1=ND1+1
  .S NDY=0 F  S NDY=$O(^GMR(123,GMRCO,40,NDX,1,NDY)) Q:NDY=""  S @GLOBAL@(ND,0)="t"_^GMR(123,GMRCO,40,NDX,1,NDY,0),ND1=ND1+1
  .S @GLOBAL@(ND1,0)="t",$P(@GLOBAL@(ND1,0),"-",81)="",ND1=ND1+1
  .Q
  Q
 GETMED(GMRCIFN,GMRCRES) ;return available med results for proc request
- ; input:
+ ; input: 
  ;    GMRCIFN - ien from file 123
  ;    GMRCRES - variable passed in by reference used for output
- ; output:
+ ; output: 
  ;     GMRCRES(x) = result_name^date^summary^result_ref
  ;      example:
  ;       GMRCRES(1)="19;MCAR(691.5,^EKG^JUN 30,1999@15:52^ABNORMAL"
@@ -119,8 +116,8 @@ DISPMED(GMRCRES,GMRCAR) ; display a med result
  ;  GMRCRES - med result var ptr  (e.g. "19;MCAR(691.5")
  ;  GMRCAR  - array to return output from medicine API
  ; Output:
- ;  GMRCAR
- ;    - var passed by ref or as global ref to return text of
+ ;  GMRCAR 
+ ;    - var passed by ref or as global ref to return text of 
  ;      medicine pkg report
  ;    Example:  GMRCAR(1)="      PROCEDURE DATE/TIME: 06/30/99 15:52"
  ;              GMRCAR(2)="        CONFIDENTIAL ECG REPORT"

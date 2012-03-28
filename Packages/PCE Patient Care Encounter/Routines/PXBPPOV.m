@@ -1,5 +1,5 @@
-PXBPPOV ;ISL/JVS - PROMPT POV ;8/31/05
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,28,92,121,149,124,170,182**;Aug 12, 1996;Build 3
+PXBPPOV ;ISL/JVS - PROMPT POV ; 5/1/01 2:58pm
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**11,28,92**;Aug 12, 1996
  ;
  ; VARIABLE LIST
  ; SELINE= Line number of selected item
@@ -7,20 +7,20 @@ PXBPPOV ;ISL/JVS - PROMPT POV ;8/31/05
 POV ;--DIAGNOSIS
  I $D(PXBNPOVL) D LOC^PXBCC(2,0) W IOUON,"Previous Entry:   ",$G(PXBNPOVL(1)) F I=1:1:10 W " "
  W IOUOFF
- N TIMED,EDATA,DIC,LINE,XFLAG,SELINE,PXBEDIS,FPL,CNT
+ N TIMED,EDATA,DIC,LINE,XFLAG,SELINE,PXBEDIS,FPL
  I '$D(^DISV(DUZ,"PXBPOV-3")) S ^DISV(DUZ,"PXBPOV-3")="   "
  I '$D(IOSC) D TERM^PXBCC
  S DOUBLEQQ=0
  S TIMED="I '$T!(DATA=""^"")"
- S DIC("S")="I $P($$ICDDX^ICDCODE(Y,IDATE),U,10)"
+ S DIC("S")="I $P($G(^ICD9(Y,0)),""^"",9)'=1!($P(^(0),""^"",11)'=""""&(IDATE<($P(^(0),""^"",11))))"
 P ;--Second Entry point
- W IOSC K FPL,EDATA,DATA
+ W IOSC K FPL
  ;---DYNAMIC HEADER---
  I '$D(CYCL) D
- .S CNT=$G(PXBCNT)\2
- .I CNT=0,DOUBLEQQ=0 D LOC^PXBCC(1,10) W "...There are "_CNT_" ICD CODES associated with this encounter."
- .I CNT=1,DOUBLEQQ=0 D LOC^PXBCC(1,10) W "...There is "_CNT_" ICD CODE associated with this encounter."
- .I CNT>1,DOUBLEQQ=0 D LOC^PXBCC(1,10) W "...There are "_CNT_" ICD CODES associated with this encounter."
+ .I PXBCNT=0,DOUBLEQQ=0 D LOC^PXBCC(1,10) W "...There are "_$G(PXBCNT)_" ICD CODES associated with this encounter."
+ .I PXBCNT=1,DOUBLEQQ=0 D LOC^PXBCC(1,10) W "...There is "_$G(PXBCNT)_" ICD CODE associated with this encounter."
+ .I PXBCNT>1,DOUBLEQQ=0 D LOC^PXBCC(1,10) W "...There are "_$G(PXBCNT)_" ICD CODES associated with this encounter."
+ ;
  D LOC^PXBCC(15,0)
  I PXBCNT>10&('$G(DOUBLEQQ)) W !,"Enter '+' for next page, '-' for previous page."
  I '$D(^TMP("PXK",$J,"POV")) W !,"Enter Diagnosis : "_$G(PXBDPOV) W:$D(PXBDPOV) " //" W IOELEOL
@@ -38,9 +38,10 @@ P1 ;--Third entry point
  I DATA="^^" S PXBEXIT=0 G POVX
  ;---I Prompt can jump to others put symbols in here
  I DATA["^P" G POVX
- ;------PXBDPOV=DEFAULT POV---PX*1.0*182 - added variable EDATA
- I DATA="",$D(PXBDPOV) S DATA=$P($G(PXBDPOV),"--",1),EDATA=DATA
+ ;------PXBDPOV=DEFAULT POV---
+ I DATA="",$D(PXBDPOV) S DATA=$P($G(PXBDPOV),"--",1)
  I DATA="",'$D(PXBDPOV) S PXBUT=1,PXBSPL="",LEAVE=1 G POVX
+ ;
  I PXBCNT>10&((DATA="+")!(DATA="-")) D DPOV4^PXBDPOV(DATA) G P
  ;
 M ;--------IF Multiple entries have been entered
@@ -72,18 +73,9 @@ LI1 ;
  I DATA="??" S DOUBLEQQ=1 D EN1^PXBHLP0("PXB","POV","",1,2) S:$L(DATA,"^")>1 (Y,DATA,EDATA)=$P($P(DATA,"^",2),"--",1) G:Y>1 PFIN G:Y?1A1.NP PFIN I DATA<1 S DATA="^P" G P1
  ;
  ;--If a "?" is NOT entered during lookup
- K X,DIC
- S X=EDATA
- D CONFIG^LEXSET("ICD",,IDATE)
- S DIC("A")="Select Diagnosis:"
- S DIC="^LEX(757.01,",DIC(0)=$S('$L($G(X)):"A",1:"")_"EQM"
- D ^DIC
- I X="@" Q
- I Y=-1 S DATA="^P" G P1
- S WHAT=$G(Y(1))
- S X="`"_+$$CODEN^ICDCODE(WHAT,80)
- S (DATA,EDATA)=WHAT K Y
- S DIC=80,DIC(0)="MZ",DIC("S")="I $P($$ICDDX^ICDCODE(Y,IDATE),U,10)" D ^DIC
+ S (VAL,Y)=$$DOUBLE1^PXBGPOV2(WHAT) I Y<1 S DATA="^P" G P1
+ ;<-*92*-<  S (X,DATA,EDATA)=$P(VAL,"^",2),DIC=80,DIC(0)="MZ" D ^DIC
+ S (DATA,EDATA)=$P(VAL,"^",2),X="`"_+$P(Y,"^",1) K Y S DIC=80,DIC(0)="MZ" D ^DIC  ;** PX*1.0*92    05/01/2001  make ^DIC selection "exact."
  ;
  ;--If Y is good and already in file...
  I '$G(DOUBLEQQ),$D(Y),$D(PXBKY($P(Y,"^",2))) D
@@ -92,16 +84,14 @@ LI1 ;
  S POV=Y(0)
  ;
 PFIN ;--Finish the DIAGNOSIS
- I $L(Y,"^")'>1 S X=Y,DIC=80,DIC(0)="IZM",DIC("S")="I $P($$ICDDX^ICDCODE(Y,IDATE),U,10)" D ^DIC
+ I $L(Y,"^")'>1 S X=Y,DIC=80,DIC(0)="IZM" D ^DIC
  I +Y<0 D HELP1^PXBUTL1("POV") G P
  S POV=Y(0)
- ;get the correct diagnosis descriptor
- N DXINF S DXINF=$$ICDDX^ICDCODE(+Y,IDATE),$P(POV,U,3)=$P(DXINF,U,4)
  S PXBNPOV($P(POV,"^",1))=""
  S PXBNPOVL(1)=$P(POV,"^",1) S ^DISV(DUZ,"PXBPOV-3")=DATA
  I $D(PXBKY($P(Y(0),"^"))),$G(SELINE) S $P(REQI,"^",9)=$O(PXBSKY(SELINE,0))
  I $D(PXBKY($P(Y(0),"^"))),'$G(SELINE) S $P(REQI,"^",9)=$O(PXBSKY($O(PXBKY($P(Y(0),"^"),0)),0))
- I +Y>0 S PXBEDIS=$P(DXINF,U,4)
+ I +Y>0 S PXBEDIS=$$EXTTEXT^PXUTL1(+Y,1,80,3)
  S $P(REQI,"^",5)=+Y,$P(REQI,"^",6)="S"
  S $P(REQE,"^",5)=$P(POV,"^",1)_" --"_$G(PXBEDIS),$P(REQE,"^",6)="SECONDARY"
 POVX ;--EXIT AND CLEAN UP

@@ -1,16 +1,23 @@
-TIULV ; SLC/JER - Visit/Movement related library ; 4/18/03
- ;;1.0;TEXT INTEGRATION UTILITIES;**7,30,55,45,52,148,156,152,113,200**;Jun 20, 1997
+TIULV ; SLC/JER - Visit/Movement related library ;11-Jun-2010 15:33;DU
+ ;;1.0;TEXT INTEGRATION UTILITIES;**7,30,55,45,52,148,156,152,1001,1007**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/26/2003 set chart #, visit and facility fields
+ ;                        used file DD to determine service category external format
+ ;             04/08/2004 fixed code to prevent UNDEF if no ward
+ ;IHS/ITSC/LJF 11/05/2004 PATCH 1001 if called by EHR, BTIUVSIT may not be set
+ ;
 PATPN(TIUY,DFN) ; Get minimum demographics for PN Print
  N VADM,VAIP,VAIN,VA,VAPA
  D OERR^VADPT
  S TIUY("PNMP")=$E($G(VADM(1)),1,30)
  S TIUY("SSN")=$G(VA("PID"))
+ S TIUY("HRCN")=$G(HRCN)                   ;IHS/ITSC/LJF 02/26/2003 set chart #
  S TIUY("DOB")="DOB:"_$$DATE^TIULS(+$G(VADM(3)),"MM/DD/CCYY")
  D ADD^VADPT
  I $G(VAPA(8))'="" S TIUY("PH#")="Ph:"_VAPA(8)
  I $G(VAPA(8))="" S TIUY("PH#")="Ph: **UNKNOWN**"
  S TIUY("INTNM")=$$NAME^VASITE ;Integration Name
- S TIUY("SITE")=$P($$SITE^VASITE,U,2)
+ ;S TIUY("SITE")=$P($$SITE^VASITE,U,2)     ;IHS/ITSC/LJF 02/26/2003
+ S TIUY("SITE")=$$GET1^DIQ(4,DUZ(2),.01)   ;IHS/ITSC/LJF 02/26/2003 get facility name
  S TIUY("LOCP")="Pt Loc: "_$S(VAIN(4)]"":$P(VAIN(4),U,2)_"  "_VAIN(5),1:"OUTPATIENT")
  Q
  ;
@@ -18,6 +25,7 @@ PATVADPT(TIUY,DFN,TIUMVN,TIUVSTR,TIUSDC) ; Extract MAS data
  N VA,VADM,VAEL,VAERR,VAIP,TIUI,TIUWARD,X,Y,TIUTYPE,TIUFTS,TIUSS,VAPA
  D DEM^VADPT
  S TIUY("PNM")=$G(VADM(1)),TIUY("SSN")=$G(VA("PID"))
+ S TIUY("HRCN")=$G(HRCN)  ;IHS/ITSC/LJF 02/26/2003 set chart #
  S TIUY("AGE")=$G(VADM(4)),TIUY("PID")="("_$E(TIUY("PNM"))_VA("BID")_")"
  S TIUY("DOB")=$G(VADM(3))
  D ADD^VADPT
@@ -25,7 +33,7 @@ PATVADPT(TIUY,DFN,TIUMVN,TIUVSTR,TIUSDC) ; Extract MAS data
  I $G(VAPA(8))="" S TIUY("PH#")="**UNKNOWN**"
  S TIUY("SEX")=$G(VADM(5))
  ; Below TIU*148
- I +$G(VADM(12))>0 D 
+ I +$G(VADM(12))>0 D
  . F TIUY("NUMRACE")=1:1:VADM(12) S TIUY("RACE",TIUY("NUMRACE"))=$G(VADM(12,TIUY("NUMRACE")))
  S TIUY("RACENO")=+$G(VADM(12))
  I +$G(VADM(12))=0 S TIUY("RACE")=$G(VADM(8))
@@ -52,7 +60,8 @@ PATVADPT(TIUY,DFN,TIUMVN,TIUVSTR,TIUSDC) ; Extract MAS data
  . S VDT=+VAIP(3)
  . S VLOC=$G(^DIC(42,+$P($G(VAIP(13,4)),U),44))
  . S TIUY("VSTR")=VLOC_";"_+TIUY("EDT")_";H"
- . S TIUY("VLOC")=VLOC_U_$P($G(^SC(VLOC,0)),U)
+ . ;S TIUY("VLOC")=VLOC_U_$P($G(^SC(VLOC,0)),U)
+ . S TIUY("VLOC")=VLOC_U_$P($G(^SC(+VLOC,0)),U)   ;IHS/ITSC/LJF 4/8/2004 prevent UNDEF
  . S:'+$G(TIUY("LOC")) TIUY("LOC")=TIUY("VLOC")
  I $G(TIUVSTR)]"" S TIUY("VSTR")=TIUVSTR D VSIT(.TIUY,TIUVSTR)
  I '+$G(TIUMVN),'+$G(TIUVSTR) D CURRENT(.TIUY,DFN)
@@ -63,12 +72,25 @@ PATVADPT(TIUY,DFN,TIUMVN,TIUVSTR,TIUSDC) ; Extract MAS data
  . N TIUVSIT S TIUVSIT=+$O(^TIU(8925,"AVSTRV",+DFN,$G(TIUY("VSTR")),0))
  . I $P($G(^AUPNVSIT(+TIUVSIT,0)),U,5)'=DFN K ^TIU(8925,"AVSTRV",+DFN,$G(TIUY("VSTR")),TIUVSIT) Q
  . S TIUY("VISIT")=+TIUVSIT_U_+$G(^AUPNVSIT(+TIUVSIT,0))
+ ;
+ ;IHS/ITSC/LJF 02/26/2003 setting of variables from IHS data
+ I '$G(BTIUVSIT),$G(TIUMVN) NEW BTIUVSIT S BTIUVSIT=$$GET1^DIQ(405,TIUMVN,.27,"I")  ;visit ien
+ ;
+ ;IHS/ITSC/LJF 11/05/2004 PATCH 1001 if called by EHR, BTIUVSIT may not be set
+ ;S TIUY("VISIT")=+$G(BTIUVSIT)_U_+$G(^AUPNVSIT(+$G(BTIUVSIT),0))                    ;visit ien ^ date
+ I $G(BTIUVSIT)<1,$G(TIUVSIT)>0 S TIUY("VISIT")=(+TIUVSIT)_U_+$G(^AUPNVSIT(+TIUVSIT,0))
+ E  S TIUY("VISIT")=+$G(BTIUVSIT)_U_+$G(^AUPNVSIT(+$G(BTIUVSIT),0))                    ;visit ien ^ date
+ ;end of PATCH 1001 change
+ ;
+ S TIUY("DIV")=+$O(^DG(40.8,"AD",DUZ(2),0))_U_$$GET1^DIQ(4,DUZ(2),.01)               ;division ^ facility name
+ ;IHS/ITSC/LJF 02/26/2003 end of new code
+ ;
  ; if pt an inpt + doc class is pn- default to current inpt loc
  S TIUTYPE=$S(+$P($G(TIUTYP(1)),U,2)>0:$P($G(TIUTYP(1)),U,2),1:+$G(TIUTYP))
- I +TIUTYPE'>0 S TIUY("INST")=$$DIVISION^TIULC1(+TIUY("LOC")) Q
+ I +$G(TIUDA) S TIUTYPE=+$G(^TIU(8925,+TIUDA,0))  ;IHS/ITSC/LJF 02/26/2003 added
+ Q:+TIUTYPE'>0
  I +$G(TIUMVN),$D(^DPT(DFN,.1)),+$$ISPN^TIULX(TIUTYPE) D
  . I $D(VAIP(14,4)) S TIUY("LOC")=$G(^DIC(42,+VAIP(14,4),44))_U_$P(VAIP(14,4),U,2)
- S TIUY("INST")=$$DIVISION^TIULC1(+TIUY("LOC"))
  Q
 WARD(DA) ; Compute ward at discharge
  N %,D0,DIC,DIQ,DR,MOVE,X,Y
@@ -90,7 +112,8 @@ VSIT(TIUY,TIUVSTR) ; Get Visit related info
  . S TIUY("EDT")=$P(TIUVSTR,";",2)_U_$$DATE^TIULS($P(TIUVSTR,";",2),"AMTH DD, CCYY@HR:MIN")
  S TIUY("LDT")=$G(TIUY("LDT"))
  S TIUCT=$P(TIUVSTR,";",3)
- I TIUCT]"" S TIUY("CAT")=TIUCT_U_$S(TIUCT="A":"AMBULATORY",TIUCT="I":"IN HOSPITAL",TIUCT="H":"HOSPITALIZATION",TIUCT="T":"TELEPHONE",1:"EVENT (HISTORICAL)")
+ ;I TIUCT]"" S TIUY("CAT")=TIUCT_U_$S(TIUCT="A":"AMBULATORY",TIUCT="I":"IN HOSPITAL",TIUCT="H":"HOSPITALIZATION",TIUCT="T":"TELEPHONE",1:"EVENT (HISTORICAL)")
+ I TIUCT]"" NEW C,Y S C=$P(^DD(9000010,.07,0),U,2),Y=TIUCT D Y^DIQ S TIUY("CAT")=TIUCT_U_Y   ;IHS/ITSC/LJF 02/26/2003 use all possible choices in file
  I TIUCT="E",+$G(TIUVSTR)'>0 Q
  S TIUY("LVL")=$G(TIUY("LVL"))
  S TIUY("ELG")=$G(VAEL(1))
@@ -124,6 +147,6 @@ CURRENT(TIUY,DFN) ; Get current INPATIENT data
  . N DIC,DIQ,DR,DA
  . S DIC=4,DR=".01",DA=+$G(DUZ(2)),DIQ="TIUDIV1"
  . D EN^DIQ1
- . ;TIU*1*152 changed TIUDIV1(4,DUZ(2),.01) to $G(TIUDIV1(4,$G(DUZ(2)),.01)) ; TIU*1*200 Added + to 2nd piece and + to $G(DUZ(2))
- . S TIUY("DIV")=+$G(DUZ(2))_U_+$G(TIUDIV1(4,+$G(DUZ(2)),.01))
+ . ;TIU*1*152 changed TIUDIV1(4,DUZ(2),.01) to $G(TIUDIV1(4,$G(DUZ(2)),.01))
+ . S TIUY("DIV")=+$G(DUZ(2))_U_$G(TIUDIV1(4,$G(DUZ(2)),.01))
  Q

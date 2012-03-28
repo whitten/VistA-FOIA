@@ -1,4 +1,5 @@
-XUTMG145 ;SEA/RDS - TaskMan: Globals: Code for File 14.5 ;5/17/91  12:54 ;
+XUTMG145 ;SEA/RDS - TaskMan: Globals: Code for File 14.5 ;5/17/91  12:54 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
  Q

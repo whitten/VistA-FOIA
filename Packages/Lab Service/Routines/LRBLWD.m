@@ -1,6 +1,7 @@
-LRBLWD ;AVAMC/REG - STUFF WORKLOAD IN 65.5 ;2/7/91  18:45
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLWD ; IHS/DIR/FJE - STUFF WORKLOAD IN 65.5 18:45 ; [ 2/7/91 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
 N S Y="ND" G SET ;no donation
 HW S Y="HW" G SET ;homologous whole blood donation
 TW S Y="TW" G SET ;therapeutic phlebotomy

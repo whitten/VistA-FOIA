@@ -1,4 +1,4 @@
-MCOBRH ; GENERATED FROM 'MCRHBRPR' PRINT TEMPLATE (#1036) ; 10/04/96 ; (FILE 701, MARGIN=80)
+MCOBRH ; GENERATED FROM 'MCRHBRPR' PRINT TEMPLATE (#3760) ; 11/29/04 ; (FILE 701, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,9 +11,10 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(1036,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3760,"DXS")
+ S I(0)="^MCAR(701,",J(0)=701
  D N:$X>0 Q:'DN  W ?0 W "MEDICAL PATIENT: "
- S X=$G(^MCAR(701,D0,0)) S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S X=$G(^MCAR(701,D0,0)) S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D N:$X>0 Q:'DN  W ?0 W "HEIGHT:"
  S X=$G(^MCAR(701,D0,2)) D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,1) W:Y]"" $J(Y,4,0)
  D N:$X>39 Q:'DN  W ?39 W "WEIGHT:"
@@ -71,4 +72,16 @@ BEGIN ;
  D T Q:'DN  D N D N D N:$X>0 Q:'DN  W ?0 W "Rheumatic:"
  D N:$X>39 Q:'DN  W ?39 W "Measurements:"
  D N:$X>0 Q:'DN  W ?0 W "SUB-CUTANEOUS NODULES:"
- G ^MCOBRH1
+ S X=$G(^MCAR(701,D0,5)) D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,4) W:Y]"" $S($D(DXS(21,Y)):DXS(21,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "GRIP STRENGTH-LEFT:"
+ D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,10) W:Y]"" $J(Y,4,0)
+ D N:$X>0 Q:'DN  W ?0 W "SYNOVIAL (BAKER'S) CYST:"
+ D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,5) W:Y]"" $S($D(DXS(22,Y)):DXS(22,Y),1:Y)
+ D N:$X>39 Q:'DN  W ?39 W "GRIP STRENGTH-RIGHT:"
+ D N:$X>69 Q:'DN  W ?69 S Y=$P(X,U,11) W:Y]"" $J(Y,4,0)
+ D N:$X>0 Q:'DN  W ?0 W "TOPHI:"
+ D N:$X>29 Q:'DN  W ?29 S Y=$P(X,U,3) W:Y]"" $S($D(DXS(23,Y)):DXS(23,Y),1:Y)
+ K Y
+ Q
+HEAD ;
+ W !,"--------------------------------------------------------------------------------",!!

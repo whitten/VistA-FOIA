@@ -1,4 +1,5 @@
-XUMF4H ;CIOFO-SF/RAM - Institution File Clean Up; 06/28/99
+XUMF4H ;CIOFO-SF/RAM - Institution File Clean Up [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1007**;APR 1, 2003
  ;;8.0;KERNEL;**206**;Jul 10, 1995
  ;
  ;

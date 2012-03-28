@@ -1,8 +1,8 @@
-PSGPLR0 ;BIR/CML3-PRINTS PICK LIST REPORT (CONT.) ;16 Jul 98 / 12:46 PM
+PSGPLR0 ;BIR/CML3-PRINTS PICK LIST REPORT (CONT.) ;25-Jan-2004 12:17;PLS
  ;;5.0; INPATIENT MEDICATIONS ;**15,34,58**;16 DEC 97
  ;
  ; Reference to ^PS(55 is supported by DBIA 2191
- ;
+ ; Modified - IHS/CIA/PLS - 12/05/03 - Line P1+2
 B0 ;
  F  S (PW,WDN)=$O(^PS(53.5,PSGPLXR,PSGPLG,TM,WDN)) Q:WDN=""  D:FFF=1 FCL F  S (PRM,RM)=$O(^PS(53.5,PSGPLXR,PSGPLG,TM,WDN,RM)) Q:RM=""  F  S PN=$O(^PS(53.5,PSGPLXR,PSGPLG,TM,WDN,RM,PN)) Q:PN=""  D B1
  Q
@@ -27,6 +27,7 @@ GTDOSES ; Set # dispense drugs and times to be admined.
  ;
 P1 ;
  S ND=$G(^DPT(PSGP,0)),PPN=$S($P(ND,"^")]"":$P(ND,"^"),1:PSGP),PSSN=$E($P(ND,"^",9),6,9),PW=$S(PW="zz":"* N/F *",1:PW),WL="",$P(WL,"=",37-($L(PW)/2))="" D:FFF=2 FCL I $Y+6>IOSL D HEADER
+ S PSSN=$$HRC^APSPFUNC(+PSGP) ; IHS/CIA/PLS - 12/5/03 - Modified to display HRN vs SSN
 PLN1 W !!,WL," WARD: ",PW," ",WL,!?1,$S(PRM'["zz":PRM,1:"* N/F *"),?11,"  ",$S(PPN'=PSGP:PPN,1:"NOT FOUND ("_PSGP_")"),$S(PSSN:"  ("_PSSN_")",1:""),":" S OCNT=0 Q
  ;
 P2 ;

@@ -1,6 +1,6 @@
-PSIVORV2 ;BIR/MLM-VIEW AN ORDER (PHARMACY) ;20 Jul 98 / 2:22 PM
+PSIVORV2 ;BIR/MLM-VIEW AN ORDER (PHARMACY) ;05-Dec-2003 10:05;PLS
  ;;5.0; INPATIENT MEDICATIONS ;**15,81**;16 DEC 97
- ;
+ ; Modified - IHS/CIA/PLS - 12/05/03 - Line ENNONUM+2
  Q
  ;***
  ;V5.0 will be using ^PSJLIFN instead. Other sub-modules in this routine
@@ -12,7 +12,9 @@ EN ; Display order with numbers.
  ;
 ENNONUM(DFN,PSJORD) ; Display order with no numbers.
  S UL80="",$P(UL80,"=",80)=""
- W:'$G(PSJPRF)&($Y) @IOF W !!,"Patient: ",VADM(1)," (",$P(VADM(2),U,2),")",?52,"Wt (kg): ",PSJPWT," ",PSJPWTD
+ ; IHS/CIA/PLS - 12/05/03 - Commented out next line and changed from SSN to HRN
+ ;W:'$G(PSJPRF)&($Y) @IOF W !!,"Patient: ",VADM(1)," (",$P(VADM(2),U,2),")",?52,"Wt (kg): ",PSJPWT," ",PSJPWTD
+ W:'$G(PSJPRF)&($Y) @IOF W !!,"Patient: ",VADM(1)," (",$G(VA("PID")),")",?52,"Wt (kg): ",PSJPWT," ",PSJPWTD
  W !?3,"Ward: ",$S(VAIN(4):$P(VAIN(4),U,2),1:"OUTPATIENT"),?52,"Ht (cm): ",PSJPHT," ",PSJPWTD
  W !,?1,"Status: ",$$CODES^PSIVUTL(P(17),$S(P("PON")'["V":53.1,1:55.01),$S(P("PON")'["V":28,1:100)) W:P("PON")["V" ?47,"Order number: ",+P("PON") W !,UL80,!
  ;

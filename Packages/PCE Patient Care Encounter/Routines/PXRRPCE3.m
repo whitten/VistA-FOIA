@@ -1,5 +1,5 @@
 PXRRPCE3 ;HIN/MjK - Clinic Specific Workload Reports ;6/7/96
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**121,146**;;Aug 12, 1996
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;;Aug 12, 1996
 EN ;_._._._._._._.Visit Totals/ Patient Ages/ Unsched Totals_._._._._._.
  ; Z = Visit Dt/Time
  D INITVAR^PXRRPCE5 ;Initialize counter variables
@@ -11,13 +11,12 @@ EN ;_._._._._._._.Visit Totals/ Patient Ages/ Unsched Totals_._._._._._.
  . S PXRRTVS=PXRRTVS+1 I Z>PXRRBDT S PXRRSESS=$S($D(Z($P(Z,"."))):PXRRSESS,1:PXRRSESS+1),Z($P(Z,"."))=""
  . D AGE
  . ;_._._._._._._._._._All Clinic Patients_._._._._._._._._._
- . S PXRRAPT=$P(Z,".") F  S PXRRAPT=$O(^DPT(DFN,"S",PXRRAPT)) Q:'PXRRAPT!(PXRRAPT>($$FMADD^XLFDT(PXRRAPT,1)))  I $P(^DPT(DFN,"S",PXRRAPT,0),U)=PXRRCLIN S:$P(^DPT(DFN,"S",PXRRAPT,0),U,7)=4 PXRRSXUN=PXRRSXUN+1
+ . S PXRRAPT=$P(Z,".") F  S PXRRAPT=$O(^DPT("S",DFN,PXRRAPT)) Q:'PXRRAPT!(PXRRAPT>($$FMADD^XLFDT(PXRRAPT,1)))  I $P(^DPT(DFN,"S",PXRRAPT,0),U)=PXRRCLIN S:$P(^DPT(DFN,"S",PXRRAPT,0),U,7)=4 PXRRSXUN=PXRRSXUN+1
  . S ^TMP($J,PXRRCLIN,"PATIENT APPTS",Z,DFN)=""
  . S ^TMP($J,PXRRCLIN,"CLINIC PATIENTS",DFN)=""
  . ;_._._._._._._._._._._._._Diagnoses_._._._._._._._._._._._._.
  . ;B = V POV IEN ; C = ICD Code
- . ;S B="" F  S B=$O(^AUPNVPOV("AD",PXRRVIFN,B)) Q:'B  S C=$P(^ICD9($P(^AUPNVPOV(B,0),U),0),U),C=$S('+C:C,1:+C) S:(C'?1"272.".E)&(C'?1"305.".E) C=$P(C,".") S ^TMP($J,PXRRCLIN,"ICD",Z,C,DFN)="",^TMP($J,PXRRCLIN,"ICD PAT",C,DFN,Z""
- . S B="" F  S B=$O(^AUPNVPOV("AD",PXRRVIFN,B)) Q:'B  S C=$P($$ICDDX^ICDCODE($P(^AUPNVPOV(B,0),U)),U,2),C=$S('+C:C,1:+C) S:(C'?1"272.".E)&(C'?1"305.".E) C=$P(C,".") S ^TMP($J,PXRRCLIN,"ICD",Z,C,DFN)="",^TMP($J,PXRRCLIN,"ICD PAT",C,DFN,Z)=""
+ . S B="" F  S B=$O(^AUPNVPOV("AD",PXRRVIFN,B)) Q:'B  S C=$P(^ICD9($P(^AUPNVPOV(B,0),U),0),U),C=$S('+C:C,1:+C) S:(C'?1"272.".E)&(C'?1"305.".E) C=$P(C,".") S ^TMP($J,PXRRCLIN,"ICD",Z,C,DFN)="",^TMP($J,PXRRCLIN,"ICD PAT",C,DFN,Z)=""
 MEDAGE ;_._._._._._._._._._._._._._Median Age_._._._._._._._._._._._._._._.
  S X=0 F  S X=$O(^TMP($J,PXRRCLIN,"PATIENT AGE",X)) Q:'X  S DFN=0 F  S DFN=$O(^TMP($J,PXRRCLIN,"PATIENT AGE",X,DFN)) Q:'DFN  D
  . S Y=$G(^TMP($J,PXRRCLIN,"PATIENT AGE",X,DFN))

@@ -1,5 +1,5 @@
 PSAOP1 ;BIR/LTL-Outpatient Dispensing (Single Drug) & (All Drugs) ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  ;PSAOP,PSAOP1,PSAOP2, & PSAOP4 gathers Outpatient dispensing data.
  ;PSAOP3 calls this routine to stuff Outpatient dispensing data in
  ;#58.81 and update 58.8 balance. It is called by PSAOP, PSAOP2,
@@ -7,12 +7,12 @@ PSAOP1 ;BIR/LTL-Outpatient Dispensing (Single Drug) & (All Drugs) ;7/23/97
  ;
  N DIC,PSAD,PSAT,PSAB,X
  ;Get transaction number
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.81,0):0 I  Q
 FIND S PSAD=$P(^PSD(58.81,0),U,3)+1 I $D(^PSD(58.81,PSAD)) S $P(^PSD(58.81,0),U,3)=$P(^PSD(58.81,0),U,3)+1 G FIND
  S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSAD D ^DIC
  L -^PSD(58.81,0) K DLAYGO,DINUM
  ;Get date + current balance + update balance
- F  L +^PSD(58.8,+PSALOC,1,+PSADRUG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,+PSALOC,1,+PSADRUG,0):0 I  Q
  S PSAB=$P($G(^PSD(58.8,+PSALOC,1,+PSADRUG,0)),U,4)
  S $P(^PSD(58.8,+PSALOC,1,+PSADRUG,0),U,4)=$P($G(^(0)),U,4)-PSA(3)
 EDO S:'$D(^PSD(58.8,+PSALOC,1,+PSADRUG,5,0)) ^(0)="^58.801A^^"
@@ -38,12 +38,12 @@ END Q
 TMP ;TMP("PSA",$J)
  N DIC,PSAD,PSAT,PSAB,X
  ;Get transaction number
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.81,0):0 I  Q
 FIND1 S PSAD=$P(^PSD(58.81,0),U,3)+1 I $D(^PSD(58.81,PSAD)) S $P(^PSD(58.81,0),U,3)=$P(^PSD(58.81,0),U,3)+1 G FIND1
  S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSAD D ^DIC
  L -^PSD(58.81,0) K DLAYGO,DINUM
  ;Get date + current balance + update balance
- F  L +^PSD(58.8,+PSALOC,1,+PSADRUG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,+PSALOC,1,+PSADRUG,0):0 I  Q
  S PSAB=$P($G(^PSD(58.8,+PSALOC,1,+PSADRUG,0)),U,4)
  S $P(^PSD(58.8,+PSALOC,1,+PSADRUG,0),U,4)=$P($G(^(0)),U,4)-PSA(3)
  S:'$D(^PSD(58.8,+PSALOC,1,+PSADRUG,5,0)) ^(0)="^58.801A^^"

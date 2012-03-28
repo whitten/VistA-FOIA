@@ -1,6 +1,5 @@
-HLCSMON1 ;SF-Utilities for Driver Program  ;06/26/2008  15:30
- ;;1.6;HEALTH LEVEL SEVEN;**15,40,49,65,109,122,142**;Oct 13, 1995;Build 17
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLCSMON1 ;SF-Utilities for Driver Program  ;02/04/2004  10:25
+ ;;1.6;HEALTH LEVEL SEVEN;**15,40,49,65,109**;Oct 13, 1995
  ;
  ;This routine contains several entry points called from HLCSMON
  ;no input parameters are required. All variables used which are
@@ -11,14 +10,7 @@ DISPLAY ;display link info
  S HLXX=0,X=0 X ^%ZOSF("RM")
  F  S HLXX=$O(HLARYD(HLXX)) Q:(HLXX'>0)  D WLINE(HLXX)
  ;DISPLAY INCOMING FILER STATUS
- ; patch HL*1.6*142 start
- ; call STAT^%ZTLOAD for each display in CNTFLR^HLCSUTL2.
- ; patch HL*1.6*122
- ; S HLXX=$P(HLRUNCNT,"^",1)
- ; I (+HLXX)=-1 S HLXX=$$CNTFLR^HLCSUTL2("IN")
  S HLXX=$$CNTFLR^HLCSUTL2("IN")
- ; patch HL*1.6*142 end
- ;
  ;ONLY UPDATE SCREEN IF COUNT HAS CHANGED
  I (HLXX'=+HLRUNCNT) D
  .D WDATA(5,17,"","",$J(" ",31)),WDATA^HLCSMON1(5,17,"","","Incoming filers running => ",35)
@@ -26,14 +18,7 @@ DISPLAY ;display link info
  .I ('HLXX) D WDATA(32,17,IOINHI,IOINORM,"Zero")
  .S $P(HLRUNCNT,"^",1)=HLXX
  ;DISPLAY OUTGOING FILER STATUS
- ; patch HL*1.6*142 start
- ; call STAT^%ZTLOAD for each display in CNTFLR^HLCSUTL2.
- ; patch HL*1.6*122
- ; S HLXX=$P(HLRUNCNT,"^",2)
- ; I (+HLXX)=-1 S HLXX=$$CNTFLR^HLCSUTL2("OUT")
  S HLXX=$$CNTFLR^HLCSUTL2("OUT")
- ; patch HL*1.6*142 end
- ;
  ;ONLY UPDATE SCREEN IF COUNT HAS CHANGED
  I (HLXX'=+$P(HLRUNCNT,"^",2)) D
  .D WDATA(5,18,"","",$J(" ",31)),WDATA^HLCSMON1(5,18,"","","Outgoing filers running => ",35)
@@ -61,30 +46,13 @@ WLINE(HLXX) ;write line from HLARYD=current values, HLARYO=old values
  ;if values haven't changed, don't do anything
  I HLARYD(HLXX)]"",HLARYD(HLXX)=$G(HLARYO(HLXX)) Q
  S HLARYO(HLXX)=HLARYD(HLXX),HLERR=$P(HLARYD(HLXX),U,8),DX=1
- ; patch HL*1.6*122
- ; F X=1:1:7 S @$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,8)
- F X=1,7 S @$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,10)
- F X=2:1:5 S @$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,8)
- ; patch HL*1.6*142
- ; if the link in-queue is set to 1 (stop), display it from HLDEV
- ; S X=6,@$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,7)
- I $P(HLARYD(HLXX),U,6)["/I-off" D
- . S X=6,@$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,8)
- E  S X=6,@$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,7)
- ;
+ F X=1:1:7 S @$P("HLNODE^HLREC^HLPROC^HLSEND^HLSENT^HLDEV^HLSTAT",U,X)=$E($P(HLARYD(HLXX),U,X)_"        ",1,8)
  ;if link is in error, write node in rev. video
  I HLERR]"" D WDATA(5,HLXX,IOBON_IORVON,IOBOFF_IORVOFF,HLNODE,8) S DX=14
  ;Turn off terminal line wrap & inform O/S where cursor is located
  S DY=HLXX X IOXY,^%ZOSF("XY")
- ; patch HL*1.6*122
- W:HLERR="" ?4,HLNODE
- ; patch HL*1.6*142
- ; if the link in-queue is set to 1 (stop), display it
- ; W ?16,HLREC,?26,HLPROC,?37,HLSEND,?47,HLSENT,?58,HLDEV,?63,HLSTAT
- I HLDEV["/I-off" D
- . W ?16,HLREC,?26,HLPROC,?37,HLSEND,?47,HLSENT,?56,HLDEV,?65,HLSTAT
- E  W ?16,HLREC,?26,HLPROC,?37,HLSEND,?47,HLSENT,?58,HLDEV,?63,HLSTAT
- ;
+ W:HLERR="" ?5,HLNODE
+ W ?16,HLREC,?26,HLPROC,?37,HLSEND,?47,HLSENT,?58,HLDEV,?64,HLSTAT
  Q
  ;
 WDATA(DX,DY,IO1,IO2,HLDATA,HLENGTH) ;

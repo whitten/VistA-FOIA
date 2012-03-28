@@ -1,5 +1,5 @@
 IBDFN14 ;ALB/CMR - ENCOUNTER FORM - OUTPUTS;JAN 4, 1996
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**12,38,51**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;**12,38**;APR 24, 1997
  ;
 CPT(X) ; -- return external value, descr and active flag for CPT code
  ; -- X passed equal to ien for cpt code
@@ -23,17 +23,8 @@ DX(X) ; -- return external value, descr and active flag for ICD9 diagnosis
  ; -- pass X equal to ien for icd9 code
  ;
  Q:'X
- N ICDNODE
  S (IBID,IBLABEL,IBINACT)=""
- ;;I $G(^ICD9(X,0))]"" S IBID=$P(^(0),"^"),IBLABEL=$P(^(0),"^",3),IBINACT=$P(^(0),"^",9)
- S ICDNODE=$$ICDDX^ICDCODE(X)
- Q:+ICDNODE=-1
- S IBID=$P(ICDNODE,U,2)     ;ICD code
- S IBLABEL=$P(ICDNODE,U,4)  ;ICD description
- S STATUS=$P(ICDNODE,U,10)  ;ICD status, 0-Not Active, 1-Acitve
- ;
- ;Set inactive flag to 1, if the ICD code is not active (STATUS=0)
- I STATUS=0 S IBINACT=1
+ I $G(^ICD9(X,0))]"" S IBID=$P(^(0),"^"),IBLABEL=$P(^(0),"^",3),IBINACT=$P(^(0),"^",9)
  Q
 VST(X) ; -- return external value, descr and active flag for VISIT TYPE 
  ; -- pass X equal to ien for visit type

@@ -1,7 +1,7 @@
-ORCDPS2 ;SLC/MKB-Pharmacy dialog utilities ;12/14/2006
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**94,116,125,131,243**;Dec 17, 1997;Build 242
+ORCDPS2 ;SLC/MKB-Pharmacy dialog utilities ;07:24 AM  5 Apr 2001 [12/31/01 6:35pm]
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**94,116,125,131**;Dec 17, 1997
  ;
-COMPLEX() ; -- Single or complex?
+COMPLEX() ; -- Single or complex dose?
  N X,Y,DIR,DUOUT,DTOUT,COMPLX
  S COMPLX=$S($O(ORDIALOG(PROMPT,"?"),-1)>1:1,$L($G(ORDIALOG($$PTR("DURATION"),1))):1,1:0)
  I $G(ORTYPE)="Q",$O(ORDIALOG(PROMPT,0)),FIRST Q COMPLX
@@ -13,14 +13,14 @@ CP1 S DIR(0)="YA",DIR("A")="Complex dose? ",DIR("B")="NO"
  D ^DIR S:$D(DTOUT) Y="^"
  Q Y
  ;
-DOSES ; -- Available common doses
+DOSES ; -- Get available common doses
  ;S $P(ORDIALOG(PROMPT,0),U,2)=$S(ORCAT="I":"1:20",1:"1:80")
  S ORDIALOG(PROMPT,"A")="Dose"_$S(ORCAT="I"&$G(ORIV):" or Rate: ",1:": ")
  S $P(ORDIALOG(PROMPT,"?"),",",2)=$S($G(ORIV):" as either a dose amount or infusion rate.",1:" as a dose or amount.")
  I FIRST,'$O(ORDIALOG(PROMPT,0)),$G(ORXFER) D SHOWSIG^ORCMED
  S ORCOMPLX=$$COMPLEX,MULT=+ORCOMPLX I ORCOMPLX="^" S ORQUIT=1 Q
  Q:$G(ORDIALOG(PROMPT,"LIST"))  Q:'$D(ORDOSE)
-D1 ; -- Entry from ORCMED,NF^ORCDPS to build list
+D1 ; -- enter here from ORCMED,NF^ORCDPS to build list
  N I,J,X,DD,DRUG,DOSE,CONJ,CNT,UD,COST,TEXT
  S (I,CNT)=0,CONJ=$P($G(ORDOSE("MISC")),U,3) S:$L(CONJ) CONJ=" "_CONJ
  F  S I=$O(ORDOSE(I)) Q:I'>0  D
@@ -41,7 +41,7 @@ D1 ; -- Entry from ORCMED,NF^ORCDPS to build list
  S:CNT ORDIALOG(PROMPT,"LIST")=CNT
  Q
  ;
-CHDOSE ; -- Kill dependent values if inst ORI of dose changes
+CHDOSE ; -- kill dependent values if inst ORI of dose changes
  N X,PROMPTS,P,NAME,DOSE,DD S X=$G(ORDIALOG(PROMPT,ORI))
  S X=$$UP^XLFSTR(X),ORDIALOG(PROMPT,ORI)=X ;force uppercase
  I X,X'?1.N.E1.A.E K DONE W $C(7),!,"Enter the amount of this drug that the patient is to receive as a dose,",!,"NOT as the number of units per dose." Q
@@ -58,7 +58,7 @@ CHDOSE ; -- Kill dependent values if inst ORI of dose changes
  I DD,$P($G(ORDOSE("DD",DD)),U,3) D NF^ORCDPS(DD) ;look for FormAlt
  Q
  ;
-EXDOSE ; -- Exit Action
+EXDOSE ; -- Dose Exit Action
  Q:'$O(ORDIALOG(PROMPT,0))  N DRUG,MISC,QUIT,LAST
  S ORDRUG=$$DISPDRUG^ORCDPS,DRUG=$G(ORDOSE("DD",+ORDRUG))
  I ORDRUG D  I $G(QUIT) S ORQUIT=1 Q
@@ -71,7 +71,7 @@ EXDOSE ; -- Exit Action
  . S MED=$P($G(^ORD(101.43,+$G(OROI),0)),U)
  . I MED'[STR,ORCAT="O"!'$G(ORDOSE(1)) S ORDIALOG($$PTR("STRENGTH"),1)=STR
  I +ORDRUG'>0,ORCAT="O" W $C(7),!,"Cannot determine dispense drug - some defaults and order checks may not occur!"
-EXD1 ; -- Kill dangling conjunction, [re]build Sig, get Qty info
+EXD1 ; -kill dangling conjunction, [re]build Sig, get Qty info
  S LAST=$O(ORDIALOG(PROMPT,"?"),-1) K ORDIALOG($$PTR("AND/THEN"),LAST)
  D ADMIN^ORCDPS3 D:$G(ORTYPE)'="Z" SIG ;[re]build Sig/Text
  I ORDRUG,ORCAT="O" D  ;set Qty info
@@ -88,7 +88,7 @@ SIG ; -- Create ORDIALOG(SIG) from Instructions PROMPT,ORDOSE,ORDRUG,ORCAT
  S ORT=$$PTR("ROUTE"),ORSCH=$$PTR("SCHEDULE"),ORDUR=$$PTR("DURATION")
  S ORID=$$PTR("DOSE"),ORCNJ=$$PTR("AND/THEN"),ORS=$$PTR("SIG")
  S ORMISC=$G(ORDOSE("MISC")),ORPREP=$P(ORMISC,U,2)
- S ORX=$S(ORCAT="I":"",ORCAT="O"&(+$G(ISIMO)=1):"",$L($P(ORMISC,U)):$P(ORMISC,U)_" ",1:"") ;"TAKE "
+ S ORX=$S(ORCAT="I":"",$L($P(ORMISC,U)):$P(ORMISC,U)_" ",1:"") ;"TAKE "
  S (CNT,ORI)=0 F  S ORI=$O(ORDIALOG(PROMPT,ORI)) Q:ORI'>0  D
  . S DOSE=$G(ORDIALOG(PROMPT,ORI)) Q:'$L(DOSE)
  . S ORX=ORX_$$DOSE_$$RTE_$$SCH_$$DUR_$$CONJ
@@ -98,44 +98,41 @@ SIG ; -- Create ORDIALOG(SIG) from Instructions PROMPT,ORDOSE,ORDRUG,ORCAT
  S ORDIALOG(ORS,1)=$NA(^TMP("ORWORD",$J,ORS,1))
  Q
  ;
-PTR(X) ; -- Ptr to prompt OR GTX X
+PTR(X) ; -- Return ptr to prompt OR GTX X
  Q +$O(^ORD(101.41,"AB","OR GTX "_X,0))
  ;
-DOSE() ; -- Dosage
+DOSE() ; -- Return dosage
  N X0,Y S X0=$G(ORDIALOG(ORID,ORI)) ;ID string
  S Y=DOSE I ORDRUG,$L(X0) D  ;use local dose if common DispDrug
  . S:$L($P(X0,"&",5)) Y=$P(X0,"&",5) ;unless Outpt w/total dose
  . I ORCAT="O",X0 S Y=$$WORD($P(X0,"&",3))_" "_$P(X0,"&",4) ;u/d
  Q Y
  ;
-WORD(X) ; -- Words for number X
+WORD(X) ; -- Return words for number X
  N X1,X2,Y S X1=$P(+X,"."),X2=$P(+X,".",2)
  S Y="" I X1 S Y=$S(X1=1:"ONE",X1=2:"TWO",X1=3:"THREE",X1=4:"FOUR",X1=5:"FIVE",X1=6:"SIX",X1=7:"SEVEN",X1=8:"EIGHT",X1=9:"NINE",X1=10:"TEN",1:X1)
  I X2 S Y=Y_$S($L(Y):" AND ",1:"")_$S(X2=5:"ONE-HALF",X2=33!(X2=34):"ONE-THIRD",X2=25:"ONE-FOURTH",X2=66!(X2=67):"TWO-THIRDS",X2=75:"THREE-FOURTHS",1:"."_X2)
  Q Y
  ;
-RTE() ; -- Expansion of route
+RTE() ; -- Return expansion of route
  N X,X0,Y S X=+$G(ORDIALOG(ORT,ORI)) Q:X'>0 ""
- K ^TMP($J,"ORCDPS2 RTE")
- D ALL^PSS51P2(+X,,,,"ORCDPS2 RTE")
- ;S X0=$G(^PS(51.2,+X,0)),Y=""
- I ORCAT="I"!(+$G(ISIMO)=1) S Y=" "_$S($L(^TMP($J,"ORCDPS2 RTE",+X,1)):^TMP($J,"ORCDPS2 RTE",+X,1),1:^TMP($J,"ORCDPS2 RTE",+X,.01))
- ;I ORCAT="I" S Y=" "_$S($L($P(X0,U,3)):$P(X0,U,3),1:$P(X0,U))
- I ORCAT="O",'+$G(ISIMO) S Y=" "_$S($L(ORPREP):ORPREP_" ",1:"")_$S($L(^TMP($J,"ORCDPS2 RTE",+X,4)):^TMP($J,"ORCDPS2 RTE",+X,4),1:^TMP($J,"ORCDPS2 RTE",+X,.01))
+ S X0=$G(^PS(51.2,+X,0)),Y=""
+ I ORCAT="I" S Y=" "_$S($L($P(X0,U,3)):$P(X0,U,3),1:$P(X0,U))
+ I ORCAT="O" S Y=" "_$S($L(ORPREP):ORPREP_" ",1:"")_$S($L($P(X0,U,2)):$P(X0,U,2),1:$P(X0,U))
  Q Y
  ;
-SCH() ; -- [outpatient] expansion of schedule
+SCH() ; -- Return [outpatient] expansion of schedule
  N X,Y S X=$G(ORDIALOG(ORSCH,ORI))
- I $L(X),ORCAT="O",'+$G(ISIMO) D SCH^PSSUTIL1(.X)
+ I $L(X),ORCAT="O" D SCH^PSSUTIL1(.X)
  S Y=$S($L(X):" "_X,1:"")
  Q Y
  ;
-DUR() ; -- Duration
+DUR() ; -- Return duration
  N X,Y S X=$G(ORDIALOG(ORDUR,ORI)),Y=""
  I X S Y=" FOR "_$$UP^XLFSTR(X)_$S(+X=X:" DAYS",1:"")
  Q Y
  ;
-CONJ() ; -- Conjunction
+CONJ() ; -- Return conjuction
  N X,Y S X=$G(ORDIALOG(ORCNJ,ORI))
  S:$L(X)>1 X=$E(X) S:X="E" S="X"
  S Y=$S(X="T":", THEN",X="X":" EXCEPT",X="A":" AND",1:"")
@@ -157,7 +154,7 @@ DOSETEXT        ; -- Reset dose text in ORDIALOG(INSTR) for backdoor orders
  I '$D(ORDIALOG(+$$PTR("SIG"),1)) S PROMPT=INSTR D SIG
  Q
  ;
-PI ; -- Include Pt Instructions w/Sig in Outpt order?
+PI ; -- Include Patient Instructions w/Sig in Outpt order?
  N X,Y,DIR,DUOUT,DTOUT,DIRUT,ORTX,ORMAX,I,CNT
  I $G(ORCAT)'="O" D CLEARWP Q  ;!'$O(ORDOSE("PI",0))
  Q:$G(ORENEW)  S I=0,ORMAX=57
@@ -165,7 +162,7 @@ PI ; -- Include Pt Instructions w/Sig in Outpt order?
  I '$O(ORDOSE("PI",0)) D CLEARWP Q
  F  S I=$O(ORDOSE("PI",I)) Q:I'>0  S X=ORDOSE("PI",I) D TXT^ORCHTAB
  S DIR(0)="YA",DIR("A")="Include Patient Instructions in Sig? "
- S DIR("?")="Enter NO if you do not want these instructions included in the sig for this order",DIR("B")=$S($D(^TMP("ORWORD",$J,PROMPT)):"YES",1:"NO")
+ S DIR("?")="Enter NO if you do not want these instructions included in the sig for this order",DIR("B")="YES"
  W ! S I=0 F  S I=$O(ORTX(I)) Q:I'>0  W !,$S(I=1:"Patient Instructions: ",1:"                      ")_ORTX(I)
  D ^DIR I $D(DUOUT)!$D(DTOUT) S ORQUIT=1 Q
  I Y D  Q  ;save text

@@ -1,4 +1,4 @@
-XQSRV ;SEA/MJM - Server message processor ;06/13/2003  09:27
+XQSRV ;SEA/MJM - Server message processor ;06/13/2003  09:27 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**155,308**;Jul 10, 1995
  Q:'$D(X)#2
  ;

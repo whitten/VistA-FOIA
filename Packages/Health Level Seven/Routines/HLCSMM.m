@@ -1,5 +1,7 @@
-HLCSMM ;ISC/MTC-Create Mail Message and Entry in the HL7 Transmission File ;11/03/2000  08:53
+HLCSMM ;ISC/MTC-Create Mail Message and Entry in the HL7 Transmission File ;11/03/2000  08:53 [ 04/02/2003   8:37 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**17,35,57,66,68**;Oct 13, 1995
+ ;THIS ROUTINE CONTAINS IHS MODFICIATION BY IHS/TUC/DLR 01/11/96
  Q
  ;
 EN(HLD0,HLD1) ; This routine will send a Message from the Out Queue to the
@@ -26,7 +28,12 @@ EN(HLD0,HLD1) ; This routine will send a Message from the Out Queue to the
  ;-- get MailMan LLP parameters
  S HLPARM=$G(^HLCS(870,HLD0,100))
  ;-- facility
- S HLFAC=$P($$SITE^VASITE,"^",2)
+ ;----- BEGIN IHS MODIFICATION
+ ;IHS/TUC/DLR 01/11/96 - replace VA call with IHS call
+ ;LINE COMMENTED OUT AND REPLACED BY NEW LINE
+ ;S HLFAC=$P($$SITE^VASITE,"^",2)
+ S HLFAC=$P($$SITE^HLZFUNC,"^",2)
+ ;----- END IHS MODIFICATION
  I HLFAC="" S HLFAC="Unknown"
  ;-- date
  D NOW^%DTC S Y=% X ^DD("DD") S HLDT=Y

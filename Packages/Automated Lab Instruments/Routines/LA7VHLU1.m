@@ -1,5 +1,5 @@
-LA7VHLU1 ;DALOI/JMC - HL7 segment builder utility ; 11-25-1998
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,61,64**;Sep 27, 1994
+LA7VHLU1 ;VA/DALOI/JMC - HL7 segment builder utility ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,61,64,1027**;NOV 01, 1997
  ;
  ;
 SETID(LA76249,LA7ID,LA7X) ; Setup identifier's in TMP global for later storing.

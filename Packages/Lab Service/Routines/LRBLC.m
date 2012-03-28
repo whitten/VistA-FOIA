@@ -1,6 +1,7 @@
-LRBLC ;AVAMC/REG - ABO/RH COUNT ;2/18/93  08:37 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLC ; IHS/DIR/FJE - ABO/RH COUNT 2/18/93 08:37 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END W !!?20,"ABO/Rh recheck counts"
  D B^LRU G:Y=-1 END
  S LRSDT=LRSDT-.01,LRLDT=LRLDT+.99,(LRABO,LRRH)=0

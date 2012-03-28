@@ -1,4 +1,5 @@
 LRLNCDEL ; DALOI/CA/FHS - UNMAP LAB TESTS TO LOINC CODES OR DELETE LOINC MAPPINGS ;1-OCT-1998
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**232,278**;Sep 27,1994
  ;Reference to ^DD supported by IA 10154
  ;=================================================================

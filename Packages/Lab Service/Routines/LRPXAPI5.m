@@ -1,5 +1,6 @@
-LRPXAPI5 ;SLC/STAFF Lab Extract API code - Match ;9/30/03  09:59
- ;;5.2;LAB SERVICE;**295**;Sep 27, 1994
+LRPXAPI5 ;VA/SLC/STAFF - Lab Extract API code: Match ;9/30/03  09:59
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**295**;Sep 27, 1994;Build 5
  ;
 MATCH(DFN,DATE,CONDS,TYPE) ; $$(dfn,date,conds,type) -> 1 if ok, else 0
  ; from LRPXAPI3,LRPXAPI6

@@ -1,4 +1,5 @@
-XUTMD ;SEA/RDS - TaskMan: Option, XUTMDEL, Part 1 (Single) ;12/28/94  14:23
+XUTMD ;SEA/RDS - TaskMan: Option, XUTMDEL, Part 1 (Single) ;12/28/94  14:23 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 ENV ;Establish Routine Environment

@@ -1,10 +1,7 @@
-DGRPTX29 ; ;07/14/09
+DGRPTX29 ; ;05/27/04
  S X=DG(DQ),DIC=DIE
- S ^DPT("APOS",$E(X,1,30),DA)=""
+ X ^DD(2,.32103,1,1,1.3) I X S X=DIV S Y(2)=";"_$S($D(^DD(2,.3212,0)):$P(^(0),U,3),1:""),Y(1)=$S($D(^DPT(D0,.321)):^(.321),1:"") S X=$P($P(Y(2),";"_$P(Y(1),U,12)_":",2),";",1) S DIU=X K Y S X=DIV S X="" X ^DD(2,.32103,1,1,1.4)
  S X=DG(DQ),DIC=DIE
- X ^DD(2,.323,1,2,1.3) I X S X=DIV S Y(1)=$S($D(^DPT(D0,"ODS")):^("ODS"),1:"") S X=$P(Y(1),U,1),X=X S DIU=X K Y X ^DD(2,.323,1,2,1.1) X ^DD(2,.323,1,2,1.4)
+ X ^DD(2,.32103,1,2,1.3) I X S X=DIV S Y(1)=$S($D(^DPT(D0,.321)):^(.321),1:"") S X=$P(Y(1),U,11) S DIU=X K Y S X=DIV S X="" X ^DD(2,.32103,1,2,1.4)
  S X=DG(DQ),DIC=DIE
- I ($T(AVAFC^VAFCDD01)'="") S VAFCF=".323;" D AVAFC^VAFCDD01(DA)
- S X=DG(DQ),DIC=DIE
- D EVENT^IVMPLOG(DA)
- I $D(DE(6))'[0!(^DD(DP,DIFLD,"AUDIT")'="e") S X=DG(DQ),DIIX=3_U_DIFLD D AUDIT^DIET
+ D AUTOUPD^DGENA2(DA)

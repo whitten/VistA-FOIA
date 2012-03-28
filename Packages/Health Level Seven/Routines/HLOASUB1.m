@@ -1,82 +1,53 @@
-HLOASUB1 ;IRMFO-ALB/CJM/RBN - Subscription Registry (continued) ;04/08/2010
- ;;1.6;HEALTH LEVEL SEVEN;**126,134,138,146,147**;Oct 13, 1995;Build 15
- ;Per VHA Directive 10-93-142, this routine should not be modified.
+HLOASUB1 ;IRMFO-ALB/CJM - Subscription Registry (continued) ;03/24/2004  14:43
+ ;;1.6;HEALTH LEVEL SEVEN;**126**;Oct 13, 1995;
  ;
 INDEX(IEN,PARMARY) ;
- ;Allows an application to optionally index its subscriptions.
- ;so that it can find find them without storing the ien.
+ ;Description: This allows an application to build an index of its
+ ;subscriptions.  This is optional, but using this function allows the
+ ;application to easily find subscriptions without storing the ien.
  ;
  ;Input:
- ;  IEN - ien of the entry
- ;  PARMARY (pass by reference) An array of up to 6 lookup values with
- ;which to build the index.  The format is: PARMARY(1)=<first parameter>,
- ; up to PARMARY(6)
+ ;  IEN - ien of the entry in the Subscription Registry
+ ;  PARMARY - **pass by reference** an array of parameters with which to build the index.  The format is: PARMARY(1)=<first parameter>, PARMARY(2)=<second parameter>  If PARMARY(i)=null, the parameter will be translated to a single space.
  ;Output:
  ;  function returns 1 on success, 0 otherwise
  ;  PARMARY - left undefined
  ;
- N OWNER,I,NODE
- Q:'$G(IEN) 0
- S OWNER=$P($G(^HLD(779.4,IEN,0)),"^",2)
- Q:'$L(OWNER) 0
- D KILLAH(IEN)
- F I=1:1:6 S:'$L($G(PARMARY(I))) PARMARY(I)=" "
- D SETAH(IEN,OWNER,.PARMARY)
- S NODE=""
- F I=1:1:6 S NODE=NODE_$G(PARMARY(I))_"^"
- S ^HLD(779.4,IEN,3)=NODE
+ N OK S OK=0
+ D
+ .Q:'$G(IEN)
+ .N OWNER,INDEX,I
+ .S OWNER=$P($G(^HLD(779.4,IEN,0)),"^",2)
+ .Q:'$L(OWNER)
+ .Q:'$D(PARMARY)
+ .S INDEX="^HLD(779.4,""AH"",OWNER,"
+ .S I=0
+ .F  S I=$O(PARMARY(I)) Q:'I  S INDEX=INDEX_""""_$S($L(PARMARY(I)):PARMARY(I),1:" ")_""","
+ .S INDEX=$E(INDEX,1,$L(INDEX)-1)_")"
+ .S @INDEX=IEN
+ .S ^HLD(779.4,"AH KILL",IEN,""""_OWNER_""","_$P(INDEX,"^HLD(779.4,""AH"",OWNER,",2))=""
+ .S OK=1
  K PARMARY
- Q 1
- ;
-SETAH(IEN,OWNER,PARMS) ;
- Q:'$G(IEN)
- Q:'$L($G(OWNER))
- N INDEX
- S INDEX="^HLD(779.4,""AH"",OWNER,"
- F I=1:1:6 D
- .S:'$L($G(PARMS(I))) PARMS(I)=" "
- .S INDEX=INDEX_""""_PARMS(I)_""","
- S INDEX=$E(INDEX,1,$L(INDEX)-1)_")"
- S @INDEX=IEN
- Q
- ;
-SETAH1(DA,OWNER,X1,X2,X3,X4,X5,X6) ;
- Q:'$G(DA)
- Q:'$L($G(OWNER))
- N PARMS,I
- F I=1:1:6 I $L($G(@("X"_I))) S PARMS(I)=@("X"_I)
- D SETAH(DA,OWNER,.PARMS)
- Q
- ;
-KILLAH1(OWNER,LOOKUP1,LOOKUP2,LOOKUP3,LOOKUP4,LOOKUP5,LOOKUP6) ;
- Q:'$L(OWNER)
- N I,INDEX
- S INDEX="^HLD(779.4,""AH"",OWNER"
- F I=1:1:6 D
- .S:'$L($G(@("LOOKUP"_I))) @("LOOKUP"_I)=" "
- .S INDEX=INDEX_","_""""_@("LOOKUP"_I)_""""
- S INDEX=INDEX_")"
- K @INDEX
- Q
+ Q OK
  ;
 KILLAH(IEN) ;kills the AH x~ref on file 779.4 for a particular subscription registry entry=ien
  Q:'$G(IEN)
- N OWNER,X1,X2,X3,X4,X5,X6,I,NODE
- S OWNER=$P($G(^HLD(779.4,IEN,0)),"^",2)
- Q:'$L(OWNER)
- S NODE=$G(^HLD(779.4,IEN,3))
- F I=1:1:6 I $L($P(NODE,"^",I)) S @("X"_I)=$P(NODE,"^",I)
- D KILLAH1(OWNER,.X1,.X2,.X3,.X4,.X5,.X6)
+ N NEXT,LOCATION
+ S NEXT=""
+ F  S NEXT=$O(^HLD(779.4,"AH KILL",IEN,NEXT)) Q:'$L(NEXT)  D
+ .S LOCATION="^HLD(779.4,""AH"","_NEXT
+ .K @LOCATION
+ K ^HLD(779.4,"AH KILL",IEN)
  Q
  ;
 FIND(OWNER,PARMARY) ;
- ;Allows an application to find a subscription
+ ;Description: This allows an application to find a subscription
  ;list.  The application must maintain a private index in order to
  ;utilize this function, via $$INDEX^HLOASUB()
  ;
  ;Input:
  ;  OWNER - owning application name
- ;  PARMARY  **pass by reference** an array of up to 6 lookup value with which the index was built.  The format is: PARMARY(1)=<first parameter>, PARMARY(2)=<second parameter>  If PARMARY(i)=null, the parameter will be ignored
+ ;  PARMARY  **pass by reference** an array of parameters with which the index was built.  The format is: PARMARY(1)=<first parameter>, PARMARY(2)=<second parameter>  If PARMARY(i)=null, the parameter will be translated to a single space.
  ;Output:
  ;  function returns the ien of the subscription list if found, 0 otherwise
  ; PARMARY - left undefined
@@ -87,11 +58,10 @@ FIND(OWNER,PARMARY) ;
  .Q:'$D(PARMARY)
  .Q:'$L($G(OWNER))
  .N INDEX,I
- .S INDEX="^HLD(779.4,""AH"",OWNER"
- .F I=1:1:6 D
- ..S:'$L($G(PARMARY(I))) PARMARY(I)=" "
- ..S INDEX=INDEX_","_""""_PARMARY(I)_""""
- .S INDEX=INDEX_")"
+ .S INDEX="^HLD(779.4,""AH"",OWNER,"
+ .S I=0
+ .F  S I=$O(PARMARY(I)) Q:'I  S INDEX=INDEX_""""_$S($L(PARMARY(I)):PARMARY(I),1:" ")_""","
+ .S INDEX=$E(INDEX,1,$L(INDEX)-1)_")"
  .S OK=+$G(@INDEX)
  K PARMARY
  Q OK
@@ -110,7 +80,7 @@ UPD(FILE,DA,DATA,ERROR) ;File data into an existing record.
  ;
  ; Example: To update a record in subfile 2.0361 in record with ien=353,
  ;          subrecord ien=68, with the field .01 value = 21:
- ;    S DATA(.01)=21,DA=68,DA(1)=353 I $$UPD(2.0361,.DA,.DATA,.ERROR) W !,"DONE"
+ ;    S DATA(.01)=21,DA=68,DA(1)=353 I $$UPDS(2.0361,.DA,.DATA,.ERROR) W !,"DONE"
  ;
  N FDA,FIELD,IENS,ERRORS
  ;
@@ -181,7 +151,7 @@ ADD(FILE,DA,DATA,ERROR,IEN) ;
 DELETE(FILE,DA,ERROR)   ;Delete an existing record.
  N DATA
  S DATA(.01)="@"
- Q $$UPD(FILE,.DA,.DATA,.ERROR)
+ Q $$UPD^HLEMU(FILE,.DA,.DATA,.ERROR)
  Q
  ;
 STATNUM(IEN) ;
@@ -208,13 +178,12 @@ CHECKWHO(WHO,PARMS,ERROR) ;
  ;Output:
  ;  Function returns 1 if the input is resolved successfully, 0 otherwise
  ;    PARMS - (pass by reference)  These subscripts are returned:
- ;     "LINK IEN" - ien of the link overwhich to transmit (could be middleware)
+ ;     "LINK IEN" - ien of the link 
  ;     "LINK NAME" - name of the link
  ;     "RECEIVING APPLICATION"  - name of the receiving app
  ;     "RECEIVING FACILITY",1)  - component 1
  ;     "RECEIVING FACILITY",2) - component 2
  ;     "RECEIVING FACILITY",3) - component 3
- ;     "RECEIVING FACILITY","LINK IEN") - ien of facility
  ;   ERROR - (pass by reference) - if unsuccessful, an error message is returned.
  ;
  N OK
@@ -238,33 +207,27 @@ CHECKWHO(WHO,PARMS,ERROR) ;
  I '$G(WHO("FACILITY LINK IEN")),$L($G(WHO("FACILITY LINK NAME"))) S WHO("FACILITY LINK IEN")=$O(^HLCS(870,"B",WHO("FACILITY LINK NAME"),0))
  ;
  ;if destination link not specified, find it based on station #
- I $L($G(WHO("STATION NUMBER"))),'$G(WHO("FACILITY LINK IEN")) S WHO("FACILITY LINK IEN")=$$FINDLINK^HLOTLNK(WHO("STATION NUMBER"))
+ I +$G(WHO("STATION NUMBER")),'$G(WHO("FACILITY LINK IEN")) S WHO("FACILITY LINK IEN")=$$FINDLINK^HLOTLNK(WHO("STATION NUMBER"))
  ;
  ;if station # not known, find it based on destination link
- I '$L($G(WHO("STATION NUMBER"))),$G(WHO("FACILITY LINK IEN")) S WHO("STATION NUMBER")=$$STATNUM^HLOTLNK(WHO("FACILITY LINK IEN"))
+ I '$G(WHO("STATION NUMBER")),$G(WHO("FACILITY LINK IEN")) S WHO("STATION NUMBER")=$$STATNUM^HLOTLNK(WHO("FACILITY LINK IEN"))
  ;
  S PARMS("RECEIVING FACILITY",1)=$G(WHO("STATION NUMBER"))
  ;
  ;if the destination link is known, get the domain
  S PARMS("RECEIVING FACILITY",2)=$S($G(WHO("FACILITY LINK IEN")):$$DOMAIN^HLOTLNK(WHO("FACILITY LINK IEN")),1:"")
  ;
- ;**P146 START CJM
- S PARMS("RECEIVING FACILITY","LINK IEN")=$G(WHO("FACILITY LINK IEN"))
- ;**P146 END CJM
- ;
  S PARMS("RECEIVING FACILITY",3)="DNS"
  ;
  ;find the link to send over - need name & ien
- I $G(WHO("MIDDLEWARE LINK IEN")) S WHO("IE LINK IEN")=WHO("MIDDLEWARE LINK IEN")
- I $L($G(WHO("MIDDLEWARE LINK NAME"))) S WHO("IE LINK NAME")=WHO("MIDDLEWARE LINK NAME")
  I $G(WHO("IE LINK IEN")) D
  .S PARMS("LINK IEN")=WHO("IE LINK IEN")
  .S PARMS("LINK NAME")=$P($G(^HLCS(870,PARMS("LINK IEN"),0)),"^")
- .I OK,'$L(PARMS("LINK NAME")) S OK=0,ERROR="MIDDLEWARE LOGICAL LINK PROVIDED BUT NOT FOUND"
+ .I OK,'$L(PARMS("LINK NAME")) S OK=0,ERROR="INTERFACE ENGINE LOGICAL LINK PROVIDED BUT NOT FOUND"
  E  I $L($G(WHO("IE LINK NAME"))) D
  .S PARMS("LINK NAME")=WHO("IE LINK NAME")
  .S PARMS("LINK IEN")=$O(^HLCS(870,"B",WHO("IE LINK NAME"),0))
- .I OK,'PARMS("LINK IEN") S OK=0,ERROR="MIDDLEWARE LOGICAL LINK PROVIDED BUT NOT FOUND"
+ .I OK,'PARMS("LINK IEN") S OK=0,ERROR="INTERFACE ENGINE LOGICAL LINK PROVIDED BUT NOT FOUND"
  E  I $G(WHO("FACILITY LINK IEN")) D
  .S PARMS("LINK IEN")=WHO("FACILITY LINK IEN")
  .S PARMS("LINK NAME")=$P($G(^HLCS(870,PARMS("LINK IEN"),0)),"^")
@@ -272,52 +235,14 @@ CHECKWHO(WHO,PARMS,ERROR) ;
  E  I $L($G(WHO("FACILITY LINK NAME"))) D
  .S PARMS("LINK NAME")=WHO("FACILITY LINK NAME")
  .S PARMS("LINK IEN")=$O(^HLCS(870,"B",WHO("FACILITY LINK NAME"),0))
- .;; ** Start HL*1.6*138 - RBN **
- .;I OK,'PARMS("LINK IEN") S OK=0,ERROR="RECEIVING FACILITY LOGICAL LINK NOT FOUND"
- .I OK,'PARMS("LINK IEN") S OK=0,ERROR="NEITHER THE RECEIVING FACILITY STATION # NOR THE DOMAIN IS SPECIFIED. AT LEAST ONE OR THE OTHER MUST BE SPECIFIED."
- .;; ** Start HL*1.6*138 - RBN **
+ .I OK,'PARMS("LINK IEN") S OK=0,ERROR="RECEIVING FACILITY LOGICAL LINK NOT FOUND"
  I OK,(('PARMS("LINK IEN"))!(PARMS("LINK NAME")="")) S OK=0,ERROR="LOGICAL LINK TO TRANSMIT OVER NOT SPECIFIED"
  ;
  ;need the station # or domain for msg header
-ZB25 I OK,'$L(PARMS("RECEIVING FACILITY",2)),'PARMS("RECEIVING FACILITY",1) S OK=0,ERROR="NEITHER THE RECEIVING FACILITY STATION # NOR THE DOMAIN IS SPECIFIED. AT LEAST ONE OR THE OTHER MUST BE SPECIFIED."
+ I OK,'$L(PARMS("RECEIVING FACILITY",2)),'PARMS("RECEIVING FACILITY",1) S OK=0,ERROR="RECEIVING FACILITY STATION # AND DOMAIN NOT SPECIFIED"
  ;
  ;append the port#
  I '$G(WHO("PORT")) S PARMS("RECEIVING FACILITY",2)=PARMS("RECEIVING FACILITY",2)_":"_$$PORT^HLOTLNK($G(WHO("FACILITY LINK IEN")))
  E  S PARMS("RECEIVING FACILITY",2)=PARMS("RECEIVING FACILITY",2)_":"_WHO("PORT")
  ;
  Q OK
- ;
- ;**P146 START CJM
-ONLIST(IEN,WHO) ;
- ;Description:
- ;  Determines if a recipient is already on the subscriber list
- ;
- ;Input:
- ;  IEN - ien of subscription
- ;  WHO (pass by reference) Identifies the recipient. The allows
- ;      subscripts are the same as in ADD^HLOASUB.
- ;
- ;Output:
- ;   Function returns 0 if not on the subscription list, otherwise
- ;      returns the ien of the subscriber on the subscription list.
- ;
- N PARMS,SUBIEN,TLINK
- S SUBIEN=0
- ;
- ;resolve input parameters
- I '$$CHECKWHO(.WHO,.PARMS) Q 0
- ;
- ;check the "AE" xref
-ZB S SUBIEN=$O(^HLD(779.4,IEN,2,"AE",PARMS("RECEIVING APPLICATION"),+$G(PARMS("RECEIVING FACILITY","LINK IEN")),+$G(PARMS("LINK IEN")),0))
- I SUBIEN Q SUBIEN
- I PARMS("RECEIVING FACILITY","LINK IEN")=PARMS("LINK IEN") S SUBIEN=$O(^HLD(779.4,IEN,2,"AE",PARMS("RECEIVING APPLICATION"),+$G(PARMS("RECEIVING FACILITY","LINK IEN")),0,0))
- I SUBIEN Q SUBIEN
- ;
- ;check the "AD" xref
- I PARMS("LINK IEN"),PARMS("LINK IEN")'=PARMS("RECEIVING FACILITY","LINK IEN") D
- .S TLINK=PARMS("LINK IEN")
- E  S TLINK=PARMS("RECEIVING FACILITY","LINK IEN")
- ;
- Q +$O(^HLD(779.4,IEN,2,"AD",PARMS("RECEIVING APPLICATION"),+TLINK,PARMS("RECEIVING FACILITY",1)_PARMS("RECEIVING FACILITY",2)_PARMS("RECEIVING FACILITY",3),0))
- ;
- ;**P146 END CJM

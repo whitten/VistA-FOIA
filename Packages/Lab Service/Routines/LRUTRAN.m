@@ -1,4 +1,6 @@
-LRUTRAN ;AVAMC/REG - TRANSFER ^LR(LRDF,LRSS, TO ^LR(LRDFN#2,LRSS, ;5/9/91  18:24 ;
+LRUTRAN ; IHS/DIR/FJE - TRANSFER ^LR(LRDF,LRSS, TO ^LR(LRDFN#2,LRSS, 5/9/91 18:24 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  W !,"Transfer data in Lab Data File (#63) from one entry to another"
  S LRDPAF=1,U="^",DIC=68,DIC(0)="AEMOQZ",DIC("A")="Select AP section: ",DIC("S")="I ""CYEMSP""[$P(^(0),U,2)&($P(^(0),U,2)]"""")" D ^DIC G:Y<1 END S LRAA=+Y,LRSS=$P(Y(0),U,2) D XR^LRU

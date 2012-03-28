@@ -1,13 +1,12 @@
-PXBAPI1 ;ISL/JVS,dee - PCE's API - interview questions ;5/6/05 2:59pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,9,23,56,104,111,113,122,116,130,147,151,124,164,182,168**;Aug 12, 1996;Build 14
+PXBAPI1 ;ISL/JVS,dee - PCE's API - interview questions ;10/15/96
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**1,9,23,56,104,111,113,122**;Aug 12, 1996
  ;;
  Q
  ;
 PROCESS(PXBEXIT) ;
- N PXBREQ
  I WHAT="INTV" D
  . ;-- Interview is all of the questions
- . D ADQ(.PXBEXIT) I PXBEXIT<1 Q 
+ . D ADQ(.PXBEXIT) I PXBEXIT<1 Q
 1 . D PRV(.PXBEXIT) I PXBEXIT<1 Q
 3 . D POV(.PXBEXIT) I PXBEXIT<1 Q
 2 . D CPT(.PXBEXIT) I PXBEXIT<1 Q
@@ -26,7 +25,7 @@ PROCESS(PXBEXIT) ;
  . I PXBVST'>0 S PXBEXIT=-2 Q
  E  I WHAT="SCC" D
  . ;-- Service connected conditions
- . S PXCECAT="VST" D SCC(.PXBEXIT) K PXCECAT
+ . D SCC(.PXBEXIT)
  . Q:PXBEXIT<1
  . D VISIT(.PXBEXIT)
  . I PXBVST'>0 S PXBEXIT=-2 Q
@@ -46,7 +45,7 @@ PROCESS(PXBEXIT) ;
  Q
  ;
 ADDEDIT ;
- N PXANS
+ N ANS
 ADDEDIT1 ;
  D ADQ(.PXBEXIT)
  G:PXBEXIT<1 ADDEDIT2
@@ -59,11 +58,8 @@ ADDEDIT1 ;
  ;
  D CPT(.PXBEXIT)
  G:PXBEXIT<1 ADDEDIT2
- I PXBVST>0,'$D(^AUPNVCPT("AD",PXBVST)) D ADDEDIT3   ;PX*1.0*182
- Q   ; PX*1.0*182 added quit, otherwise user is forced to delete enc.
- ;
 ADDEDIT2 ;
- I PXBVST>0,'$D(^AUPNVCPT("AD",PXBVST)),'$D(^AUPNVSIT("AD",PXBVST)) D  I PXANS'=1 S PXBEXIT=1 G ADDEDIT1
+ I PXBVST>0,'$D(^AUPNVCPT("AD",PXBVST)),'$D(^AUPNVSIT("AD",PXBVST)) D  I ANS'=1 S PXBEXIT=1 G ADDEDIT1
  . N DIR,X,Y
  . W !!
  . S DIR(0)="Y"
@@ -71,22 +67,10 @@ ADDEDIT2 ;
  . S DIR("A")="Do you want to delete this encounter"
  . S DIR("B")="NO"
  . D ^DIR
- . S PXANS=Y
- . Q:PXANS'=1
+ . S ANS=Y
+ . Q:ANS'=1
  . I $$DELVFILE^PXAPIDEL("ALL",PXBVST,"","","","","")=1 S PXBEXIT=-1
  I PXBVST>0,'$D(^AUPNVSIT(PXBVST,0)) S PXBVST=""
- Q
- ;
-ADDEDIT3 ;added PX*1.0*182
- N DIR,X,Y
- W !!
- S DIR(0)="Y"
- S DIR("A",1)="Must have a STOP CODE or a PROCEDURE to complete this action."
- S DIR("A")="Do you want to delete this encounter"
- S DIR("B")="NO"
- D ^DIR
- Q:Y'=1
- I $$DELVFILE^PXAPIDEL("ALL",PXBVST,"","","","","")=1 S PXBVST=""
  Q
  ;
 ADQ(PXBEXIT) ;Ask the Administration questions
@@ -101,7 +85,7 @@ ADQ(PXBEXIT) ;Ask the Administration questions
  .. S PXELAP=$$ELAP^SDPCE(PXBPAT,PXBHLOC)
  I PXBEXIT'<1,PXBHLOC'>0 S PXBHLOC=$$ASKHL I PXBHLOC'>0 S PXBEXIT=-1 Q
  I PXBEXIT'<1 D CODT(.PXBEXIT)
- I PXBEXIT'<1,WHAT'="INTV" S PXCECAT="VST" D SCC(.PXBEXIT) K PXCECAT
+ I PXBEXIT'<1 D SCC(.PXBEXIT)
  I PXBEXIT'<1 D
  . D VISIT(.PXBEXIT)
  . I PXBVST'>0 S PXBEXIT=-2 Q
@@ -117,22 +101,15 @@ ASKPAT() ;Ask user for a patient
  ;
 ASKHL() ;Ask user for a Hospital Location
 ASKHL2 ;DIC on file 44
- N DIR,DIC,Y,X,DA,PXRES
+ N DIR,DIC,Y,X,DA
  S DIR(0)="PA^44:AEMQ"
  S DIR("A")="Clinic: "
  ; not occasion of service and not dispositioning
- ;I PXALHLOC S DIR("S")="I '+$G(^(""OOS""))&'$O(^PX(815,1,""DHL"",""B"",Y,0))"
- ; not occasion of service only   ;PX*1.0*116
- I PXALHLOC S DIR("S")="I '+$G(^(""OOS""))"   ;PX*1.0*116
+ I PXALHLOC S DIR("S")="I '+$G(^(""OOS""))&'$O(^PX(815,1,""DHL"",""B"",Y,0))"
  ; only clinic that are not occasion of service and not dispositioning
- ;E  S DIR("S")="I $P(^(0),U,3)=""C""&'+$G(^(""OOS""))&'$O(^PX(815,1,""DHL"",""B"",Y,0))"
- E  S DIR("S")="I $P(^(0),U,3)=""C""&'+$G(^(""OOS""))"   ;PX*1.0*116
+ E  S DIR("S")="I $P(^(0),U,3)=""C""&'+$G(^(""OOS""))&'$O(^PX(815,1,""DHL"",""B"",Y,0))"
  D ^DIR
- ;enable to select a disposition clinic   ;PX*1.0*116
- ;I $D(^PX(815,1,"DHL","B",+Y)) D HELPDISP^PXCEVSIT W !,$C(7) G ASKHL2
- ; disallow selection of clinics with non conforming stop codes
- I +Y>0 S PXRES=$$CLNCK^SDUTL2(+Y,1) I 'PXRES D  G ASKHL2
- .W !,?5,"Clinic MUST be corrected before continuing."
+ I $D(^PX(815,1,"DHL","B",+Y)) D HELPDISP^PXCEVSIT W !,$C(7) G ASKHL2
  Q $S(+Y>0:+Y,1:-1)
  ;
 ASKDT() ;Ask user for the encounter Date/Time
@@ -158,8 +135,8 @@ CODT(PXBEXIT) ;Ask the user the Check out Date/Time
  Q
  ;
 SCC(PXBEXIT) ;Ask the user the Service connected conditions
- N PXBDATA,PXBCLASS,PXBOUTEN,PXDOD
- S (PXBOUTEN,PXDOD)=""
+ N PXBDATA,PXBCLASS,PXBOUTEN
+ S PXBOUTEN=""
  ;I $$APPOINT^PXUTL1(PXBPAT,PXBVSTDT,PXBHLOC) D
  ;. S PXBOUTEN=$P($G(^DPT(+PXBPAT,"S",+PXBVSTDT,0)),"^",20)
  ;E  I $$DISPOSIT^PXUTL1(PXBPAT,PXBVSTDT,PXBVST) D
@@ -168,9 +145,8 @@ SCC(PXBEXIT) ;Ask the user the Service connected conditions
  ;D CLASS^PXBAPI21(PXBOUTEN,PXBPAT,PXBVSTDT,PXBHLOC)
  D CLASS^PXBAPI21(PXBOUTEN,PXBPAT,PXBVSTDT,PXBHLOC,PXBVST)
  ;PX*1*111 - Add HNC
- F PXBCLASS=1:1:8 I $G(PXBDATA("ERR",PXBCLASS))=4 S PXBEXIT=-1 Q  ; changed 6/17/98 for MST enhancement
+ F PXBCLASS=1:1:6 I $G(PXBDATA("ERR",PXBCLASS))=4 S PXBEXIT=-1 Q  ; changed 6/17/98 for MST enhancement
  Q:PXBEXIT<1
- I $G(PXDOD) S PXBEXIT=-1 Q
  S PXB800(1)=$P($G(PXBDATA(3)),"^",2)
  S PXB800(2)=$P($G(PXBDATA(1)),"^",2)
  S PXB800(3)=$P($G(PXBDATA(2)),"^",2)
@@ -178,8 +154,6 @@ SCC(PXBEXIT) ;Ask the user the Service connected conditions
  S PXB800(5)=$P($G(PXBDATA(5)),"^",2) ;added 6/17/98 for MST enhancement
  ;PX*1*111 - Add HNC
  S PXB800(6)=$P($G(PXBDATA(6)),"^",2)
- S PXB800(7)=$P($G(PXBDATA(7)),"^",2)
- S PXB800(8)=$P($G(PXBDATA(8)),"^",2)
  Q
  ;
 VISIT(PXBEXIT) ;Creat or edit the Visit
@@ -194,7 +168,7 @@ VISIT(PXBEXIT) ;Creat or edit the Visit
  . S $P(PXBAFTER(0),"^",1)=PXBVSTDT
  . S $P(PXBAFTER(0),"^",5)=PXBPAT
  . S $P(PXBAFTER(0),"^",8)=$P(^SC(PXBHLOC,0),"^",7)
- . S:PXBAPPT>0 $P(PXBAFTER(0),"^",7)="A" ;PX*1*124
+ . S:PXBAPPT>0 $P(PXBAFTER(0),"^",16)="A"
  . S $P(PXBAFTER(150),"^",3)="P"
  . S $P(PXBAFTER(812),"^",2)=PXBPKG
  . S $P(PXBAFTER(812),"^",3)=PXBSOURC
@@ -207,8 +181,6 @@ VISIT(PXBEXIT) ;Creat or edit the Visit
  S $P(PXBAFTER(800),"^",5)=$G(PXB800(5)) ;added 6/17/98 for MST emhancement
  ;PX*1*111 - Add HNC
  S $P(PXBAFTER(800),"^",6)=$G(PXB800(6))
- S $P(PXBAFTER(800),"^",7)=$G(PXB800(7))
- S $P(PXBAFTER(800),"^",8)=$G(PXB800(8))
  I $D(PXELAP)#2 D
  . S $P(PXBAFTER(0),"^",21)=+PXELAP
  F PXBNODE=0,21,150,800,811,812 D

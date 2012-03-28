@@ -1,7 +1,12 @@
-SDAMOS ;ALB/CAW - Statistical Report for Appointments;4/15/92
- ;;5.3;Scheduling;**11,46**;Aug 13, 1993
+SDAMOS ;ALB/CAW - Statistical Report for Appointments; [ 09/13/2001  2:13 PM ]
+ ;;5.3;Scheduling;**11,46,1007**;Aug 13, 1993
  ;SCK - 5/18/93 MODS FOR APP CLININCS AND STOP CODES
-STATS ;
+ ;IHS/ANMC/LJF  9/29/2000 added call to list manager
+ ;                        fixed code to display dashes correctly
+ ;             10/25/2000 changed 132 column message
+ ;cmi/anch/maw  8/14/2007 PATCH 1007 removed clinic stop as selectable report if division only
+ ;
+STATS ;EP
  N OPT,SDFIN
  K ^TMP("SDAMS",$J)
  S SDFIN=0,SDSORT=SDSEL
@@ -12,10 +17,12 @@ STATS ;
 STATS1 ;
  I '$$COMPL G ^SDAMO
  W !!,$$LINE^SDAMO("Device Selection")
- W !!,"This output requires 132 columns.",!!
+ ;W !!,"This output requires 132 columns.",!!  ;IHS/ANMC/LJF 10/25/2000
+ W !!,"If printing to paper, this report requires 132 columns.",!!  ;IHS/ANMC/LJF 10/25/2000
  S %ZIS="PQM" D ^%ZIS G STATSQ:POP
  I $D(IO("Q")) D QUE G STATSQ
  W ! D WAIT^DICD
+ I $E(IOST,1,2)="C-" D EN^BSDAMO,STATSQ Q  ;IHS/ANMC/LJF 9/29/2000
  D START^SDAMOS
 STATSQ ;
  D:'$D(ZTQUEUED) ^%ZISC
@@ -26,7 +33,8 @@ STATSQ ;
 START ;
  U IO
  K ^TMP("SDAMS",$J)
- S SDLEN=25,SDPAGE=1,$P(SDASH,"-",IOM+1)="",$P(SDTDASH,"=",IOM+1)="",SDAMDD=$P(^DD(2.98,3,0),U,3)
+ ;S SDLEN=25,SDPAGE=1,$P(SDASH,"-",IOM+1)="",$P(SDTDASH,"=",IOM+1)="",SDAMDD=$P(^DD(2.98,3,0),U,3)  ;IHS/ANMC/LJF 9/29/2000
+ S SDLEN=25,SDPAGE=1,$P(SDASH,"-",132)="",$P(SDTDASH,"=",132)="",SDAMDD=$P(^DD(2.98,3,0),U,3)  ;IHS/ANMC/LJF 9/29/2000
  D EN
  I '$D(^TMP("SDAMS",$J)) D NOREP^SDAMOS1 G STATSQ
  I FMT=1 D BLD^SDAMOSP
@@ -89,7 +97,8 @@ FORMAT() ;
 OPTION(CHECK) ;
  S X="S^"
  S X=X_"1:Appointment Clinic;"
- S X=X_"2:Stop Code"
+ ;S X=X_"2:Stop Code"  ;cmi/anch/maw orig line
+ I SDSEL'=6 S X=X_"2:Stop Code"  ;cmi/anch/maw 8/14/2007 patch 1007 no stop code report for division only stats
  S DIR(0)=X,DIR("A")="Select Report Format",DIR("?")="Select format for printed report",DIR("B")="Appointment Clinic"
  D ^DIR K DIR
  Q (+Y)

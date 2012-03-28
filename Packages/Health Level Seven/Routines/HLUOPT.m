@@ -1,4 +1,5 @@
-HLUOPT ;AISC/SAW-Main Menu for HL7 Module ;07/26/99  08:47
+HLUOPT ;AISC/SAW-Main Menu for HL7 Module ;07/26/99  08:47 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
  ;;1.6;HEALTH LEVEL SEVEN;**57**;Oct 13, 1995
 AP ;Enter/Edit DHCP Application Parameters
  F  D  Q:Y<0

@@ -1,4 +1,5 @@
-ZU ;SFISC/RWF - For MSM-NT and MSM-UNIX, TIE all User terminals to this routine!! ;06/20/2000  11:31
+ZU ;SFISC/RWF - For MSM-NT and MSM-UNIX, TIE all User terminals to this routine!! ;06/20/2000  11:31 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1006,1007**;APR 1, 2003
  ;;8.0;KERNEL;**13,42,49,94,107,162**;Jul 10, 1995
  ;FOR MSM-NT and MSM-UNIX v4.3 or greater
 EN N $ESTACK S $ECODE="",$ETRAP="D ERR^ZU Q:$QUIT 0 Q" ;,ZUGUI2=$$GUI()

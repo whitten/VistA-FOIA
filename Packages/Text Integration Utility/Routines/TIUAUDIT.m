@@ -1,6 +1,8 @@
 TIUAUDIT ;SLC/JER - Display audit trail ;4/4/01
  ;;1.0;TEXT INTEGRATION UTILITIES;**100**;Jun 20, 1997
  ;;Text Integration Utility;;
+ ;IHS/ITSC/LJF 02/21/2003 changed SSN to HRCN
+ ;
 EN ; Option entry
  K ^TMP("TIUAUDIT",$J) N TIU
  D EN^VALM("TIU DISPLAY AUDIT TRAIL")
@@ -24,7 +26,10 @@ SETREC(LINE) ; Calls $$SETSTR^VALM1 for each line of ^TMP("TIUAUDIT",$J,
  N Y
  I LINE="HDR" D
  . S Y=$$SETSTR^VALM1($$NAME^TIULS(TIU("PNM"),"LAST,FI MI"),$G(Y),1,15)
- . S Y=$$SETSTR^VALM1(TIU("SSN"),$G(Y),16,12)
+ . ;
+ . ;S Y=$$SETSTR^VALM1(TIU("SSN"),$G(Y),16,12)     ;IHS/ITSC/LJF 02/21/2003
+ . S Y=$$SETSTR^VALM1("#"_TIU("HRCN"),$G(Y),16,12) ;IHS/ITSC/LJF 02/21/2003
+ . ;
  . S Y=$$SETSTR^VALM1($P($G(TIU("WARD")),U,2),$G(Y),30,20)
  . I +TIU("DOCTYP")=1 D
  . . S Y=$$SETSTR^VALM1("Adm: "_$$DATE^TIULS(+TIU("EDT"),"MM/DD/YY"),$G(Y),51,13)

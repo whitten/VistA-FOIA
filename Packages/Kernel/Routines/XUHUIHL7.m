@@ -1,4 +1,4 @@
-XUHUIHL7 ;OAKCIOFO/JG - HL7 GENERATION ROUTINE; 06/010/2002
+XUHUIHL7 ;OAKCIOFO/JG - HL7 GENERATION ROUTINE [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**239**;JUL 10, 1995
  ; Supported by IA#3589
  ; This routine generates an HL7 MFN Staff message based on data 

@@ -1,4 +1,5 @@
-LRAPQAC ;AVAMC/REG/CYM - AP QA ;7/25/96  09:11 ;
+LRAPQAC ; IHS/DIR/AAB - AP QA 7/25/96 09:11 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END S X="T",%DT="" D ^%DT S LRT=Y D D^LRU S LRTOD=Y S IOP="HOME" D ^%ZIS
  W @IOF,!?20,"Quality assurance cum path data summaries",!?21,"for accessions from one date to another",!
@@ -9,7 +10,8 @@ QUE U IO K ^TMP("LRAP",$J),^TMP($J) S (LR("W"),LRS(5),LRQ(3),LRQ(9))=1,LRSDT=LRS
  F LRDFN=0:0 S LRDFN=$O(^TMP("LRAP",$J,LRDFN)) Q:'LRDFN  S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),X=@(X_Y_",0)"),^TMP("LRAP",$J,"B",$P(X,"^"),LRDFN)=X
  S LRA=0 F LRB=0:0 S LRA=$O(^TMP("LRAP",$J,"B",LRA)) Q:LRA=""  F LRDFN=0:0 S LRDFN=$O(^TMP("LRAP",$J,"B",LRA,LRDFN)) Q:'LRDFN!(LR("Q"))  S LRPPT=^(LRDFN) D L
  K ^TMP("LRAP",$J),LRAU W @IOF D END,END^LRUTL Q
-L S LRQ=0,LRP=$P(LRPPT,"^"),SEX=$P(LRPPT,"^",2),Y=$P(LRPPT,"^",3),SSN=$P(LRPPT,"^",9) D D^LRU,SSN^LRU S DOB=$S(Y[1700:"",1:Y)
+L ;S LRQ=0,LRP=$P(LRPPT,"^"),SEX=$P(LRPPT,"^",2),Y=$P(LRPPT,"^",3),SSN=$P(LRPPT,"^",9) D D^LRU,SSN^LRU S DOB=$S(Y[1700:"",1:Y)
+ S LRQ=0,LRP=$P(LRPPT,"^"),SEX=$P(LRPPT,"^",2),Y=$P(LRPPT,"^",3),SSN=$P(LRPPT,"^",9),DFN=$P(^LR(LRDFN,0),"^",3) D D^LRU,SSN^LRU S DOB=$S(Y[1700:"",1:Y)  ;IHS/ANMC/CLS 11/1/95
  G:'$D(^LR(LRDFN,"SP"))&('$D(^LR(LRDFN,"CY")))&('$D(^LR(LRDFN,"EM"))) AU
  D ^LRAPT1 Q:LR("Q")
 AU I $P($P($G(^LR(LRDFN,"AU")),U,6)," ")=LRABV D ^LRAPT2

@@ -1,5 +1,5 @@
 XINDEX ;ISC/REL,GFT,GRK,RWF - INDEX & CROSS-REFERENCE ;08/04/08  13:19
- ;;7.3;TOOLKIT;**20,27,48,61,66,68,110,121,128**;Apr 25, 1995;Build 1
+ ;;7.3;TOOLKIT;**20,27,48,61,66,68,110,121**;Apr 25, 1995;Build 10
  ; Per VHA Directive 2004-038, this routine should not be modified.
  G ^XINDX6
 SEP F I=1:1 S CH=$E(LIN,I) D QUOTE:CH=Q Q:" "[CH
@@ -24,15 +24,9 @@ BEG ;
  I LC="" W !,">>>Routine '",RTN,"' not found <<<",! Q
  S TXT="",LAB=$P(^UTILITY($J,1,RTN,0,1,0)," ") I RTN'=$P(LAB,"(") D E^XINDX1(17)
  I 'INDLC,LAB["(" D E^XINDX1(55) S LAB=$P(LAB,"(")
- ;if M routine(not compiled template or DD) and has more than 2 lines, check lines 1 & 2
- I 'INDLC,LC>2 D
+ I 'INDLC,LC>2 S LIN=$G(^UTILITY($J,1,RTN,0,2,0)),TXT=2 D
  . N LABO S LABO=1
- . S LIN=$G(^UTILITY($J,1,RTN,0,1,0)),TXT=1
- . ;check 1st line (site/dev - ) patch 128
- . I $P(LIN,";",2,4)'?.E1"/".E.1"-".E D E^XINDX1(62)
- . S LIN=$G(^UTILITY($J,1,RTN,0,2,0)),TXT=2
- . ;check 2nd line (;;nn.nn[TV]nn;package;.anything)
- . I $P(LIN,";",3,99)'?1.2N1"."1.2N.1(1"T",1"V").2N1";"1A.AP1";".E D E^XINDX1(44) ;patch 121
+ . I $P(LIN,";",3,99)'?1.2N1"."1.2N.1(1"T",1"V").2N1";".E D E^XINDX1(44) ;patch 121
  . I $L(INP(11)) X INP(11) ;Version number check
  . I $L(INP(12)) X INP(12) ;Patch number check
 B5 F TXT=1:1:LC S LIN=^UTILITY($J,1,RTN,0,TXT,0),LN=$L(LIN),IND("SZT")=IND("SZT")+LN+2 D LN,ST ;Process Line
@@ -42,8 +36,7 @@ B5 F TXT=1:1:LC S LIN=^UTILITY($J,1,RTN,0,TXT,0),LN=$L(LIN),IND("SZT")=IND("SZT"
  D POSTRTN
  Q
  ;Proccess one line, LN = Length, LIN = Line.
-LN K V S (ARG,GRB,IND("COM"),IND("DOL"),IND("F"))="",X=$P(LIN," ")
- I '$L(X) S LABO=LABO+1 G CD
+LN K V S (ARG,GRB,IND("COM"))="",X=$P(LIN," ") I '$L(X) S LABO=LABO+1 G CD
  S (IND("COM"),LAB)=$P(X,"("),ARG=$P($P(X,"(",2),")"),LABO=0,IND("PP")=X?1.8E1"(".E1")"
  D:$L(ARG) NE^XINDX3 ;Process formal parameters as New list.
  I 'INDLC,'$$VT^XINDX2(LAB) D E^XINDX1($S(LAB=$$CASE^XINDX52(LAB):37,1:55)) ;Check for bad labels
@@ -53,13 +46,11 @@ CD I LN>245 D:'(LN=246&($E(RTN,1,3)="|dd")) E^XINDX1(19) ;patch 119
  D:LIN'?1.ANP E^XINDX1(18)
  S LIN=$P(LIN," ",2,999),IND("LCC")=1
  I LIN="" D E^XINDX1(42) Q  ;Blank line ;p110
- S I=0 ;Watch the scope of I, counts dots
+ S I=0 ;Watch the scope of I.
  I " ."[$E(LIN) D  S X=$L($E(LIN,1,I),".")-1,LIN=$E(LIN,I,999)
  . F I=1:1:245 Q:". "'[$E(LIN,I)
  . Q
- ;check dots against Do level IND("DO"), IND("DOL")=dot level
- D:'I&$G(IND("DO1")) E^XINDX1(51) S IND("DO1")=0 S:'I IND("DO")=0
- I I D:X>IND("DO") E^XINDX1(51) S (IND("DO"),IND("DOL"))=X
+ D:'I&$G(IND("DO1")) E^XINDX1(51) S IND("DO1")=0 S:'I IND("DO")=0 I I D:X>IND("DO") E^XINDX1(51) S IND("DO")=X
  ;Count Comment lines, skip ;; lines
  I $E(LIN)=";",$E(LIN,2)'=";" S IND("SZC")=IND("SZC")+$L(LIN) ;p110
  ;Process commands on line.
@@ -68,8 +59,7 @@ EE I LIN="" D ^XINDX2 Q
  I COM=";" S LIN="" G EE ;p110
  I COM=" " S ERR=$S(LIN?1." ":13,1:0),LIN=$S(ERR:"",1:$E(LIN,2,999)) D:ERR ^XINDX1 G EE
  D SEP
- S CM=$P(ARG,":",1),POST=$P(ARG,":",2,999),IND("COM")=IND("COM")_$C(9)_COM,ERR=48
- D:ARG[":"&(POST']"") ^XINDX1 S:POST]"" GRB=GRB_$C(9)_POST,IND("COM")=IND("COM")_":"
+ S CM=$P(ARG,":",1),POST=$P(ARG,":",2,999),IND("COM")=IND("COM")_$C(9)_COM,ERR=48 D:ARG[":"&(POST']"") ^XINDX1 S:POST]"" GRB=GRB_$C(9)_POST,IND("COM")=IND("COM")_":"
  ;SAC now allows lowercase commands
  I CM?.E1L.E S CM=$$CASE^XINDX52(CM),COM=$E(CM) ;I IND("LCC") S IND("LCC")=0 D E^XINDX1(47)
  I CM="" D E^XINDX1(21) G EE ;Missing command
@@ -85,7 +75,7 @@ B S ERR=25 G ^XINDX1
 C S ERR=29 G ^XINDX1
 D G DG1^XINDX4
 E Q:ARG=""  S ERR=7 G ^XINDX1
-F G:ARG]"" FR^XINDX4 S IND("F")=1 Q
+F G:ARG]"" FR^XINDX4 Q
 G G DG^XINDX4
 H Q:ARG'=""  S ERR=32 G ^XINDX1
 J S ERR=36,ARG="" G ^XINDX1

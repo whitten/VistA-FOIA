@@ -1,5 +1,5 @@
-GMRAPEO0 ;HIRMFO/WAA,RM-EDIT OBSERVED A/AR ;10/15/04  10:06
- ;;4.0;Adverse Reaction Tracking;**8,17,21**;Mar 29, 1996
+GMRAPEO0 ;HIRMFO/WAA,RM-EDIT OBSERVED A/AR ;09-Feb-2011 17:14;DU
+ ;;4.0;Adverse Reaction Tracking;**8,17,21,1002**;Mar 29, 1996;Build 32
 EN1 ; Entry to edit Observed A/AR Data
  ;This code allows the user to select a concomitant reaction by date.
  ;If that reactant doesn't have a date, then a new date is added
@@ -7,7 +7,7 @@ EN1 ; Entry to edit Observed A/AR Data
  N GMRAN85
  S (GMRAX,GMRAN85)=0 I $D(^GMR(120.85,"C",GMRAPA)) S X=0 F  S X=$O(^GMR(120.85,"C",GMRAPA,X)) Q:X<1  S GMRAX=X
  I GMRAX K X S:$D(^GMR(120.85,GMRAX,0)) DIC("B")=$P(^GMR(120.85,GMRAX,0),U)
-OBS ; 
+OBS ;
  S GMRALAGO=1 D EN2^GMRAU85 I GMRAOUT D:GMRAPA1 UNLOCK^GMRAUTL(120.85,GMRAPA1) G EXIT
  I $P($G(^GMR(120.85,+$O(^GMR(120.85,"C",GMRAPA,0)),0)),U)="" W !?4,$C(7),"OBSERVATION DATE IS A REQUIRED ENTRY!!" G OBS
  I $G(GMRAPA1)<1 W !?4,$C(7),"OBSERVATION DATE IS A REQUIRED ENTRY!!" G OBS
@@ -22,7 +22,11 @@ OBS ;
  ..Q
  .Q
  G:GMRAOUT EXIT
- I $D(^XUSEC("GMRA-ALLERGY VERIFY",DUZ)) D MECH^GMRAPED0
+ ;Mechanism has been removed and is now calculated
+ ;I $D(^XUSEC("GMRA-ALLERGY VERIFY",DUZ)) D MECH^GMRAPED0
+ G EXIT:GMRAOUT
+ ;add the SNOMED EVENT
+ D EVENT^GMRAPED0
  G EXIT:GMRAOUT
  D COMM G EXIT:GMRAOUT
  D ORR G EXIT:GMRAOUT

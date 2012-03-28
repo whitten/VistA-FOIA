@@ -1,5 +1,6 @@
 LRAPMRL ;DALOI/WTY/KLL- AP MODIFY RELEASED REPORT;12/04/01
- ;;5.2;LAB SERVICE;**259,295,317,368,397**;Sep 27, 1994;Build 1
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**259,295,317**;Sep 27, 1994
  ;
 MAIN ;
  N LRQUIT,LRMSG,LREND,LRDATA,LRREL,LRAU,LREFPD,LRWM,LRCT,LRTMP,LRGMDF
@@ -109,9 +110,10 @@ WHAT ;What is to be edited
  ;  off at data entry for SP, CY, EM's
  S LRASK=1,XASK=""
  I 'LRAU D
- .S XASK=$S(LRSS="SP":11.2,LRSS="CY":11.3,1:"")
- .S:XASK="" XASK=$S(LRSS="EM":11.4,1:"")
- .S LRASK=$$GET1^DIQ(69.9,"1,",XASK,"I")
+ .S X=$G(^LAB(69.9,1,11))
+ .S XASK=$S(LRSS="SP":$P(X,"^",2),LRSS="CY":$P(X,"^",3),1:"")
+ .S:XASK="" XASK=$S(LRSS="EM":$P(X,"^",4),1:"")
+ .S LRASK=$$GET1^DIQ(69.9,1,XASK,"I")
  S:LRASK DIR(0)="S^1:Edit Report;2:Edit Diagnosis"
  S:LRASK DIR("A")="Enter selection",DIR("B")=1
  S:'LRASK DIR(0)="Y",DIR("B")="YES",DIR("A")="Edit Report?"
@@ -238,7 +240,7 @@ STORE ;
  S LRIENS1=LRORIEN(1)_","_LRIENS
  S LRWPROOT="^TMP(""DIQ1"",$J)"
  D WP^DIE(LRFILE,LRIENS1,1,"",LRWPROOT)
- K ^TMP("DIQ1",$J),LRORIEN
+ K ^TMP("DIQ1",$J)
  Q
 SUPRPT ;Supplementary Report
  K DIR
@@ -260,7 +262,7 @@ SUPRPT ;Supplementary Report
  D STORE^LRAPDSR
  Q
 UNLOCK ;Unlock the record
- D UPDATE^LRPXRM(LRDFN,$G(LRSS,"AU"),$G(LRI))
+ ; D UPDATE^LRPXRM(LRDFN,$G(LRSS,"AU"),$G(LRI))  ; IHS/OIT/MKK - LR*5.2*1030 - RPMS Does NOT use Clinical Reminders
  L -@(LRLOCK)
  Q
 END ;Clean-up variables and quit

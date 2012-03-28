@@ -1,5 +1,5 @@
-DPTLK5 ;BAY/JAT,EG - Patient lookup APIs for patient safety issues ; 11 Aug 2005 8:20 AM
- ;;5.3;Registration;**265,276,277,485,675,788**;Aug 13, 1993;Build 18
+DPTLK5 ;BAY/JAT - Patient lookup APIs for patient safety issues ; 24 Feb 2000  6:55 PM
+ ;;5.3;Patient File;**265,276,277**;Aug 13, 1993
  Q
 BS5(DPTDFN) ;function checks if other patients on "BS5" xref
  ; with same last name
@@ -31,27 +31,8 @@ DMT(DPTDFN,DPTUSER) ; function checks if the 'Display Means Test Required'
  ;
  S DFN=DPTDFN
  S DGMTLST=$$CMTS^DGMTU(DFN)
- ;only display division message if means test is required
- I '$$MFLG^DGMTU(DGMTLST) Q 0
+ I $P(DGMTLST,U,4)'="R" Q 0
  S DPTDIV=0
  S DPTDIV=$O(^DG(40.8,"AD",DPTUSER,DPTDIV))
  I DPTDIV,$P($G(^DG(40.8,DPTDIV,"MT")),U)="Y" Q DPTDIV
  Q 0
- ;
-FFP ; This function checks if the 'Display Fugitive Felon Message'
- ; message is to be displayed.  Message displays only for DG and SD
- ; menu options
- ;
- Q:'$D(XQY0)
- Q:$E(XQY0,1,2)'="SD"&($E(XQY0,1,2)'="DG")
- ;
- N X,Y,IORVON,IORVOFF,DIR,DIRUT
- S X="IORVON;IORVOFF"
- D ENDR^%ZISS
- W !?17,$CHAR(7) W:$D(IORVON) IORVON W "*** WARNING - FFP FLAG ACTIVE ***" W:$D(IORVOFF) IORVOFF
- W !?19,$CHAR(7) W:$D(IORVON) IORVON W "PLEASE NOTIFY YOUR SUPERVISOR" W:$D(IORVOFF) IORVOFF
- W !
- I '$D(DGCLIST) D
- . S DIR(0)="FAO",DIR("A")="Enter <RETURN> to continue."
- . D ^DIR K DIR
- Q

@@ -1,5 +1,5 @@
-LA7SMP0 ;DALOI/JMC - Shipping Manifest Print (Cont'd);11/25/96  14:39
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64**;Sep 27, 1994
+LA7SMP0 ;VA/DALOI/JMC - Shipping Manifest Print (Cont'd);JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**46,64,1027**;NOV 01, 1997;Build 9
  ;
 HED ; Header
  I $E(IOST,1,2)="C-" D TERM Q:$G(LA7EXIT)
@@ -33,10 +33,11 @@ HED ; Header
  W !,"Shipping Condition: ",$S(LA7SCOND:$$GET1^DIQ(62.93,LA7SCOND_",",.01),1:"None Specified")
  W ?(IOM-42)," Container: ",$S(LA7SCONT:$$GET1^DIQ(62.91,LA7SCONT_",",.01),1:"None Specified")
  ;
- I $L($P(LA7SCFG(0),"^",13)) W !,?4,"Account Number: ",$P(LA7SCFG(0),"^",13)
+ ;I $L($P(LA7SCFG(0),"^",13)) W !,?4,"Account Number: ",$P(LA7SCFG(0),"^",13)  ;cmi/maw 7/6/2010 orig line moved under insurance
  ;
  I LA7SBC D SBC1
- W !!,?11,"Patient Name",?41,"Patient ID",?64,"Accession"
+ ;W !!,?11,"Patient Name",?41,"Patient ID",?64,"Accession"  ;cmi/maw 7/6/2010 orig line
+ W !!,?11,"Patient Name",?41,"Patient ID",?64,"Lab Reference #"  ;cmi/maw 7/6/2010 reference lab
  I IOM>131 W ?86,"Requested By"
  W !,?11,"Date of Birth",?41,"Sex",?64,"Specimen UID"
  I IOM>131 W ?86,"Collect Date/Time"
@@ -50,13 +51,17 @@ SH ; Subheader
  W ?11,PNM
  ;I LRDPF=2,LA7ICN W ?41,LA7ICN
  ;E  W ?41,$S(LRDPF=2:SSN,1:SSN(2))
- W ?41,$S(LRDPF=2:SSN,1:SSN(2))
- W ?64,LA7ACC
+ ;W ?41,$S(LRDPF=2:SSN,1:SSN(2))  ;cmi/maw 7/6/2010 orig line
+ W ?41,$S(LRDPF=2:$$HRN^AUPNPAT(DFN,DUZ(2)),1:"")
+ ;cmi/maw 7/6/2010 replace above with HRN
+ ;W ?64,LA7ACC  ;cmi/maw 7/6/2010 orig line
+ W ?64,$$GETORDA^LA7VORM1(LA7UID)  ;cmi/maw 7/6/2010 ref lab now order number
  I IOM>131 W ?86,$P(LA7PROV,"^",2)
  W !
  I LA7DC W "Cont'd"
  W ?11,$$FMTE^XLFDT(DOB),?41,$S(SEX="M":"Male",SEX="F":"Female",SEX="":"Unknown",1:SEX),?64,LA7UID
- I IOM'>131 W !,?11,$E($P(LA7PROV,"^",2),1,28),?41,$S(LA7CDT:$$FMTE^XLFDT(LA7CDT,"1M"),1:LA7CDT)
+ ;I IOM'>131 W !,?11,$E($P(LA7PROV,"^",2),1,28),?41,$S(LA7CDT:$$FMTE^XLFDT(LA7CDT,"1M"),1:LA7CDT)  ;cmi/maw 7/6/2010 orig line
+ I IOM'>131 W !,?11,$$GET1^DIQ(200,$P(LA7PROV,"^"),41.99)_"-"_$E($P(LA7PROV,"^",2),1,19),?41,$S(LA7CDT:$$FMTE^XLFDT(LA7CDT,"1M"),1:LA7CDT)  ;cmi/maw 7/6/2010 for NPI
  I IOM>131 W ?86,$S(LA7CDT:$$FMTE^XLFDT(LA7CDT,"1M"),1:LA7CDT)
  W !
  I +LA7SMST'=4 D
@@ -150,6 +155,20 @@ CMT ; Print comments on manifest
  Q
  ;
  ;
+OCMT(UID) ;now check here for order comment
+ ;ihs/cmi/maw 07/26/2011 added for ref lab
+ N ORD,ORDI,ORDD,ORDA,ORDB
+ S ORD=$$GETORDA^LA7VORM1(UID)
+ Q:'ORD
+ S ORDD=$O(^LRO(69,"C",ORD,0))
+ Q:'ORDD
+ S ORDI=0 F  S ORDI=$O(^LRO(69,ORDD,1,ORDI)) Q:'ORDI  D
+ . S ORDA=0 F  S ORDA=$O(^LRO(69,ORDD,1,ORDI,2,ORDA)) Q:'ORDA  D
+ .. Q:$G(^LRO(69,ORDD,1,ORDI,2,ORDA,.3))'=UID
+ .. S ORDB=0 F  S ORDB=$O(^LRO(69,ORDD,1,ORDI,2,ORDA,1,ORDB)) Q:'ORDB  D
+ ... W !,?11,$G(^LRO(69,ORDD,1,ORDI,2,ORDA,1,ORDB,0))
+ Q
+ ;
 PTID ; Get/setup patient identifier information
  ;
  S DFN=+$P(^LR(LRDFN,0),U,3),LRDPF=+$P(^(0),U,2) D PT^LRX
@@ -223,6 +242,7 @@ KILL ; Cleanup variables
  K LA760,LA762801
  K LRDFN,LRDPF,LRPRAC
  K ^TMP("LA7ERR",$J),^TMP("LA7SM",$J),^TMP("LA7SMRI",$J)
+ K ^TMP($J,"LA7SMP")  ;cmi/maw kill off temp global that stores if insurance info already printed
  D KVAR^LRX
  ;
  I $D(ZTQUEUED) S ZTREQ="@"

@@ -1,4 +1,5 @@
-ZISPL1 ;SF/RWF - %ZIS UTILITIES FOR SPOOLING ;11/20/97  08:53
+ZISPL1 ;SF/RWF - %ZIS UTILITIES FOR SPOOLING ;11/20/97  08:53 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**23,36,69**;Jul 10, 1995
  ;This is general code for managment of the spooler file from %ZIS.
  Q

@@ -1,4 +1,5 @@
-XPDDI ;SFISC/RSD - Display an Install ; 29 Feb 96 13:10
+XPDDI ;SFISC/RSD - Display an Install ; 29 Feb 96 13:10 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**21**;Jul 10, 1995
 EN1 ;print from Install file
  N DIC,D0,XPD,Y,Z

@@ -1,4 +1,5 @@
-XUTMTPU ;SEA/RDS - TaskMan: ToolKit, Print For Unschedule ;1/31/96  11:40
+XUTMTPU ;SEA/RDS - TaskMan: ToolKit, Print For Unschedule ;1/31/96  11:40 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**20**;Jul 10, 1995
  ;
 SCHED ;Lookup Tasks In Schedule File

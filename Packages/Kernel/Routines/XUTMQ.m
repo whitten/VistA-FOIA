@@ -1,4 +1,5 @@
-XUTMQ ;SEA/RDS - TaskMan: Option, XUTMINQ, Show task lists ;07/24/2000  13:23
+XUTMQ ;SEA/RDS - TaskMan: Option, XUTMINQ, Show task lists ;07/24/2000  13:23 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**20,136,169**;Jul 10, 1995
  ;
 ENV ;Establish Routine Environment

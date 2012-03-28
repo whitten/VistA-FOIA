@@ -1,26 +1,22 @@
 PSJLIACT ;BIR/MV-IV ACTION ;28 Jul 98 / 8:50 AM
- ;;5.0; INPATIENT MEDICATIONS ;**15,47,62,58,82,97,80,110,111,134,181**;16 DEC 97;Build 190
+ ;;5.0; INPATIENT MEDICATIONS ;**15,47,62,58,82,97,80**;16 DEC 97
  ;
  ; Reference to ^PS(55 is supported by DBIA 2191.
+ ; Reference to ^VALM1 is supported by DBIA 10116.
  ; Reference to MAIN^TIUEDIT is supported by DBIA 2410.
  ;
 DC ; Discontinue order
- K PSGORQF
  D HOLDHDR^PSJOE
- S PSJCOM=+$S(PSJORD["V":$P($G(^PS(55,DFN,"IV",+PSJORD,.2)),"^",8),1:$P($G(^PS(53.1,+PSJORD,.2)),"^",8))
- I PSJCOM W !!,"This order is part of a complex order. If you discontinue this order the",!,"following orders will be discontinued too (unless the stop date has already",!,"been reached)." D CMPLX^PSJCOM1(PSGP,PSJCOM,PSJORD)
- I PSJCOM F  W !!,"Do you want to discontinue this order" S %=1 D YN^DICN Q:%  D ENCOM^PSGOEM
- I PSJCOM,%'=1 S VALMBK="" Q
- I PSJORD["V" D DC^PSIVORA D:'$G(PSJOCFLG) EN^PSJLIORD(DFN,ON) Q
+ I PSJORD["V" D DC^PSIVORA,EN^PSJLIORD(DFN,ON) Q
  D:PSJORD["P" DISCONT^PSIVORC
  S VALMBCK="Q"
  Q
 ACEDIT ; Display LM screen and AC and EDit actions
+ ;K PSIVFN1 ; if not set display the second screen when finish.
  D EN^PSJLIVMD
  S VALMBCK=$S($G(PSIVACEP):"Q",1:"R")
  Q
 AEEXIT ; Call for EXIT CODE in PSJ LM IV AC/EDIT
- K PSGORQF
  D:ON["V" GT55^PSIVORFB
  I ON["P" D GT531^PSIVORFA(DFN,ON) D:P("OT")'="I" GTDATA^PSJLIFN
  D EN^PSJLIVMD
@@ -28,14 +24,12 @@ AEEXIT ; Call for EXIT CODE in PSJ LM IV AC/EDIT
  Q
 EDIT ; Edit order
  K PSIVFN1 NEW PSIVNBD
- I $D(PSGACT),PSGACT'["E" W !,"This order may not be edited." D PAUSE^VALM1 Q
  D EDIT1
- Q:$D(PSIVNBD)!($G(PSIVCOPY)&'$G(PSIVENO))
+ Q:$D(PSIVNBD)
  D EN^PSJLIVMD
  S VALMBCK=$S($G(PSIVFN1):"Q",1:"R")
  Q
 EDIT1 ;
- K PSGORQF
  ;Ensure P() is defined
  I $D(P)<10 S XQORQUIT=1,P("PON")="",PSIVNBD=1 D  Q
  .W !,"WARNING: An error has occurred. Changes will not be saved"
@@ -45,6 +39,7 @@ EDIT1 ;
  S:$G(ON55)="" ON55=$G(PSJORD)
  D HOLDHDR^PSJOE
  ;* Edit a new back door order
+ ;;I ($G(ON55)["V"&($G(P(21))="")) D  Q
  I ($G(ON55)["V"&($G(P("21FLG"))="")) D  Q
  . D GSTRING^PSIVORE1,GTFLDS^PSIVORFE
  . I $G(ON55)["V",'$G(DONE) D OK^PSIVORE
@@ -53,20 +48,17 @@ EDIT1 ;
  I $G(ON55)["V" NEW PSJEDIT1 D E^PSIVOPT1 D  Q
  . I $G(PSJIVBD) K PSJIVBD D EN^PSJLIORD(DFN,ON)
  I $G(ON55)["P" D EDIT^PSIVORC ;Edit incomplete order.
- K P("OVRIDE")
  Q
 ACCEPT ; Accept order
  D HOLDHDR^PSJOE
  ;Accept IV from back door.
  I $G(PSJIVBD) K PSJIVBD D OK^PSIVORE S VALMBCK="Q" Q
- ;D:'$G(PSGORQF) IN^PSJOCDS($G(ON),"IV","") Q:$G(PSGORQF)
  I ON["V" D ACCEPT^PSIVOPT1 Q
  S PSIVFN1=1
  D COMPLTE^PSIVORC1
  S VALMBCK="Q"
  Q
 R ; Renewal
- K PSGORQF
  S PSJREN=1
  D HOLDHDR^PSJOE
  NEW PSIVAC S PSIVAC="PR" K PSGFDX
@@ -75,7 +67,6 @@ R ; Renewal
  K PSJREN
  Q
 H ; Hold
- K PSGORQF
  NEW TEX S TEX="Active order ***"
  D HOLDHDR^PSJOE
  D H^PSIVOPT(DFN,ON,P(17),P(3))
@@ -89,7 +80,6 @@ L ; Activity Log
  S VALMBCK="R"
  Q
 O ; On Call
- K PSGORQF
  NEW TEX S TEX="Active order ***"
  D HOLDHDR^PSJOE
  D O^PSIVOPT(DFN,ON,P(17),P(3))
@@ -106,7 +96,6 @@ VF1(PSIVREA,PSIVAL,PSIVLOG) ;
  ;PSIVREA: the reason use by LOG^PSIVORAL
  ;PSIVAL : the description reason
  ;PSIVLOG: Log an activity if = 1
- K PSGORQF
  I '+$G(OD)!($L($G(OD))>16) K OD
  D:+PSJSYSU=3 ^PSIVORE1
  NEW DIE,DA,DR,PSJX,XX,PSIVACT,PSJRQND
@@ -120,14 +109,8 @@ VF1(PSIVREA,PSIVAL,PSIVLOG) ;
  I +PSJSYSU=1 S DR="16////"_DUZ_";17////"_$E(%,1,12)_";143////1"_$P(XX,U,2)
  I $G(P("PRY"))="D" S DR=DR_";.22////"_+P("IVRM")
  D ^DIE
- ; If pending IV renew is edited during finish, go back and DE the original active order left in RENEWED status
- S PREREN=$S(ON55["V":$G(@(DIE_"+ON55,2)")),1:""),PREREN=$P(PREREN,"^",5) I PREREN D  K PREREN
- . I PREREN["P" S PREREN=$G(@("^PS(53.1,+PREREN,0)")),PREREN=$P(PREREN,"^",25)
- . I PREREN["V" N PRERENOD S PRERENOD=$G(@("^PS(55,DFN,""IV"",+PREREN,0)")) I $P(PRERENOD,"^",17)="R",($G(P("RES"))="E") D
- ..  S DIE="^PS(55,"_DFN_",""IV"",",DA=+PREREN,DA(1)=DFN
- ..  S DR="100////D;.03////"_PSGDT S ORIGSTOP=$P($G(@("^PS(55,DFN,""IV"",+PREREN,2)")),"^",3) I ORIGSTOP S DR=DR_";116////"_ORIGSTOP
- ..  D ^DIE D EN1^PSJHL2(DFN,"SC",PREREN)
  K DR,DIE,DA
+ ;I ((+PSJSYSU=3)&($G(PSJPRI)="D"))!((+PSJSYSU=3)&($G(P("PRY"))="D")) D
  I (+PSJSYSU=3)&($G(P("PRY"))="D") D
  .N DIR W ! S DIR(0)="S^Y:Yes;N:No",DIR("A")="Do you want to enter a Progress Note",DIR("B")="No" D ^DIR
  .Q:Y="N"
@@ -144,16 +127,13 @@ VF1(PSIVREA,PSIVAL,PSIVLOG) ;
  S PSIVAL=PSIVAL_$S(+PSJSYSU=3:"PHARMACIST",1:"NURSE")
  D LOG^PSIVORAL K PSIVAL,PSIVREA,PSIVLN
  I $G(PSJORD)["P" S PSIVREA="V",PSIVALT="",PSGRDTX=$G(^PS(53.1,+PSJORD,2.5)) D
- . I $G(PSGRDTX) S PSIVAL="Requested Start Date: "_$$ENDTC^PSGMI($$DATE2^PSJUTL2($P(PSGRDTX,U))) D LOG^PSIVORAL
- . I $P(PSGRDTX,U,3) S PSIVREA="V",PSIVALT="" S PSIVAL="Requested Stop Date: "_$$ENDTC^PSGMI($$DATE2^PSJUTL2($P(PSGRDTX,U,3))) D LOG^PSIVORAL
+ . I $G(PSGRDTX) S PSIVAL="Requested Start Date: "_$$DATE2^PSJUTL2($P(PSGRDTX,U)) D LOG^PSIVORAL
+ . I $P(PSGRDTX,U,3) S PSIVREA="V",PSIVALT="" S PSIVAL="Requested Stop Date: "_$$DATE2^PSJUTL2($P(PSGRDTX,U,3)) D LOG^PSIVORAL
  N DUR I $G(PSJORD) S DUR=$$GETDUR^PSJLIVMD(DFN,+PSJORD,$S(PSJORD["P":"P",1:"IV"),1) I DUR]""  D
  . K DR S DIE="^PS(55,"_DFN_",""IV"",",DA=+ON55,DA(1)=DFN
- . S DR=$S($G(IVLIMIT):"152////"_DUR,1:"151////"_DUR) K IVLIMIT
+ . S DR="151////"_DUR
  . D ^DIE
  D EN1^PSJHL2(DFN,"SC",ON55)
  D:+PSJSYSU=1 EN1^PSJHL2(DFN,"ZV",ON55)
  D GT55^PSIVORFB S OLDON=$P($G(^PS(55,DFN,"IV",+ON55,2)),"^",5),P("OLDON")=OLDON
- N PSJPRIO,PSJSCH,NODE0,NODEP2 S NODE0=$G(^PS(55,DFN,"IV",+ON55,0)),NODEP2=$G(^PS(55,DFN,"IV",+ON55,.2))
- S PSJPRIO=$P(NODEP2,"^",4),PSJSCH=$P(NODE0,"^",9)
- I (",S,A,")[(","_$G(PSJPRIO)_",")!($G(PSJSCH)="NOW")!($G(PSJSCH)["STAT") D NOTIFY^PSJHL4(ON55,DFN,$G(PSJPRIO),$G(PSJSCH))
  Q

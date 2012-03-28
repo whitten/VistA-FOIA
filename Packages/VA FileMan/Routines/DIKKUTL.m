@@ -1,4 +1,5 @@
-DIKKUTL ;SFISC/MKO-UTILITY OPTION TO DEFINE A KEY ;8:13 AM  7 Jun 2001
+DIKKUTL ;SFISC/MKO-UTILITY OPTION TO DEFINE A KEY ;8:13 AM  7 Jun 2001 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**68**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 MOD ;Create/Modify/Edit a Key

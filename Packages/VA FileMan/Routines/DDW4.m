@@ -1,4 +1,5 @@
-DDW4 ;SFISC/PD KELTZ-OTHER NAVIGATION, DEL ;2:54 PM  23 Aug 2000
+DDW4 ;SFISC/PD KELTZ-OTHER NAVIGATION, DEL ;2:54 PM  23 Aug 2000 [ 04/02/2003   8:25 AM ]
+ ;;22.0;VA FileMan;**1001**;APR 1, 2003
  ;;22.0;VA FileMan;**18**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
  ;

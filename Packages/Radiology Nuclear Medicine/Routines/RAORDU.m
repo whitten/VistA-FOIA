@@ -1,5 +1,5 @@
-RAORDU ;HISC/CAH - AISC/RMO-Update Request Status ;9/7/04 11:01am
- ;;5.0;Radiology/Nuclear Medicine;**18,41,57**;Mar 16, 1998
+RAORDU ;HISC/CAH,FPT,GJC AISC/RMO-Update Request Status ;9/29/97  14:44
+ ;;5.0;Radiology/Nuclear Medicine;**18**;Mar 16, 1998
  ; last modif JULY 5,00
  ;The variables RAOIFN and RAOSTS must be defined. The variable
  ;RAOREA is set when Canceling and Holding a request. The
@@ -46,13 +46,10 @@ RAORDU ;HISC/CAH - AISC/RMO-Update Request Status ;9/7/04 11:01am
  I $$PCE^RAWORK(),(RAOSTS=2),$G(RASAVDR)'="[RA OVERRIDE]" D
  . N RA7003 S RA7003=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0))
  . Q:$P(RA7003,"^",24)="Y"  ; quit if clinic stop credited
- . ;BILLING AWARE PHASE II, NO LONGER SENDING TO PTF
- . ;I $P(RA7003,"^",6)]"",($P(^DIC(42,$P(RA7003,"^",6),0),"^",3)'="D") Q
- . ;omit quit since both inpatient and outpatient data are sent to PCE
+ . I $P(RA7003,"^",6)]"",($P(^DIC(42,$P(RA7003,"^",6),0),"^",3)'="D") Q
+ . ; quit if assigned a ward and AMIS service is not Domiciliary
  . D COMPLETE^RAPCE(RADFN,RADTI,RACNI)
  . Q
- ; PFSS 1B project. If the request status is discontinue then send the delete event to IBB
- I RAOSTS=1 D DC^RABWIBB(RAOIFN)  ; Requirement 8
  Q
  ;
 SETLOG K N I $D(RAOREA)>1 S N=$S($D(RAOIFN):RAOIFN,$D(ORPK):ORPK,1:1) I '$D(RAOREA(N)) S N=$O(RAOREA(0))
@@ -84,7 +81,8 @@ ORVR() ;returns version number of OE/RR
  ;returns 0 if OE/RR is not installed
  ;
  ;Q 3.0 ;for testing purposes
- Q $S('$D(^ORD(100.99,0)):0,'$D(^DD(100,0,"VR")):0,1:^("VR"))
+ ;Q $S('$D(^ORD(100.99,0)):0,'$D(^DD(100,0,"VR")):0,1:^("VR"))
+ Q $S('$D(^ORD(100.99,0)):0,'$D(^DD(100,0,"VR")):0,$D(^DD(100,0,"VR"))<3:3.0,1:^("VR"))  ;IHS/ITSC/CLS 12/15/2003 uses OE/RR protocols even if v 2.5
  ;
 ORQUIK() ;returns 1 if CPRS Order Dialogue file 101.41 exists
  ;this means the quick order conversion to file 101.41 has been

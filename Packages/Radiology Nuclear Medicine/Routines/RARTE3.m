@@ -1,7 +1,5 @@
 RARTE3 ;HISC/GJC-Create a skeletal report, store in Error Reports multiple ;2/4/97  09:39
- ;;5.0;Radiology/Nuclear Medicine;**31,56,47**;Mar 16, 1998;Build 21
- ;Supported IA #10103 NOW^XLFDT
- ;Supported IA #2053 UPDATE^DIE
+ ;;5.0;Radiology/Nuclear Medicine;**31**;Mar 16, 1998
  ; This routine will be accessed when the user unverifies a report.
  ; At this time, a skeletal copy of the report will be stored off
  ; in the 'Error Reports' multiple.  This will keep track of report
@@ -32,10 +30,8 @@ CHK17 ; called from routine RARTE1
  ; 2 = exm doesn't point to this rpt, CAN DELETE BUT NOT UPGRADE EXM STAT
  ; 3 = all okay
  S RAOK=3
- S RADFN=+$P(RA0,"^",2),RADTI=9999999.9999-$P(RA0,"^",3)
- ;S RACN=$P($P(RA0,"^"),"-",2) ;get from longcase no.'s 2nd part
- ;P47 replace above line-get case from LAST piece not 2nd (could be SSAN)
- S RACN=$P(RA0,"^") S RACN=$P(RACN,"-",$L(RACN,"-"))
+ S RADFN=+$P(RA0,"^",2),RADTI=9999999.9999-$P(RA0,"^",3),RACN=$P(RA0,"^",4)
+ S:RACN="" RACN=$P($P(RA0,"^"),"-",2) ;get from longcase no.'s 2nd part
  I RACN="" D WARN1,PRESS Q
  S RACNI=+$O(^RADPT(RADFN,"DT",RADTI,"P","B",RACN,0))
  I 'RACNI D WARN1,PRESS Q

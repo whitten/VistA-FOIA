@@ -1,5 +1,8 @@
-VASITE ;ALB/AAS - TIME SENSETIVE VA STATION NUMBER UTILITY ; 4/22/92
- ;;5.3;Registration;**134**;Aug 13, 1993
+VASITE ;ALB/AAS - TIME SENSETIVE VA STATION NUMBER UTILITY ; [ 04/01/2004  5:17 PM ]
+ ;;5.3;Registration;**134,1004,1009,1012,1013**;Aug 13, 1993
+ ;IHS/ANMC/LJF  7/31/2001 used IHS location file info
+ ;IHS/OIT/LJF  11/09/2005 PATCH 1004 added to patch for sites where good copy was overwritten
+ ;cmi/anch/maw 04/07/2008 PATCH 1009 requirement 54 added fix for no DUZ(2) in SITE
  ;
 SITE(DATE,DIV) ;
  ;       -Output= Institution file pointer^Institution name^station number with suffix
@@ -7,12 +10,23 @@ SITE(DATE,DIV) ;
  ;       -Input (optional) date for division, if undefined will use DT
  ;       -      (optional) medical center division=pointer in 40.8
  ;
+ ;IHS/ANMC/LJF 7/31/2001 use IHS location file for data
+ ;I '$G(DIV) S DIV=+$O(^DG(40.8,"C",DUZ(2),0))  ;cmi/maw 04/07/2008 patch 1009 orig line
+ ;I '$G(DIV),$G(DUZ(2)) S DIV=+$O(^DG(40.8,"C",DUZ(2),0))  ;cmi/maw 04/07/2008 patch 1009 modified to check for DUZ(2)
+ I '$G(DIV),$G(DUZ(2)) S DIV=+$O(^DG(40.8,"AD",DUZ(2),0))  ;cmi/maw 04/07/2008 patch 1012 modified to check for "AD" DUZ(2)
+ ;I '$G(DIV) S DIV=+$O(^DG(40.8,"C",$G(^DD("SITE",1)),0))  ;cmi/maw 04/07/2008 patch 1009 modified if neither DUZ(2) or DIV are set
+ I '$G(DIV) S DIV=+$O(^DG(40.8,"AD",$G(^DD("SITE",1)),0))  ;cmi/maw 04/07/2008 patch 1012 modified if neither DUZ(2) or DIV are set
+ NEW X S X=$$GET1^DIQ(40.8,+$G(DIV),.07,"I") I 'X Q -1
+ ;Q X_U_$$GET1^DIQ(9999999.06,X,.01)_U_$$GET1^DIQ(9999999.06,X,.0799)
+ Q X_U_$$GET1^DIQ(9999999.06,X,.01)_U_$$GET1^DIQ(4,X,99)   ;IHS/ITSC/LJF 4/1/2004
+ ;IHS/ANMC/LJF 7/31/2001 end of IHS code
+ ;
  N PRIM,SITE
  S:'$D(DATE) DATE=DT
  S:'$D(DIV) DIV=$$PRIM(DATE)
  I DATE'?7N!DIV<0 Q -1
  S PRIM=$G(^VA(389.9,+$O(^(+$O(^VA(389.9,"AIVDT",DIV,$$IVDATE(DATE))),0)),0))
- S SITE=$S('$P(PRIM,"^",6)&($P(PRIM,"^",4)?3N.AN):$P(PRIM,"^",4),1:-1)
+ S SITE=$S('$P(PRIM,"^",6)&($P(PRIM,"^",4)?3N.AN):$P(PRIM,"^",4),1:-1)  ;IHS/ANMC/LJF 9/21/2000
  S:SITE>0 SITE=$P(^DG(40.8,DIV,0),"^",7)_"^"_$P($G(^DIC(4,$P(^DG(40.8,DIV,0),"^",7),0)),"^")_"^"_SITE
  Q SITE
  ;
@@ -24,7 +38,8 @@ ALL(DATE) ; -returns all possible station numbers
  N PRIM,DIV
  S:'$D(DATE) DATE=DT
  S VASITE=-1
- S DIV=0 F  S DIV=$O(^VA(389.9,"C",DIV)) Q:'DIV  S PRIM=$G(^VA(389.9,+$O(^(+$O(^VA(389.9,"AIVDT",DIV,$$IVDATE(DATE))),0)),0)) S:'$P(PRIM,"^",6)&($P(PRIM,"^",4)?3N) VASITE($P(PRIM,"^",4))=$P(PRIM,"^",4),VASITE=1
+ ;S DIV=0 F  S DIV=$O(^VA(389.9,"C",DIV)) Q:'DIV  S PRIM=$G(^VA(389.9,+$O(^(+$O(^VA(389.9,"AIVDT",DIV,$$IVDATE(DATE))),0)),0)) S:'$P(PRIM,"^",6)&($P(PRIM,"^",4)?3N) VASITE($P(PRIM,"^",4))=$P(PRIM,"^",4),VASITE=1  ;IHS/ANMC/LJF 9/21/2000
+ S DIV=0 F  S DIV=$O(^VA(389.9,"C",DIV)) Q:'DIV  S PRIM=$G(^VA(389.9,+$O(^(+$O(^VA(389.9,"AIVDT",DIV,$$IVDATE(DATE))),0)),0)) S:'$P(PRIM,"^",6)&($P(PRIM,"^",4)?6N) VASITE($P(PRIM,"^",4))=$P(PRIM,"^",4),VASITE=1  ;IHS/ANMC/LJF 9/21/2000
  Q VASITE
  ;
 IVDATE(DATE) ; -- inverse date reference start
@@ -49,6 +64,8 @@ YN ;  -input transform for is primary facility
 PRIM(DATE) ;  -returns medical center division of primary medical center division
  ;          - input date, if date is null then date will be today
  ;
+ ;Q +$O(^DG(40.8,"C",DUZ(2),0))   ;IHS/ANMC/LJF 7/31/2001
+ Q +$O(^DG(40.8,"AD",DUZ(2),0))   ;cmi/maw 3/9/2010 PATCH 1012 for station number
  N PRIM
  S:'$D(DATE) DATE=DT S DATE=DATE+.24
  S PRIM=$G(^VA(389.9,+$O(^(+$O(^VA(389.9,"AIVDT1",1,$$IVDATE(DATE))),0)),0))

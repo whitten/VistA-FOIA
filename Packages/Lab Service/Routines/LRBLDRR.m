@@ -1,7 +1,7 @@
-LRBLDRR ;AVAMC/REG/CYM - REVIEW/RELEASE COMPONENTS ;1/24/97  11:04 ;
- ;;5.2;LAB SERVICE;**72,90,97,247,408**;Sep 27, 1994;Build 8
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
- Q  D E S LR("M")=1,X="BLOOD BANK" D ^LRUTL G:Y=-1 E D D^LRBLU G:'$D(X) E
+LRBLDRR ; IHS/DIR/AAB - REVIEW/RELEASE COMPONENTS 1/24/97 11:04 ; [ 02/03/1999  2:08 PM ]
+ ;;5.2;LR;**1002,1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72,90,97**;Sep 27, 1994
+ D E S LR("M")=1,X="BLOOD BANK" D ^LRUTL G:Y=-1 E D D^LRBLU G:'$D(X) E
  I LRCAPA S X="DONOR UNIT LABELING" D X^LRUWK G:'$D(X) E S Y="RR" D S^LRBLWD K LRT S X="UNIT LOG-IN/SEND-OUT" D X^LRUWK G:'$D(X) E
  S LRA=$S($D(^LAB(69.9,1,8,1,0)):$P(^(0),"^",2),1:0),Y="LG" D:LRCAPA S^LRBLWD
  W !!?20,"Review-label-release components",!!?20,LRAA(4),! D BAR^LRBLB I LR W !!?15,"STANDARD UNIT ID LABELING " S %=1 D YN^LRU G:%<1 E S LR(3)=$S(%=1:"",1:1)
@@ -28,7 +28,9 @@ REST S LRV=$P(^LRE(LRQ,0),"^",15),X=^(5,LRI,0),LRQ("S")=$P(X,"^",11),LRQ("D")=$P
  F A=1,6.1,10:1:16,18,19 S X=LRJ(A),B=LRB(A),X=$S(X]"":$P($P(B,X_":",2),";"),1:"") S LRJ(A)=X
  F A=17,20 I $G(LRH(A)) S X=LRJ(A),B=LRB(A),X=$S(X]"":$P($P(B,X_":",2),";"),1:"") S LRJ(A)=X
  W @IOF I LRQ("S")]"","AD"[LRQ("S") W $C(7)
- W $S(LRQ("S")="A":"AUTOLOGOUS ",LRQ("S")="D":"DIRECTED ",1:" ") I LRQ("D") W "For: " S X=^LR(LRQ("D"),0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU W $P(X,"^")," ",SSN
+ ;W $S(LRQ("S")="A":"AUTOLOGOUS ",LRQ("S")="D":"DIRECTED ",1:" ") I LRQ("D") W "For: " S X=^LR(LRQ("D"),0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU W $P(X,"^")," ",SSN
+ W $S(LRQ("S")="A":"AUTOLOGOUS ",LRQ("S")="D":"DIRECTED ",1:" ")
+ I LRQ("D") W "For: " S X=^LR(LRQ("D"),0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9) D SSN^LRU W $P(X,"^")," ",HRCN  ;IHS/DIR TUC/AAB 04/29/98
  W ?53,"Unit: ",LRG
  W !,"Unit testing:",?70,"Tech" F A=10:1:16,18,19 D W
  F A=17,20 I $G(LRH(A)) D W

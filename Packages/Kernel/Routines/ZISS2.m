@@ -1,4 +1,5 @@
-%ZISS2 ;AC/SFISC - Collect screen parameters(Graphic set) ;11/04/97  16:28
+%ZISS2 ;AC/SFISC - Collect screen parameters(Graphic set) ;11/04/97  16:28 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1005,1007**;APR 1, 2003 
  ;;8.0;KERNEL;**69**;JUL 10, 1995
  Q
 SETZ D KILL F %ZISI=1:1 S %ZISZ=$T(Z+%ZISI) Q:%ZISZ=""  D SETDR^%ZISS

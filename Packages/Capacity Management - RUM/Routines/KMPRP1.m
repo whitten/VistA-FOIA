@@ -1,18 +1,20 @@
-KMPRP1 ;OAK/RAK - RUM Data by Option/Protocol/RPC ;11/29/04  08:47
- ;;2.0;CAPACITY MANAGEMENT - RUM;**1**;May 28, 2003
+KMPRP1 ;SFISC/RAK - RUM Data by Option ;4 Nov 1998
+ ;;1.0;CAPACITY MANAGEMENT - RUM;;Dec 09, 1998
 EN ;-- entry point.
  ;
- N %ZIS,CONT,KMPRDATE,KMPROPR,KMPROPT,OUT,POP
+ N %ZIS,CONT,DIC,IORVOFF,IORVON,KMPRDATE,KMPROPT,OUT,POP
  N X,Y,ZTDESC,ZTRTN,ZTSAVE,ZTSK
  ;
+ D ZIS^KMPRUTL
  S OUT=0
  F  D  Q:OUT
- .D HDR^KMPDUTL4(" RUM Data by Option/Protocol/RPC ")
- .S KMPROPR=$$OPR I 'KMPROPR S OUT=1 Q
- .; select option, protocol or rpc entry
- .S KMPROPT=$$OPRSEL(KMPROPR) Q:'KMPROPT
+ .W @IOF,!,?30,IORVON," RUM Data by Option ",IORVOFF,!
+ .K DIC S DIC=19,DIC(0)="AEMQZ",DIC("A")="Select Option: "
+ .W ! D ^DIC I Y<0 S OUT=1 Q
+ .S KMPROPT=+Y_"^"_Y(0,0)
  .; determine start date from file 8971.1
- .D RUMDATES^KMPRUTL(.KMPRDATE) Q:'KMPRDATE
+ .D RUMDATES^KMPRUTL(.KMPRDATE)
+ .Q:'KMPRDATE
  .; select output device.
  .S %ZIS="Q",%ZIS("A")="Device: ",%ZIS("B")="HOME"
  .W ! D ^%ZIS I POP W !,"No action taken." Q
@@ -20,20 +22,18 @@ EN ;-- entry point.
  .I $D(IO("Q")) K IO("Q") D  Q
  ..S ZTDESC="RUM Data by Option for '"_$P(KMPROPT,U,2)_"'."
  ..S ZTRTN="EN1^KMPRP1"
- ..S ZTSAVE("KMPRDATE")="",ZTSAVE("KMPROPR")="",ZTSAVE("KMPROPT")=""
+ ..S ZTSAVE("KMPRDATE")="",ZTSAVE("KMPROPT")=""
  ..D ^%ZTLOAD W:$G(ZTSK) !,"Task #",ZTSK
  ..D EXIT
  .;
  .; if output to terminal display message.
- .W:$E(IOST,1,2)="C-" !?3,"compiling data..."
+ .W:$E(IOST,1,2)="C-" !?3,"...compiling data..."
  .D EN1
- ;
  Q
  ;
 EN1 ;-- entry point from taskman.
  ;
  Q:'$G(KMPRDATE)
- Q:'$G(KMPROPR)
  Q:$G(KMPROPT)=""
  ;
  N ELEMENT,KMPRARRY,KMPRDAYS
@@ -51,7 +51,6 @@ DATA ;-- set data into KMPRARRY
  Q:'$D(ELEMENT)
  Q:$G(KMPRARRY)=""
  Q:'$G(KMPRDATE)
- Q:'$G(KMPROPR)
  Q:$G(KMPROPT)=""
  ;
  N DATE,END,I,IEN,OPTION,START
@@ -63,7 +62,8 @@ DATA ;-- set data into KMPRARRY
  .S IEN=0,KMPRDAYS=KMPRDAYS+1
  .F  S IEN=$O(^KMPR(8971.1,"B",DATE,IEN)) Q:'IEN  D 
  ..Q:'$D(^KMPR(8971.1,IEN,0))  S DATA(0)=^(0),DATA(1)=$G(^(1)),DATA(2)=$G(^(2))
- ..S OPTION=$$OPRCHK(KMPROPR,KMPROPT,DATA(0)) Q:OPTION=""
+ ..S OPTION=$P(DATA(0),U,4)
+ ..Q:OPTION'=$P(KMPROPT,U,2)
  ..F I=1:1:8 D 
  ...S $P(@KMPRARRY@(OPTION),U,I)=$P($G(@KMPRARRY@(OPTION)),U,I)+$P(DATA(1),U,I)
  ...S $P(@KMPRARRY@(OPTION),U,I)=$P($G(@KMPRARRY@(OPTION)),U,I)+$P(DATA(2),U,I)
@@ -92,7 +92,7 @@ PRINT ;-- print data from KMPRARRY.
  I '$D(@KMPRARRY) D  Q
  .D HDR
  .W !!!?28,"<<<No Data to Report>>>"
- .D CONTINUE^KMPDUTL4("Press RETURN to continue",2,.CONT)
+ .W !! D CONTINUE^KMPRUTL("Press RETURN to continue",.CONT)
  ;
  S OPTION=""
  F  S OPTION=$O(@KMPRARRY@(OPTION)) Q:OPTION=""  D 
@@ -102,10 +102,10 @@ PRINT ;-- print data from KMPRARRY.
  ..W $$REPEAT^XLFSTR(".",25-$X)
  ..S NUMBER=$P(DATA,U,PIECE)
  ..; per occurrence.
- ..W:OCCUR&(PIECE'=8) ?28,$J($FN(NUMBER/OCCUR,",",$S(I<3:2,1:0)),$S(I<3:14,1:11))
+ ..W:PIECE'=8 ?28,$J($FN(NUMBER/OCCUR,",",$S(I<3:2,1:0)),$S(I<3:14,1:11))
  ..W ?50,$J($FN(NUMBER,",",$S(I<3:2,1:0)),$S(I<3:18,1:15))
  ;
- D CONTINUE^KMPDUTL4("Press RETURN to continue",2,.CONT)
+ W !! D CONTINUE^KMPRUTL("Press RETURN to continue",.CONT)
  ;
  Q
  ;
@@ -121,50 +121,3 @@ HDR ;
  W !
  ;
  Q
- ;
-OPR() ;-- extrinsic function - select option, protocol or rpc
- ;-----------------------------------------------------------------------
- ; Return: 1 - Option
- ;         2 - Protocol
- ;         3 - RPC
- ;        "" - No selection made
- ;-----------------------------------------------------------------------
- N DIR,X,Y
- S DIR(0)="SO^1:Option;2:Protocol;3:RPC"
- D ^DIR
- Q $S(Y:Y_"^"_$G(Y(0)),1:"")
- ;
-OPRCHK(OPR,OPT,DATA) ;-- extrinsic function - check to see if option, protocol or rpc matches
- ;-----------------------------------------------------------------------
- ; OPR.... Results from $$OPR above.
- ; OPT.... Option, protocol or rpc name to be matched
- ; DATA... Zero node of file 8971.1 (RESOURCE USAGE MONITOR)
- ;
- ; Return: OptionName - match
- ;                 "" - no match
- ;-----------------------------------------------------------------------
- Q:$G(OPR)="" ""
- Q:'OPR!($P(OPR,U,2)="") ""
- Q:'$D(DATA) ""
- Q:(+OPR)<1!((+OPR)>3) ""
- N OPTION
- ; option - piece 4, protocol - piece 5, rpc - piece7
- S OPTION=$S((+OPR)=1:$P(DATA,U,4),(+OPR)=2:$P(DATA,U,5),1:$P(DATA,U,7))
- Q $S(OPTION="":"",OPTION'=$P(OPT,U,2):"",1:OPTION)
- ;
-OPRSEL(OPR) ;-- extrinsic function - select entry
- ;-----------------------------------------------------------------------
- ; OPT.... Results from $$OPR above.
- ;
- ; Return: IEN^Name - this will be from the Option file, Protocol file,
- ;                    or RPC file, depending on the value of OPR.
- ;         "" - no selection made
- ;-----------------------------------------------------------------------
- Q:'$G(OPR) ""
- Q:OPR<1!(OPR>3) ""
- N DIC,X,Y
- ; 1 - option, 2 - protocol, 3 - rpc
- S DIC=$S((+OPR)=1:19,(+OPR)=2:101,1:8994)
- S DIC(0)="AEMQZ",DIC("A")="Select "_$P(OPR,U,2)_": "
- W ! D ^DIC
- Q $S(Y<0:"",1:+Y_"^"_Y(0,0))

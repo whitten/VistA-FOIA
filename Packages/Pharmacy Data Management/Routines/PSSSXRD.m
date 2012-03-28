@@ -1,5 +1,5 @@
-PSSSXRD ; BIR/PKR - Build indexes for drug files. ;08/30/2004
- ;;1.0;PHARMACY DATA MANAGEMENT;**62,89**;9/30/97
+PSSSXRD ; BIR/PKR - Build indexes for drug files. ;06/05/2003
+ ;;1.0;PHARMACY DATA MANAGEMENT;**62**;9/30/97
  ;
  ;Reference to ^PXRMINDX supported by DBIA #4114
  ;Reference to ADDERROR^PXRMSXRM supported by DBIA #4113
@@ -9,10 +9,10 @@ PSSSXRD ; BIR/PKR - Build indexes for drug files. ;08/30/2004
  ;===============================================================
 PSPA ;Build the index for the Pharmacy Patient File.
  N ADD,DA,DA1,DAS,DATE,DFN,DRUG,END,ENTRIES,GLOBAL,IDEN,IND,INS,NE
- N NERROR,POI,SDATE,SOL,START,STARTD,TEMP,TENP,TEXT
+ N NERROR,SDATE,SOL,START,STARTD,TEMP,TENP,TEXT
  S GLOBAL=$$GET1^DID(55,"","","GLOBAL NAME")
  ;Don't leave any old stuff around.
- K ^PXRMINDX(55),^PXRMINDX("55NVA")
+ K ^PXRMINDX(55)
  S ENTRIES=$P(^PS(55,0),U,4)
  S TENP=ENTRIES/10
  S TENP=+$P(TENP,".",1)
@@ -51,7 +51,7 @@ PSPA ;Build the index for the Pharmacy Patient File.
  ... S ^PXRMINDX(55,"IP",DRUG,DFN,STARTD,SDATE,DAS)=""
  ... S ^PXRMINDX(55,"PI",DFN,DRUG,STARTD,SDATE,DAS)=""
  ... S NE=NE+1
- .;Process the IV multiple.
+ .;Process the IV mutiple.
  . S DA=0
  . F  S DA=+$O(^PS(55,DFN,"IV",DA)) Q:DA=0  D
  .. S TEMP=$G(^PS(55,DFN,"IV",DA,0))
@@ -94,21 +94,6 @@ PSPA ;Build the index for the Pharmacy Patient File.
  ... S DAS=DFN_";IV;"_DA_";SOL;"_DA1_";0"
  ... S ^PXRMINDX(55,"IP",DRUG,DFN,STARTD,SDATE,DAS)=""
  ... S ^PXRMINDX(55,"PI",DFN,DRUG,STARTD,SDATE,DAS)=""
- .;Process the NVA multiple.
- . S DA=0
- . F  S DA=+$O(^PS(55,DFN,"NVA",DA)) Q:DA=0  D
- .. S TEMP=$G(^PS(55,DFN,"NVA",DA,0))
- .. S STARTD=$P(TEMP,U,9)
- .. I STARTD="" S STARTD=$P(TEMP,U,10)
- .. I STARTD="" D  Q
- ... S IDEN="DFN="_DFN_" D1="_DA_" NVA missing start date"
- ... D ADDERROR^PXRMSXRM(GLOBAL,IDEN,.NERROR)
- .. S SDATE=$P(TEMP,U,7)
- .. I SDATE="" S SDATE="U"_DFN_DA
- .. S DAS=DFN_";NVA;"_DA_";0"
- .. S POI=$P(TEMP,U,1)
- .. S ^PXRMINDX("55NVA","IP",POI,DFN,STARTD,SDATE,DAS)=""
- .. S ^PXRMINDX("55NVA","PI",DFN,POI,STARTD,SDATE,DAS)=""
  S END=$H
  S TEXT=NE_" PHARMACY PATIENTS results indexed."
  D MES^XPDUTL(TEXT)
@@ -122,7 +107,4 @@ PSPA ;Build the index for the Pharmacy Patient File.
  S ^PXRMINDX(55,"GLOBAL NAME")=$$GET1^DID(55,"","","GLOBAL NAME")
  S ^PXRMINDX(55,"BUILT BY")=DUZ
  S ^PXRMINDX(55,"DATE BUILT")=$$NOW^XLFDT
- S ^PXRMINDX("55NVA","GLOBAL NAME")=^PXRMINDX(55,"GLOBAL NAME")
- S ^PXRMINDX("55NVA","BUILT BY")=^PXRMINDX(55,"BUILT BY")
- S ^PXRMINDX("55NVA","DATE BUILT")=^PXRMINDX(55,"DATE BUILT")
  Q

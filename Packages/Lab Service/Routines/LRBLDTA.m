@@ -1,6 +1,6 @@
-LRBLDTA ;AVAMC/REG/CYM - ABNORMAL DONOR TESTS ;6/28/96  09:04 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDTA ; IHS/DIR/AAB - ABNORMAL DONOR TESTS 6/28/96 09:04 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END
  W !!?20,"Blood donor- Abnormal Test List"
 A R !!,"Start with DONOR UNIT ID: ",X:DTIME G:X=""!(X[U) END D C G:'$D(X) A

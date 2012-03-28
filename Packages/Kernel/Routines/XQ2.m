@@ -1,4 +1,4 @@
-XQ2 ;SEA/MJM - Menu lister & Utilities ; [2/20/03 7:32am]
+XQ2 ;SEA/MJM - Menu lister & Utilities ; [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**273**;Jul 10, 1995
  ;
 WRITE ;Get data for this option

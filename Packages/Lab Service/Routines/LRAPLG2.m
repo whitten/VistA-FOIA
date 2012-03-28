@@ -1,4 +1,5 @@
-LRAPLG2 ;AVAMC/REG - LOG-IN DATA FROM FILE #63 ;3/26/96  19:08 ;
+LRAPLG2 ; IHS/DIR/AAB - LOG-IN DATA FROM FILE #63 3/26/96 19:08 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72,115**;Sep 27, 1994
  S LRAN=X,LRFND=1 S LRDFN=$O(^LR(LRXREF,LRH(2),LRABV,LRAN,0)) I 'LRDFN G END
  S LRI=$O(^LR(LRXREF,LRH(2),LRABV,LRAN,LRDFN,0)) I '$D(^LR(LRDFN,0))!('LRI&(LRSS'="AU")) G END
@@ -7,7 +8,8 @@ LRAPLG2 ;AVAMC/REG - LOG-IN DATA FROM FILE #63 ;3/26/96  19:08 ;
  I LRSS="AU" G:'$D(^LR(LRDFN,"AU")) END S X=^("AU"),LRRC=$P(X,U),LRSVC=$P(X,U,14),(LRCS,LRMD,LRSIT,LRLLOC,LRC(5))="",DA=LRDFN D D^LRAUAW S LRSD=LR(63,12)
  I LRSS'="AU" G:'$D(^LR(LRDFN,LRSS,LRI,0)) END S X=^(0),LRSD=$P(X,U),LRRC=$P(X,U,10),LRMD=$P(X,U,7),LRSIT=$P(X,U,5),LRCS=$P(X,U,11),LRLLOC=$P(X,U,8),LRC(5)=""
  S Y=LRRC D D^LRU
- W $C(7),!!,"Accession # ",LRAN," for ",LRH(0),!,"In ",$P(LRAA(1)," ",1)," file but not in Accession file.",!,"Entry: ",LRP," ID: ",SSN,"  Dated: ",Y,!,"Enter in Accession file " S %=2 D YN^LRU
+ ;W $C(7),!!,"Accession # ",LRAN," for ",LRH(0),!,"In ",$P(LRAA(1)," ",1)," file but not in Accession file.",!,"Entry: ",LRP," ID: ",SSN,"  Dated: ",Y,!,"Enter in Accession file " S %=2 D YN^LRU
+ W $C(7),!!,"Accession # ",LRAN," for ",LRH(0),!,"In ",$P(LRAA(1)," ",1)," file but not in Accession file.",!,"Entry: ",LRP," ID: ",HRCN,"  Dated: ",Y,!,"Enter in Accession file " S %=2 D YN^LRU  ;IHS/OIRM TUC/AAB 10/08/97
  I %'=1 D END^LRAPLG1 Q
  I '$D(LRTS) S LRTS=""
  L +^LRO(68,LRAA) S ^LRO(68,LRAA,1,LRAD,1,LRAN,0)=LRDFN_"^^"_LRRC_"^^^^"_LRLLOC_"^"_LRMD(1)_"^"_LRSVC_"^"_DUZ,^(3)=LRSD_"^^^^"_LRI_"^"_LRC(5)

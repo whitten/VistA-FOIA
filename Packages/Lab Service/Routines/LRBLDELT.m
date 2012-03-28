@@ -1,6 +1,7 @@
-LRBLDELT ;AVAMC/REG - DELETE FILE 65 ENTRIES ;8/18/89  10:55 ;
- ;;5.2;LAB SERVICE;**247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDELT ; IHS/DIR/FJE - DELETE FILE 65 ENTRIES 8/18/89 10:55 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
+ ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END S X="BLOOD BANK" D ^LRUTL G:Y=-1 END
  W !!?25,"DELETE INVENTORY FILE ENTRIES",!?28,"WITH FINAL DISPOSITIONS"
  W !!,$C(7),!!,"Has the tape of the blood inventory file (65) been made ?" S %=2 D YN^LRU G:%'=1 END

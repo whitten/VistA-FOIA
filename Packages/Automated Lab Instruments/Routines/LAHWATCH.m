@@ -1,4 +1,5 @@
-LAHWATCH ;SLC/RAF/DALISC/TNN - WATCH DATA IN ^LAH GLOBAL ;1/13/92  12:41
+LAHWATCH ; IHS/DIR/FJE - WATCH DATA IN ^LAH GLOBAL 12:41 ; [ 1/13/92 ]
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
 IN ;
  S U="^" W !!!,"This routine will allow you to look at the verifiable data in the ^LAH GLOBAL  ",!,"for a specific instrument",!!

@@ -1,4 +1,5 @@
 LRAPBR4 ;DALOI/WTY/KLL - Autopsy Browser Display;7/27/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**259,317**;Sep 27, 1994
  ;
  ;Reference to ^DPT supported by IA #918

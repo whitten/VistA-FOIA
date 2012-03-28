@@ -1,4 +1,6 @@
-LRUTW ;AVAMC/REG - DISPLAY LAB TEST INFO FOR LAB ; 2/14/89  17:19 ;
+LRUTW ; IHS/DIR/FJE - DISPLAY LAB TEST INFO FOR LAB 2/14/89 17:19 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  N N,LRCSREC,AGE,SEX
  S AGE="??",SEX="M",IOP="HOME" D ^%ZIS W @IOF
@@ -31,7 +33,8 @@ PANEL D HOLD W !,"Tests in panel: " Q
 HDR W @IOF,"Lab test",?20,"Highest allowed urgency  Cost",!
  W $E($P(Y(0),U,1),1,26),?28,$S($P(Y(0),U,16):$E($P(^LAB(62.05,$P(Y(0),U,16),0),U,1),1,14),1:"any"),?45,$P(Y(0),U,11) Q
 HOLD R !,"Press any key to continue ",%:DTIME D HDR Q
-COL W !,"Collection Sample",?21,"VA Lab Slip",?37,"Container",?68,"Vol Req(ml)" Q
+COL ;W !,"Collection Sample",?21,"VA Lab Slip",?37,"Container",?68,"Vol Req(ml)" Q
+ W !,"Collection Sample",?21,"Lab Slip",?37,"Container",?68,"Vol Req(ml)" Q  ;IHS/ANMC/CLS 08/18/96
 COLL D HOLD,COL Q
 WARD D HOLD W !,"Ward Instructions:" Q
 SYN D HOLD W !,"Synonym:" Q

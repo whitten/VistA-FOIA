@@ -1,5 +1,6 @@
-LAMIVTL5 ;DAL/HOAK Verify for Vitek literal isolate 0  ;7/8/96  07:30 ;
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**12,36**;Sep 27,1994
+LAMIVTL5 ;VA/DAL/HOAK - Verify for Vitek literal isolate 0  ;7/8/96  07:30 ;
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**1030**;NOV 01, 1997
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**12,36**;Sep 27,1994;Build 7
 INIT ;
  S OK=1
  K ^TMP("LRISO1",$J)

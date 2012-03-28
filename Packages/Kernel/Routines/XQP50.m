@@ -1,4 +1,5 @@
-XQP50 ;Luke&Ron/SEA - Update Patch 50 Application History ;11/27/96  09:42
+XQP50 ;Luke&Ron/SEA - Update Patch 50 Application History ;11/27/96  09:42 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**51**;Nov 21, 1996
  ;
  ;This routine, a post init routine for patch XU*8*51, updates

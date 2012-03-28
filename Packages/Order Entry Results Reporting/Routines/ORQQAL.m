@@ -1,5 +1,6 @@
-ORQQAL ; slc/CLA,JFR - Functions which return patient allergy data ;6/8/06  14:11
- ;;3.0;ORDER ENTRY/RESULTS REPORTING;**9,85,162,190,216,232,243**;Dec 17, 1997;Build 242
+ORQQAL ; slc/CLA,JFR - Functions which return patient allergy data ;05-Nov-2010 08:32;DU
+ ;;3.0;ORDER ENTRY/RESULTS REPORTING;**9,85,162,190**;Dec 17, 1997;Build 3
+ ;IHS/MSC/MGH Modified to remove inactive allergies
 LIST(ORAY,ORPT) ; RETURN PATIENT'S ALLERGY/ADVERSE REACTION INFO:
  ; null:no allergy assessment, 0:no known allergies, 1:pt has allergies
  ; if 1 also get: allergen/reactant^reaction/symptom^severity^allergy ien
@@ -20,19 +21,18 @@ SIGNS S K=0,N=0 F  S K=$O(GMRARXN(J,"S",K)) Q:K'>0  D
 LRPT(ORAY,ORPT) ; RETURN PT'S ALLERGY/ADVERSE REACTION INFO IN REPORT FORMAT:
  ; null:no allergy assessment, 0:no known allergies, 1:pt has allergies
  ; if 1 also get: allergen/reactant^reaction/symptom^severity^allergy ien
- N I,J,K,SEVER,CR,GMRAIDT ;216
+ N I,J,K,SEVER,CR
  S CR=$CHAR(13)
- S I=1,J=0,K=0,SEVER="",GMRAIDT=1 ;216
+ S I=1,J=0,K=0,SEVER=""
  D EN1^GMRAOR1(ORPT,"GMRARXN")
  I $G(GMRARXN)="" S ORAY(I)="No Allergy Assessment"
  I $G(GMRARXN)=0 S ORAY(I)="No Known Allergies"
  I $G(GMRARXN)=1 F  S J=$O(GMRARXN(J)) Q:J=""  D
  .S SEVER=$P(GMRARXN(J),U,2)
- .S ORAY(I)=$P(GMRARXN(J),U)_"     "_$S($L($G(SEVER)):"[Severity: "_SEVER_"]",1:""),I=I+1
+ .S ORAY(I)=$P(GMRARXN(J),U)_"     [Severity: "_$S($L($G(SEVER)):SEVER,1:"UNKNOWN")_"]",I=I+1
  .S K=0,N=0 F  S K=$O(GMRARXN(J,"S",K)) Q:K'>0  D
  ..I N=0 S ORAY(I)="    Signs/symptoms: "_$P(GMRARXN(J,"S",K),";")
  ..E     S ORAY(I)="                    "_$P(GMRARXN(J,"S",K),";")
- ..I $P(GMRARXN(J,"S",K),";",2) S ORAY(I)=ORAY(I)_" ("_$$FMTE^XLFDT($P(GMRARXN(J,"S",K),";",2),2)_")" ;216
  ..S N=N+1,I=I+1
  .S ORAY(I)=" ",I=I+1
  S:'$D(ORAY(1)) ORAY(1)="No allergies found."
@@ -59,40 +59,34 @@ RXN(ORAY,ORPT,SRC,NDF,PSDRUG) ; RETURN TRUE OR FALSE IF PATIENT IS ALLERGIC TO A
  K I,J,GMRADRCL,GMRAING,CL
  Q
 MEDCLASS(ORAY,DFN,PSDRUG) ;check for allergens with medications in same VA drug class
- N ORVACLS,CL,X,I,RET,TYP
- S TYP="DR"
+ N ORVACLS,ALLR,K,CL,X,X1
  Q:+$G(PSDRUG)<1
- ;S ORVACLS=$P(^PSDRUG(PSDRUG,0),U,2)
- S ORVACLS=$$CLASS50^ORPEAPI(PSDRUG)
+ S ORVACLS=$P(^PSDRUG(PSDRUG,0),U,2)
  Q:$L(ORVACLS)<4
  Q:$G(ORVACLS)="HA000"  ;don't process herbal drug class for order checks
  S CL=$S($E(ORVACLS,1,4)="CN10":5,1:4) ;look at 5 chars if ANALGESICS
- D GETDATA^GMRAOR(DFN)
- Q:'$D(^TMP("GMRAOC",$J,"APC"))
- S I="" F  S I=$O(^TMP("GMRAOC",$J,"APC",I)) Q:'$L(I)  D
- .I $E(I,1,CL)=$E(ORVACLS,1,CL) S X=I
- I $L($G(X)) D
- .N IEN,NAME
- .D IEN^PSN50P65(,X,"ORQQAL")
- .S IEN=$O(^TMP($J,"ORQQAL","B",X,0))
- .I 'IEN S ORAY="2"_U_X Q
- .S NAME=$G(^TMP($J,"ORQQAL",IEN,1))
- .I '$L(NAME) S ORAY="2"_U_X Q
- .S ORAY="2"_U_NAME_": ("_$G(^TMP("GMRAOC",$J,"APC",X))_")"
- K ^TMP("GMRAOC",$J)
+ S GMRA="0^0^001",ALLR=""
+ D EN1^GMRADPT F  S ALLR=$O(GMRAL(ALLR)) Q:'ALLR!(+ORAY=2)  D
+ .;IHS/MSC/MGH quit if inactive allergy
+ .S X1="",X=$O(GMRAL(ALLR,"I",$C(0)),-1)
+ .I X S X1=$P(GMRAL(ALLR,"I",X),U,4)
+ .Q:+X>0&(X1="")
+ .K GMRACT D EN1^GMRAOR2(ALLR,"GMRACT") I $D(GMRACT("V")) D
+ ..S K=0 F  S K=$O(GMRACT("V",K)) Q:K'>0!(+ORAY=2)  D
+ ...I $E($P(GMRACT("V",K),U),1,CL)=$E(ORVACLS,1,CL) D
+ ....S ORAY="2"_U_$P(GMRACT("V",K),U,2)
+ K GMRA,GMRAL,GMRACT
  Q
 DETAIL(ORAY,DFN,ALLR,ID) ; RETURN DETAILED ALLERGY INFO FOR SPECIFIED ALLERGIC REACTION:
  D EN1^GMRAOR2(ALLR,"GMRACT")
  N CR,OX,OH S CR=$CHAR(13),I=1
  S ORAY(I)="    Causative agent: "_$P(GMRACT,U),I=I+1
- S ORAY(I)=" Nature of Reaction: "_$S($P(GMRACT,U,6)="ALLERGY":"Allergy",$P(GMRACT,U,6)="PHARMACOLOGIC":"Adverse Reaction",$P(GMRACT,U,6)="UNKNOWN":"Unknown",1:""),I=I+1 ;216
  S ORAY(I)=" ",I=I+1
  I $D(GMRACT("S",1)) D SYMP
  I $D(GMRACT("V",1)) D CLAS
- S ORAY(I)="         Originator: "_$P(GMRACT,U,2)_$S($L($P(GMRACT,U,3)):" ("_$P(GMRACT,U,3)_")",1:""),I=I+1 ;216
- S ORAY(I)="         Originated: "_$P(GMRACT,U,10),I=I+1 ;216
+ S ORAY(I)="         Originated: "_$P(GMRACT,U,2)_"  "_$P(GMRACT,U,3),I=I+1
  I $D(GMRACT("O",1)) D OBS
- S ORAY(I)="           Verified: "_$S($P(GMRACT,U,4)="VERIFIED":$P(GMRACT,U,8),1:"No"),I=I+1 ;216
+ S ORAY(I)="           Verified: "_$S($P(GMRACT,U,4)="VERIFIED":"Yes",1:"No"),I=I+1
  S ORAY(I)="Observed/Historical: "_$S($P(GMRACT,U,5)="OBSERVED":"Observed",$P(GMRACT,U,5)="HISTORICAL":"Historical",1:""),I=I+1
  I $D(GMRACT("C",1)) D COM
  K GMRACT

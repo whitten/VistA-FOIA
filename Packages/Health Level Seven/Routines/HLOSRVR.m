@@ -1,17 +1,14 @@
-HLOSRVR ;ALB/CJM/OAK/PIJ- Server for receiving messages - 10/4/94 1pm ;04/08/2010
- ;;1.6;HEALTH LEVEL SEVEN;**126,130,131,134,137,138,139,143,147**;Oct 13, 1995;Build 15
- ;Per VHA Directive 2004-038, this routine should not be modified.
+HLOSRVR ;ALB/CJM- Server for receiving messages - 10/4/94 1pm
+ ;;1.6;HEALTH LEVEL SEVEN;**126,130,131**;Oct 13, 1995;Build 10
  ;
 GETWORK(WORK) ;
- ;GET WORK function for a single server or a Taskman multi-server
+ ;GET WORK function for a single server OR Taskman multi-server
  N LINK
  I '$$CHKSTOP^HLOPROC,$G(WORK("LINK"))]"",$$GETLINK^HLOTLNK(WORK("LINK"),.LINK),+LINK("SERVER") S WORK("PORT")=LINK("PORT") Q 1
  Q 0
  ;
 DOWORKS(WORK) ;
  ;DO WORK rtn for a single server (non-concurrent)
- N $ETRAP,$ESTACK
- S $ETRAP="G ERROR^HLOSRVR3"
  D SERVER(WORK("LINK"))
  Q
 DOWORKM(WORK) ;
@@ -41,38 +38,23 @@ VMS ;Called from VMS TCP Service once a connection request has been received. Th
  Q
  ;
 SERVER(LINKNAME,LOGICAL) ; LINKNAME identifies the logical link, which describes the communication channel to be used
- ;;Start HL*1.6*138 PIJ
- ;;N $ETRAP,$ESTACK S $ETRAP="G ERROR^HLOSRVR1"
- N $ETRAP,$ESTACK S $ETRAP="G ERROR^HLOSRVR3"
- ;;End HL*1.6*138 PIJ
+ N $ETRAP,$ESTACK S $ETRAP="G ERROR^HLOSRVR1"
  N HLCSTATE,INQUE
  S INQUE=0
- ;
-ZB1 ;
- ;
  Q:'$$CONNECT(.HLCSTATE,LINKNAME,.LOGICAL)
- ;
  K LINKNAME
  F  Q:'HLCSTATE("CONNECTED")  D  Q:$$CHKSTOP^HLOPROC
  .N HLMSTATE,SENT
+ .;
  .;read msg and parse the hdr
  .;HLMSTATE("MSA",1) is set with type of ack to return
- .;
  .I $$READMSG^HLOSRVR1(.HLCSTATE,.HLMSTATE) D
+ ..;
+ ..;send an ack if required and save the MSA segment
  ..I (HLMSTATE("MSA",1)]"") S SENT=$$WRITEACK(.HLCSTATE,.HLMSTATE) D:HLMSTATE("IEN") SAVEACK(.HLMSTATE,SENT)
- ..;
- ..;** P143 START CJM **
- ..I HLMSTATE("ID")'="" L -HLO("MSGID",HLMSTATE("ID"))
- ..;** P143 END CJM **
- ..;
  ..D:HLMSTATE("IEN") UPDATE(.HLMSTATE,.HLCSTATE)
  ..D:HLCSTATE("COUNTS")>4 SAVECNTS^HLOSTAT(.HLCSTATE)
- ..I $G(HLMSTATE("ACK TO","IEN")),$L($G(HLMSTATE("ACK TO","SEQUENCE QUEUE"))) D ADVANCE^HLOQUE(HLMSTATE("ACK TO","SEQUENCE QUEUE"),+HLMSTATE("ACK TO","IEN"))
- .E  D
- ..;** P143 START CJM **
- ..I $G(HLMSTATE("ID"))'="" L -HLO("MSGID",HLMSTATE("ID"))
- ..;** P143 END CJM **
- ..D INQUE() H:HLCSTATE("CONNECTED") 1
+ .E  D INQUE() H:HLCSTATE("CONNECTED") 1
  ;
 END D CLOSE^HLOT(.HLCSTATE)
  D INQUE()
@@ -85,7 +67,6 @@ CONNECT(HLCSTATE,LINKNAME,LOGICAL) ;
  N LINK,NODE
  S HLCSTATE("CONNECTED")=0
  Q:'$$GETLINK^HLOTLNK(LINKNAME,.LINK) 0
-ZB999 ; 
  Q:+LINK("SERVER")'=1 0
  S HLCSTATE("SERVER")=LINK("SERVER")
  M HLCSTATE("LINK")=LINK
@@ -98,7 +79,6 @@ ZB999 ;
  S HLCSTATE("BUFFER","SEGMENT COUNT")=0 ;count of segments in buffer
  ;
  S HLCSTATE("COUNTS")=0
- S HLCSTATE("MESSAGE STARTED")=0 ;start of message flag
  S HLCSTATE("MESSAGE ENDED")=0 ;end of message flag
  S NODE=^%ZOSF("OS")
  S HLCSTATE("SYSTEM","OS")=$S(NODE["DSM":"DSM",NODE["OpenM":"CACHE",NODE["G.TM":"G.TM",1:"")
@@ -115,16 +95,8 @@ ZB999 ;
  Q HLCSTATE("CONNECTED")
  ;
 INQUE(MSGIEN,PARMS) ;
- ;
- ;** do not implement the Pass Immediate parameter **
- ;INQUE(MSGIEN,PARMS,IMMEDIATE);
- ;
- ;puts received messages on the incoming queue and sets the B x-ref
+ ;puts received messages on the incoming queue and sets the B x-refs
  I $G(MSGIEN) S INQUE=INQUE+1 M INQUE(MSGIEN)=PARMS
- ;
- ;** do not implement the Pass Immediate parameter **
- ;I ('$G(MSGIEN))!(INQUE>20)!($G(IMMEDIATE)) S MSGIEN=0 D
- ;
  I ('$G(MSGIEN))!(INQUE>20) S MSGIEN=0 D
  .F  S MSGIEN=$O(INQUE(MSGIEN)) Q:'MSGIEN  D
  ..S ^HLB("B",INQUE(MSGIEN,"MSGID"),MSGIEN)=""
@@ -141,7 +113,7 @@ SAVEACK(HLMSTATE,SENT) ;
  ;Input:
  ;  SENT - flag = 1 if transmission of ack succeeded, 0 otherwise
  ;
- N NODE,I,XX
+ N NODE,I
  S $P(NODE,"^")=HLMSTATE("MSA","DT/TM OF MESSAGE")
  S $P(NODE,"^",2)=HLMSTATE("MSA","MESSAGE CONTROL ID")
  S $P(NODE,"^",3)="MSA"
@@ -156,14 +128,11 @@ UPDATE(HLMSTATE,HLCSTATE) ;
  ;
  N PARMS,PURGE,WAIT
  S PARMS("PASS")=0
- I HLMSTATE("STATUS","ACTION")]"",HLMSTATE("STATUS")'="ER" D
- .N IEN
- .S IEN=HLMSTATE("IEN")
- .S PARMS("PASS")=1,$P(^HLB(IEN,0),"^",6)=HLMSTATE("STATUS","QUEUE"),$P(^HLB(IEN,0),"^",10)=$P(HLMSTATE("STATUS","ACTION"),"^"),$P(^HLB(IEN,0),"^",11)=$P(HLMSTATE("STATUS","ACTION"),"^",2)
+ I HLMSTATE("STATUS","ACTION")]"",HLMSTATE("STATUS")'="SE" S PARMS("PASS")=1,$P(^HLB(HLMSTATE("IEN"),0),"^",6)=HLMSTATE("STATUS","QUEUE")
  D:'PARMS("PASS")  ;if not passing to the app, set the purge date
  .I HLMSTATE("STATUS")="" S HLMSTATE("STATUS")="SU"
  .S:HLMSTATE("BATCH") WAIT=HLCSTATE("SYSTEM","ERROR PURGE")
- .S:'HLMSTATE("BATCH") WAIT=$S(($G(HLMSTATE("ACK TO","STATUS"))="ER"):24*HLCSTATE("SYSTEM","ERROR PURGE"),HLMSTATE("STATUS")="ER":24*HLCSTATE("SYSTEM","ERROR PURGE"),1:HLCSTATE("SYSTEM","NORMAL PURGE"))
+ .S:'HLMSTATE("BATCH") WAIT=$S(HLMSTATE("STATUS")="SE":24*HLCSTATE("SYSTEM","ERROR PURGE"),1:HLCSTATE("SYSTEM","NORMAL PURGE"))
  .S PURGE=$$FMADD^XLFDT($$NOW^XLFDT,,WAIT)
  .S $P(^HLB(HLMSTATE("IEN"),0),"^",9)=PURGE
  .S ^HLB("AD","IN",PURGE,HLMSTATE("IEN"))=""
@@ -173,11 +142,10 @@ UPDATE(HLMSTATE,HLCSTATE) ;
  ..S ^HLB("AD","IN",PURGE,+HLMSTATE("ACK TO","IEN"))=""
  ;
  ;if not waiting for an application ack, set the status now even if passing to the app - but don't set the purge until the infiler passes the message
- I HLMSTATE("STATUS")="",($G(HLMSTATE("ACK TO","IEN"))!HLMSTATE("HDR","APP ACK TYPE")'="AL") S HLMSTATE("STATUS")="SU"
- I HLMSTATE("STATUS")'="" S $P(^HLB(HLMSTATE("IEN"),0),"^",20)=HLMSTATE("STATUS") S:$G(HLMSTATE("MSA",3))]"" $P(^HLB(HLMSTATE("IEN"),0),"^",21)=HLMSTATE("MSA",3) D:HLMSTATE("STATUS")'="SU"
+ I HLMSTATE("STATUS")="",HLMSTATE("HDR","APP ACK TYPE")'="AL" S HLMSTATE("STATUS")="SU"
+ I HLMSTATE("STATUS")'="" S $P(^HLB(HLMSTATE("IEN"),0),"^",20)=HLMSTATE("STATUS") S:$G(HLMSTATE("MSA",3))]"" $P(^HLB(HLMSTATE("IEN"),0),"^",21)=HLMSTATE("MSA",3) D:HLMSTATE("STATUS")="SE"
  .N APP
- .S APP=HLMSTATE("HDR","RECEIVING APPLICATION") S:APP="" APP="UNKNOWN" S ^HLB("ERRORS",APP,HLMSTATE("DT/TM"),HLMSTATE("IEN"))=""
- .D COUNT^HLOESTAT("IN",$G(HLMSTATE("HDR","RECEIVING APPLICATION")),$G(HLMSTATE("HDR","SENDING APPLICATION")),$S(HLMSTATE("BATCH"):"BATCH",1:$G(HLMSTATE("HDR","MESSAGE TYPE"))),$G(HLMSTATE("HDR","EVENT")))
+ .S APP=HLMSTATE("HDR","RECEIVING APPLICATION") S:APP="" APP="UNKNOWN" S ^HLB("ERRORS","SE",APP,HLMSTATE("DT/TM"),HLMSTATE("IEN"))=""
  ;
  ;set the necessary parms for passing the msg to the app via the infiler
  D:PARMS("PASS")
@@ -186,16 +154,12 @@ UPDATE(HLMSTATE,HLCSTATE) ;
  .I HLMSTATE("HDR","SENDING FACILITY",2)]"" S FROM=FROM_"~"_HLMSTATE("HDR","SENDING FACILITY",2)_"~"_HLMSTATE("HDR","SENDING FACILITY",3)
  .I FROM="" S FROM="UNKNOWN SENDING FACILITY"
  .S PARMS("FROM")=FROM,PARMS("QUEUE")=HLMSTATE("STATUS","QUEUE"),PARMS("ACTION")=HLMSTATE("STATUS","ACTION")
- .I HLMSTATE("STATUS")'="" S PARMS("PURGE")=$S(HLMSTATE("STATUS")="ER":2,$G(HLMSTATE("ACK TO","STATUS"))="ER":2,1:1)
+ .I HLMSTATE("STATUS")'="" S PARMS("PURGE")=1
  .S:$G(HLMSTATE("ACK TO","IEN")) PARMS("ACKTOIEN")=HLMSTATE("ACK TO","IEN") ;to insure that the infiler will know to set the purge date at the same time as the initial message
  ;
  S PARMS("BODY")=HLMSTATE("BODY")
  S PARMS("DT/TM")=HLMSTATE("DT/TM")
  S PARMS("MSGID")=HLMSTATE("ID")
- ;
- ;** do not implement the Pass Immediate parameter **
- ;D INQUE(HLMSTATE("IEN"),.PARMS,$G(HLMSTATE("STATUS","PASS IMMEDIATE")))
- ;
  D INQUE(HLMSTATE("IEN"),.PARMS)
  Q
  ;
@@ -213,7 +177,7 @@ WRITEACK(HLCSTATE,HLMSTATE) ;
  ;  Function returns 1 if successful, 0 otherwise
  ;  HLMSTATE("MSA","MESSAGE CONTROL ID") - the msg id of the ack
  ;  HLMSTATE(,"MSA","DT/TM OF MESSAGE") - from the ack header
- ; 
+ ;
  N HDR,SUB,FS,CS,MSA,ACKID,TIME
  ;Hard-code the delimiters, the standard requires that the receiving system accept the delimiters listed in the header
  S FS="|"

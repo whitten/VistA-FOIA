@@ -1,5 +1,7 @@
 XQ6 ;SEA/AMF,SLC/CJS- BULK KEY DISTRIBUTION ;2/14/95  12:47
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007,1016**;APR 1, 2003;Build 5
  ;;8.0;KERNEL;;Jul 10, 1995
+ ;THIS ROUTINE CONTAINS IHS MODIFICATION BY IHS/ANMC/LJF 1/29/97
 EN1 S XQAL=1,XQDA=0 G INIT ; ENTRY POINT TO ACTIVATE KEY (XUKEYALL)
 EN2 S XQAL=0,XQDA=0 G INIT ; DE-ALLOCATE ACTIVE KEY (XUKEYDEALL)
 EN3 S XQAL=1,XQDA=1 G INIT ; DELEGATE KEYS (XQKEYDEL)
@@ -15,6 +17,11 @@ KEY ;
  S XQM=0 S:"-"[$E(X,1) X=$E(X,2,999),XQM=1
  S DIC=19.1,DIC(0)="EZM" S:'XQBOSS DIC("S")="I $D(^VA(200,DUZ,52,+Y,0))" D ^DIC K DIC I Y<0 W " ??",*7 G KEY
  I XQM W $S($D(XQKEY(+Y)):"  Deleted from current list",1:$C(7)_" ??  Key not on list") K XQKEY(+Y) G KEY
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Insert new line to warn user that the PROVIDER key must be given under
+ ;the ADD PROVIDER option. Original modification by IHS/ANMC/LJF 7/29/97
+ I $P(Y,U,2)="PROVIDER" W !,*7,"DO NOT GIVE PROVIDER KEY!!  IT MUST BE DONE UNDER ADD PROVIDER OPTION!!",!,"TYPE ^ TO START OVER."
+ ;----- END IHS MODIFICATION
  S XQKEY(+Y)="" I $D(^DIC(19.1,+Y,3,0)),$P(^(0),U,4)>0 D MORE
  G KEY
  ;
@@ -32,8 +39,15 @@ SHOW ;Show the users of a particular key
  K ^TMP($J) S XQL=1,DIC="^DIC(19.1,",DIC(0)="AEQMZ",DIC("A")="   Which key? " W ! D ^DIC I Y'>0 K DIC,XQL Q
  S XQKEY=$P(Y,U,2) I '$D(^XUSEC(XQKEY)) W !!,"There are no holders of this key." K DIC,XQKEY Q
  W @IOF,?15,"Current holders of the key ",XQKEY,!!
- S %=0 F XQI=0:0 S %=$O(^XUSEC(XQKEY,%)) Q:%=""  I $D(^VA(200,+%,0)) S ^TMP($J,$P(^VA(200,+%,0),U))=""
- S %="" F XQI=1:1 S %=$O(^TMP($J,%)) Q:%=""  W !,% D:'(XQI#16) PAUSE Q:X[U
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;Next two lines are commented out and replaced by two lines below to
+ ;add user's SERVICE to the display when displaying holders of a 
+ ;security key.  Original modification by IHS/ANMC/LJF 1/29/97
+ ;S %=0 F XQI=0:0 S %=$O(^XUSEC(XQKEY,%)) Q:%=""  I $D(^VA(200,+%,0)) S ^TMP($J,$P(^VA(200,+%,0),U))=""
+ ;S %="" F XQI=1:1 S %=$O(^TMP($J,%)) Q:%=""  W !,% D:'(XQI#16) PAUSE Q:X[U
+ S %=0 F XQI=0:0 S %=$O(^XUSEC(XQKEY,%)) Q:%=""  I $D(^VA(200,+%,0)) S ^TMP($J,$P(^VA(200,+%,0),U))=$$SERVICE(%)
+ S %="" F XQI=1:1 S %=$O(^TMP($J,%)) Q:%=""  W !,%,?30,^TMP($J,%) D:'(XQI#16) PAUSE Q:X[U
+ ;----- END IHS MODIFICATION
  K ^TMP($J),%,DIC,XQI,XQL,XQKEY
  Q
 PAUSE ;Hold the screen
@@ -70,4 +84,12 @@ MESS ;Correct problems with key cross-references from 7.0 %RCR above.
  .F  S DA=$O(^VA(200,DA(1),XQFIL,DA)) Q:DA'=+DA  D IX^DIK
  .Q
  K DA,DIC,DIK,XQDUZ,XQFIL
- Q
+ Q 
+ ;----- BEGIN IHS MODIFICATION - XU*8.0*1007
+ ;This SERVICE subroutine is added to return the user's service
+ ;when displaying holders of a security key. Original modification
+ ;by IHS/ANMC/LJF 1/29/97
+SERVICE(USR)       ; -- RETURNS USER'S SERVICE
+ NEW X S X=$P($G(^VA(200,+USR,5)),U) I X="" Q ""
+ Q $P($G(^DIC(49,X,0)),U)
+ ;----- END IHS MODIFICATION

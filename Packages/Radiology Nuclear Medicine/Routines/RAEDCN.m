@@ -1,27 +1,9 @@
 RAEDCN ;HISC/CAH,FPT,GJC,SS AISC/MJK,RMO-Edit Exams by Case Number ;1/11/02  11:15
- ;;5.0;Radiology/Nuclear Medicine;**5,13,10,18,28,31,34,45,85,97**;Mar 16, 1998;Build 6
- ;
- ; 06/11/2007 KAM/BAY RA*5*85 Remedy Call 174790 Change Exam Cancel
- ;            to allow only descendent exams with stub report
- ;
+ ;;5.0;Radiology/Nuclear Medicine;**5,13,10,18,28,31,34**;Mar 16, 1998
  ;last modified by SS JUNE 21,2000 for P18
 START D SET^RAPSET1 I $D(XQUIT) K XQUIT,RAFLG,RADR,POP,RAQUICK Q
-START1 ;
- N RAERR
- D ^RACNLU S RAERR=0 G Q:X="^"
- I RADR="[RA DIAGNOSTIC BY CASE]" D  I RAERR R !?5,"Press RETURN to exit:",RAXIT:DTIME G Q
- .N RAPRTSET,RAMEMARR,RA3,RA7003,RA17
- .D EN2^RAUTL20(.RAMEMARR)
- .S RA3=99
- .; disallow case that is a member of a printset, fld 25 = 2
- .I RAPRTSET W ! D WHYMSG2^RASTED S RAERR=1 Q
- .S RA7003=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0))
- .S RA17=$P(RA7003,U,17)
- .; disallow case that has no report or has stub report
- .I 'RA17!($$STUB^RAEDCN1(+RA17)) S RAERR=1 W !?3,$C(7),"No report has been entered yet for this exam, therefore it cannot be edited.",! Q
- .; disallow case that has an elec. filed report
- .I $P($G(^RARPT(+RA17,0)),U,5)="EF" S RAERR=1 D WARN1 Q
- .Q
+START1 D ^RACNLU G Q:X="^"
+ I RADR="[RA DIAGNOSTIC BY CASE]" N RAPRTSET,RAMEMARR,RA3 D EN2^RAUTL20(.RAMEMARR) S RA3=99 I RAPRTSET W ! D WHYMSG2^RASTED G Q  ;skip edit because member of set =2
  I $D(^RA(72,"AA",RAIMGTY,9,+RAST)),'$D(^XUSEC("RA MGR",+$G(DUZ))) W !!?3,$C(7),"You do not have the appropriate access privileges to edit completed exams." G START1
  I $D(^RA(72,"AA",RAIMGTY,0,+RAST)) W !!?3,$C(7),"Exam has been 'cancelled' therefore it cannot be edited." G START1
  I RADR="[RA DIAGNOSTIC BY CASE]",$D(^RARPT(RARPT,0)),$P(^(0),"^",5)="V" W !!?3,$C(7),"A report has been verified for this exam, therefore it cannot be edited.",! G START
@@ -35,29 +17,12 @@ START1 ;
  . S RADISPLY=$G(^RAMIS(71,+$P($G(^RADPT(+RADFN,"DT",+RADTI,"P",+RACNI,0)),U,2),0)) ; set $ZR to 71 for prccpt^radd1, not call raprod since diff col
  . S RADISPLY=$$PRCCPT^RADD1()
  . W !,?24,RADISPLY
- .;
- .;save 'before' CM data value to compare against the possible 'after'
- .;value
- .D TRK70CMB^RAMAINU(RADFN,RADTI,RACNI,.RATRKCMB) ;RA*5*45
- .;
  . Q
  D:RADR'="[RA NO PURGE SPECIFICATION]" SVBEFOR^RAO7XX(RADFN,RADTI,RACNI) ;P18 save before edit to compare it in RAUTL1 later
- D ^DIE K DIE("NO^"),DE,DQ,DIE,DR,RAZCM
+ D ^DIE K DIE("NO^"),DE,DQ,DIE,DR
  D:RADR'="[RA NO PURGE SPECIFICATION]" UP1^RAUTL1
- ;
- ;1) check data consistency between 'CONTRAST MEDIA USED' & 'CONTRAST
- ;MEDIA'
- ;2) check 'before' CM data against 'after' CM data, file in audit log
- ;if necessary. Remember, contrast media asked when in input template:
- ;RA EXAM EDIT (RA*5*45)
- I RADR="[RA EXAM EDIT]" D
- .S RACMDA=RACNI,RACMDA(1)=RADTI,RACMDA(2)=RADFN
- .D XCMINTEG^RAMAINU1(.RACMDA) ;1
- .D TRK70CMA^RAMAINU(RADFN,RADTI,RACNI,RATRKCMB) ;2
- .K RACMDA Q
- ;
  I $D(RAFLG("EDIT"))!($D(RAFLG("DIAG"))) D UNLOCK^RAUTL12(RADIE,RADADA)
- K RATRKCMB,RADUZ,RAZZ W ! G START1:'+$G(RAXIT)
+ K RADUZ,RAZZ W ! G START1:'+$G(RAXIT)
  ;
 Q K %,%DT,%W,%X,%Y,%Y1,A,C,D0,D1,D2,DA,DIC,DIE,DIV,DK,I,ORIFN,ORVP,POP,RACN,RACNI,RACS,RACT,RADADA,RADATE,RADFN,RADIE,RADIV,RADR,RADTE,RADTI,RAEXFM,RAEXLBLS,RAFIN,RAFL,RAFLG,RAFLH,RAFLHFL,RAHEAD,RAI,RAJ
  K RAMES,RANME,RANUM,RAOIFN,RAOR,RAORDIFN,RAOREA,RAORIFN,RAOSEL,RAOSTS,RAPOP,RAPRI,RAPRC,RAQUICK,RAPRIT,RARPT,RARPTZ,RASN,RASSN,RAST,RASTI,RAVW,X,XQUIT,VAINDT,VADMVT,Y,^TMP($J,"RAEX")
@@ -75,19 +40,18 @@ SAVE S RADR="[RA NO PURGE SPECIFICATION]" G START
  ;
 EDIT ; Case No. Exam Edit
  N RAEDIT,RAXIT
- N RAREM,RANUZD1,RAPSDRUG,RA00,RADIOPH,RALOW,RAHI,RADRAWN,RAASK,RADOSE,RASKMEDS,RAWHICH ;these are used by the edit template
+ N REM,RANUZD1,RAPSDRUG,RA00,RADIOPH,RALOW,RAHI,RADRAWN,RAASK,RADOSE,RASKMEDS,RAWHICH ;these are used by the edit template
  S RAXIT=0,RAFLG("EDIT")="",RAQUICK=1,RADR="[RA EXAM EDIT]" G START
  ;
 CANCEL D SET^RAPSET1 I $D(XQUIT) K XQUIT Q
  S RAXIT=$$CKREASON^RAEDCN1("C") I RAXIT K RAXIT Q  ;P18
  D ^RACNLU G Q:X="^" I $D(^RA(72,"AA",RAIMGTY,0,+RAST)) W !?3,$C(7),"This exam has already been cancelled!" G Q
  I $D(^RA(72,+RAST,0)),$P(^(0),"^",6)'="y" W !?3,$C(7),"This exam is in the '",$P(^(0),"^"),"' status and cannot be 'CANCELLED'." G Q
- ; 06/11/2007 KAM/BAY *85 Added descendent check to next line
-ASKIMG I RARPT,($$STUB^RAEDCN1(RARPT)),($$PSET^RAEDCN1(RADFN,RADTI,RACNI)) D  G:"Nn"[$E(X) Q G:"Yy"[$E(X) ASKCAN W:X'["?" $C(7) W !!?3,"Enter 'YES' to cancel a descendent exam with images, or 'NO' not to." G ASKIMG
+ASKIMG I RARPT,($$STUB^RAEDCN1(RARPT)) D  G:"Nn"[$E(X) Q G:"Yy"[$E(X) ASKCAN W:X'["?" $C(7) W !!?3,"Enter 'YES' to cancel an exam with images, or 'NO' not to." G ASKIMG
  . S X=RANME_"'s Case No. "_$E(RADTE,4,7)_$E(RADTE,1,2)_"-"_RACN
  . W !!?10,"----------------------------------",$C(7)
  . W !?10,X
- . W !?10,"This descendent exam has associated images.",$C(7)
+ . W !?10,"This exam has associated images.",$C(7)
  . W !?10,"----------------------------------",$C(7)
  . I '$D(^XUSEC("RA MGR",DUZ)) D  S X="N" Q
  .. W !!?3,"** You do not have the  RA MGR  key to cancel an exam with images. **",$C(7)
@@ -104,6 +68,38 @@ ASKCAN R !!,"Do you wish to cancel this exam now? NO// ",X:DTIME S:'$T!(X="")!(X
 PACS I '$D(Y),$D(RAFIN) W !?10,"...cancellation complete." D DELPNT^RAUTL20(RADFN,RADTI,RACNI),^RAORDC,CANCEL^RAHLRPC
  L -^RADPT(RADFN)
  G Q
+ ;
+DEL ; 'Exam Deletion' option (RA DELETEXAM)
+ D SETVARS Q:'($D(RACCESS(DUZ))\10)!('$D(RAIMGTY))
+ S RAXIT=$$CKREASON^RAEDCN1("D") I RAXIT K RAXIT Q  ;P18
+DEL1 D ^RACNLU G Q:X="^"
+ I RARPT W !?3,$C(7),"A report has been filed for this case. Therefore deletion is not allowed!" G DEL1
+ASKDEL R !!,"Do you wish to delete this exam? NO// ",X:DTIME S:'$T!(X="")!(X["^") X="N" G DEL1:"Nn"[$E(X) I "Yy"'[$E(X) W:X'["?" $C(7) W !!,"Enter 'YES' to delete this exam, or 'NO' not to." G ASKDEL
+ L +^RADPT(RADFN,"DT",RADTI):1 I '$T W !,$C(7),"Someone else is editing an exam for this patient on the date/time",!,"you selected. Please try Later" G DEL1
+ S RADELFLG="" D ^RAORDC
+ ; trigger RA CANCEL protocol on xam delete if xam not already cancelled
+ S RA7003=$G(^RADPT(RADFN,"DT",RADTI,"P",RACNI,0)),X=+$P(RA7003,"^",3)
+ ; no rpt filed, xam status exists & not cancelled -OR- xam status
+ ; non-existent.
+ I $P($G(^RA(72,X,0)),U,3)'=0 D
+ . K RAIENS,RAERR S RAIENS=""_RACNI_","_RADTI_","_RADFN_","_"",RAFDA(70.03,RAIENS,3)="CANCELLED" D FILE^DIE("KSE","RAFDA","RAERR") K RAIENS,RAERR,RAFDA D CANCEL^RAHLRPC
+ . Q
+ K RA7003 S RABULL="",DA(2)=RADFN,DA(1)=RADTI,DA=RACNI
+ S DIK="^RADPT(DA(2),""DT"",DA(1),""P""," D ^DIK
+ W !?10,"...deletion of exam complete."
+ K %,D,D0,D1,D2,DA,DIC,DIK,RADELFLG,RABULL,RAPRTZ,RAAFTER,RABEFORE
+ ; Check if one exam or multiple exams exists below "DT" node.
+ ; If no exams are present, delete "DT" node.
+ I '+$O(^RADPT(RADFN,"DT",RADTI,"P",0)) D
+ . K DA,DIK S DA(1)=RADFN,DA=RADTI
+ . S DIK="^RADPT(DA(1),""DT""," D ^DIK
+ . K DA,DIK Q
+ L -^RADPT(RADFN,"DT",RADTI)
+ G DEL1
+ ;
+VIEW ; 'View Exam by Case No.' option (RA VIEWCN)
+ D SETVARS Q:'($D(RACCESS(DUZ))\10)!('$D(RAIMGTY))
+ S RAVW="" D ^RACNLU G Q:X="^" K RAFL D ^RAPROD D Q G VIEW
  ;
 DUP ; Option: RA FLASH
  N RAREGX,RAYN D SET^RAPSET1 I $D(XQUIT) K XQUIT,POP Q
@@ -147,6 +143,4 @@ SETVARS ; Setup key Rad/Nuc Med variables
  I $O(RACCESS(DUZ,""))="" D SETVARS^RAPSET1(0)
  Q:'($D(RACCESS(DUZ))\10)  ; user does not have location access
  I $G(RAIMGTY)="" D SETVARS^RAPSET1(1) K:$G(RAIMGTY)="" XQUIT
- Q
-WARN1 W !?3,"An electronically filed report has already been entered for this case.",!?3,"Please use the 'Outside Report Entry/Edit' option to change or enter",!?3,"diagnostic code for this case.",!!
  Q

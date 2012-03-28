@@ -1,6 +1,5 @@
 XINDX1 ;ISC/REL,GRK,RWF - ERROR ROUTINE ;08/05/08  13:59
- ;;7.3;TOOLKIT;**20,61,66,68,110,121,128**;Apr 25, 1995;Build 1
- ; Per VHA Directive 2004-038, this routine should not be modified.
+ ;;7.3;TOOLKIT;**20,61,66,68,110,121**;Apr 25, 1995;Build 10
  G A
 E(ERR) ;
 A N %,%1 ;TXT is the line of the error.
@@ -78,5 +77,3 @@ ERROR ;
 59 ;;;F - Bad WRITE syntax.
 60 ;;;S - Lock missing Timeout.
 61 ;;;S - Non-Incremental Lock.
-62 ;;;S - First line of routine violates the SAC.
-63 ;;;F - GO or DO mismatch from block structure (M45).

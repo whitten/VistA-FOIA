@@ -1,4 +1,6 @@
-LRMITSRS ;SLC/STAFF - MICRO TREND REPORT SETUP ;11/7/93  12:33
+LRMITSRS ; IHS/DIR/FJE - MICRO TREND REPORT SETUP 12:33 ; 
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;**96**;Sep 27, 1994
  ; from LRMITSR
  ; sets up static information on reports

@@ -1,5 +1,5 @@
 RANMUSE3 ;HISC/SWM-Nuclear Medicine Usage reports ;10/20/97  11:09
- ;;5.0;Radiology/Nuclear Medicine;**65,47**;Mar 16, 1998;Build 21
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
 PGHD ; Page Header
  I RAPG!($E(IOST,1,2)="C-") W:$Y>0 @IOF
  S RAPG=RAPG+1
@@ -10,8 +10,7 @@ PGHD ; Page Header
  W !,"Division: ",RANUMD(RASEQD) W:$G(RAHDTYP)'="D" ?45,"Imaging Type: ",RANUMI(RASEQI)
  Q
 COLHD ; Column Header for detailed report
- I $$USESSAN^RAHLRU1() W !!,"Long-Case@Time",?22,"Patient Name",?38,"SSN",?50,"Radiopharm",?65,"Act.Drawn",?75,"Dose Adm'd",?88,"Low",?98,"High",?105,"Procedure",?121,"Who Adm'd"
- I '$$USESSAN^RAHLRU1() W !!,"Long-Case@Time",?16,"Patient Name",?35,"SSN",?44,"Radiopharm",?59,"Act.Drawn",?69,"Dose Adm'd",?83,"Low",?93,"High",?100,"Procedure",?116,"Who Adm'd"
+ W !!,"Long-Case@Time",?16,"Patient Name",?35,"SSN",?44,"Radiopharm",?59,"Act.Drawn",?69,"Dose Adm'd",?83,"Low",?93,"High",?100,"Procedure",?116,"Who Adm'd"
  W !,RALN
  Q
 COLHDS ; Column Header for summary report
@@ -62,11 +61,10 @@ FOOT W !!,"Notes: A case may have more than 1 radiopharm, so total no. unique ca
  W !!,$S(RATITLE["Usage":"Radiopharm",1:"Dose administerers")," selected for this report :" W !?6
  S RA2=0 F  S RA2=$O(^TMP($J,"RA EITHER",RA2)) Q:RA2=""  W:$X+$L(RA2)>(IOM+2) !?6 W RA2 W:$O(^(RA2))]"" ", "
  Q
-ZERO ; zero out total for imaging type(s) and associated division(s) w/o data
+ZERO ; zero out total for imaging type(s) that has no data
  S RA0=""
 Z1 S RA0=$O(^TMP($J,"RA D-TYPE",RA0)) Q:RA0']""  S RA1=""
 Z2 S RA1=$O(RACCESS(DUZ,"DIV-IMG",RA0,RA1)) G:RA1']"" Z1
  G:'$D(^TMP($J,"RA I-TYPE",RA1)) Z2
  S:'$D(^TMP($J,"RATUNIQ",RASEQD(RA0),RASEQI(RA1))) ^TMP($J,"RATUNIQ",RASEQD(RA0),RASEQI(RA1))=0
- S:'($D(^TMP($J,"RATUNIQ",RASEQD(RA0)))#2) ^TMP($J,"RATUNIQ",RASEQD(RA0))=0
  G Z2

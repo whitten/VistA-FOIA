@@ -1,5 +1,15 @@
-DGSEC1 ;ALB/RMO-MAS Security Options ;7/24/99  23:48
- ;;5.3;Registration;**222,149,214**;Aug 13, 1993
+DGSEC1 ;ALB/RMO-MAS Security Options ; [ 01/04/2002  7:06 AM ]
+ ;;5.3;Registration;**222,149,214,1010**;Aug 13, 1993
+ ;IHS/ANMC/LJF 9/06/2000 added IHS entry point for protocol
+ ;             9/07/2000 added check to quit loop if called by protocol
+ ;                       changed SSN to chart # in bulletin
+ ;             9/08/2000 changed SSN to chart # in purge report
+ ;             9/14/2000 commented out call to SECA08^VAFCDD01
+ ;                       no need to update Pivot table
+ ;             1/04/2002 using IHS template for editing
+ ;
+ ;cmi/anch/maw 05/03/2009 PATCH 1010 RQMT49 mods under subroutine 4
+ ;
  N I,X,DIK
  G:$D(^DOPT("DGSEC1",4)) A S ^DOPT("DGSEC1",0)="Security Menu Options^1N^" F I=1:1 S X=$T(@(I)+1) Q:X=""  S ^DOPT("DGSEC1",I,0)=$P(X,";;",2,99)
  S DIK="^DOPT(""DGSEC1""," D IXALL^DIK
@@ -7,10 +17,14 @@ A N DIC,Y,X
  W !! S DIC="^DOPT(""DGSEC1"",",DIC(0)="AEQM" D ^DIC Q:Y<0  D @+Y G A
 1 ;
  ;;Enter/Edit Patient Security Level
+ I $G(BDGSECL) K BDGSECL D Q Q  ;IHS/ANMC/LJF 9/7/2000
  N DA,DLAYGO,DR,DIC,X,Y
  I '$D(^XUSEC("DG SENSITIVITY",DUZ)) W !!?3,$C(7),"You do not have the appropriate access privileges to assign security." Q
  S DIC("A")="Select PATIENT NAME: ",DIC="^DGSL(38.1,",DLAYGO=38.1,DIC(0)="AELMQ",DGSENFLG="" W ! D ^DIC K DIC("A"),DGSENFLG Q:Y<0
  S DA=+Y
+ ;
+IHS ;EP; -- entry point from IHS protocol;IHS/ANMC/LJF 9/6/2000
+ S DIE="^DGSL(38.1,",DR="[BDG ENTER/EDIT SECURITY]" D ^DIE K DIE,DA,DR Q  ;IHS/ANMC/LJF 1/04/2002
  ;
  ; warn user if attempting to edit security level from remote source
  N SECSRCE,OK
@@ -31,7 +45,7 @@ A N DIC,Y,X
  S SENSAFTR=$P($G(^DGSL(38.1,DA,0)),"^",2)
  ;
  ;CIRN CHANGES
- I SENSBEF'=SENSAFTR D SECA08^VAFCDD01(DA)
+ ;I SENSBEF'=SENSAFTR D SECA08^VAFCDD01(DA)  ;IHS/ANMC/LJF 9/14/2000
  K SENSBEF,SENSAFTR
  G 1
  ;
@@ -47,7 +61,8 @@ BULTIN ;This bulletin is sent if a patient's sensitivity is removed.
  .S DIC="^VA(200,",DIC(0)="MO",X="`"_X D ^DIC
  .S:Y>0 XMB(1)=$P(Y,U,2) S:XMB(1)="" XMB(1)="UNKNOWN"
  .Q
- S XMB(2)=$S($D(^DPT(DA,0)):$P(^(0),"^")_" ("_$P(^(0),"^",9)_")",1:"UNKNOWN")
+ ;S XMB(2)=$S($D(^DPT(DA,0)):$P(^(0),"^")_" ("_$P(^(0),"^",9)_")",1:"UNKNOWN")
+ S XMB(2)=$$VAL^XBDIQ1(2,DA,.01)_" (#"_$$HRCN^BDGF2(DA,DUZ(2))_")"  ;IHS/ANMC/LJF 9/7/2000
  F DGI=3:1:6 S XMB(DGI)=""
  S SECSRCE=$P($G(^DGSL(38.1,DA,0)),"^",5) I SECSRCE'="" D
  .S XMB(3)=" >>> WARNING: The source of the patient sensitivity"
@@ -69,6 +84,8 @@ BULTIN ;This bulletin is sent if a patient's sensitivity is removed.
 ASKPUR N %
  W !!,"Are you sure you want to purge all non-sensitive patients" S %=2 D YN^DICN G Q:%<0!(%=2)
  I '% W !!,"Enter 'YES' to purge non-sensitive patients, or 'NO' to exit this process." G ASKPUR
+ D DTR  ;cmi/maw 5/3/2009 PATCH 1010 RQMT49
+ G Q:'$G(BDGSD)
  ;
 ASKPRT W !!,"Do you want to print patients as they are purged" S %=2 D YN^DICN G Q:%<0 S DGPRT=$S(%=2:"QUE",1:"") I '% W !!,"Enter 'YES' to print patients being purged, or 'NO' to schedule purge." G ASKPRT
  S DGPGM="PURNON^DGSEC1",DGVAR="DGPRT^DUZ" I DGPRT="" W ! D ZIS^DGUTQ G Q:POP,PURNON
@@ -76,7 +93,10 @@ ASKPRT W !!,"Do you want to print patients as they are purged" S %=2 D YN^DICN G
  ;
 PURNON N DIC,Y
  I DGPRT="" S DGCNT=0 W !!,"Purge Non-sensitive Patients from Security Log started " D H^DGUTL S Y=DGTIME D DT^DIQ W ".",!
- F DFN=0:0 S DFN=$O(^DGSL(38.1,"ANS",DFN)) Q:'DFN  I $D(^DGSL(38.1,DFN,0)),'$P(^(0),"^",2) S DA=DFN,DIK="^DGSL(38.1," D ^DIK I DGPRT="" W !," ...",$S($D(^DPT(DFN,0)):$P(^(0),"^")_" ("_$P(^(0),"^",9)_")",1:"Unknown") S DGCNT=DGCNT+1
+ ;F DFN=0:0 S DFN=$O(^DGSL(38.1,"ANS",DFN)) Q:'DFN  I $D(^DGSL(38.1,DFN,0)),'$P(^(0),"^",2) S DA=DFN,DIK="^DGSL(38.1," D ^DIK I DGPRT="" W !," ...",$S($D(^DPT(DFN,0)):$P(^(0),"^")_" ("_$P(^(0),"^",9)_")",1:"Unknown") S DGCNT=DGCNT+1
+ ;F DFN=0:0 S DFN=$O(^DGSL(38.1,"ANS",DFN)) Q:'DFN  I $D(^DGSL(38.1,DFN,0)),'$P(^(0),"^",2) S DA=DFN,DIK="^DGSL(38.1," D ^DIK I DGPRT="" W !," ...",$S($D(^DPT(DFN,0)):$P(^(0),"^")_" ("_$$HRCN^BDGF2(DFN,DUZ(2))_")",1:"Unknown") S DGCNT=DGCNT+1
+ F DFN=0:0 S DFN=$O(^DGSL(38.1,"ANS",DFN)) Q:'DFN  I $D(^DGSL(38.1,DFN,0)),'$P(^(0),"^",2),$P($P(^(0),"^",4),",")<BDGED,$P($P(^(0),"^",4),".")>BDGSD S DA=DFN,DIK="^DGSL(38.1," D ^DIK I DGPRT="" D  ;cmi/maw 5/3/2009 PATCH 1010 RQMT49
+ . W !," ...",$S($D(^DPT(DFN,0)):$P(^(0),"^")_" ("_$$HRCN^BDGF2(DFN,DUZ(2))_")",1:"Unknown") S DGCNT=DGCNT+1  ;IHS/ANMC/LJF 9/8/2000
  I DGPRT="" W !!,"Purge completed " D H^DGUTL S Y=DGTIME D DT^DIQ W ". ","Number of records purged: ",DGCNT
  ;
 Q K DFN,DGCNT,DGPGM,DGPRT,DGVAR,POP D CLOSE^DGUTQ
@@ -92,3 +112,14 @@ RUSURE() ; Description: Asks user if they are sure they want to edit the  DG SEC
  D ^DIR
  Q:$D(DIRUT) 0
  Q Y
+ ;
+DTR ;-- get date range
+ S %DT("A")="Begin Date: ",%DT="AEPX" W ! D ^%DT
+ I Y=-1 K BDGSD G ASKPUR
+ S BDGSD=Y X ^DD("DD") S BDGSDY=Y
+ED S %DT("A")="End Date: " W ! D ^%DT K %DT
+ I Y=-1 K BDGED G DTR
+ S BDGED=Y X ^DD("DD") S BDGEDY=Y
+ I BDGED<BDGSD W !!,"Ending Date cannot be before Starting Date! Please reenter.",! G DTR
+ Q
+ ;

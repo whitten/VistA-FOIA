@@ -1,4 +1,6 @@
-LRUET ;AVAMC/REG - RESULTS FOR A TEST RANGE ;2/18/93  12:43 ;
+LRUET ; IHS/DIR/FJE - RESULTS FOR A TEST RANGE 2/18/93 12:43 ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  D V^LRU W ! S DIC("A")="Select lab test to check a range of values: "
  S DIC=60,DIC(0)="AEQMOZ",DIC("S")="I $P(^(0),U,5)[""CH""" D ^DIC K DIC G:Y<1 END
@@ -15,7 +17,9 @@ QUE U IO K ^TMP($J) D L^LRU,S^LRU,H S LR("F")=1
  D D K ^TMP($J) D END,END^LRUTL Q
 C Q:'$D(^LR(LRDFN,"CH",LRI,LRN))!($P(^(0),"^",5)'=LRA)  S X=$P(^(LRN),"^") G:$E(X)=LRG S I @(+^(LRN)_LRB),^(LRN)'="canc" G S
  Q
-S S DFN=$P(^LR(LRDFN,0),"^",3) Q:'DFN  S X=^DPT(DFN,0),LRP=$P(X,"^"),SSN=$P(X,"^",9),^TMP($J,LRP,LRDFN,LRN,LRI)=$P(^LR(LRDFN,"CH",LRI,LRN),"^"),^TMP($J,LRP)=SSN,^TMP($J,"B",LRP,LRI)=$P(^LR(LRDFN,"CH",LRI,0),"^",11) Q
+S ;S DFN=$P(^LR(LRDFN,0),"^",3) Q:'DFN  S X=^DPT(DFN,0),LRP=$P(X,"^"),SSN=$P(X,"^",9),^TMP($J,LRP,LRDFN,LRN,LRI)=$P(^LR(LRDFN,"CH",LRI,LRN),"^"),^TMP($J,LRP)=SSN,^TMP($J,"B",LRP,LRI)=$P(^LR(LRDFN,"CH",LRI,0),"^",11) Q
+ S DFN=$P(^LR(LRDFN,0),"^",3) Q:'DFN  S X=^DPT(DFN,0),LRP=$P(X,"^"),SSN=$P(X,"^",9) D SSN^LRU  ;IHS/ANMC/CLS 08/18/96
+ S ^TMP($J,LRP,LRDFN,LRN,LRI)=$P(^LR(LRDFN,"CH",LRI,LRN),"^"),^TMP($J,LRP)=HRCN,^TMP($J,"B",LRP,LRI)=$P(^LR(LRDFN,"CH",LRI,0),"^",11) Q  ;IHS/ANMC/CLS 08/18/96
  ;
 D S LRP=0 F LRA=0:0 S LRP=$O(^TMP($J,LRP)) Q:LRP=""!(LR("Q"))  F LRDFN=0:0 S LRDFN=$O(^TMP($J,LRP,LRDFN)) Q:'LRDFN!(LR("Q"))  D LRT
  Q
@@ -25,7 +29,8 @@ LRT D:$Y>(IOSL-6) H Q:LR("Q")  S X=^TMP($J,LRP) W !!,LRP,?31,X
 W D:$Y>(IOSL-6) H1 Q:LR("Q")  S Y=9999999-LRI D DT^LRU W !,^TMP($J,"B",LRP,LRI) W:LRE=1 ?31,N(1) W ?41,Y,?65,$J(LRX,5) Q
  ;
 H Q:LR("Q")  I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
- D F^LRU W !,LRQ(2)," From: ",LRSTR," to ",LRLST,!,"Report for: ",$P(^VA(200,DUZ,0),U),!,"Patient",?34,"SSN",!,"Location",?31,"Test",?45,"Date",?65,"Result",!,LR("%") Q
+ ;D F^LRU W !,LRQ(2)," From: ",LRSTR," to ",LRLST,!,"Report for: ",$P(^VA(200,DUZ,0),U),!,"Patient",?34,"SSN",!,"Location",?31,"Test",?45,"Date",?65,"Result",!,LR("%") Q
+ D F^LRU W !,LRQ(2)," From: ",LRSTR," to ",LRLST,!,"Report for: ",$P(^VA(200,DUZ,0),U),!,"Patient",?34,"HRCN",!,"Location",?31,"Test",?45,"Date",?65,"Result",!,LR("%") Q  ;IHS/ANMC/CLS 08/18/96
 H1 D H Q:LR("Q")  W !,LRP,?31,^TMP($J,LRP) Q
  ;
 END D V^LRU Q

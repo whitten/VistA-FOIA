@@ -1,5 +1,5 @@
 RABUL ;HISC/FPT,GJC AISC/DMK-Generate 'RAD/NUC MED REQUEST CANCELLED' or 'RAD/NUC MED REQUEST HELD' Bulletin ;9/9/94  09:53
- ;;5.0;Radiology/Nuclear Medicine;**2,15,75**;Mar 16, 1998;Build 4
+ ;;5.0;Radiology/Nuclear Medicine;**2,15**;Mar 16, 1998
  ; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ; The variables DA and RAOSTS must be defined.
  ; The variable DA must be greater than 0, and RAOSTS must
@@ -19,7 +19,7 @@ RABUL ;HISC/FPT,GJC AISC/DMK-Generate 'RAD/NUC MED REQUEST CANCELLED' or 'RAD/NU
  ; Procedure ; RAPNAM ; XMB(3)    <---> Reason ; RARCR ; XMB(7)
  ; Date Desired ; RADTDS ; XMB(4) <---> Current User ; RAUSER ; XMB(8)
  ;
-EN(RAX) ; Pass in the request status (RAX)
+EN(RAX) ; Pass in the report status (RAX)
  ; also called during request status edit.
  Q:+$G(DA)'>0
  Q:+$G(RAOSTS)'=1&(+$G(RAOSTS)'=3)
@@ -39,15 +39,11 @@ EN(RAX) ; Pass in the request status (RAX)
  S RARCR=$S($D(^RA(75.2,RARCR,0)):$P(^(0),U),1:"Unknown")
  S:RARCR="Unknown" RARCR=$S($P(Z,U,27)]"":$P(Z,U,27),1:"Unknown")
  S RAUSER=$S($D(^VA(200,DUZ,0)):$P(^(0),U),1:"Unknown")
- ; --- P75 define the REASON FOR STUDY ---
- S RASTYREA=$P($G(^RAO(75.1,DA,.1)),U)
- S:RASTYREA="" RASTYREA="Unknown" ;req'd if missing error
- ;
- S XMB(1)=RANAME,XMB(2)=RASSN,XMB(3)=RAPNAM,XMB(4)=RASTYREA,XMB(5)=RADTDS
- S XMB(6)=RARPHY,XMB(7)=RARLOC,XMB(8)=RARCR,XMB(9)=RAUSER
+ S XMB(1)=RANAME,XMB(2)=RASSN,XMB(3)=RAPNAM,XMB(4)=RADTDS
+ S XMB(5)=RARPHY,XMB(6)=RARLOC,XMB(7)=RARCR,XMB(8)=RAUSER
  S XMB=RAXMB_$S(RAX=1:" CANCELLED",1:" HELD")
  D ^XMB:$D(^XMB(3.6,"B",XMB))
- K RANAME,RAPNAM,RARLOC,RARPHY,RARCR,RASTYREA,XMB,XMB0,XMC0,XMDT,XMM,XMMG
+ K RANAME,RAPNAM,RARLOC,RARPHY,RARCR,XMB,XMB0,XMC0,XMDT,XMM,XMMG
  Q
 OE3(DA) ; Trigger the Rad/Nuc Med Request Cancelled bulletin when
  ; the order is discontinued through CPRS (frontdoor).

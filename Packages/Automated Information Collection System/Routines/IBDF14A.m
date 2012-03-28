@@ -1,5 +1,5 @@
 IBDF14A ;ALB/CJM - AICS LIST CLINIC SETUP ; JUL 20,1993
- ;;3.0;AUTOMATED INFO COLLECTION SYS;**25**;APR 24, 1997
+ ;;3.0;AUTOMATED INFO COLLECTION SYS;;APR 24, 1997
  ;
 % ; -- entry point from ibdf14
  I '$D(VAUTD) G ^IBDF14
@@ -15,7 +15,6 @@ CLINICS ; -- get a list of clinics with setups defined
  .I DIVIS="" S DIVIS=$S(MULTI=0:$$PRIM^VASITE,MULTI=1:"Unknown",1:1)
  .I 'VAUTD,'$D(VAUTD(DIVIS)) Q  ;if not all divisions or select div.
  .S:+DIVIS DIVIS=$P($G(^DG(40.8,+DIVIS,0)),"^")
- .I DIVIS="" S DIVIS="Unknown"
  .S:NAME]"" ^TMP($J,"IBCS",DIVIS,NAME)=CLINIC_"^"_SETUP,CNT(DIVIS)=$G(CNT(DIVIS))+1
  Q
  ;

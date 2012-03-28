@@ -1,4 +1,6 @@
-LRACPG ;SLC/RWF - REMOVE LR(LRDFN,"PG") TO INITIALIZE PAT CUM ;19 JUN 84 12:38PM ;
+LRACPG ; IHS/DIR/FJE - REMOVE LR(LRDFN,"PG") TO INITIALIZE PAT CUM 19 JUN 84 12:38PM ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
 ANS ;
  W !,"Are you certain you wish to re-initial",!?10," every patient's cumulative pages  "

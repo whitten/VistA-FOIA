@@ -1,32 +1,31 @@
-RAO7RON1 ;HISC/GJC,FPT-Request message from OE/RR. (frontdoor) ; 7/26/05 2:08pm
- ;;5.0;Radiology/Nuclear Medicine;**69,75,98**;Mar 16, 1998;Build 2
+RAO7RON1 ;HISC/GJC,FPT-Request message from OE/RR. (frontdoor) ;8/4/97  12:27
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
  ;------------------------- Variable List -------------------------------
  ; RADATA=HL7 data minus seg. hdr    RAHDR=Segment header
  ; RAHLFS="|"                        RAMSG=HL7 message passed in
  ; RAOBR12=danger code               RAOBR18=modifier
  ; RAOBR19=Img. Loc. pntr (79.1)     RAOBR30=trans. mode
- ; RAOBR31=Reason for Study          RAOBX2=format of observ. value
- ; RAOBR4=univ. trans. mode          RAOBX5=observ. value
- ; RAOBX3=observ. ID                 RAORC10=entered by (200
- ; RAORC1=order control              RAORC15=order effective D/T
- ; RAORC12=ordering provider (200)   RAORC2=placer order #_"^OR"
- ; RAORC16=order control reason      RAORC7=start dt/freq. of service
- ; RAORC3=filler order #_"^RA"       RAPID5=patient name (2)
- ; RAPID3=patient ID                 RAPV12=patient class
- ; RAPV119=visit #                   RASEG=message seg. including header
- ; RAPV13=patient location (44)
+ ; RAOBR4=univ. trans. mode          RAOBX2=format of observ. value
+ ; RAOBX3=observ. ID                 RAOBX5=observ. value
+ ; RAORC1=order control              RAORC10=entered by (200)
+ ; RAORC12=ordering provider (200)   RAORC15=order effective D/T
+ ; RAORC16=order control reason      RAORC2=placer order #_"^OR"
+ ; RAORC3=filler order #_"^RA"       RAORC7=start dt/freq. of service
+ ; RAPID3=patient ID                 RAPID5=patient name (2)
+ ; RAPV119=visit #                   RAPV12=patient class
+ ; RAPV13=patient location (44)      RASEG=message seg. including header
  ; ----------------------------------------------------------------------
  ;
 OBR ; breakdown the 'OBR' segment
  S RAOBR4=$P(RADATA,RAHLFS,4)
  F I=1:1:$L(RAOBR4,RAECH(1)) S RAOBR4(I)=$P(RAOBR4,RAECH(1),I)
- I RAOBR4(1)'="" S RACPTIEN=+$O(^ICPT("B",RAOBR4(1),0)) S:'RACPTIEN RAERR=8 Q:RAERR  ;RA*5*69
+ I +RAOBR4(1) S RACPTIEN=+$O(^ICPT("B",+RAOBR4(1),0)) S:'RACPTIEN RAERR=8 Q:RAERR
  S RAERR=$$EN2^RAO7VLD(71,+RAOBR4(4),RAOBR4(5)) S:RAERR RAERR=8 Q:RAERR
  I $$UP^XLFSTR($P($G(^RAMIS(71,+RAOBR4(4),0)),"^",6))="P" D  Q:RAERR
  . S RAERR=$$EN6^RAO7VLD(+RAOBR4(4)) S:RAERR RAERR=32
  . Q
- I RAOBR4(1)'="" S:'$D(^RAMIS(71,"D",RACPTIEN,+RAOBR4(4))) RAERR=8 Q:RAERR  ;RA*5*69
+ I +RAOBR4(1) S:'$D(^RAMIS(71,"D",RACPTIEN,+RAOBR4(4))) RAERR=8 Q:RAERR
  S RAOBR4(4,"I-TYPE")=+$P($G(^RAMIS(71,+RAOBR4(4),0)),"^",12)
  S RANEW(75.1,"+1,",2)=RAOBR4(4)
  S RAIT=$P(^RAMIS(71,+RAOBR4(4),0),U,12)
@@ -62,20 +61,6 @@ OBR ; breakdown the 'OBR' segment
  S:'RAERR RAERR=$$EN1^RAO7VLD(75.1,19,"E",RAOBR30,"RASULT","")
  S:RAERR RAERR=13 Q:RAERR
  S RANEW(75.1,"+1,",19)=RAOBR30
- ;--- Reason for Study P75 ---
- ;CPRS will not pass 'Reason for Study' data until OR*3.0*243
- ;(GUI CPRS V27) is released. Define a default Reason for Study 
- I '$$PATCH^XPDUTL("OR*3.0*243") S RAOBR31="See Clinical History:"
- E  D  Q:RAERR  ;CPRS V27 is installed
- .S RAOBR31=$P($P(RADATA,RAHLFS,31),RAECH(1),2)
- .S:RAOBR31="" RAERR=38 Q:RAERR
- .S RAERR=$$EN1^RAO7VLD(75.1,1.1,"E",RAOBR31,"RASULT","")
- .S:RAERR RAERR=39
- .Q
- S RAOBR31=$TR(RAOBR31,$C(10)," ")  ;strip 'line feed' - P98
- S RAOBR31=$TR(RAOBR31,$C(13)," ")  ;strip 'carriage return' - P98
- S:'RAERR RANEW(75.1,"+1,",1.1)=RAOBR31
- K RAOBR31
  Q
 OBX ; breakdown the 'OBX' segment
  S RAOBX2=$P(RADATA,RAHLFS,2)
@@ -84,28 +69,9 @@ OBX ; breakdown the 'OBX' segment
  S RAOBX5=$P(RADATA,RAHLFS,5)
  F I=1:1:$L(RAOBX3,RAECH(1)) S RAOBX3(I)=$P(RAOBX3,RAECH(1),I)
  S X=RAOBX3(2) D UPPER^RAUTL4 S RAOBX3(2)=Y
- ;
- ;P75 check to see if CLINICAL HISTORY data is passed. If data is passed, and not yet
- ;determined if valid continue to check for validity until:
- ;1-valid data is found
- ;2-no data left to validate
  I RAOBX3(1)=2000.02 D
- .;check if a null value is sent for CLINICAL HISTORY which is
- .;possible if the CPRS user does not enter a CLINICAL HISTORY
- .I RAOBX5="",$P(RACLIN,U)'=1 Q
- .;now if data was sent (RAOBX5'="") set the data received from CPRS flag
- .S $P(RACLIN,U)=1
- .;now that we know the CPRS user intended to send CLINICAL HISTORY data
- .;radiology has to validate the format of that data. $$EN4^RAO7VLD(str)
- .;returns 1 if the data passed in was valid, else 0. Once we establish
- .;that valid data has been sent, all subsequent data is accepted, valid
- .;or not.
- .S:$$EN4^RAO7VLD(RAOBX5) $P(RACLIN,U,2)=1
- .;now, if the current character string or any other character string
- .;of data representing the CLINICAL HISTORY has been accepted as valid
- .;($P(RACLIN,U,2)=1) save the character string
- .I $P(RACLIN,U,2)=1 S RAWP=RAWP+1,^TMP("RAWP",$J,RAWP)=RAOBX5
- ;
+ .S:RACLIN RACLIN=$$EN4^RAO7VLD(RAOBX5)
+ .S RAWP=RAWP+1,^TMP("RAWP",$J,RAWP)=RAOBX5
  I RAOBX3(1)=2000.33 D  Q:RAERR
  .S RAERR=$$EN1^RAO7VLD(75.1,13,"E",RAOBX5,"RASULT","") S:RAERR RAERR=14 Q:RAERR
  .S RAPREG=$E(RAOBX5),RAPREG=$S(RAPREG="N"!(RAPREG="n"):"n",RAPREG="Y"!(RAPREG="y"):"y",1:"u")

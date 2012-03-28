@@ -1,4 +1,5 @@
-LRUCN ;AVAMC/REG/CYM - LAB CONSULTS ;2/18/98  12:34 ;
+LRUCN ;AVAMC/REG/CYM - LAB CONSULTS ;2/18/98  12:34 ; [ 05/15/2003  12:31 PM ]
+ ;;5.2T9;LR;**1006,1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**203,247**;Sep 27, 1994
  ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
  D END W !!?20,"CONSULTATION REPORT"
@@ -14,10 +15,16 @@ H S LRQ=LRQ+1 W @IOF,!!!!,LR("%"),!?5,"CLINICAL RECORD ",LRL(1),?51,"|" W:LRQ>1 
 W W !,LR("%") Q
 F F X=0:0 Q:$Y>(IOSL-12)  W !
  D W W !?60,"(",$S($D(LRE):"End of report",1:"See next page"),")",!,LRS,!,LRS(1),?60,LRD
- D W W !,LRP,?40,"LOC: ",LRLLOC,!,"SSN:",SSN,?16,"SEX:",SEX," DOB: ",DOB W:$D(AGE) " AGE:",AGE W !
+ ;D W W !,LRP,?40,"LOC: ",LRLLOC,!,"SSN:",SSN,?16,"SEX:",SEX," DOB: ",DOB W:$D(AGE) " AGE:",AGE W !
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ D W W !,LRP,?40,"LOC: ",LRLLOC,!,"HRCN:",HRCN,?16,"SEX:",SEX," DOB: ",DOB W:$D(AGE) " AGE:",AGE W !  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  W:$L(LRADM) "ADM:",$E(LRADM,1,12) W:$D(LRADX) ?17,"DX:",$E(LRADX,1,28) W:$L(LRMD) ?46,LRMD Q
 SET S X=^LAB(65.9,LRL,0),DIWL=$S($P(X,U,5):$P(X,U,5),1:5),DIWR=IOM-$P(X,U,6),DIWF=$S($P(X,U,7):"D",1:""),DIWF=DIWF_$S($P(X,U,8):"R",1:"")
  S X=$S($D(^LAB(65.9,LRL,3)):^(3),1:""),LRS=$P(X,"^"),LRS(1)=$P(X,"^",2) Q
-ASK I '$O(^LR(LRDFN,LRSS,0)) S LRI=-1 W $C(7),!!,"There are no specimen dates for ",LRP," ",SSN Q
+ASK ;I '$O(^LR(LRDFN,LRSS,0)) S LRI=-1 W $C(7),!!,"There are no specimen dates for ",LRP," ",SSN Q
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ I '$O(^LR(LRDFN,LRSS,0)) S LRI=-1 W $C(7),!!,"There are no specimen dates for ",LRP," ",HRCN Q  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  K DIC S DIC="^LR(LRDFN,LRSS,",DIC(0)="AEQM" D ^DIC K DIC S LRI=+Y,Y=$P(Y,U,2),LRI(1)=$$FMTE^XLFDT(Y,"M") Q
 END D V^LRU Q

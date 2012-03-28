@@ -1,10 +1,9 @@
-LRDAGE ;DFW/MRL/DALOI/FHS - RETURN TIMEFRAME IN DAYS, MONTHS OR YEARS; 15 MAR 90
- ;;5.2;LAB SERVICE;**279,302**;Sep 27, 1994
+LRDAGE ;DFW/MRL/DALOI/FHS - RETURN TIMEFRAME IN DAYS, MONTHS OR YEARS;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**279,302,1022,1027**;NOV 01, 1997
  ;Adapted from IDAGE routine
  ;If period is under 31 days then format is nnd where d=days
  ;If period is under 2 years then format is nnm where m=month(s)
  ;In all other cases format is in nny where y=years
- ;
  ;
  ;Entry point from patient file in VA FileManager
  ;
@@ -32,16 +31,24 @@ DATE(DOB,LRCDT) ;Entry point if passing only a valid Date without patient
  ;   DOB, Date of birth
  ;   LRCDT = collection date
  ; Date formate error will return 99yr
+ ;
+ ; IHS/OIT/MKK LR*5.2*1027 - Date Format error will return -1
+ ;     Because people in RPMS can be 99yrs old (or older)
  N X,Y,%DT
  I '$G(LRCDT) S LRCDT=$$DT^XLFDT
  S DOB=$P(DOB,".")
- I '$G(DOB) Q "99yr"  ;no DOB passed
+ ; I '$G(DOB) Q "99yr"  ;no DOB passed
+ I '$G(DOB) Q -1  ; no DOB passed -- IHS/OIT/MKK LR*5.2*1027
  S X=DOB,LRCDT=$P(LRCDT,".")
- I $S(DOB'=+DOB:1,LRCDT'=+LRCDT:1,1:0) Q "99yr"
- I $S(DOB'?7N.NE:1,LRCDT'?7N.NE:1,1:0) Q "99yr"
- D ^%DT I Y'>0 Q "99yr"  ;invalid date
+ ; I $S(DOB'=+DOB:1,LRCDT'=+LRCDT:1,1:0) Q "99yr"
+ ; I $S(DOB'?7N.NE:1,LRCDT'?7N.NE:1,1:0) Q "99yr"
+ ; D ^%DT I Y'>0 Q "99yr"  ;invalid date
+ I $S(DOB'=+DOB:1,LRCDT'=+LRCDT:1,1:0) Q -1      ; IHS/OIT/MKK LR*5.2*1027
+ I $S(DOB'?7N.NE:1,LRCDT'?7N.NE:1,1:0) Q -1      ; IHS/OIT/MKK LR*5.2*1027
+ D ^%DT I Y'>0 Q -1               ; invalid date   IHS/OIT/MKK LR*5.2*1027
  S X=LRCDT
- K %DT D ^%DT I Y'>0 Q "99yr"  ;invalid date
+ ; K %DT D ^%DT I Y'>0 Q "99yr"  ;invalid date
+ K %DT D ^%DT I Y'>0 Q -1         ; invalid date   IHS/OIT/MKK LR*5.2*1027
  ;
 CALC ;Calculate timeframe based on difference between DOB and collection
  ; date. Time is stripped off.
@@ -50,11 +57,13 @@ CALC ;Calculate timeframe based on difference between DOB and collection
  ; 30-730 dy = mo
  ; >24 mo = yr
  ;
- I DOB>LRCDT Q "99yr"
+ ; I DOB>LRCDT Q "99yr"
+ I DOB>LRCDT Q -1                                ; IHS/OIT/MKK LR*5.2*1027
  I DOB=LRCDT Q "1dy"  ;same dates---pass 1 day old
  S X=$E(LRCDT,1,3)-$E(DOB,1,3)-($E(LRCDT,4,7)<$E(DOB,4,7))
  I X>1 S X=+X_"yr" Q X   ;age 2 years or more---pass in years
  S X=$$FMDIFF^XLFDT(LRCDT,DOB,1)
  I X>30 S X=X\30_"mo" Q X  ;over 30 days---pass in months
  E  S X=X_"dy" Q X  ;under 31 days---pass in days
- Q "99yr"
+ ; Q "99yr"
+ Q -1                                            ; IHS/OIT/MKK LR*5.2*1027

@@ -1,7 +1,6 @@
 RAO7MFN ;HISC/GJC-Create MFN orderable item update msg ;6/11/97  08:47
- ;;5.0;Radiology/Nuclear Medicine;**1,6,10,18,45**;Mar 16, 1998
+ ;;5.0;Radiology/Nuclear Medicine;**1,6,10,18**;Mar 16, 1998
  ;Last midification by SS for P18 JUN 19, 2000
- ;Last modification: 12.16.03 patch 45 Contrast Media by CPT gjc
 PROC(RAENALL,RAFILE,RASTAT,RAY) ; Entry point to update a single procedure.
  ; 'RAY'    <> is the same as 'Y' when passed back from DIC after
  ;             lookup on file 71 & file 71.3
@@ -16,6 +15,7 @@ PROC(RAENALL,RAFILE,RASTAT,RAY) ; Entry point to update a single procedure.
  ;  root in which to place the output.
  ;
  Q:'$D(RAY)!('$D(RAFILE))!('$D(RASTAT))!('$D(RAENALL))
+ Q:'+$P(RASTAT,"^")&('+$P(RASTAT,"^",2))  ; inactive before & after edit
  S RAFNUM=71,RAFNAME=$P($G(^DIC(RAFNUM,0)),"^"),RAXIT=0
  S:'$D(RATSTMP) RATSTMP=$$NOW^XLFDT()
  S:'$D(RACNT) RACNT=0 S:'$D(RAINCR) RAINCR="S RACNT=RACNT+1"
@@ -42,26 +42,28 @@ PROC(RAENALL,RAFILE,RASTAT,RAY) ; Entry point to update a single procedure.
  . Q
  Q:$$PROCNDE^RAO7UTL(.RA71)  ; Does the Proc. have Proc-Types & I-Types
  I RAFILE=71 D
- .I +$P(RAY,"^",3) D
- ..;new entry, add to master file whether active or inactive
- ..S RAMFE="MAD"
- ..Q
- .I '+$P(RAY,"^",3),(+$P(RASTAT,"^",2)) D
- ..;now active regardless of prior status, update master file
- ..S RAMFE="MUP"
- ..Q
- .I '+$P(RAY,"^",3),('+$P(RASTAT,"^",2)) D
- ..;now inactive regardless of prior status, deactivate master file
- ..S RAMFE="MDC"
- ..Q
- .Q
+ . I +$P(RAY,"^",3),(+$P(RASTAT,"^",2)) D
+ .. ; new entry, add to master file
+ .. S RAMFE="MAD"
+ .. Q
+ . I '+$P(RAY,"^",3),(+$P(RASTAT,"^")),(+$P(RASTAT,"^",2)) D
+ .. ; active to active, update master file
+ .. S RAMFE="MUP"
+ .. Q
+ . I '+$P(RAY,"^",3),('+$P(RASTAT,"^")),(+$P(RASTAT,"^",2)) D
+ .. ; inactive to active, update master file
+ .. S RAMFE="MUP"
+ .. Q
+ . I '+$P(RAY,"^",3),(+$P(RASTAT,"^")),('+$P(RASTAT,"^",2)) D
+ .. ; was active now inactive, deactivate master file
+ .. S RAMFE="MDC"
+ .. Q
+ . Q
  ; If RAMFE is still not defined, must be an addition to common orders
  ; 'Update' to OE since procedure is already in their master file
  I RAFILE=71.3 S RAMFE="MUP"
- ;
  ; If parent with no descendents, send deactivate msg even if active
  I $P($G(RA71(0)),"^",6)="P",'$O(^RAMIS(71,$S(RAFILE=71.3:+$P(RAY,"^",2),1:+RAY),4,0)) S RAMFE="MDC"
- ;
  S RACPT(0)=$$NAMCODE^RACPTMSC(+$P(RA71(0),"^",9),DT)
  S:RAFILE=71 RAIEN71=+RAY S:RAFILE=71.3 RAIEN71=+$P(RAY,"^",2)
  S RAXT71=$P(RA71(0),"^")
@@ -69,8 +71,7 @@ PROC(RAENALL,RAFILE,RASTAT,RAY) ; Entry point to update a single procedure.
  S RAPHYAP=$S($P(RA71(0),"^",11)="":"","Yy"[$P(RA71(0),"^",11):"Y",1:"N")
  S RACOST=$P(RA71(0),"^",10),RAPRCTY=$P(RA71(0),"^",6)
  S RACMNOR=$S($P($G(RA713(0)),"^",4)]"":"Y",1:"N") ;can't be an active common w/o a seq #
- ;determine CM associations for active & inactive procedures
- S RACMCODE=$$CMEDIA^RAO7UTL(RAIEN71,$P(RA71(0),U,6)) ;ien, proc. type
+ S RACMCODE=$$CMEDIA^RAO7UTL(RAIEN71)
  S RAINACT=$S(RA71("I")]"":$$HLDATE^HLFNC(RA71("I"),"DT"),1:"")
  I 'RAENALL D
  . X RAINCR
@@ -88,7 +89,7 @@ PROC(RAENALL,RAFILE,RASTAT,RAY) ; Entry point to update a single procedure.
  K RAINACT X RAINCR
  S @(RAVAR_RACNT_")")="ZRA"_RAHLFS_RAIMGAB_RAHLFS_RAPHYAP
  S @(RAVAR_RACNT_")")=@(RAVAR_RACNT_")")_RAHLFS_RACOST_RAHLFS
- S @(RAVAR_RACNT_")")=@(RAVAR_RACNT_")")_$G(RACMCODE)_RAHLFS
+ S @(RAVAR_RACNT_")")=@(RAVAR_RACNT_")")_RACMCODE_RAHLFS
  S @(RAVAR_RACNT_")")=@(RAVAR_RACNT_")")_RACMNOR_RAHLFS
  S @(RAVAR_RACNT_")")=@(RAVAR_RACNT_")")_RAPRCTY_RAHLFS
  ; Check the synonym (1), message (3) and the Education Description

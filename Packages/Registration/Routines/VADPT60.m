@@ -1,5 +1,6 @@
 VADPT60 ;ALB/MJK - Patient ID Utilities; 12 AUG 89 @1200
- ;;5.3;Registration;;Aug 13, 1993
+ ;;5.3;Registration;**1004**;Aug 13, 1993
+ ;IHS/OIT/LJF  11/10/2005 PATCH 1004 included for sites where it has been overwritten
  ;
 EN D DT^DICRW S X="VADPT60",DIK="^DOPT("""_X_""","
  G:$D(^DOPT(X,7)) A S ^DOPT(X,0)="Patient ID Utilities^1N^"

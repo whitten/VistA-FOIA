@@ -1,6 +1,6 @@
-LRBLDEX1 ;AVAMC/REG/CYM - EX-BLOOD DONORS ;7/3/96  20:44 ;
- ;;5.2;LAB SERVICE;**72,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLDEX1 ; IHS/DIR/AAB - EX-BLOOD DONORS 7/3/96 20:44 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  S LRP=0 D H S LR("F")=1 F A=1:1 S LRP=$O(^LRO(69.2,LRAA,8,65.5,1,"B",LRP)) Q:LRP=""  F LRI=0:0 S LRI=$O(^LRO(69.2,LRAA,8,65.5,1,"B",LRP,LRI)) Q:'LRI  D L
  G:LR("Q") OUT I $D(^TMP("LRBL",$J)) D H2 Q:LR("Q")  S A=0 F B=0:0 S A=$O(^TMP("LRBL",$J,A)) Q:A=""!(LR("Q"))  D:$Y>(IOSL-6) H2 Q:LR("Q")  W !,A,?15,^TMP("LRBL",$J,A)
 OUT K ^TMP("LRBL",$J) D V^LRU,END^LRUTL Q  ;out

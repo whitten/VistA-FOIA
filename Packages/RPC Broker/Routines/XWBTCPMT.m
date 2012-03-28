@@ -1,5 +1,5 @@
 XWBTCPMT ;ISF/RWF - Routine to test a connection ;10/07/09  16:37
- ;;1.1;RPC BROKER;**43,49,53**;Mar 28, 1997;Build 4
+ ;;1.1;RPC BROKER;**43,49,53**;Mar 28, 1997;Build 5
 CALL ;Interactive
  N IP,PORT,STAT
  D HOME^%ZIS

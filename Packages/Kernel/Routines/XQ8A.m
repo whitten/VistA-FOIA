@@ -1,4 +1,4 @@
-XQ8A ;SEA/LUKE - Rebuild menus in all production accounts ;06/26/2000  09:15
+XQ8A ;SEA/LUKE - Rebuild menus in all production accounts ;06/26/2000  09:15 [ 07/29/2004   9:01 AM ]
  ;;8.0;KERNEL;**46,157**;Jul 10, 1995
 BLD1 ;Build the ^XUTL("XQO") for a single XQDIC in all production UCI's
  S XQ8SV=XQY_U_XQDIC_U_XQY0

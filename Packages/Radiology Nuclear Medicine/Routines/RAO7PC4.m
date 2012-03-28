@@ -1,6 +1,5 @@
 RAO7PC4 ;HISC/SWM-utilities ;11/19/01  10:23
- ;;5.0;Radiology/Nuclear Medicine;**28,32,31,45,77**;Mar 16, 1998;Build 7
- ;08/10/2006 BAY/KAM Remedy Call 134839 Subscript Error
+ ;;5.0;Radiology/Nuclear Medicine;**28,32,31**;Mar 16, 1998
  Q
 EN1 ; api for CPRS notification alert #67
  Q:'$D(XQADATA)
@@ -9,9 +8,7 @@ EN1 ; api for CPRS notification alert #67
  D KIL1 ;  kill ^TMP nodes
  Q
 SET1 N RADFN,RADTI,RACNI,RAPROC1,RAPROC2,RAPHY1,RAPHY2,RAPMOD1,RAPMOD2,RAACNT
- N RAPATNAM,RASSN,RASTR,I,J,RACMU
- ; 08/10/2006 BAY/KAM Remedy Call 134839/RA*5*77 - Added next line
- Q:$G(XQADATA)=""
+ N RAPATNAM,RASSN,RASTR,I,J
  S RADFN=$P(XQADATA,"/") ; ien patient
  S RAACNT=0 ; counter
  S RADTI=$P(XQADATA,"/",2) ; inverse date of exam
@@ -25,16 +22,15 @@ SET1 N RADFN,RADTI,RACNI,RAPROC1,RAPROC2,RAPHY1,RAPHY2,RAPMOD1,RAPMOD2,RAACNT
  K ^TMP($J,"RAE4")
  Q:'$D(^DPT(RADFN,0))
  S RAPATNAM=$P(^DPT(RADFN,0),"^") S RASSN=$$SSN^RAUTL() S:RASSN="" RASSN="Unkn"
- S RACMU=$S(+$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"CM",0))>0:" (CM w/exam)",1:"")
  S ^TMP($J,"RAE4",1)="Imaging Exam for "_RAPATNAM_" ("_RASSN_") changed:"
  I 'RAPROC2,RAPROC1 D
  .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))=" "
- .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))="For procedure "_$E($P(^RAMIS(71,RAPROC1,0),"^"),1,53)_RACMU
+ .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))="For procedure  "_$P(^RAMIS(71,RAPROC1,0),"^")
  .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))=" "
  I RAPROC2 D
  .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))=" Procedure changed"
- .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))="  From: "_$E($P(^RAMIS(71,RAPROC1,0),"^"),1,53)
- .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))="  To:   "_$E($P(^RAMIS(71,RAPROC2,0),"^"),1,53)_RACMU
+ .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))="  From: "_$P(^RAMIS(71,RAPROC1,0),"^")
+ .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))="  To:   "_$P(^RAMIS(71,RAPROC2,0),"^")
  .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))=""
  I RAPHY2 D
  .S ^TMP($J,"RAE4",$$INCR^RAUTL4(RAACNT))=" Requesting Physician changed"
@@ -77,7 +73,7 @@ SETALERT ;
  ;
 ZZ(RASTRING) ; Additional text for display when processing alert.
  ;
- N RADFN,RADTI,RACMU,RACNI,RAPROC1,RAPROC2,RAPHY1,RAPHY2,RAPMOD1,RAPMOD2
+ N RADFN,RADTI,RACNI,RAPROC1,RAPROC2,RAPHY1,RAPHY2,RAPMOD1,RAPMOD2
  N RAPNAM,RAPSSN,I,RAPRFR,RAPRTO,RAPHYFR,RAPHYTO,RASTR
  S RADFN=$P(RASTRING,"/") ; ien patient
  S RADTI=$P(RASTRING,"/",2) ; inverse date of exam
@@ -93,18 +89,17 @@ ZZ(RASTRING) ; Additional text for display when processing alert.
  S RAPSSN=$$GET1^DIQ(70,+RADFN,.09) S:RAPSSN="" RAPSSN="UNKNOWN"
  D EN^DDIOL("Imaging Exam For "_$E(RAPNAM,1,30)_" ("_RAPSSN_") Changed:",,"!!?4")
  ;
- S RACMU=$S(+$O(^RADPT(RADFN,"DT",RADTI,"P",RACNI,"CM",0))>0:" (CM w/exam)",1:"")
  I 'RAPROC2,RAPROC1 D
- .S RAPRFR=$E($$GET1^DIQ(71,+RAPROC1,.01),1,50) S:RAPRFR="" RAPRFR="UNKNOWN"
- .S RAPRFR=RAPRFR_RACMU D EN^DDIOL("For procedure "_RAPRFR_RACMU,,"!?4")
+ .S RAPRFR=$$GET1^DIQ(71,+RAPROC1,.01) S:RAPRFR="" RAPRFR="UNKNOWN"
+ .D EN^DDIOL("For procedure  "_RAPRFR,,"!?4")
  .D EN^DDIOL(" ",,"!")
  .Q
  I RAPROC2 D
- .S RAPRFR=$E($$GET1^DIQ(71,+RAPROC1,.01),1,53) S:RAPRFR="" RAPRFR="UNKNOWN"
- .S RAPRTO=$E($$GET1^DIQ(71,+RAPROC2,.01),1,53) S:RAPRTO="" RAPRTO="UNKNOWN"
+ .S RAPRFR=$$GET1^DIQ(71,+RAPROC1,.01) S:RAPRFR="" RAPRFR="UNKNOWN"
+ .S RAPRTO=$$GET1^DIQ(71,+RAPROC2,.01) S:RAPRTO="" RAPRTO="UNKNOWN"
  .D EN^DDIOL("Procedure changed",,"!?4")
  .D EN^DDIOL("From: "_RAPRFR,,"!?8")
- .D EN^DDIOL("To:   "_RAPRTO_RACMU,,"!?8")
+ .D EN^DDIOL("To:   "_RAPRTO,,"!?8")
  .Q
  I RAPHY2 D
  .S RAPHYFR=$$GET1^DIQ(200,RAPHY1,.01) S:RAPHYFR="" RAPHYFR="UNKNOWN"
@@ -126,8 +121,7 @@ ZZ(RASTRING) ; Additional text for display when processing alert.
  .Q
  Q
  ;
-SETNOTIF(RAIEN751) ; called by RAO7XX if patch OR*3.0*112 is installed
- ;so that the CPRS notification system can be used to set the alert
+SETNOTIF(RAIEN751) ;use CPRS notification system to set the alert
  Q:'$D(RASTRING)
  ;RASTRING is : dfn^invdt^caseien^befproc^aftproc^befphy^aftphy
  ;              ^befpmodA,pmodF,etc^aftpmodF,pmodH,etc

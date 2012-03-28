@@ -1,8 +1,5 @@
 PSADRUG ;BIR/LTL-Add/edit Pharmacy Location drugs ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**64**; 10/24/97;Build 4
- ;
- ;References to ^PSDRUG( are covered by IA #2095
- ;
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  N DIC,DA,DIE,DLAYGO,DINUM,DR,DIR,DIRUT,PSA,PSAINV,PSAIT,X,Y
  D ^PSADA G:'$G(PSALOC) QUIT
 NOINV S:'$D(^PSD(58.8,PSALOC,1,0)) ^(0)="^58.8001IP^^"
@@ -34,7 +31,7 @@ DRUG S DIE="^PSD(58.8,PSALOC,1,",DA=PSAIT,DR="3Please enter total "_$P(PSAIT(4),
  .W !!,"Current Inventory from the DRUG file = "_$P($G(^PSDRUG(PSAIT,660.1)),U),!
  W:'$P(^PSD(58.8,PSALOC,1,PSAIT,0),U,4) !,"Once an initial quantity is entered it can only be updated by receiving,",!,"dispensing or adjusting.",!!,"Updating will occur to the balance in ",$G(PSALOCN),".",!!,"The Current Inventory "
  W "from the DRUG file is only offered as an initial balance",!,"and is NOT updated."
- F  L +^PSD(58.8,+PSALOC,1,+PSAIT,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,+PSALOC,1,+PSAIT,0):0 I  Q
  D ^DIE L -^PSD(58.8,+PSALOC,1,+PSAIT,0) G:$D(Y) QUIT
 DISP W !!,"Current balance:  "_$P(^PSD(58.8,PSALOC,1,PSAIT,0),U,4)," ",$P(PSAIT(4),U,8),!
  G:$G(PSA(2))']"" AGAIN
@@ -44,7 +41,7 @@ MON S:'$D(^PSD(58.8,+PSALOC,1,+PSAIT,5,0)) ^(0)="^58.801A^^"
  I '$D(^PSD(58.8,+PSALOC,1,+PSAIT,5,$E(DT,1,5)*100,0)) S DIC="^PSD(58.8,+PSALOC,1,+PSAIT,5,",DIC(0)="LM",(X,DINUM)=$E(DT,1,5)*100,DA(2)=PSALOC,DA(1)=PSAIT,DLAYGO=58.8 D ^DIC K DIC,DLAYGO
  S DIE="^PSD(58.8,+PSALOC,1,+PSAIT,5,",DA(2)=PSALOC,DA(1)=PSAIT,DA=$E(DT,1,5)*100,DR="1////^S X=PSA(2);7////^S X=PSA(2)" D ^DIE K DIE
  W !,"Updating beginning balance and transaction history.",!
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.81,0):0 I  Q
 FIND S PSAT=$P(^PSD(58.81,0),U,3)+1 I $D(^PSD(58.81,PSAT)) S $P(^PSD(58.81,0),U,3)=$P(^PSD(58.81,0),U,3)+1 G FIND
  S DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81,(DINUM,X)=PSAT D ^DIC
  L -^PSD(58.81,0) K DIC,DLAYGO

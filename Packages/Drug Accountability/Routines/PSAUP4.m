@@ -1,5 +1,5 @@
 PSAUP4 ;BIR/JMB-Upload and Process Prime Vendor Invoice Data - CONT'D ;9/19/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,20,21,67**; 10/24/97;Build 15
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**3,12,20,21**; 10/24/97
  ;This routine prints invoices from the ^XTMP global on the screen or
  ;to a printer.
  ;
@@ -111,7 +111,7 @@ OU .;Order Unit
  .W ?67,$J(PSAECOST,12,2)
  .I $Y+9>IOSL,+$P(PSADATA,"^",21),+$P(PSADATA,"^",27) D:$E(IOST,1,2)="C-" SCREEN Q:PSAOUT  D HEADER,LINEHDR
  .I $G(PSADRG) D HAVEDRG
- .I '$G(PSADRG) W !?9,"STOCK LEVEL  : ",!?9,"REORDER LEVEL: "_$P(PSADATA,"^",21),!?9,"DISPENSE UNITS/ORDER UNIT: " D DISP^PSAP67
+ .I '$G(PSADRG) W !?9,"STOCK LEVEL  : ",!?9,"REORDER LEVEL: "_$P(PSADATA,"^",21),!?9,"DISPENSE UNITS/ORDER UNIT: "
  .;
  .;Print Adj Qty
  .I $G(PSADJQTY)'="" D
@@ -173,5 +173,4 @@ HAVEDRG ;Display data if drug is found.
  .I 'PSAPHARM W !?9,"STOCK LEVEL  : "_$P(PSADATA,"^",27),!?9,"REORDER LEVEL: "_$P(PSADATA,"^",21)
  W !?9,"DISPENSE UNITS/ORDER UNIT: "
  W $S(+$P(PSADATA,"^",20):+$P(PSADATA,"^",20),+$P($G(^PSDRUG(PSADRG,1,+$P(PSADATA,"^",7),0)),"^",7):+$P($G(^PSDRUG(PSADRG,1,+$P(PSADATA,"^",7),0)),"^",7),1:"")
- D DISP^PSAP67
  Q

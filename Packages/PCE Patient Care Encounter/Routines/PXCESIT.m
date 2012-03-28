@@ -1,5 +1,5 @@
-PXCESIT ;ISL/dee,ISA/KWP - Used to edit a new visit and display (use most) a visit ;3/17/04 12:10pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,74,111,130,124,168**;Aug 12, 1996;Build 14
+PXCESIT ;ISL/dee,ISA/KWP - Used to edit a new visit and display (use most) a visit ;04/28/99
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**22,74,111**;Aug 12, 1996
  ;+ The classifications show in the Display Detail Protocol
  Q
  ;
@@ -18,12 +18,10 @@ FORMAT ;;Encounter~9000010~0,21,150,800,811,812~~^AUPNVSIT
  ;;0~22~.22~Hospital Location:  ~Hospital Location:  ~~EHOSPLOC^PXCEVSIT~^D HELPHLOC^PXCEVSIT~~D
  ;;0~8~.08~Clinic Stop:  ~Clinic Stop:  ~$$DISPLY08^PXCECSTP~EWORKLOD^PXCEVSIT(0)~~~D
  ;;0~18~.18~Check Out ~Check Out Date and Time:  ~~ECODT^PXCEVSIT~~~D
- ;;800~1~80001~Service Connected:  ~Service Connected:  ~~SKIP^PXCEVSIT~~~D
- ;;800~7~80007~Combat Veteran:  ~Combat Veteran:  ~~SKIP^PXCEVSIT~~~D
+ ;;800~1~80001~Service Connected:  ~Service Connected:  ~~GET800^PXCEE800~~~D
  ;;800~2~80002~Agent Orange Exposure:  ~Agent Orange Exposure:  ~~SKIP^PXCEVSIT~~~D
  ;;800~3~80003~Ionizing Radiation Exposure:  ~Ionizing Radiation Exposure:  ~~SKIP^PXCEVSIT~~~D
- ;;800~4~80004~SW Asia Conditions:  ~SW Asia Conditions:  ~~SKIP^PXCEVSIT~~~D
- ;;800~8~80008~Project 112/SHAD:  ~Project 112/SHAD:  ~~SKIP^PXCEVSIT~~~D
+ ;;800~4~80004~Persian Gulf Exposure:  ~Persian Gulf Exposure:  ~~SKIP^PXCEVSIT~~~D
  ;;800~5~80005~Military Sexual Trauma:  ~Military Sexual Trauma:  ~~SKIP^PXCEVSIT~~~D
  ;;800~6~80006~Head and/or Neck Cancer:  ~Head and/or Neck Cancer:  ~~SKIP^PXCEVSIT~~~D
  ;;

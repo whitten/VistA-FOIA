@@ -1,4 +1,6 @@
-LRLTR2 ;SLC/DCM - SET-UP LETTERS ; 6/2/86  8:11 AM ;
+LRLTR2 ; IHS/DIR/FJE - SET-UP LETTERS 6/2/86 8:11 AM ;
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  F Z=1:1 S X=$P($T(ZZ+Z),";;",2) Q:X=""  S ^TMP("LRLTR",$J,$E(X,1))=$P(X,"=",2)
  Q

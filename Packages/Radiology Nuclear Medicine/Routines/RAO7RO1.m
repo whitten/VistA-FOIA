@@ -1,12 +1,10 @@
 RAO7RO1 ;HISC/FPT-RAD/NM Error Messages ;8/28/97  14:16
- ;;5.0;Radiology/Nuclear Medicine;**2,75,86**;Mar 16, 1998;Build 7
+ ;;5.0;Radiology/Nuclear Medicine;**2**;Mar 16, 1998
  ;
 EN1(RAERR) ; errors encountered with OE v3.0 back & frontdoor transmission
  S RAEMSG=$P($T(MSG+RAERR),";",4)
  I RAEMSG]"" Q RAEMSG
  Q "Error # "_RAERR_" does not exist"
- ;
- ;Note: Error code nine (9) disappears with the release of CPRS GUI V27. P86
  ;
 MSG ; error messages
  ;;1;Missing/Invalid Order Control
@@ -46,5 +44,3 @@ MSG ; error messages
  ;;35;FileMan rejected date/time
  ;;36;Invalid Approving Rad/Nuc Med physician
  ;;37;Rad/Nuc Med order not placed in a DISCONTINUED status
- ;;38;Missing REASON FOR STUDY value
- ;;39;Invalid REASON FOR STUDY value

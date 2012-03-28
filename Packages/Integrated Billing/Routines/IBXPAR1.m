@@ -1,10 +1,9 @@
-IBXPAR1 ; ;09/24/03
+IBXPAR1 ; ;11/29/04
  D DE G BEGIN
 DE S DIE="^IBE(350.9,",DIC=DIE,DP=350.9,DL=1,DIEL=0,DU="" K DG,DE,DB Q:$O(^IBE(350.9,DA,""))=""
- I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,9) S:%]"" DE(3)=% S %=$P(%Z,U,11) S:%]"" DE(4)=%
- I $D(^(1)) S %Z=^(1) S %=$P(%Z,U,7) S:%]"" DE(1)=% S %=$P(%Z,U,9) S:%]"" DE(2)=% S %=$P(%Z,U,26) S:%]"" DE(7)=%
- I $D(^(2)) S %Z=^(2) S %=$P(%Z,U,1) S:%]"" DE(8)=% S %=$P(%Z,U,2) S:%]"" DE(11)=% S %=$P(%Z,U,3) S:%]"" DE(12)=% S %=$P(%Z,U,4) S:%]"" DE(13)=% S %=$P(%Z,U,5) S:%]"" DE(14)=% S %=$P(%Z,U,6) S:%]"" DE(15)=% S %=$P(%Z,U,10) S:%]"" DE(9)=%
- I  S %=$P(%Z,U,12) S:%]"" DE(10)=%
+ I $D(^(0)) S %Z=^(0) S %=$P(%Z,U,9) S:%]"" DE(2)=% S %=$P(%Z,U,11) S:%]"" DE(3)=%
+ I $D(^(1)) S %Z=^(1) S %=$P(%Z,U,9) S:%]"" DE(1)=% S %=$P(%Z,U,26) S:%]"" DE(6)=%
+ I $D(^(2)) S %Z=^(2) S %=$P(%Z,U,1) S:%]"" DE(7)=% S %=$P(%Z,U,2) S:%]"" DE(8)=% S %=$P(%Z,U,3) S:%]"" DE(9)=% S %=$P(%Z,U,4) S:%]"" DE(10)=% S %=$P(%Z,U,5) S:%]"" DE(11)=% S %=$P(%Z,U,6) S:%]"" DE(12)=%
  K %Z Q
  ;
 W W !?DL+DL-2,DLB_": "
@@ -52,75 +51,61 @@ SAVEVALS S @DIEZTMP@("V",DP,DIIENS,DIFLD,"O")=$G(DE(DQ)) S:$D(^("F"))[0 ^("F")=$
 NKEY W:'$D(ZTQUEUED) "??  Required key field" S X="?BAD" G QS
 KEYCHK() Q:$G(DE(DW,"KEY"))="" 1 Q @DE(DW,"KEY")
 BEGIN S DNM="IBXPAR1",DQ=1
-1 S DW="1;7",DV="P3.8'",DU="",DLB="BILL CANCELLATION MAILGROUP",DIFLD=1.07
+1 S DW="1;9",DV="P3.8'",DU="",DLB="BILL DISAPPROVED MAILGROUP",DIFLD=1.09
  S DU="XMB(3.8,"
  G RE
 X1 Q
-2 S DW="1;9",DV="P3.8'",DU="",DLB="BILL DISAPPROVED MAILGROUP",DIFLD=1.09
+2 S DW="0;9",DV="P3.8'",DU="",DLB="COPAY BACKGROUND ERROR GROUP",DIFLD=.09
  S DU="XMB(3.8,"
  G RE
 X2 Q
-3 S DW="0;9",DV="P3.8'",DU="",DLB="COPAY BACKGROUND ERROR GROUP",DIFLD=.09
+3 S DW="0;11",DV="P3.8'",DU="",DLB="CATEGORY C BILLING MAIL GROUP",DIFLD=.11
  S DU="XMB(3.8,"
  G RE
 X3 Q
-4 S DW="0;11",DV="P3.8'",DU="",DLB="MEANS TEST BILLING MAIL GROUP",DIFLD=.11
- S DU="XMB(3.8,"
- G RE
-X4 Q
-5 S DQ=6 ;@5
-6 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=6 D X6 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
-X6 S:IBDR'["5" Y="@99"
+4 S DQ=5 ;@5
+5 D:$D(DG)>9 F^DIE17,DE S Y=U,DQ=5 D X5 D:$D(DIEFIRE)#2 FIREREC^DIE17 G A:$D(Y)[0,A:Y=U S X=Y,DIC(0)="F",DW=DQ G OUT^DIE17
+X5 S:IBDR'["5" Y="@99"
  Q
-7 S DW="1;26",DV="*P353'",DU="",DLB="DEFAULT FORM TYPE",DIFLD=1.26
+6 S DW="1;26",DV="*P353'",DU="",DLB="DEFAULT FORM TYPE",DIFLD=1.26
  S DU="IBE(353,"
  G RE
-X7 S DIC("S")="I $P(^IBE(353,Y,0),U,1)[""UB""" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
+X6 S DIC("S")="I $P(^IBE(353,Y,0),U,1)[""UB""" D ^DIC K DIC S DIC=DIE,X=+Y K:Y<0 X
  Q
  ;
-8 S DW="2;1",DV="F",DU="",DLB="AGENT CASHIER MAIL SYMBOL",DIFLD=2.01
+7 S DW="2;1",DV="F",DU="",DLB="AGENT CASHIER MAIL SYMBOL",DIFLD=2.01
  G RE
-X8 K:$L(X)>25!($L(X)<1) X
+X7 K:$L(X)>25!($L(X)<1) X
  I $D(X),X'?.ANP K X
  Q
  ;
-9 S DW="2;10",DV="RF",DU="",DLB="FACILITY NAME FOR BILLING",DIFLD=2.1
+8 S DW="2;2",DV="F",DU="",DLB="AGENT CASHIER STREET ADDRESS",DIFLD=2.02
  G RE
-X9 K:$L(X)>18!($L(X)<1)!'($TR(X," ")?.A) X
+X8 K:$L(X)>25!($L(X)<3) X
  I $D(X),X'?.ANP K X
  Q
  ;
-10 S DW="2;12",DV="S",DU="",DLB="BILLING SITE IS OTHER FACILITY",DIFLD=2.12
- S DU="0:NO;1:YES;"
+9 S DW="2;3",DV="F",DU="",DLB="AGENT CASHIER CITY",DIFLD=2.03
  G RE
-X10 Q
-11 S DW="2;2",DV="F",DU="",DLB="AGENT CASHIER STREET ADDRESS",DIFLD=2.02
- G RE
-X11 K:$L(X)>25!($L(X)<3) X
+X9 K:$L(X)>15!($L(X)<1) X
  I $D(X),X'?.ANP K X
  Q
  ;
-12 S DW="2;3",DV="F",DU="",DLB="AGENT CASHIER CITY",DIFLD=2.03
- G RE
-X12 K:$L(X)>15!($L(X)<1) X
- I $D(X),X'?.ANP K X
- Q
- ;
-13 S DW="2;4",DV="P5'",DU="",DLB="AGENT CASHIER STATE",DIFLD=2.04
+10 S DW="2;4",DV="P5'",DU="",DLB="AGENT CASHIER STATE",DIFLD=2.04
  S DU="DIC(5,"
  G RE
-X13 Q
-14 S DW="2;5",DV="FX",DU="",DLB="AGENT CASHIER ZIP CODE",DIFLD=2.05
+X10 Q
+11 S DW="2;5",DV="F",DU="",DLB="AGENT CASHIER ZIP CODE",DIFLD=2.05
  G RE
-X14 S:$E(X,6)="-" X=$TR(X,"-") K:$L(X)>9!($L(X)<5)!'(X?5N!(X?9N)) X
+X11 K:$L(X)>5!($L(X)<5)!'(X?5N) X
  I $D(X),X'?.ANP K X
  Q
  ;
-15 S DW="2;6",DV="F",DU="",DLB="AGENT CASHIER PHONE NUMBER",DIFLD=2.06
+12 S DW="2;6",DV="F",DU="",DLB="AGENT CASHIER PHONE NUMBER",DIFLD=2.06
  G RE
-X15 K:$L(X)>25!($L(X)<4) X
+X12 K:$L(X)>25!($L(X)<4) X
  I $D(X),X'?.ANP K X
  Q
  ;
-16 S DQ=17 ;@99
-17 G 0^DIE17
+13 S DQ=14 ;@99
+14 G 0^DIE17

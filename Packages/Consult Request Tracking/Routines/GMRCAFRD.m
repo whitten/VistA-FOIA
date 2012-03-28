@@ -1,24 +1,17 @@
-GMRCAFRD ;SLC/DLT,DCM,JFR - LM FORWARD ACTION ;7/11/03 14:02
- ;;3.0;CONSULT/REQUEST TRACKING;**1,4,10,12,15,22,35,39,64**;DEC 27, 1997;Build 20
+GMRCAFRD ;SLC/DLT,DCM,JFR - LM FORWARD ACTION ;1/8/02 14:36
+ ;;3.0;CONSULT/REQUEST TRACKING;**1,4,10,12,15,22**;DEC 27, 1997
  ;
  ; This routine invokes IA #2395
  ;
 FR(GMRCO) ;Forward Request to a new service
- N ORVP,GMRCLCK,DFN,GMRCACT,GMRCSEQ,GMRCDOC
+ N ORVP,GMRCLCK,DFN
  W !!,"Forward Request To Another Service For Action."
  W !,"Select the service to send the consult to.",!
  S:$D(GMRCSS) GMRCSSS=GMRCSS
- N GMRCPL,GMRCPR,GMRCURG,GMRCDG,GMRCFF,GMRCORNP,GMRCAD,GMRCTO,GMRCADUZ,GMRCATTN,NEWATTN,GMRCPA
+ N GMRCPL,GMRCPR,GMRCURG,GMRCDG,GMRCFF,GMRCORNP,GMRCAD,GMRCTO,GMRCADUZ
  K GMRCQUT,GMRCSEL,GMRCSSS
  I '$L($G(GMRCO)) D SELECT^GMRCA2(.GMRCO) I $D(GMRCQUT) D END Q
  I '+$G(GMRCO) D END S GMRCQUT=1 Q
- I $P($G(^GMR(123,GMRCO,12)),U,5)="P" D  Q
- . N DIR
- . W !,"The requesting facility may not take this action on an "
- . W "inter-facility consult."
- . S DIR(0)="E" D ^DIR
- . D END
- . S GMRCQUT=1
  I '$$LOCK^GMRCA1(GMRCO) D END S GMRCQUT=1 Q
  S GMRCLCK=1
  ;
@@ -28,25 +21,6 @@ FR(GMRCO) ;Forward Request to a new service
  .S GMRCMSG="Invalid action. This consult has partial results."
  .S GMRCMSG(1)="Remove the associated results before forwarding."
  .D EXAC^GMRCADC(.GMRCMSG),END S GMRCQUT=1 Q
- S GMRCSEQ=0,GMRCDOC="" F  S GMRCSEQ=$O(^GMR(123,+GMRCO,50,GMRCSEQ)) Q:GMRCSEQ=""  D  Q:+$G(GMRCQUT)
- . I $P($G(^GMR(123,+GMRCO,50,GMRCSEQ,0)),";",2)="TIU(8925," S GMRCDOC=$P(^GMR(123,+GMRCO,50,GMRCSEQ,0),";",1)
- . I $G(GMRCDOC)="" Q
- . I $P($G(^TIU(8925,GMRCDOC,0)),U,5)=5 D
- . . S GMRCMSG="Invalid Action. This consult has an unsigned note."
- . . D EXAC^GMRCADC(.GMRCMSG),END S GMRCQUT=1 Q
- . I $P($G(^TIU(8925,GMRCDOC,0)),U,5)=6 D
- . . S GMRCMSG="Invalid Action. This consult has an uncosigned note."
- . . D EXAC^GMRCADC(.GMRCMSG),END S GMRCQUT=1 Q
- Q:+$G(GMRCQUT)  S GMRCSEQ=0,GMRCDOC="" F  S GMRCSEQ=$O(^GMR(123,+GMRCO,40,GMRCSEQ)) Q:GMRCSEQ=""  D  Q:+$G(GMRCQUT)
- . I $P($P($G(^GMR(123,+GMRCO,40,GMRCSEQ,0)),U,9),";",2)="TIU(8925," S GMRCDOC=$P($P($G(^GMR(123,+GMRCO,40,GMRCSEQ,0)),U,9),";",1)
- . I $G(GMRCDOC)="" Q
- . I $P($G(^TIU(8925,GMRCDOC,0)),U,5)=5 D
- . . S GMRCMSG="Invalid Action. This consult has an unsigned note."
- . . D EXAC^GMRCADC(.GMRCMSG),END S GMRCQUT=1 Q
- . I $P($G(^TIU(8925,GMRCDOC,0)),U,5)=6 D
- . . S GMRCMSG="Invalid Action. This consult has an uncosigned note."
- . . D EXAC^GMRCADC(.GMRCMSG),END S GMRCQUT=1 Q
- Q:+$G(GMRCQUT)
  ;
  I $D(IOBM),$D(IOTM),$D(IOSTBM) D FULL^VALM1
  I $P(^GMR(123,GMRCO,0),"^",16) W !!,"This is a SERVICE ENTERED order stub.  Please send the written consult to the",!,"Service, in addition to the automated forwarding!"
@@ -55,16 +29,8 @@ FR(GMRCO) ;Forward Request to a new service
  D ASRV^GMRCASV K GMRCASV I $S($D(DTOUT):1,$D(DIROUT):1,$D(GMRCQUT):1,1:0) D END Q
  I 'GMRCDG S GMRCMSG="No Service Was Selected. Consult Was Not Forwarded To Any Service!" D EXAC^GMRCADC(GMRCMSG),END S GMRCQUT=1 Q
  S GMRCFF=$P(^GMR(123,GMRCO,0),"^",5) I GMRCFF=+GMRCDG S GMRCMSG="The Forwarding Service Cannot Forward A Consult To Itself!" D EXAC^GMRCADC(GMRCMSG),END S GMRCQUT=1 Q
- S GMRCATTN=$P($G(^GMR(123,GMRCO,0)),"^",11)
- N DIE,DR
- S DIE="^GMR(123,",DA=GMRCO,DR="7//"_$S($G(GMRCATTN)'="":GMRCATTN,1:"")
- D ^DIE
- S NEWATTN=$P($G(^GMR(123,+GMRCO,0)),"^",11)
- I NEWATTN'=GMRCATTN S GMRCPA=$G(GMRCATTN)
  S GETPROV="Who is responsible for Forwarding the Consult?"
-FRGTPRV D GETPROV^GMRCAU I '$D(GMRCORNP) D END S GMRCQUT=1 Q
- S GMRCACT=$$PROVIDER^XUSER(GMRCORNP) I $P(GMRCACT,U)'=1 D  G FRGTPRV
- .W !!,"***User account is TERMINATED please choose another responsible user.***"
+ D GETPROV^GMRCAU I '$D(GMRCORNP) D END S GMRCQUT=1 Q
  S GMRCAD=$$GETDT^GMRCUTL1 I GMRCAD="^" D END S GMRCQUT=1 Q
  I '$G(GMRCAD) S GMRCAD=$$NOW^XLFDT
  N GMRCSS,GMRCSSNM,GMRCA,GMRCMSG,GMRCIROL,GMRCINM,GMRCIROU,ORSTS

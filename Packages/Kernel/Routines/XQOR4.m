@@ -1,4 +1,5 @@
-XQOR4 ; SLC/KCM - Process "^^" jump ;11/18/92  09:53 ;
+XQOR4 ; SLC/KCM - Process "^^" jump ;11/18/92  09:53 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**56,62**;Jul 10, 1995
 DJMP ;From: STAK^XQOR1
  Q:'$D(^TMP("XQORS",$J,XQORS,"ITM",^TMP("XQORS",$J,XQORS,"ITM"),"IN"))

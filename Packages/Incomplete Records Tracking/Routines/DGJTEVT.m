@@ -1,5 +1,5 @@
 DGJTEVT ;ALB/MIR - EVENT DRIVER CALL FOR IRT ; 04 JAN 91
- ;;1.0;Incomplete Records Tracking;;Jun 25, 2001
+ ;;5.3;Registration;**61**;Aug 13, 1993
  ;
 EN2 N CA,DGPMA,DGPMP,DGPMT
  S DGONE=1 ;first time

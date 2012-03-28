@@ -1,8 +1,7 @@
 PSJP ;BIR/CML3-INPATIENT LOOK-UP ; 15 Apr 98 / 9:05 AM
- ;;5.0; INPATIENT MEDICATIONS ;**10,53,60,181**;16 DEC 97;Build 190
+ ;;5.0; INPATIENT MEDICATIONS ;**10,53,60**;16 DEC 97
  ;
  ; Reference to ^PS(55 is supported by DBIA 2191
- ; Reference to ^PS(59.7 is supported by DBIA 2181
  ; Reference to ^%ZIS is supported by DBIA 10086
  ; Reference to ^DICN is supported by DBIA 10009
  ; Reference to ^DIR is supported by DBIA 10026
@@ -15,8 +14,6 @@ ENDPT ; get any patient
  K DIC
  ;
 CHK ;
- ;Clean out arrays use in order checks
- K PSJEXCPT,PSJOCER
  S (DFN,PSGP)=+Y,VA200=1 D INP^VADPT
  I VAIN(4) S PSJPCAF=1_"^"_VAIN(1),PSJPWD=+VAIN(4),PSJPWDN=$P(VAIN(4),"^",2),PSJPTS=+VAIN(3),PSJPTSP=+VAIN(2),PSJPRB=VAIN(5),PSJPAD=+VAIN(7),PSJPDX=VAIN(9),PSJPTD=$S($D(^PS(55,PSGP,5.1)):$P(^(5.1),"^",4),1:""),PSJPDD="" G CNV
  S PSJPCAF="",VAIP("D")="L" D IN5^VADPT I 'VAIP(13,1) W $C(7),!!?3,"PATIENT HAS NEVER BEEN ADMITTED." D ENCONT G:%'=1 ENDPT S PSJPDD=""
@@ -34,7 +31,6 @@ WP ; ward parameters
  S PSJSYSW0="",PSJSYSW=0 I $G(PSJPWD) S PSJSYSW=+$O(^PS(59.6,"B",PSJPWD,0)) I PSJSYSW S PSJSYSW0=$G(^PS(59.6,PSJSYSW,0))
  ; *OLD CODE* S PSJSYSL="",X=$P(PSJSYSU,";",3)>1,PSJSYSL=$P(PSJSYSW0,"^",X*4+12)
  S PSJSYSL="",X=$P(PSJSYSU,";",3)>1,PSJSYSL=$S(X=0:$P(PSJSYSW0,"^",12),1:$P(PSJSYSW0,"^",16))
- S PSJDCEXP=$$RECDCEXP()
  I PSJSYSL D
  .S:X X='$P(PSJSYSP0,"^",10) S IOP=$S($P(PSJSYSP0,"^",13)]"":$P(PSJSYSP0,"^",13),$P(PSJSYSW0,"^",19+X)]"":$P(PSJSYSW0,"^",19+X),1:"") I IOP]"" D
  ..S IOP="`"_IOP K %ZIS S %ZIS="NQ" D ^%ZIS S:'POP $P(PSJSYSL,"^",2,3)=ION_"^"_IO D HOME^%ZIS
@@ -54,18 +50,3 @@ CH2 ;
 CH3 ;
  W !!?2,"This patient is shown to be currently discharged.  You will be able to enter",!,"IV orders for this patient but NOT Unit Dose orders." Q
  Q
-RECDCEXP() ;
- ;Determent the Hours to display Recently DC/Expired orders on the short profile
- ;Returning P1^P2
- ;P1 = Number of hours defined in 59.6 or 59.7.  Set to 24 if no value set in either file.
- ;P2 = Date.time from Now - P1 hours
- ;
- NEW PSJDCEXP,PSJWD,PSJWD1,PSJSYS,X,%
- S PSJWD1=$S(+$G(PSJPWD):PSJPWD,+$G(VAIN(4)):+VAIN(4),1:0)
- S:PSJWD1 X=$O(^PS(59.6,"B",PSJWD1,0))
- S:+$G(X) PSJWD=$P($G(^PS(59.6,X,0)),U,33)
- S PSJSYS=+$P($G(^PS(59.7,1,26)),U,8)
- S PSJDCEXP=$S($G(PSJWD):PSJWD,PSJSYS:PSJSYS,1:24)
- D NOW^%DTC
- S X=$$FMADD^XLFDT(%,0,-PSJDCEXP,0,0)
- Q PSJDCEXP_U_X

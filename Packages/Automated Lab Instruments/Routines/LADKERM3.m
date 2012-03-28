@@ -1,4 +1,5 @@
-LADKERM3 ;SLC/RWF/DLG - UNPACK KERMIT RECORDS  ;12/6/89  09:24 ;
+LADKERM3 ; IHS/DIR/FJE - UNPACK KERMIT RECORDS 12/6/89 09:24 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;Call with TSK = instrument
  ;Used to unpack kermit records from ^LA(tsk,"O",n) to ^LA(tsk,"C",n).

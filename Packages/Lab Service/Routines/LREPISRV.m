@@ -1,4 +1,5 @@
-LREPISRV ;DALOI/RLM-EPI data server ;8/2/2000
+LREPISRV ;VA/DALOI/RLM-EPI data server ;8/2/2000
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
  ;;5.2;LAB SERVICE;**260,281**;Sep 27, 1994
  ; Reference to $$SITE^VASITE supported by IA #10112
  ; Reference to ^%ZOSF supported by IA #10096

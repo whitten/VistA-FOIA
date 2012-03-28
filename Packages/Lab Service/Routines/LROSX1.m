@@ -1,4 +1,6 @@
-LROSX1 ;SLC/DCM - Being replaced ;7/17/90  12:17
+LROSX1 ; IHS/DIR/FJE - Being replaced 12:17 ; 
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  ;
 EN ;*THIS ROUTINE IS BEING PHASED OUT*

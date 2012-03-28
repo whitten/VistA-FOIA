@@ -1,4 +1,5 @@
-XUTMTZ2 ;SEA/RDS - TaskMan: Toolkit, troubleshooting, part 3 ;5/20/91  15:40 ;
+XUTMTZ2 ;SEA/RDS - TaskMan: Toolkit, troubleshooting, part 3 ;5/20/91  15:40 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 REPORT ;entry--report all errors in Error file by count

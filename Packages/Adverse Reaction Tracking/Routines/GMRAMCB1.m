@@ -1,5 +1,5 @@
-GMRAMCB1 ;HIRMFO/WAA-MARK CHART & ID BAND FIELD EDIT PART 2 ;7/23/97  09:39
- ;;4.0;Adverse Reaction Tracking;**8**;Mar 29, 1996
+GMRAMCB1 ;HIRMFO/WAA-MARK CHART & ID BAND FIELD EDIT PART 2 ;02-Nov-2010 16:31;DU
+ ;;4.0;Adverse Reaction Tracking;**8,1002**;Mar 29, 1996;Build 32
 GETAL ; GET PATIENT AND ALLERGY
  S GMRANS="",DFN=-1,DIC="^DPT(",DIC(0)="AEQM",DIC("A")="Select Patient: " D ^DIC Q:+Y'>0  K DIC,DLAYGO S DFN=+Y
  L +^GMR(120.8,"B",DFN):0 I '$T W !,"THIS DATA IS CURRENTLY BEING EDITED, TRY LATER." G GETAL
@@ -15,9 +15,9 @@ ALL1 W ! S GMRADEL=0
  I $D(DTOUT)!($D(DUOUT))!($D(DIROUT)) K X,Y S GMRAOUT=1 Q
  Q:Y=""  S X=Y K Y I $$UP^XLFSTR(X)="ALL" D ALLSEL Q:GMRAOUT  G:'$D(X) ALL1
  I X["-" S GMRADEL=1,X=$P(X,"-",2)
- S GMRAX=X,X=$P($G(^DPT(DFN,0)),"^")
+ S GMRACB1=X,X=$P($G(^DPT(DFN,0)),"^")
  K DIC S DIC="^GMR(120.8,",DIC(0)="EZQ",DIC("W")="W ""   "",$P($G(^(0)),U,2)"
- S DIC("S")="I $P(^(0),U)=DFN,$P($$UP^XLFSTR($P(^(0),U,2)),$$UP^XLFSTR(GMRAX))="""",$P(^(0),U,2)'="""",'+$G(^GMR(120.8,+Y,""ER""))"
+ S DIC("S")="I $P(^(0),U)=DFN,$P($$UP^XLFSTR($P(^(0),U,2)),$$UP^XLFSTR(GMRACB1))="""",$P(^(0),U,2)'="""",'+$G(^GMR(120.8,+Y,""ER""))"
  D ^DIC K DIC I Y<1 G ALL1
  S GMRAPA=+Y,GMRAPA(0)=$S($D(^GMR(120.8,GMRAPA,0)):^(0),1:"")
  I GMRAPA(0)="" S GMRADEL=0 G ALL1

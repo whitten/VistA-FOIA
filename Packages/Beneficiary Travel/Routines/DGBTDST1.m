@@ -1,5 +1,5 @@
 DGBTDST1 ;ALB/SCK - BENEFICIARY TRAVEL DIST. ENTER/EDIT CONT. ;4/26/93
- ;;1.0;Beneficiary Travel;;September 25, 2001
+ ;;5.3;Registration;;Aug 13, 1993
 START ;
  Q
  ;

@@ -1,12 +1,12 @@
 PSAPSI1 ;BIR/LTL-IV Dispensing (Single Drug) & (All Drugs) ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  ;This routine places the IV data into files 58.8 and 58.81. It is called
  ;by PSAPSI, PSAPSI2, AND PSAPSI3.
  ;
  N DIC,PSAD,PSAT
  S (PSA(4),PSA(6))=0 F  S PSA(4)=$O(^TMP("PSA",$J,PSADRUG,PSA(4))) Q:'PSA(4)  S PSA(6)=PSA(6)+1
  ;get transaction numbers
- F  L +^PSD(58.81,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.81,0):0 I  Q
 FIND S PSAD=$P(^PSD(58.81,0),U,3)+1 I $D(^PSD(58.81,PSAD)) S $P(^PSD(58.81,0),U,3)=$P(^PSD(58.81,0),U,3)+1 G FIND
  S PSAT=PSAD,DIC="^PSD(58.81,",DIC(0)="L",DLAYGO=58.81
  F PSAD=PSAT:1:(PSAT+(PSA(6)-1)) S (DINUM,X)=PSAD D ^DIC
@@ -16,7 +16,7 @@ LUP S PSA(4)=0 F  S PSA(4)=$O(^TMP("PSA",$J,PSADRUG,PSA(4))) Q:'PSA(4)  S PSA=$G
  K ^TMP("PSA",$J,PSADRUG)
  Q
 LUP1 ;get date + current balance + update balance
- F  L +^PSD(58.8,PSALOC,1,PSADRUG,0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I  Q
+ F  L +^PSD(58.8,PSALOC,1,PSADRUG,0):0 I  Q
  S PSAB=$P($G(^PSD(58.8,PSALOC,1,PSADRUG,0)),U,4)
  G:'$G(PSA(7)) EDO
  S $P(^PSD(58.8,PSALOC,1,PSADRUG,0),U,4)=$P($G(^(0)),U,4)-PSA

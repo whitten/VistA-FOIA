@@ -1,9 +1,13 @@
-LRCE ;SLC/RWF/DALOI/JMC - LOOK-UP ON CENTRAL ENTRY # ;8/11/97
+LRCE ;SLC/RWF/DALOI/JMC - LOOK-UP ON CENTRAL ENTRY # ;8/11/97 [ 04/14/2003  7:25 AM ]
+ ;;5.2;LR;**1003,1004,1015,1018,1022**;September 20, 2007
  ;;5.2;LAB SERVICE;**28,76,103,121,153,210,202,263**;Sep 27, 1994
 EN ;
  S (LRSTOP,LRFLAG1,LRFLG,LRSN1,LRNOP)=0
  K DIRUT,SSN,LRORD
- W !!
+ W !! S LN=2
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ K DIR  ;IHS/ITSC/TPF 11/12/02 DIR SHOULD BE KILLED BEFORE CALLING DIR  **1015**
+ ;----- END IHS MODIFICATIONS
  S DIR("A")="Order Number or UID: ",DIR(0)="FOA"
  S DIR("?",1)="Enter a whole number for the order number, enter the universal identifier"
  S DIR("?",2)="(UID), or press Return to find the order number by Patient.",DIR("?")="Enter '^' to Exit."
@@ -80,7 +84,10 @@ PT ;
 HEAD ;
  D CHKPAGE
  Q:$G(LRSTOP)
- W !!,"ORDER #: ",LRORD,?20,"PAT: ",PNM,"    SSN: ",SSN,!
+ ;W !!,"ORDER #: ",LRORD,?20,"PAT: ",PNM,"    SSN: ",SSN,!
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ W !!,"ORDER #: ",LRORD,?20,"PAT: ",PNM,"    HRCN: ",HRCN,!  ;IHS/ANMC/CLS 08/18/96
+ ;----- END IHS MODIFICATIONS
  D CHKPAGE
  Q:$G(LRSTOP)
  D LRGLIN^LRX
@@ -174,7 +181,14 @@ FSN ;
 TEST ;
  D CHKPAGE Q:$G(LRSTOP)
  S X=^LRO(69,LRODT,1,LRSN,2,I,0) S:$P(^(0),U,3) LRNOP=1 W !,"  TEST: ",$S($D(^LAB(60,+X,0)):$P(^(0),"^"),1:"UNKNOWN"),?28,"  " S LRURG=+$P(X,U,2) W $E($S($D(^LAB(62.05,LRURG,0)):$P(^(0),U),1:"ROUTINE"),1,15)
- W ?38,"  ",$S($D(^LRO(68,+$P(X,"^",4),0)):$P(^(0),"^"),1:""),?50,"  ",$P(X,"^",5),?55
+ ; W ?38,"  ",$S($D(^LRO(68,+$P(X,"^",4),0)):$P(^(0),"^"),1:""),?50,"  ",$P(X,"^",5),?55
+ ;----- BEGIN IHS MODIFICATIONS LR*5.2*1018
+ ; W !,"Sign or Symptom: ",$G(^LRO(69,LRODT,1,LRSN,2,I,9999999))  ;IHS/ITSC/TPF 11/07/02 **1015** 'SIGN OR SYMPTOM' LAB POV
+ ;----- END IHS MODIFICATIONS
+ ;----- BEGIN IHS/OIT/MKK MODIFICATIONS LR*5.2*1022
+ W ?38,"  ",$S($D(^LRO(68,+$P(X,"^",4),0)):$P(^(0),"^"),1:""),?50,"  ",$P(X,"^",5)
+ W !,"Sign or Symptom: ",$G(^LRO(69,LRODT,1,LRSN,2,I,9999999))  ;IHS/ITSC/TPF 11/07/02 **1015** 'SIGN OR SYMPTOM' LAB POV
+ ;----- END IHS/OIT/MKK MODIFICATIONS LR*5.2*1022
  D REF
  I $P(X,"^",11) W !?3,"Canceled by: "_$P(^VA(200,$P(X,"^",11),0),"^") S I(2)=0 D
  . F  S I(2)=$O(^LRO(69,LRODT,1,LRSN,2,I,1.1,I(2))) Q:I(2)<1  I $D(^(I(2),0)) W !?5,^(0) D CHKPAGE Q:$G(LRSTOP)
@@ -183,9 +197,17 @@ TEST ;
  Q
 REF ; if referred test, display status and manifest
  N LREVNT,LRMAN,LRUID S LRUID=$P($G(^LRO(69,LRODT,1,LRSN,2,I,.3)),"^") Q:'LRUID
- W "  <"_LRUID_">" S LREVNT=$$STATUS^LREVENT(LRUID,+X,"") I LREVNT'="" D
- .S LRMAN=$P(LREVNT,"^",3) I LRMAN'="" W !,?5,"SHIPPING MANIFEST: "_LRMAN
+ ; W "  <"_LRUID_">" S LREVNT=$$STATUS^LREVENT(LRUID,+X,"") I LREVNT'="" D
+ ; .S LRMAN=$P(LREVNT,"^",3) I LRMAN'="" W !,?5,"SHIPPING MANIFEST: "_LRMAN
+ ; .W !,?5,"REFERRAL STATUS: "_$P(LREVNT,"^")_" ("_$P(LREVNT,"^",2)_")"
+ ;----- BEGIN IHS/OIT/MKK MODIFICATIONS LR*5.2*1022
+ W !,"  <"_LRUID_">"
+ S LREVNT=$$STATUS^LREVENT(LRUID,+X,"")
+ I LREVNT'="" D
+ .S LRMAN=$P(LREVNT,"^",3)
+ .I LRMAN'="" W !,?5,"SHIPPING MANIFEST: "_LRMAN
  .W !,?5,"REFERRAL STATUS: "_$P(LREVNT,"^")_" ("_$P(LREVNT,"^",2)_")"
+ ;----- END IHS/OIT/MKK MODIFICATIONS LR*5.2*1022
  Q
 END ;
  K %,%DT,A,DFN,DIC,DIR,DIRUT,DTOUT,DUOUT,I,II,K,L,LRARIV,LRCLCTR,LRCLST

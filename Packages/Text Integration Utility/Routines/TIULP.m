@@ -1,7 +1,7 @@
-TIULP ; SLC/JER - Functions determining privilege ; 12/13/10 3:45pm
- ;;1.0;TEXT INTEGRATION UTILITIES;**98,100,116,109,138,152,175,157,182,184,217,236,234,232,241**;Jun 20, 1997;Build 7
- ; CANDO^USRLA: ICA 2325, ISA^USRLM: ICA 2324
- ; 8930.1,2,8: IACS 3129,3128,3104 
+TIULP ; SLC/JER - Functions determining privilege ;2/18/03  3:29
+ ;;1.0;TEXT INTEGRATION UTILITIES;**98,100,116,109,138,152**;Jun 20, 1997
+ ;IHS/ITSC/LJF 08/20/2003 check if running Consults before checking for interpreter
+ ;
 CANDO(TIUDA,TIUACT,PERSON) ; Can PERSON perform action now
  ; Receives: TIUDA=Record number in file 8925
  ;           TIUACT=Name of user action in 8930.8 (USR ACTION)
@@ -9,34 +9,27 @@ CANDO(TIUDA,TIUACT,PERSON) ; Can PERSON perform action now
  ;                  Assumed to be DUZ if not received.
  ;                  New **100** ID param, backward compatible.
  ;  Returns:   TIUY=1:yes,0:no_"^"_why not message
- N TIUI,TIUTYP,TIUROLE,STATUS,TIUY,TIUATYP,MSG,WHO,MODIFIER,TIUD0,TIUACTW
+ N TIUI,TIUTYP,TIUROLE,STATUS,TIUY,TIUATYP,MSG,WHO,MODIFIER
  S TIUY=0 I '$G(PERSON) S PERSON=DUZ
- S TIUD0=$G(^TIU(8925,+TIUDA,0)) I 'TIUD0 G CANDOX
- I $$ISPRFDOC^TIUPRF(TIUDA),((TIUACT="ATTACH ID ENTRY")!(TIUACT="ATTACH TO ID NOTE")) S TIUY="0^Patient Record Flag notes may not be used as Interdisciplinary notes." G CANDOX
- S TIUACTW=$G(TIUACT)
  ;**100** was I +TIUACT'>0 S TIUACT etc.
- S TIUACT=$$USREVNT(TIUACT) I +TIUACT'>0 G CANDOX
- ; -- Historical Procedures - Prohibit actions detailed in
- ;    HPCAN^TIUCP: P182
- N HPCAN I $$ISHISTCP^TIUCP(+TIUD0) S HPCAN=$$HPCAN^TIUCP(+TIUACT) I 'HPCAN S TIUY=HPCAN G CANDOX
- ; **152 Get status
- S STATUS=+$P(TIUD0,U,5)
- ; **152[234] prevents editing or sending back a completed or uncosigned document.
- I STATUS>5,(+TIUACT=9)!(+TIUACT=17) D  G CANDOX
- . ; **152[234] Displays message to user
- . I +TIUACT=9 S TIUY="0^ You may not edit uncosigned or completed documents."
- . I +TIUACT=17 S TIUY="0^You may not send back uncosigned or completed documents."
+ S TIUACT=$$USREVNT(TIUACT) I +TIUACT'>0 S TIUY=0 G CANDOX
+ ; **152 Get status to evaluate for completed document.
+ S STATUS=+$P($G(^TIU(8925,+TIUDA,0)),U,5)
+ ; **152 prevents editing or sending back a completed document.
+ I STATUS>6,(+TIUACT=9)!(+TIUACT=17) D  G CANDOX
+ .; **152 Displays message to user
+ . I +TIUACT=9 S TIUY="0^ You may not edit a completed document."
+ . I +TIUACT=17 S TIUY="0^You may not send back this completed document."
  ; -- In case business rules have changed, & children already existed:
  I +TIUACT=24,$D(^TIU(8925,"GDAD",TIUDA)) D  G CANDOX
  . S TIUY="0^ This note cannot be attached; it has its own children."
  I +TIUACT=25,+$G(^TIU(8925,TIUDA,21)) D  G CANDOX
  . S TIUY="0^ This note cannot receive interdisciplinary children; it is itself a child."
- ;VMP/AM P241 If note is administratively closed, then bypass check for blank characters
- I $P($G(^TIU(8925,+TIUDA,16)),U,13)'="S",+TIUACT=4!(+TIUACT=5),+$$BLANK^TIULC(TIUDA) D  G CANDOX ;Sets TIUPRM1
+ I +TIUACT=4!(+TIUACT=5),+$$BLANK^TIULC(TIUDA) D  G CANDOX
  . S TIUY="0^ Contains blanks ("_$P(TIUPRM1,U,6)_") which must be filled before "_$P(TIUACT,U,2)_"ATURE."
  S TIUROLE=$$USRROLE(TIUDA,PERSON)
- S TIUTYP=+TIUD0
- I $$ISADDNDM^TIULC1(+TIUDA) S TIUATYP=TIUTYP,TIUTYP=+$G(^TIU(8925,+$P(TIUD0,U,6),0))
+ S TIUTYP=+$G(^TIU(8925,+TIUDA,0))
+ I $$ISADDNDM^TIULC1(+TIUDA) S TIUATYP=TIUTYP,TIUTYP=+$G(^TIU(8925,+$P($G(^TIU(8925,+TIUDA,0)),U,6),0))
  I TIUROLE']"" S TIUY=$$CANDO^USRLA(TIUTYP,STATUS,+TIUACT,PERSON)
  F TIUI=1:1:($L(TIUROLE,U)-1) D  Q:+$G(TIUY)>0
  . S TIUY=$$CANDO^USRLA(TIUTYP,STATUS,+TIUACT,PERSON,$P(TIUROLE,U,TIUI))
@@ -44,21 +37,13 @@ CANDO(TIUDA,TIUACT,PERSON) ; Can PERSON perform action now
  ;**100** update for PERSON param; update for verb modifier:
  I +TIUY'>0 D  G CANDOX
  . S WHO=" You"
- . ;I PERSON'=DUZ S WHO=$P(^VA(200,PERSON,0),U),WHO=$$NAME^TIULS(WHO,"FIRST LAST")
- . I PERSON'=DUZ S WHO=$$NAME^TIULS($$GET1^DIQ(200,PERSON,.01),"FIRST LAST") ;P182
+ . I PERSON'=DUZ S WHO=$P(^VA(200,PERSON,0),U),WHO=$$NAME^TIULS(WHO,"FIRST LAST")
  . S MODIFIER=$P(TIUACT,U,3) I $L(MODIFIER) S MODIFIER=" "_MODIFIER
  . ;e.g. "You may not ATTACH this UNSIGNED TELEPHONE NOTE TO AN ID NOTE."
  . S MSG=WHO_" may not "_$P(TIUACT,U,2)_" this "_$P($G(^TIU(8925.6,+STATUS,0)),U)_" "_$$PNAME^TIULC1(TIUTYP)_MODIFIER_"."
  . S TIUY=TIUY_U_MSG
  I +TIUACT=15,$$HASIMG^TIURB2(+TIUDA) D  G CANDOX
  . S TIUY="0^ This document contains linked images. You must ""delete"" the Images using the Imaging package before proceeding."
- ;VMP/ELR P217. Do not allow deletion of a parent with child
- I $G(TIUACTW)["DELETE RECORD",$$HASIDKID^TIUGBR(+TIUDA) D  G CANDOX
- . ;VMP/ELR P232. Create new error msg.
- . NEW TIUMSG D IDMSG^TIULP3(.TIUMSG) S TIUY="0^"_TIUMSG
- ;VMP/ELR P232 do not allow edit, delete or addendum on NIR and Anesthesia report  IA3356 FOR XQY0
- I (($G(XQY0)["OR CPRS GUI CHART")!($G(XQY0)["TIU ")),$$ACTION^TIULP3($G(TIUACTW)),$$ISSURG^TIULP3(+TIUDA) D  G CANDOX
- . S TIUY="0^ "_$$SURMSG^TIULP3($G(TIUACTW))
 CANDOX Q TIUY
  ;
 CANLINK(TIUTYP) ; Can user (DUZ) link (attach) a document of a particular type
@@ -80,8 +65,6 @@ CANLINK(TIUTYP) ; Can user (DUZ) link (attach) a document of a particular type
  I $$POSSPRNT^TIULP(TIUTYP) S TIUY="0^ This interdisciplinary PARENT title cannot be used for CHILD entries."
  ; -- If selected type is a CWAD, don't let user attach it: --
  I $$ISCWAD^TIULX(TIUTYP) S TIUY="0^ CWAD titles cannot be used for interdisciplinary entries."
- ; -- If selected type is a PRF, don't let user attach it: --
- I $$ISPFTTL^TIUPRFL(TIUTYP) S TIUY="0^ Patient Record Flag titles cannot be used for interdisciplinary entries."
  ; -- If selected type is a consult, don't let user attach it: --
  I $$ISA^TIULX(TIUTYP,+$$CLASS^TIUCNSLT) S TIUY="0^ Consult titles cannot be used for interdisciplinary entries."
  Q TIUY
@@ -120,9 +103,9 @@ USRROLE(TIUDA,PERSON) ; Identify the user's role with respect to the document
  I PERSON=+$P(TIU12,U,9) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","ATTENDING PHYSICIAN",0))_U
  I PERSON=+$P(TIU12,U,4) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","EXPECTED SIGNER",0))_U
  I PERSON=+$P(TIU12,U,8) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","EXPECTED COSIGNER",0))_U
- I $$ASURG^TIUADSIG(TIUDA) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","SURROGATE",0))_U ;P157
  ;Check if the person can be an Interpreter for this document via a Consult API
- I $$CPINTERP^GMRCCP(+TIUDA,PERSON) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","INTERPRETER",0))_U
+ ;I $$CPINTERP^GMRCCP(+TIUDA,PERSON) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","INTERPRETER",0))_U                           ;IHS/ITSC/LJF 08/20/2003
+ I $L($T(CPINTERP^GMRCCP)) I $$CPINTERP^GMRCCP(+TIUDA,PERSON) S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","INTERPRETER",0))_U  ;IHS/ITSC/LJF 08/20/2003
  I STATUS>6 D  I COMPLTR S TIUY=$G(TIUY)_+$O(^USR(8930.2,"B","COMPLETER",0))_U
  . S COMPLTR=0
  . I PERSON=+$P(TIU15,U,8) S COMPLTR=1 Q
@@ -150,13 +133,12 @@ CANPICK(TIUTYP) ; Screens selection of title by title status and
  S TIUPOWN=$P(TIUT0,U,5),TIUCOWN=+$P(TIUT0,U,6)
  I TIUTSTAT=10 S TIUY=$S(TIUPOWN=DUZ:1,+$$ISA^USRLM(DUZ,TIUCOWN):1,1:0)
 CANPIX Q +$G(TIUY)
-REQCOSIG(TIUTYP,TIUDA,USER,TIUDT) ; Evaluate whether user requires cosignature
+REQCOSIG(TIUTYP,TIUDA,USER) ; Evaluate whether user requires cosignature
  N TIUI,TIUY,TIUDPRM S USER=$S(+$G(USER):+$G(USER),1:+$G(DUZ))
  D DOCPRM^TIULC1(TIUTYP,.TIUDPRM,+$G(TIUDA))
  I $G(TIUDPRM(5))="" G REQCOSX
- I +$G(TIUDT)'>0 S TIUDT=+$P($P(+$G(^TIU(8925,+$G(TIUDA),13)),U),".")
  F TIUI=1:1:$L(TIUDPRM(5),U) D  Q:+TIUY>0
- . S TIUY=+$$ISA^USRLM(+USER,+$P(TIUDPRM(5),U,TIUI),,+$G(TIUDT))
+ . S TIUY=+$$ISA^USRLM(+USER,+$P(TIUDPRM(5),U,TIUI))
 REQCOSX Q +$G(TIUY)
  ;
 REQCPF(TIUCDA) ;Check if clinical procedure fields are required

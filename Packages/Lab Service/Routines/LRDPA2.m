@@ -1,5 +1,8 @@
 LRDPA2 ;AVAMC/REG - PT BLOOD BANK LOOKUP ;12/14/92  10:47 ;
- ;;5.2;LAB SERVICE;**310**;Sep 27, 1994
+ ;;5.2;LR;**310,1022**;September 20, 2007
+ ;;
+ ; VA Patch 310 is included in IHS LAB PATCH 1022
+ ;;
  K ^TMP($J) I '$D(IOM) S IOP="HOME" D ^%ZIS
  S:IOM="" IOM=80
  S DIWR=IOM-5,DIWL=5,DIWF="W"

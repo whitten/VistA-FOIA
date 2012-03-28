@@ -1,5 +1,7 @@
-SCRPO2 ;BP-CIOFO/KEITH - Historical Patient Position Assignment Listing (cont.) ;7/31/99  22:36
+SCRPO2 ;BP-CIOFO/KEITH - Historical Patient Position Assignment Listing (cont.) ;7/31/99  22:36 [ 11/02/2000  7:59 AM ]
  ;;5.3;Scheduling;**177**;AUG 13, 1993
+ ;IHS/ANMC/LJF 11/02/2000 changed SSN to HRCN
+ ;                        replaced elig/means test with gender/age
  ;
 BPTPA(SCPASS,SCDIV,SCTEAM,SCPOS,SCLINIC,SCFMT) ;Evaluate patient team position assignment information
  ;Input: SCPASS=patient team position assignment information
@@ -30,6 +32,7 @@ BPTPA(SCPASS,SCDIV,SCTEAM,SCPOS,SCLINIC,SCFMT) ;Evaluate patient team position a
  Q:'$$PROV(.SCPROV,SCPC)  ;providers
  S SCPAT=$P(SCPT0,U)_U_DFN  ;patient name^dfn
  S SCSSN=$P(SCPT0,U,9)  ;patient ssn
+ S SCSSN=$$HRCN^BDGF2(DFN,+$G(DUZ(2)))  ;IHS/ANMC/LJF 11/2/2000
  S SCGEND=$S($P(SCPT0,U,2)="M":"MALE",1:"FEMALE")  ;patient gender
  S SCAGE=$$AGEGR($P(SCPT0,U,3))  ;patient age group
  S SCPELIG=$$ELIG^SCRPO(DFN)  ;primary eligibility
@@ -39,8 +42,10 @@ BPTPA(SCPASS,SCDIV,SCTEAM,SCPOS,SCLINIC,SCFMT) ;Evaluate patient team position a
  D ENEP^SCRPW24(.SCX,"H") S SCENRP=$P(SCX(1),U,2)  ;enrollment priority
  ;
  ;Set data string
- S SCX=$E($P(SCPAT,U),1,18)_U_$E(SCSSN,6,10)
- S SCX=SCX_U_$P(SCPELIG,U,2)_U_$P(SCMTST,U,2)
+ ;S SCX=$E($P(SCPAT,U),1,18)_U_$E(SCSSN,6,10)   ;IHS/ANMC/LJF 11/2/2000
+ S SCX=$E($P(SCPAT,U),1,18)_U_SCSSN             ;IHS/ANMC/LJF 11/2/2000
+ ;S SCX=SCX_U_$P(SCPELIG,U,2)_U_$P(SCMTST,U,2)  ;IHS/ANMC/LJF 11/2/2000
+ S SCX=SCX_U_SCAGE_U_$E(SCGEND,1)  ;IHS/ANMC/LJF 11/2/2000
  S SCX=SCX_U_$E($P(SCTEAM,U),1,13)_U_U_$E($P(SCPOS,U),1,14)_U
  S SCX=SCX_U_$E($P(SCLINIC,U),1,14)
  ;

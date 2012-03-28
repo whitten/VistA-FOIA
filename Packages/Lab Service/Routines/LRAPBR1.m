@@ -1,5 +1,6 @@
-LRAPBR1 ;DALOI/WTY/KLL;AP Browser Print Cont.;11/08/01
- ;;5.2;LAB SERVICE;**259,317,363**;Sep 27, 1994;Build 3
+LRAPBR1 ;VA/DALOI/WTY/KLL - AP Browser Print Cont.;11/08/01
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**259,317**;Sep 27, 1994
  ;
  ;
 ENTER ;from LRAPBR
@@ -100,7 +101,6 @@ WPFLD ;
  F LRCNT=1:1:4 D
  .S X=$T(FIELDS+LRCNT)
  .S LRV=$P(X,";",2),LRV1=$P(X,";",3),LRV2=$P(X,";",4)
- .D TEXTCHK
  .I $P($G(^LR(LRDFN,LRSS,LRI,LRV,0)),U,4) D
  ..D GLENTRY("","",1),GLENTRY(LR(69.2,LRV1),"",1)
  ..S LRFILE=LRSF,LRIENS=LRI_","_LRDFN_",",LRFLD=LRV
@@ -189,7 +189,8 @@ FOOTER ;Footer-called from ^LRAPBR
  D GLENTRY(LRP,"",1)
  S LRTEXT=$S('$D(LR("W")):"STANDARD FORM 515",1:"WORK COPY ONLY !!")
  D GLENTRY(LRTEXT,50)
- D GLENTRY("ID:"_SSN,"",1)
+ ; D GLENTRY("ID:"_SSN,"",1)
+ D GLENTRY("ID:"_HRCN,"",1)
  D GLENTRY("SEX:"_SEX,16),GLENTRY(" DOB:"_DOB,BTAB)
  I AGE D
  .S LRTEXT=$S($G(VADM(6))]"":" AGE AT DEATH: ",1:" AGE: ")_AGE
@@ -251,16 +252,3 @@ FIELDS ;Field numbers for word processing fields
  ;1;.03;7
  ;1.1;.04;4
  ;1.4;.14;5
-TEXTCHK ; update text line counter if it is missing (Remedy 116253)
- N I,X,DATA
- S I=0
- K ^TMP("WP",$J)
- S X=$G(^LR(LRDFN,LRSS,LRI,LRV,0))
- I X'="",$L(X,"^")=1 D
- . F  S I=$O(^LR(LRDFN,LRSS,LRI,LRV,I)) Q:I=""  D
- . . S DATA=$G(^LR(LRDFN,LRSS,LRI,LRV,I,0))
- . . S ^TMP("WP",$J,I,0)=DATA
- I $D(^TMP("WP",$J)) D
- . D WP^DIE(63.08,LRI_","_LRDFN_",",LRV,"","^TMP(""WP"",$J)")
- . K ^TMP("WP",$J)
- Q

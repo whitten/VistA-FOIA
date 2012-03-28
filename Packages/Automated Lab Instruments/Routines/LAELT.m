@@ -1,4 +1,5 @@
-LAELT ;SLC/RWF - ELT 8/8DS AUTOMATED DATA ;8/16/90  13:59 ;
+LAELT ; IHS/DIR/FJE - ELT 8/8DS AUTOMATED DATA 8/16/90 13:59 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;Cross link by IDE= accession, I.D. number from ELT
  ;ELT 8/ds in transfer option 3.

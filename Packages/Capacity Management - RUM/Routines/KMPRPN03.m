@@ -1,11 +1,12 @@
-KMPRPN03 ;OAK/RAK - Print Package RUM Stats ;11/19/04  09:01
- ;;2.0;CAPACITY MANAGEMENT - RUM;**1**;May 28, 2003
+KMPRPN03 ;SFISC/RAK - Print Package RUM Stats ;29 Oct 1998
+ ;;1.0;CAPACITY MANAGEMENT - RUM;;Dec 09, 1998
 EN ;-- entry point.
  ;
- N %ZIS,CONT,DIR,KMPRDATE,KMPRNAM,MESSAGE,POP
+ N %ZIS,CONT,DIR,IORVOFF,IORVON,KMPRDATE,KMPRNAM,MESSAGE,POP
  N X,Y,ZTDESC,ZTRTN,ZTSAVE,ZTSK
  ;
- D HDR^KMPDUTL4(" Package Resource Usage ")
+ D ZIS^KMPRUTL
+ W @IOF,!?28,IORVON," Package Resource Usage ",IORVOFF,!
  W !,?2,"This option will display the package Resource Usage Monitor statistics.",!
  W ?2,"The printout summarizes the statistics of the options, protocols and",!
  W ?2,"tasks for a selected namespace as percentages.",!!
@@ -85,7 +86,7 @@ PRINT ;-- print data from KMPRARRY.
  .; if no more entries send message  else use default.
  .S MESSAGE=""
  .S:$O(@KMPRARRY@(NODE))="" MESSAGE="Press RETURN to continue"
- .D CONTINUE^KMPDUTL4(MESSAGE,2,.CONT)
+ .W !! D CONTINUE^KMPRUTL(MESSAGE,.CONT)
  ;
  Q
  ;

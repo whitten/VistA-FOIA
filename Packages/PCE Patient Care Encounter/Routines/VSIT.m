@@ -1,5 +1,5 @@
-VSIT ;ISD/MRL,RJP - Visit Tracking ;5/9/02 4:31pm
- ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,111,118,164**;Aug 12, 1996
+VSIT ;ISD/MRL,RJP - Visit Tracking ; 5/9/02 4:31pm
+ ;;1.0;PCE PATIENT CARE ENCOUNTER;**76,111,118**;Aug 12, 1996
  ; Patch PX*1*76 changes the 2nd line of all VSIT* routines to reflect
  ; the incorporation of the module into PCE.  For historical reference,
  ; the old (VISIT TRACKING) 2nd line is included below to reference VSIT
@@ -12,10 +12,10 @@ VSIT ;ISD/MRL,RJP - Visit Tracking ;5/9/02 4:31pm
  ;        [VSIT(0)]     = <functional parameters>
  ;        [VSIT("xxx")] = <used in match logic if VSIT(0)["M">
  ; - rtns VSIT("IEN")   = <visit record # in format as Y w/ ^DIC>
- ;       VSIT(##,"XXX") = visit values passed by mnemonics
+ ;       VSIT(##,"XXX") = visit values passed by mneomonics
  ;      If VSIT("IEN")  = -1 Error in creation/lookup.
  ;      If Vsit("IEN")  = -2 Package is turned off or not defined in the
- ;                          Visit Tracking Parameters file.
+ ;                           Visit Tracking Parameters file.
  S VSIT("IEN")=$$GET($G(VSIT),$G(DFN),$G(VSIT(0)),.VSIT)
 EXIT ;
  Q
@@ -24,11 +24,12 @@ GET(VDT,DFN,PRAM,VSIT) ; find or create a visit
  ;
  ; - pass {VDT/VSIT("VDT")} = <visit date [and time] in FM format>
  ;        {DFN/VSIT("PAT")} = <patient file pointer>
- ;        [PRAM/VSIT(0)]    = <functional parameters>
+ ;        [PRAM/VSIT(0)]    = <functional paramerets>
  ;        [VSIT("xxx")]     = <array w/ mnemonic subscript>
  ;                            <used in match logic if VISIT(O)["M">
  ;                            <for SVC, TYP, INS, DSS, ELG , LOC>
  ; - rtns                   = <visit record # in format as Y w/ ^DIC>
+ ;
  I $G(VSITPKG)]"" S VSIT("PKG")=VSITPKG
  E  S (VSITPKG,VSIT("PKG"))=$G(VSIT("PKG"))
  N VSITPKGP
@@ -64,10 +65,6 @@ GET(VDT,DFN,PRAM,VSIT) ; find or create a visit
  ;
  ;If not forcing new visit try to look up the visit
  D LST^VSITGET("","","",.VSIT,.VSITGET)
- I $$SWSTAT^IBBAPI(),+$G(VSITGET)=1 D  ;PX*1.0*164
- . N ACT
- . I $G(VSIT("ACT"))']0 S VSIT("ACT")=$P($G(^AUPNVSIT(+VSITGET(1),0)),"^",26) Q
- . I $G(VSIT("ACT"))]0 S ACT=VSIT("ACT") K VSIT S VSIT("IEN")=+$P(VSITGET(1),"^"),VSIT("ACT")=ACT D UPD^VSIT ;PX*1.0*164
  ;
  I +$G(VSITGET)=0,VSIT(0)["N" D  G QUIT
  . D DEFAULTS^VSITDEF
@@ -142,13 +139,13 @@ PKG2IEN(PKG) ;Pass in package name space and
  ;        returns pointer to the package in the Package file #9.4
  Q $$PKG2IEN^VSIT0($G(PKG))
  ;
-PKG(PKG,VALUE) ;-Entry point to add package to multiple in tracking parameters
+PKG(PKG,VALUE) ;-Entry point to add package to multiple in tracking param
  ;-PKG=Package Name Space
  ;-VALUE=Value on the ON/OFF flag under package multiple 
  ;--1=ON  0=OFF
  Q $$PKG^VSIT0($G(PKG),$G(VALUE))
  ;
-PKGON(PKG) ; -- Returns the active flag for the package
+PKGON(PKG) ; -- Returns the active flage for the package
  ; 1 the package can create visits
  ; 0 the package cannot create visits
  ; -1 called wrong or could not find package in VT parameters file

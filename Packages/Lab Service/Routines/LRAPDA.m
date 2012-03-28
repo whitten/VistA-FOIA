@@ -1,5 +1,6 @@
 LRAPDA ;DALOI/REG/WTY/KLL/CKA - ANATOMIC PATH DATA ENTRY;11/02/01
- ;;5.2;LAB SERVICE;**72,73,91,121,248,259,295,317,365**;Sep 27, 1994;Build 9
+ ;;5.2;LAB SERVICE;**1030**;NOV 01, 1997
+ ;;5.2;LAB SERVICE;**72,73,91,121,248,259,295,317,365**;Sep 27, 1994;Build 11
  ;
  ;Reference to ^%DT supported by IA #10003
  ;Reference to ^DIE supported by IA #10018
@@ -62,7 +63,7 @@ REST ;
  .W !,"modified; it must first be released before Supplementary"
  .W !,"report can be added.",!
  .S LRXSTOP=1
- Q:LRXSTOP 
+ Q:LRXSTOP
  ;
 DIE ;Edit
  I LRSS="AU" D AUE Q
@@ -118,7 +119,7 @@ EDIT ;Call to ^DIE
  D ^DIE
  S LRAC=$P(LRA,U,6)
  I LRELSD D MAIN^LRAPRES1(LRDFN,LRSS,LRI,LRSF,LRP,LRAC)
- D UPDATE^LRPXRM(LRDFN,LRSS,LRI)
+ ; D UPDATE^LRPXRM(LRDFN,LRSS,LRI)     ; IHS/OIT/MKK - LR*5.2*1030 - RPMS Does NOT use Clinical Reminders
  D:LRSFLG="S"&('$D(Y)) ^LRAPDSR
  D FRE^LRU
  I LRSOP'="","ABM"[LRSOP D CPTCOD
@@ -204,7 +205,7 @@ AURESET ;Reset DR to orig value in LRAUDA
  .S LRAC=$P(LRA,U,6)
  .I LRELSD D MAIN^LRAPRES1(LRDFN,LRSS,LRI,LRSF,LRP,LRAC)
  D:LRSFLG="S" ^LRAPDSR
- D UPDATE^LRPXRM(LRDFN,"AU")
+ ; D UPDATE^LRPXRM(LRDFN,"AU")    ; IHS/OIT/MKK - LR*5.2*1030 - RPMS Does NOT use Clinical Reminders
  L -^LR(LRDFN)
  D:"BAP"[LRSOP AU
  D:LRSOP="R" R

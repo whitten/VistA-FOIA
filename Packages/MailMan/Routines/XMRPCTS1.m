@@ -2,7 +2,7 @@ XMRPCTS1 ;(KC-VAMC)/XXX-Simple PCTS front end to MailMan ;02/06/99  10:32
  ;;8.0;MailMan;;Jun 28, 2002
  N XMUS,XMFM,XMSTR,XMRI,XMTO,XMABORT
  ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- ;All should be sent to XXX@VHA.DMIA the local PCTS Domain
+ ;All should be sent to XXX@DOMAIN.NAME the local PCTS Domain
  ;Edit these for your site.
  S XMUS="XXXX" ;Local routing indicator
  S XMFM="YYYY" ;from line
@@ -115,8 +115,8 @@ READY(XMDUZ,XMINSTR,XMRESTR,XMABORT) ;
  S DIR("?")="'NO' will place the message only in your IN basket."
  D ^DIR I $D(DIRUT) S XMABORT=1 Q
  Q:'Y
- W !,"Send to:  XXX@VHA.DMIA"
- D ADDR^XMXADDR(XMDUZ,"XXX@VHA.DMIA",.XMINSTR,.XMRESTR)
+ W !,"Send to:  XXX@DOMAIN.NAME"
+ D ADDR^XMXADDR(XMDUZ,"XXX@DOMAIN.NAME",.XMINSTR,.XMRESTR)
  Q
 EXIT ;
  K I,XMTO,XMFM,XMSTR,XMUS,XMTM,XMRI,DIC,XCNP,XMXUSEC,ZTPAR,XMSEQ,XMOUT,DTOUT

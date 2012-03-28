@@ -1,11 +1,25 @@
-DGSEC ;ALB/RMO - MAS Patient Look-up Security Check ; 3/24/04 7:53pm
- ;;5.3;Registration;**32,46,197,214,249,281,352,391,425,582,769,796**;Aug 13, 1993;Build 6
+DGSEC ;ALB/RMO - MAS Patient Look-up Security Check ; 2/21/03 10:19am [ 03/17/2005  1:46 PM ]
+ ;;5.3;Registration;**32,46,197,214,249,281,352,391,425,1002,1008,1009**;Aug 13, 1993
+ ;IHS/ANMC/LJF  9/7/2000  added chart # to bulletin
+ ;              8/31/2001 added code to track all patients per parameter
+ ;             10/02/2003 VA added code to add patient but not setting of ANS xref
+ ;IHS/ITSC/WAR 3/17/2005 Fix dealing with calls from other apps/pkgs
+ ;IHS/OIT/LJF 08/31/2007 PATCH 1008 added code to check if user is restrcited from accessing a record
  ;
  ;Entry point from DPTLK
- I +$G(Y)=+$G(^DISV(DUZ,"^DPT(")),$G(DPTBTDT) K DPTBTDT Q
  N DFN,DGANS,DGMSG,DGOPT,DGPTSSN,DGREC,DGSENS,DGY,DX,DY,%,DG1
  ;Y=Patient file DFN
  S DGY=Y
+ ;
+ ;IHS/OIT/LJF 08/31/2007 PATCH 1008
+ ; check if users is restricted from accessing this patient's record
+ I $$STATUS^BDGSPT2(DUZ,DGY,1)["RESTRICTED ACCESS" D  Q
+ . S Y=-1
+ . NEW MSG S MSG(2)="Sorry, you are restricted from accessing this patient's record."
+ . S MSG(3)="If you have questions, please contact your HIM department."
+ . D DISP(.MSG)
+ ; end of PATCH 1008 code
+ ;
  ;OWNREC^DGSEC4 parameters: 
  ;  DGREC = output array passed by reference
  ;  DGY = Patient file DFN
@@ -32,9 +46,22 @@ DGSEC ;ALB/RMO - MAS Patient Look-up Security Check ; 3/24/04 7:53pm
  I DGSENS(1)=-1 D  G Q
  .S Y=-1
  .D DISP(.DGSENS)
- I DGSENS(1)=0 G Q
+ ;I DGSENS(1)=0 G Q  ;IHS/ANMC/LJF 8/31/2001
  ;Get option name for DG Security Log file and bulletin
  D OP^XQCHK S DGOPT=$S(+XQOPT<0:"^UNKNOWN",1:$P(XQOPT,U)_U_$P(XQOPT,U,2))
+ ;
+ ;IHS/ANMC/LJF 8/31/2001 if site parameter says log all patients
+ ;                       if set to 2, means non-sensitive so log anyway
+ ;IHS/ITSC/WAR 3/17/2005 Fix dealing with calls from other apps/pkgs
+ ;                       REM'd next 3 lines 
+ ;I DGSENS(1)[0 D  G Q
+ ;. I DGSENS(1)=0 Q:$$GET1^DIQ(43,1,9999999.01)'="YES"  ;track all not on
+ ;. S DGSENS(1)=0                                       ;reset if = 0^0
+ I DGSENS(1)=0 D  G Q
+ . I $$GET1^DIQ(43,1,9999999.01)'="YES"&('$G(^DGSL(38.1,+DGY,0))) Q  ;track all not on.  End of 3/17/2005 modification
+ . D SETLOG1(+Y,DUZ,,DGOPT)                            ;set log entry
+ ;IHS/ANMC/LJF 8/31/2001 end of new code
+ ;
  I DGSENS(1)=1 D
  .I DIC(0)["E" D
  ..W $C(7)
@@ -90,10 +117,9 @@ SETLOG1(DFN,DGDUZ,DG1,DGOPT) ;Adds/updates entry in DG Security Log file (38.1)
  ;  DGOPT - Option (#19) file Name (#.01)^Menu text (Optional)
  ;
  N DGA1,DGDATE,DGDTE,DGT,DGTIME,XQOPT
- ;DG/582
- I $G(VALM("TITLE"))="Dependents Module" Q
  ;Lock global
 LOCK L +^DGSL(38.1,+DFN):1 G:'$T LOCK
+ ;
  ;Add new entry for patient if not found
  I '$D(^DGSL(38.1,+DFN,0)) D
  .S ^DGSL(38.1,+DFN,0)=+DFN
@@ -109,6 +135,7 @@ LOCK L +^DGSL(38.1,+DFN):1 G:'$T LOCK
  ..S X=$G(^DIC(8,ELIG,0))
  ..I $P(X,"^",12) S FLAG=1
  .S $P(^DGSL(38.1,+DFN,0),"^",2)=FLAG
+ .I FLAG=0 S ^DGSL(38.1,"ANS",+DFN)=""  ;IHS/ITSC/LJF 10/02/2003
  .;Date/time sensitivity was set
  .S $P(^DGSL(38.1,+DFN,0),"^",4)=$$NOW^XLFDT()
  ;determine if an inpatient
@@ -142,16 +169,14 @@ BULTIN1(DFN,DGDUZ,DGOPT,DGMSG) ;Generate sensitive record access bulletin
  ;        DGMSG = Message array (Optional)
  ;
  N DGEMPLEE,XMSUB,XQOPT
- ;DG/582
- I $G(VALM("TITLE"))="Dependents Module" Q
  K DGB I $D(^DG(43,1,"NOT")),+$P(^("NOT"),U,10) S DGB=10
  Q:'$D(DGB)  S XMSUB="RESTRICTED PATIENT RECORD ACCESSED"
  S DGB=+$P($G(^DG(43,1,"NOT")),U,DGB) Q:'DGB
- S DGB=$$GET1^DIQ(3.8,DGB,.01,"","","ZERR") Q:'$L(DGB)
- ;S DGB=$P($G(^XMB(3.8,DGB,0)),U) Q:'$L(DGB)
+ S DGB=$P($G(^XMB(3.8,DGB,0)),U) Q:'$L(DGB)
  I $G(DGOPT)="" D OP^XQCHK S DGOPT=$S(+XQOPT<0:"^UNKNOWN",1:$P(XQOPT,U)_U_$P(XQOPT,U,2))
  N XMB,XMY,XMY0,XMZ
  S XMB="DG SENSITIVITY",XMB(1)=$P(^DPT(+DFN,0),U)
+ S XMB(1)=XMB(1)_" (#"_$$HRCN^BDGF2(+DFN,DUZ(2))_")"  ;IHS/ANMC/LJF 9/7/2000
  S DGEMPLEE=$$EMPL^DGSEC4(+DFN)
  I DGEMPLEE=1 S XMB(1)=XMB(1)_"  (Employee)"
  S XMB(2)=$P(^DPT(+DFN,0),U,9),XMB(3)=$P(DGOPT,U,2),XMY("G."_DGB)=""
@@ -163,7 +188,10 @@ BULTIN1(DFN,DGDUZ,DGOPT,DGMSG) ;Generate sensitive record access bulletin
 SEND(XMB,XMY) ;Queue mail bulletin
  ;Input: XMB,XMY=Mailman bulletin parameters
  ;
- D ^XMB
+ N ZTSK,ZTRTN,ZTDESC,ZTIO,ZTDTH,ZTSAVE,DGI,X,Y
+ F DGI="XMB","XMB(","XMY(" S ZTSAVE(DGI)=""
+ S ZTRTN="EN^XMB",ZTDESC="DG Security Bulletin",ZTIO="",ZTDTH=$H
+ D ^%ZTLOAD
  Q
  ;
 DISP(ARRAY) ;Display message text to screen
@@ -191,10 +219,9 @@ LOADXMY() ;this adds the contents of field #509 of File #43 to the XMY array
  ;          Returns: 0              - Ok
  ;                   -1^errortext   - if can't find mail group
  ;
- N DGB,DGERR,DGM
+ N DGB,DGERR
  S DGERR=0
  S DGB=+$P($G(^DG(43,1,"NOT")),"^",10)
- S DGM=$$GET1^DIQ(3.8,DGB,.01,"","","ZERR")
- I '$D(DGM) S DGERR="-1^No/Bad Field #509 entry in File #43" G QTLOADX
- S XMY("G."_DGM)="" ; pass mailgroup
+ I '$D(^XMB(3.8,DGB,0))#2 S DGERR="-1^No/Bad Field #509 entry in File #43" G QTLOADX
+ S XMY("G."_$P($G(^XMB(3.8,DGB,0)),"^",1))="" ; pass mailgroup
 QTLOADX Q DGERR

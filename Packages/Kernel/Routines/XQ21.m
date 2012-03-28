@@ -1,4 +1,5 @@
-XQ21 ;MJM/SEA ;9/14/94  11:10
+XQ21 ;MJM/SEA ;9/14/94  11:10 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  ;
 USER ;This routine is called by the XUUSERDISP option.

@@ -1,5 +1,6 @@
-LAMIVTL1 ;DAL/HOAK 2nd Vitek literal verify rtn
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**12,29**;Sep 27,1994
+LAMIVTL1 ;VA/DAL/HOAK - 2nd Vitek literal verify rtn ;1/22/96  08:30 ;
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**1030**;NOV 1, 1997
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**12,29**;Sep 27,1994;Build 7
 INIT ;
  S OK=1
  S LREND=0
@@ -39,7 +40,8 @@ EN ; From LAMIAUT0 BY FHS
 PAT ;
  D PT^LRX
  W !,"ACC # (",LRAN,")    "
- W $$DTF^LRAFUNC1(LRCDT),!!?10,PNM,"   SSN: ",SSN,"   LOC: ",LRLLOC
+ ; W $$DTF^LRAFUNC1(LRCDT),!!?10,PNM,"   SSN: ",SSN,"   LOC: ",LRLLOC
+ W $$DTF^LRAFUNC1(LRCDT),!!?10,PNM,"   HRCN: ",HRCN,"   LOC: ",LRLLOC  ;IHS/OIRM TUC/AAB 12/10/97
  W !?5,"Specimen: "
  W $S($D(^LAB(61,+LRSPEC,0)):$P(^(0),U),1:"Unknown")
  W "    Sample: ",$S($D(^LAB(62,+LRSAMP,0)):$P(^(0),U),1:"Unknown"),!
@@ -60,7 +62,8 @@ PAT ;
 EXP ; From LAMIAUT4 BY FHS
  ;---------------------------------------------------------------------
  ;Get the list of tests for this ACC.
- W !!,PNM,"   ",SSN,!,LRACCN
+ ; W !!,PNM,"   ",SSN,!,LRACCN
+ W !!,PNM,"   ",HRCN,!,LRACCN  ;IHS/OIRM TUC/AAB 12/10/97
  D INF^LRX
  W !!?5,$P(^LAB(61,LRSPEC,0),U),"  ",$P(^LAB(62,LRSAMP,0),U),!
  K ^TMP("LR",$J),LRTEST,LRNAME,LRTS

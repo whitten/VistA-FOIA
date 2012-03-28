@@ -1,4 +1,6 @@
-LRMITSP ;SLC/STAFF - MICRO TREND PROCESS ;3/4/93  16:59
+LRMITSP ; IHS/DIR/FJE - MICRO TREND PROCESS 16:59 ; 
+ ;;5.2;LR;**1013**;JUL 15, 2002
+ ;
  ;;5.2;LAB SERVICE;**96**;Sep 27, 1994
  ; LRATS  inverse start time
  ; LRFBEG  formatted begin time

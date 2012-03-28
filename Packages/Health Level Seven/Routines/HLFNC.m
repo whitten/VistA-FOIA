@@ -1,7 +1,6 @@
-HLFNC ;AISC/SAW/OAK-OIFO/RBN-Routine of Functions and Other Calls Used for HL7 Messages  ;03/26/2008  11:34
- ;;1.6;HEALTH LEVEL SEVEN;**38,42,51,66,141**;Oct 13, 1995;Build 11
- ;Per VHA Directive 2004-038, this routine should not be modified.
- ;
+HLFNC ;AISC/SAW-Routine of Functions and Other Calls Used for HL7 Messages ;08/03/2000  15:45 [ 04/02/2003   8:38 AM ]
+ ;;1.6;HEALTH LEVEL SEVEN;**1004**;APR 1, 2003
+ ;;1.6;HEALTH LEVEL SEVEN;**38,42,51,66**;Oct 13, 1995
 HLNAME(X,HLECDE) ;Convert a name in DHCP format to HL7 format
  ; INPUT: X - Name in DHCP format
  ;        Optional - HLECDE - HL7 encoding chars 
@@ -54,7 +53,7 @@ HLDATE(X,Y) ;Convert date, date/time or time only in FM format to HL7 format
  S %=$$FMTHL7^XLFDT(X)
  Q $S(Y="DT":$E(%,1,8),1:%)
  ;
-FMDATE(X) ; Convert a date, date/time or time only in HL7 format to FM format
+FMDATE(X) ;Convert a date, date/time or time only in HL7 format to FM format
  I X="" Q ""
  N %
  S %=$P($TR(X,"+-","^"),"^")
@@ -159,22 +158,7 @@ HLPHONE(X,B,C) ;Convert DHCP Phone Number to HL7 Format
  ;C = Comments
  Q:'$D(X) ""  Q:$L(X)<7 ""
  N I,Y,Y1,Z S B=$S('$D(B):"",1:"B"_B),C=$S('$D(C):"",1:"C"_C)
- ;
- ; patch HL*1.6*141 start
- ; S Y="" F I=1:1:$L(X) S Y=Y_$S($E(X,I)?1N:$E(X,I),"X,x"[$E(X,I)&('$D(Z)):"X",1:"") I "X,x"[$E(X,I) S Z=""
- N CH
- S Y=""
- F I=1:1:$L(X) D
- . S CH=$E(X,I)
- . ; Next line modified by RBN
- . ;S Y=Y_$S(CH?1N:CH,"Xx"[CH&('$D(Z)):"X",1:"")
- . S Y=Y_$S(CH?1N:CH,"Xx,*"[CH&('$D(Z)):"X",1:"")
- . I "Xx"[CH S Z=""
- ;
- ; the number, following "X" character, should be greater than 0
- I Y["X",+$P(Y,"X",2)<1 S Y=$P(Y,"X")
- ; patch HL*1.6*141 end
- ;
+ S Y="" F I=1:1:$L(X) S Y=Y_$S($E(X,I)?1N:$E(X,I),"X,x"[$E(X,I)&('$D(Z)):"X",1:"") I "X,x"[$E(X,I) S Z=""
  I $L(Y)<7 Q ""
  S Y1=$S(Y["X":"X"_$P(Y,"X",2),1:""),Y=$P(Y,"X") I $L(Y)<7 Q ""
  I $L(Y)=8,189[$E(Y) S Y=$E(Y,2,8)

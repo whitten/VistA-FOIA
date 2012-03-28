@@ -1,4 +1,6 @@
-LRLL1 ;SLC/RWF - LOAD LIST SCAN. ;2/19/91  10:42 ;
+LRLL1 ; IHS/DIR/FJE - LOAD LIST SCAN. 2/19/91 10:42 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;**116**;Sep 27, 1994
 L1 ;
  L +^LRO(68.2,LRINST,3) I $S($D(^LRO(68.2,LRINST,3)):^(3),1:0) W !,"Waiting for another build to finish.",$C(7),!!?5,"Type '^' to stop waiting." L -^LRO(68.2,LRINST,3) R X:DTIME G L1:X'[U Q

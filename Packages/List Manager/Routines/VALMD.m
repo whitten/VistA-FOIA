@@ -1,5 +1,5 @@
-VALMD ;MJK/ALB - List Manager Demo Routine; APR 2, 1992 ;06/26/2006
- ;;1.0;List Manager;**8**;Aug 13, 1993;Build 1
+VALMD ;MJK/ALB - List Manager Demo Routine; APR 2, 1992
+ ;;1;List Manager;;Aug 13, 1993
  ;
 EN ; -- option entry point
  K XQORS,VALMEVL
@@ -19,7 +19,7 @@ PKG ; -- entry pt if package known
  .S VALMCNTI=VALMCNTI+1 W:(VALMCNTI#10)=0 "."
  .S X=$$SETFLD^VALM1(VALMCNTI,"","NUMBER")
  .S X=$$SETFLD^VALM1($P(VALMX,U),X,"NAME")
- .S X=$$SETFLD^VALM1($P(VALMX,U,2),X,"TEXT") K Z S $E(Z,$L(X)+1,240)=""
+ .S X=$$SETFLD^VALM1($P(VALMX,U,2),X,"TEXT") K Z S $P(Z,$E(VALMCNTI),240)=""
  .S VALMCNT=VALMCNT+1
  .D SET^VALM10(VALMCNT,$E(X_Z,1,240),VALMCNTI) ; set text
  .S ^TMP("VALMZIDX",$J,VALMCNTI)=VALMCNT_U_VALMIFN

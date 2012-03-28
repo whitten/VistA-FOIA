@@ -1,7 +1,6 @@
 RAUTL00 ;HIRMFO/GJC-Utility Routine (linked to RAUTL0) ;11/14/97  12:01
- ;;5.0;Radiology/Nuclear Medicine;**93**;Mar 16, 1998;Build 3
+ ;;5.0;Radiology/Nuclear Medicine;;Mar 16, 1998
  ;
- ; 07/14/2008 BAY/KAM Rem Call 257549 Mod request for alert text
 OENOTE ; Fire off OE/RR notification for [abnormal, amended] rad results
  ; back door fires off this notif. regardless of oe/rr version
  ; because oe/rr doesn't get abnormal/amended info in HL7 msgs
@@ -46,11 +45,11 @@ OE3(RADFN,RADTI,RACNI,X) ; Fire off oe/rr notifications, version 3.0+
  S RA751=$G(^RAO(75.1,+$P(X,"^",11),0))
  S RAIENS=RADTI_"~"_RACNI
  I $D(RAAB) D  ; abnormal Dx code associated with report
- . S:'+$O(^RARPT(RARPT,"ERR",0)) RANOTE="25^Abnl Imaging Reslt, Needs Attn: "_$E(X1,1,25)
+ . S:'+$O(^RARPT(RARPT,"ERR",0)) RANOTE="25^Abnormal Imaging Results: "_$E(X1,1,25)
  . S:+$O(^RARPT(RARPT,"ERR",0)) RANOTE="53^Amended/Abnormal Imaging Results: "_$E(X1,1,20)
  . Q
  I '$D(RAAB)  D  ; no abnormal Dx code with this report
- . S:'+$O(^RARPT(RARPT,"ERR",0)) RANOTE="22^Imaging Results,Non Critical: "_$E(X1,1,30)
+ . S:'+$O(^RARPT(RARPT,"ERR",0)) RANOTE="22^Imaging Results: "_$E(X1,1,30)
  . S:+$O(^RARPT(RARPT,"ERR",0)) RANOTE="53^Amended Imaging Results: "_$E(X1,1,25)
  . Q
  S RAMSG=$P($G(RANOTE),"^",2),RAOIFN=$P(RA751,"^",7),RAREQPHY(+$P(X,"^",14))=""

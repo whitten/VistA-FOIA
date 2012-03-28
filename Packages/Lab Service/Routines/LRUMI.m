@@ -1,4 +1,6 @@
-LRUMI ;AVAMC/REG - MICRO RREJCTED SPECIMEN REPORT ;10/6/93  11:52 ;
+LRUMI ; IHS/DIR/FJE - MICRO RREJCTED SPECIMEN REPORT 10/6/93 11:52 ;
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END S DIC=68,DIC(0)="QMZ",X="MICROBIOLOGY" D ^DIC K DIC G:Y<1 END S X=$P(Y,U,2) D ^LRUTL G:Y=-1 END
  D B^LRU G:Y<0 END
@@ -22,13 +24,16 @@ S S LRC=$S($D(^LR(LRDFN,"MI",LRI,1)):$P(^(1),"^",5),1:"") I LRC["CON" S LRAC=^(0
  Q
 SET S A=$P(LRAC,"^",6),L=$P(LRAC,"^",8),S=+$P(LRAC,"^",5),S=$S($D(^LAB(61,S,0)):$P(^(0),"^"),1:"") S:S="" S="?" S:L="" L="?"
  S ^TMP($J,"A",A)=LRDFN_"^"_LRI_"^"_L_"^"_S_"^"_+LRAC,^(A,LRN)=LRC,^TMP($J,"L",L,A)="",^TMP($J,"S",S,A)="" Q
-A S LRZ=^TMP($J,"A",LRC),LRDFN=+LRZ,LRI=$P(LRZ,"^",2),X=^LR(LRDFN,0),Y=$P(X,"^",3),X=^DIC($P(X,"^",2),0,"GL"),LRY=@(X_Y_",0)") D W
+A ;S LRZ=^TMP($J,"A",LRC),LRDFN=+LRZ,LRI=$P(LRZ,"^",2),X=^LR(LRDFN,0),Y=$P(X,"^",3),X=^DIC($P(X,"^",2),0,"GL"),LRY=@(X_Y_",0)") D W
+ S LRZ=^TMP($J,"A",LRC),LRDFN=+LRZ,LRI=$P(LRZ,"^",2),X=^LR(LRDFN,0),Y=$P(X,"^",3),X=^DIC($P(X,"^",2),0,"GL"),LRY=@(X_Y_",0)"),HRCN=$S($P($G(^AUPNPAT(+$G(Y),41,+$G(DUZ(2)),0)),"^",2):$P(^(0),"^",2),1:"??") D W  ;IHS/ANMC/CLS 08/18/96
  F LRF=0:0 S LRF=$O(^TMP($J,"A",LRC,LRF)) Q:'LRF!(LR("Q"))  D:$Y>(IOSL-3) H Q:LR("Q")  W !,^TMP($J,"A",LRC,LRF)
  Q
-W S Z=$S('LRG:$P(LRZ,"^",4),1:$P(LRZ,"^",3)),Y=$P(LRZ,"^",5) D DT^LRU W !,LRC,?15,$E(Z,1,12),?28,Y,?43,$P(LRY,"^"),?74,$E($P(LRY,"^",9),6,10) Q
+W ;S Z=$S('LRG:$P(LRZ,"^",4),1:$P(LRZ,"^",3)),Y=$P(LRZ,"^",5) D DT^LRU W !,LRC,?15,$E(Z,1,12),?28,Y,?43,$P(LRY,"^"),?74,$E($P(LRY,"^",9),6,10) Q
+ S Z=$S('LRG:$P(LRZ,"^",4),1:$P(LRZ,"^",3)),Y=$P(LRZ,"^",5) D DT^LRU W !,LRC,?15,$E(Z,1,12),?28,Y,?43,$P(LRY,"^"),?74,HRCN Q  ;IHS/ANMC/CLS 08/18/96
  Q
 H I $D(LR("F")),IOST?1"C".E D M^LRU Q:LR("Q")
- D F^LRU W !,"MICROBIOLOGY REJECTED SPECIMENS FROM: ",LRSTR," THROUGH: ",LRLST,!,"ACCESSION",?15,$S('LRG:"SPECIMEN",1:"LOCATION"),?28,"DATE TAKEN",?43,"PATIENT",?75,"SSN",!,LR("%") Q
+ ;D F^LRU W !,"MICROBIOLOGY REJECTED SPECIMENS FROM: ",LRSTR," THROUGH: ",LRLST,!,"ACCESSION",?15,$S('LRG:"SPECIMEN",1:"LOCATION"),?28,"DATE TAKEN",?43,"PATIENT",?75,"SSN",!,LR("%") Q
+ D F^LRU W !,"MICROBIOLOGY REJECTED SPECIMENS FROM: ",LRSTR," THROUGH: ",LRLST,!,"ACCESSION",?15,$S('LRG:"SPECIMEN",1:"LOCATION"),?28,"DATE TAKEN",?43,"PATIENT",?75,"HRCN",!,LR("%") Q  ;IHS/ANMC/CLS 08/18/96
 H1 D H Q:LR("Q")  W !!,"Location: ",LRA,!,"---------" Q
 H2 D H Q:LR("Q")  W !!,"Specimen: ",LRA,!,"---------" Q
  ;

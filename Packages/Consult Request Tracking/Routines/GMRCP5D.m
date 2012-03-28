@@ -1,9 +1,5 @@
-GMRCP5D ;SLC/DCM,RJS,JFR,WAT - Print Consult form 513 (Gather Data - Addendums, Headers, Service reports and Comments) ;03/18/09  15:00
- ;;3.0;CONSULT/REQUEST TRACKING;**4,12,15,22,29,35,38,61,65,66**;Dec 27, 1997;Build 30
- ;
- ;This routine invokes the following ICR(s):
- ;2056 $$GET1^DIQ, 2541 $$KSP^XUPARAM, 10103 $$FMTE^XLFDT, 10104 $$UP^XLFSTR, 10061 VADPT API
- ;10040 ^SC(, 4156 $$CVEDT^DGCV, 10060 ^VA(200
+GMRCP5D ;SLC/DCM,RJS,JFR - Print Consult form 513 (Gather Data - Addendums, Headers, Service reports and Comments) ;11/6/02 15:51
+ ;;3.0;CONSULT/REQUEST TRACKING;**4,12,15,22,29**;Dec 27, 1997
  ;
 FORMAT(GMRCIFN,GMRCRD,PAGEWID) ;
  ;
@@ -25,25 +21,14 @@ FORMAT(GMRCIFN,GMRCRD,PAGEWID) ;
  ;
  ; Build Processing Activities
  S GMRCR0=0 F  S GMRCR0=$O(^GMR(123,GMRCIFN,40,GMRCR0)) Q:'GMRCR0  D
- .N GMRCR1,GMRC400,CMT,USER,GMRCDT,RPRV,GMRC402,GMRCISIT
+ .N GMRCR1,GMRC400,CMT,USER,GMRCDT,RPRV,GMRC402
  .S GMRCR1=+$O(^GMR(123,GMRCIFN,40,GMRCR0,0)) Q:GMRCR1'=1
  .S GMRC400=$G(^GMR(123,GMRCIFN,40,GMRCR0,0))
  .S GMRC402=$G(^GMR(123,GMRCIFN,40,GMRCR0,2))
  .S CMT=$$PRCMT^GMRCP5B(+$P(GMRC400,U,2)) Q:'$L(CMT)
  .S GMRCDT=$P(GMRC400,U,3) S:'GMRCDT GMRCDT=$P(GMRC400,U,1)
  .S GMRCDT=$$EXDT(GMRCDT)_" "_$P(GMRC402,U,3)
- .;Following lines modified in patch *38
- .;I $P(^GMR(123,GMRCIFN,0),U,23) D  ;commented out
- .;.S GMRCISIT=$$GET1^DIQ(4,$P(^GMR(123,GMRCIFN,0),U,23),.01)  ;commented out
- .;.S GMRCISIT="Entered at: "_GMRCISIT  ;commented out
- .I $L(GMRC402) D  ;ADDED
- ..S GMRCISIT=$$GET1^DIQ(123,GMRCIFN,.07)  ;ADDED
- .I '$D(GMRCISIT) D  ;ADDED
- ..S GMRCISIT=$$KSP^XUPARAM("INST")  ;ADDED
- ..I GMRCISIT'="" S GMRCISIT=$$GET1^DIQ(4,GMRCISIT,.01)  ;ADDED
- ..I GMRCISIT="" S GMRCISIT=$$GET1^DIQ(123,GMRCIFN,.05)  ;ADDED
- .S GMRCISIT="Entered at: "_GMRCISIT  ;ADDED
- .;End of modifications for patch *38
+ .;
  .S RPRV=$$GET1^DIQ(200,+$P(GMRC400,U,4),.01)
  .I '$L(RPRV) S RPRV=$P(GMRC402,U,2)
  .S:($L(RPRV)) RPRV="Responsible Person: "_RPRV
@@ -63,7 +48,6 @@ FORMAT(GMRCIFN,GMRCRD,PAGEWID) ;
  .. D BLD("COM",GMRCR0,1,5,FWDLN)
  .D BLD("COM",GMRCR0,1,5,USER)
  .D:($L(RPRV)) BLD("COM",GMRCR0,1,5,RPRV)
- .D:($L($G(GMRCISIT))) BLD("COM",GMRCR0,1,5,GMRCISIT)
  .;
  .N GMRCR2 S GMRCR2=0
  .F  S GMRCR2=$O(^GMR(123,GMRCIFN,40,GMRCR0,GMRCR1,GMRCR2)) Q:'GMRCR2  D
@@ -108,51 +92,21 @@ ADDEND(GMRCIFN,GMRCR0,GMRCNDX,GMRCRD,PAGEWID) ;
  Q
  ;
 HDR ; Header code for form 513
- ;GMRCPEL   ext fmt Primary Eligibiity Code
- ;GMRCELIG  ext fmt of Patient Type defined @ FORMAT^GMRCP5A
- ;CVELIG    marker to indicate if pt has active preference for Combat Veteran Eligibility status
- ;get and format eligibility info
- N VAEL,VAPA,GMRCPEL,SUB,GMRCFROM
- N CVELIG ;WAT
- D ELIG^VADPT
- D ADD^VADPT
- N VASV,OEFOIF D SVC^VADPT S:(VASV(11)>0)!(VASV(12)>0)!(VASV(13)>0) OEFOIF="OEF/OIF" ;WAT 66
- S GMRCPEL=$P(VAEL(1),U,2)
- I $L($G(GMRCELIG))  D
- .;if TYPE is Active Duty and VETERAN Y/N? is No, then call the pt Active Duty
- .S:$P(VAEL(6),U,1)=5&(VAEL(4)=0) GMRCELIG=$P(VAEL(6),U,2)
- F SUB=0,1 D
- .N GMRCFLN
- .S GMRCFLN=$P($G(^DPT(GMRCDFN,0)),U,1)
- .S CVELIG=$$CVEDT^DGCV(GMRCDFN) S:$P($G(CVELIG),U,3) CVELIG="CV ELIGIBLE" ;WAT
- .D BLD("HDR",SUB,1,0,GMRCDVL)
- .D BLD("HDR",SUB,1,6,"MEDICAL RECORD")
- .D BLD("HDR",SUB,0,39,"|")
- .D BLD("HDR",SUB,0,45,"CONSULTATION SHEET")
- .D BLD("HDR",SUB,1,0,GMRCDVL)
- .D BLD("HDR",SUB,1,0,GMRCFLN)
- .D BLD("HDR",SUB,0,45,GMRCPEL)
- .D BLD("HDR",SUB,1,0,GMRCSN)
- .D BLD("HDR",SUB,0,16,$$EXDT(GMRCDOB))
- .D BLD("HDR",SUB,0,45,GMRCELIG)
- .D:$G(CVELIG)["CV" BLD("HDR",SUB,1,45,CVELIG)
- .D:$G(OEFOIF)="OEF/OIF" BLD("HDR",SUB,1,45,OEFOIF) ;WAT 66
  ;
- ;                                  ADDRESS LINES 1-3
- F GMRCX=1,2,3 D:$L(VAPA(GMRCX))
- .D BLD("HDR",0,1,0,VAPA(GMRCX))
- .;I GMRCX=1 D BLD("HDR",0,0,51,"Standard Form 513 (Rev 9-77)")
+ N PG,GMRCFROM
  ;
- ;         CITY              STATE                ZIP CODE
- S GMRCX=VAPA(4)_"   "_$P(VAPA(5),U,2)_"      "_VAPA(6)
- ;
- I $L(VAPA(8)) S GMRCX=GMRCX_"      Phone: "_VAPA(8)   ; TELEPHONE (IF AVAILABLE)
- ;
- D BLD("HDR",0,1,0,GMRCX)
- D BLD("HDR",0,1,0,GMRCDVL)
- D BLD("HDR",0,1,0,"Consult Request: "_$$CONSRQ(GMRCIFN))
- D BLD("HDR",0,1,55,"|Consult No.: "_GMRCIFN)
- ;
+ F PG=0,1 D
+ .D BLD("HDR",PG,1,0,GMRCDVL)
+ .D BLD("HDR",PG,1,6,"MEDICAL RECORD")
+ .D BLD("HDR",PG,0,29,"|")
+ .D BLD("HDR",PG,0,36,"CONSULTATION SHEET")
+ .I PG D BLD("HDR",PG,0,60,"Page ","GMRCPG,65") I 1
+ .E  I '$G(GMRCGUI) D BLD("HDR",PG,0,60,"Page ","GMRCPG,65")
+ .;
+ .D BLD("HDR",PG,1,0,GMRCDVL)
+ .D BLD("HDR",PG,1,0,"Consult Request: "_$$CONSRQ(GMRCIFN))
+ .D BLD("HDR",PG,0,55,"|Consult No.: "_GMRCIFN)
+ .;
  D BLD("HDR",1,1,0,GMRCEQL)
  D BLD("HDR",0,1,0,GMRCDVL)
  ;
@@ -176,13 +130,12 @@ HDR ; Header code for form 513
  ;
  D BLD("HDR",0,1,0,GMRCDVL)
  D BLD("HDR",0,1,0,"Requesting Facility: "_$E(GMRCFAC,1,22))
- I $P(GMRCRD,U,11) D BLD("HDR",0,0,45,"|ATTENTION: "_$E($$GET1^DIQ(200,+$P(GMRCRD,U,11),.01),1,21))
+ I $P(GMRCRD,U,11) D BLD("HDR",0,0,45,"|ATTENTION: "_$E($P($G(^VA(200,+$P(GMRCRD,U,11),0)),U,1),1,21))
  I $P(GMRCRD,U,23) D
  . D BLD("HDR",0,1,0,"Remote Consult No.: "_GMRCINO)
  . D BLD("HDR",0,1,0,"Role: "_GMRCIRL)
  D BLD("HDR",0,1,0,GMRCEQL)
  ;
- D KVAR^VADPT ;WAT 66
  Q
  ;
 CENTER(X) ;

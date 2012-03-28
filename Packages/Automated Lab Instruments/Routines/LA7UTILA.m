@@ -1,5 +1,5 @@
-LA7UTILA ;DALOI/JMC - Browse UI message ; 6/19/96 09:00
- ;;5.2;AUTOMATED LAB INSTRUMENTS;**23,27,46,64**;Sep 27, 1994
+LA7UTILA ;VA/DALOI/JMC - Browse UI message ;JUL 06, 2010 3:14 PM
+ ;;5.2;AUTOMATED LAB INSTRUMENTS;**23,27,46,64,1027**;NOV 01, 1997
  ;
 EN ; Select a Universal Interface message to browse.
  D EXIT ; Housekeeping before we start.

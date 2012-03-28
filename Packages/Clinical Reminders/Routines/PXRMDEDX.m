@@ -1,5 +1,5 @@
 PXRMDEDX ;SLC/PJH - Delete dialog components ;12/12/2001
- ;;2.0;CLINICAL REMINDERS;;Feb 04, 2005
+ ;;1.5;CLINICAL REMINDERS;**7**;Jun 19, 2000
  ;
  ;=====================================================================
  ;

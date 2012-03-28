@@ -1,26 +1,32 @@
-PSOBING1 ;BHAM ISC/LC - bingo board utility routine ; 6/2/10 4:05pm
- ;;7.0;OUTPATIENT PHARMACY;**5,28,56,135,244,268,357**;DEC 1997;Build 12
+PSOBING1 ;BHAM ISC/LC - bingo board utility routine ;18-Aug-2004 15:55;PLS
+ ;;7.0;OUTPATIENT PHARMACY;**5,28,56,135**;DEC 1997
  ;External reference to ^PS(55 supported by DBIA 2228
  ;External reference to DD(52.11 and DD(59.2 supported by DBIA 999
- ;
- ;*244 don't store to file 52.11 if Rx Status > 11
- ;
-BEG Q:'$G(PSODFN)  D:'$D(PSOPAR) ^PSOLSET G:'$D(PSOPAR) END
+ ; Modified - IHS/CIA/PLS - 03/10/04 - Lines NEW1, REL and NOTE
+BEG D:'$D(PSOPAR) ^PSOLSET G:'$D(PSOPAR) END
 NEW K DD,DO S (DIC,DIE)="^PS(52.11,",(NDA,X,DA)=PSODFN,DIC(0)="LMNQZ" D FILE^DICN K DIC G:Y'>0 NEW S (ODA,DA)=+Y,BNGSUS=0 S:$D(SUSROUTE) BNGSUS=1
-NEW1 S GRTP=$P($G(^PS(59.3,DISGROUP,0)),"^",2),NAM=$P($G(^DPT(PSODFN,0)),"^"),SSN=$P($G(^DPT(PSODFN,0)),"^",9) I GRTP="T" D  G:'$D(DA) END
- .K TFLAG S DR="1;2////"_DISGROUP_";3////"_PSOSITE_";4////"_TM_";5////"_$E(TM1_"0000",1,4)_";8////"_NAM_";9////"_SSN_";13////"_BNGSUS_"" D STO  Q:'$D(DA)
+NEW1 ; IHS/CIA/PLS - 07/08/04 - Change SSN references to HRN
+ ;S GRTP=$P($G(^PS(59.3,DISGROUP,0)),"^",2),NAM=$P($G(^DPT(PSODFN,0)),"^"),SSN=$P($G(^DPT(PSODFN,0)),"^",9) I GRTP="T" D  G:'$D(DA) END
+ S GRTP=$P($G(^PS(59.3,DISGROUP,0)),"^",2),NAM=$P($G(^DPT(PSODFN,0)),"^"),SSN=$$HRN^AUPNPAT(DFN,$$GET1^DIQ(59,PSOSITE,100,"I")) I GRTP="T" D  G:'$D(DA) END
+ .; IHS/CIA/PLS - 08/18/04 - Added TIME READY field
+ .;K TFLAG S DR="1;2////"_DISGROUP_";3////"_PSOSITE_";4////"_TM_";5////"_$E(TM1_"0000",1,4)_";8////"_NAM_";9////"_SSN_";13////"_BNGSUS_"" D STO  Q:'$D(DA)
+ .K TFLAG S DR="1;2////"_DISGROUP_";3////"_PSOSITE_";4////"_TM_";5////"_$E(TM1_"0000",1,4)_";8////"_NAM_";9////"_SSN_";13////"_BNGSUS_";6////"_$E(TM1_"0000",1,4)_"" D STO  Q:'$D(DA)
  .W !! S TIC=$P(^PS(52.11,DA,0),"^",2) D
  ..F TIEN=0:0 S TIEN=$O(^PS(52.11,"C",TIC,TIEN)) Q:'TIEN  I DA'=TIEN,($P(^PS(52.11,DA,0),"^",4)=+$P(^PS(52.11,TIEN,0),"^",4)) D
  ...S TDFN=$P(^PS(52.11,TIEN,0),"^"),TSSN=$P(^PS(52.11,TIEN,1),"^",2),TFLAG=0 W !,$C(7),$P(^DPT(TDFN,0),"^")_" ("_TSSN_") was issued ticket # "_TIC,". Try again!",!
  ..K TDFN,TIEN,TSSN Q:'TFLAG
  I $G(GRTP)="T" G:'TFLAG NEW1 G:TFLAG END
- S DR="2////"_DISGROUP_";3////"_PSOSITE_";4////"_TM_";5////"_$E(TM1_"0000",1,4)_";8////"_NAM_";9////"_SSN_";13////"_BNGSUS_""
-STO S NFLAG=1 L +^PS(52.11,DA):$S(+$G(^DD("DILOCKTM"))>0:+^DD("DILOCKTM"),1:3) E  W !!,$C(7),Y(0,0)," is being edited!",! S DA=NDA D WARN Q:$G(GRTP)="T"  G END
+ ; IHS/CIA/PLS - 08/18/04 - Added TIME READY field
+ ;S DR="2////"_DISGROUP_";3////"_PSOSITE_";4////"_TM_";5////"_$E(TM1_"0000",1,4)_";8////"_NAM_";9////"_SSN_";13////"_BNGSUS_""
+ S DR="2////"_DISGROUP_";3////"_PSOSITE_";4////"_TM_";5////"_$E(TM1_"0000",1,4)_";8////"_NAM_";9////"_SSN_";13////"_BNGSUS_";6////"_$E(TM1_"0000",1,4)_""
+STO S NFLAG=1 L +^PS(52.11,DA):2 E  W !!,$C(7),Y(0,0)," is being edited!",! S DA=NDA D WARN Q:$G(GRTP)="T"  G END
  S XDA=DA D ^DIE I $G(DUOUT)!($G(DTOUT))!(X="") S DA=ODA D WARN G END
  S DA=XDA D STORX S DA=XDA L -^PS(52.11,DA)
  S TFLAG=1 D:$G(GRTP)="N" CHKUP^PSOBINGO,NOTE G:$G(GRTP)="N" END
  Q
-NOTE S DFN=$P($G(^PS(52.11,DA,0)),"^"),NFLAG=1 W !!,?5,"NAME",?30,"SSN",?45,"ID",?50,"ORDER"
+NOTE ; IHS/CIA/PLS - 07/08/04 - Changed SSN reference to HRN
+ ;S DFN=$P($G(^PS(52.11,DA,0)),"^"),NFLAG=1 W !!,?5,"NAME",?30,"SSN",?45,"ID",?50,"ORDER"
+ S DFN=$P($G(^PS(52.11,DA,0)),"^"),NFLAG=1 W !!,?5,"NAME",?30,"HRN",?45,"ID",?50,"ORDER"
  F Z=0:0 S Z=$O(^PS(52.11,"B",DFN,Z)) Q:'Z  S ZDA=Z S NODE=^PS(52.11,ZDA,1),Z1=$P($G(NODE),"^"),Z2=$P($G(NODE),"^",3),Z3=$P($G(NODE),"^",4),Z4=$P($G(NODE),"^",2) W !,?5,Z1,?30,Z4,?46,Z2,?52,Z3
  W !!,"Please advise the patient that the above ID # and/or ORDER Letter"
  W !,"will be displayed with his/her name on the Bingo Display",!!
@@ -54,7 +60,6 @@ STORX ;Sto Rx # for each entry in 52.11
  Q:'$D(BBRX(1))  N DIC,DIE,NUM,BB,BBN,DR,FL,FLN,I
  S DA(1)=DA,(DIC,DIE)="^PS(52.11,"_DA(1)_",2,",DIC(0)="L",DIC("P")=$P(^DD(52.11,12,0),"^",2),DLAYGO=52.11
  F BBN=0:0 S BBN=$O(BBRX(BBN)) Q:'BBN  F NUM=1:1 S BB=$P(BBRX(BBN),",",NUM) Q:'BB  D
- .Q:$G(^PSRX(BB,"STA"))>11                            ;*244
  .I $D(RXPR(BB)) S FL="P",FLN=$G(RXPR(BB))
  .I '$D(RXPR(BB)) F I=0:0 S I=$O(^PSRX(BB,1,I)) Q:'I  S FL="F",FLN=I
  .I '$D(FL) S FL="F",FLN=0
@@ -87,7 +92,8 @@ CREF ;check for deleted refills
  K BDA,BRB,BRX0,BRX1,BRXFL,BRXFLN
  Q
  ;
-REL S BNGRXP=RXP N NAM,NAME,RXO,SSN
+REL Q:$$GET1^DIQ(9009033,+PSOSITE,314,"I")  ; IHS/CIA/PLS - 03/10/04 - Exit if autorelease enabled
+ S BNGRXP=RXP N NAM,NAME,RXO,SSN
  S NAM=$P($G(^DPT(BINGNAM,0)),"^"),ADA="",BNGRXP=RXP
  F XX=0:0 S XX=$O(^PS(52.11,"B",BINGNAM,XX)) Q:'XX  D
  .F BRX=0:0 S BRX=$O(^PS(52.11,XX,2,"B",BRX)) Q:'BRX  D
@@ -102,12 +108,12 @@ REL S BNGRXP=RXP N NAM,NAME,RXO,SSN
  I $D(BINGRPR),$D(BNGRDV) S BDIV=BNGRDV G REL1
 REL1 N TM,TM1 D NOW^%DTC S TM=$E(%,1,12),TM1=$P(TM,".",2)
  S NM=$P(^DPT($P(^PS(52.11,DA,0),"^"),0),"^"),DR="6////"_$E(TM1_"0000",1,4)_";8////"_NM_"",DIE="^PS(52.11,"
- L +^PS(52.11,DA):$S(+$G(^DD("DILOCKTM"))>0:+^DD("DILOCKTM"),1:3) E  W !!,$C(7),NM," is being edited!",! D WARN G END
+ L +^PS(52.11,DA):2 E  W !!,$C(7),NM," is being edited!",! D WARN G END
  D ^DIE L -^PS(52.11,DA) I $G(DUOUT)!($G(DTOUT))!(X="") D WARN G END
  S RX0=^PS(52.11,DA,0),JOES=$P(RX0,"^",4),TICK=+$P($G(RX0),"^",2),GRP=$P($G(^PS(59.3,$P($G(^PS(52.11,DA,0)),"^",3),0)),"^",2) D:GRP="T"&('$G(TICK)) WARN G:'$D(DA) END
  W !!,NAM," added to the "_$P($G(^PS(59.3,$P(RX0,"^",3),0)),"^")_" display."
  I +$G(^PS(55,"ASTALK",$P(^PS(52.11,DA,0),"^"))) W !,$C(7),"This patient is enrolled in ScripTalk and may benefit from",!,"a non-visual announcement that prescriptions are ready."
- S PSZ=0 I '$D(^PS(59.2,DT,0)) K DD,DIC,DO,DA S X=DT,DIC="^PS(59.2,",DIC(0)="",DINUM=X D FILE^DICN S PSZ=1 Q:Y'>0 
+ S PSZ=0 I '$D(^PS(59.2,DT,0)) K DD,DIC,DO,DA S X=DT,DIC="^PS(59.2,",DIC(0)="",DINUM=X D FILE^DICN S PSZ=1 Q:Y'>0
  I PSZ=1 S DA(1)=+Y,DIC=DIC_DA(1)_",1,",(DINUM,X)=JOES,DIC(0)="",DIC("P")=$P(^DD(59.2,1,0),"^",2) K DD,DO D FILE^DICN K DIC,DA Q:Y'>0
  I PSZ=0 K DD,DIC,DO,DA S DA(1)=DT,(DINUM,X)=JOES,DIC="^PS(59.2,"_DT_",1,",DIC(0)="LZ" D FILE^DICN K DIC,DA,DO
  S DA=ODA D STATS1^PSOBRPRT,WTIME

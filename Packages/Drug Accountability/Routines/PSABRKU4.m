@@ -1,9 +1,9 @@
 PSABRKU4 ;BIR/JMB-Upload and Process Prime Vendor Invoice Data - CONT'D ;7/23/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**26,64**; 10/24/97;Build 4
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**26**; 10/24/97
 XTMP ;This modules copies the prime vendor data in ^TMP($J,"PSAPV SET") to
  ;^XTMP("PSAPV"). The data has passed all X12 checks.
  ;
- S X1=DT,X2=21 D C^%DTC L +^XTMP("PSAPV",0):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I '$T Q
+ S X1=DT,X2=21 D C^%DTC L +^XTMP("PSAPV",0):2 I '$T Q
  S ^XTMP("PSAPV",0)=X_"^"_DT_"^Drug Accountability Prime Vendor Uploaded Invoice Data"
  ;
  ;Sets array of orders & invoices in XTMP (uploaded or processed).

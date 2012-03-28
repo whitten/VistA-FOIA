@@ -1,12 +1,11 @@
 PSAVER ;BIR/JMB-Verify Invoices ;9/6/97
- ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;**60,65,71**; 10/24/97;Build 10
+ ;;3.0; DRUG ACCOUNTABILITY/INVENTORY INTERFACE;; 10/24/97
  ;This routine allows the user to verify processed invoices. The entire
  ;invoice may be verified with/without editing. After verification, the
  ;pharmacy location or master vault balances are incremented during a
  ;background job (PSAVER5).
  ;
  I '$D(^XUSEC("PSA ORDERS",DUZ)) W !,"You do not hold the key to enter the option." Q
- I $D(^PSD(58.811,"ASTAT","L")) D LCKCHK^PSAVER4
  I '$D(^PSD(58.811,"ASTAT","P")) W !!,"There are no invoices that need to be verified." H 1 Q
  ;
  ;Creates a list of invoices that can be verified by the user. If the
@@ -22,7 +21,7 @@ PSAVER ;BIR/JMB-Verify Invoices ;9/6/97
  .W !!,"There is at least one invoice that needs to be verified. However, invoices",!,"cannot be verified by the same person who processed them and a pharmacist",!,"must verify invoices that contain a drug marked as a controlled substance."
  .W !!,"There are no invoices you can verify because the invoice(s) meet one of the",!,"above conditions."
  ;
-ESIG D SIG^XUSESIG G:X1="" EXIT S PSAOUT=0
+ESIG D SIG^XUSESIG G:X1="" EXIT  S PSAOUT=0
  ;
 PRINT ;Asks & prints all invoices the user can verify.
  W ! S DIR(0)="Y",DIR("B")="N",DIR("A")="Print processed invoices",DIR("?",1)="Enter YES to print all invoices you can verify then begin verification.",DIR("?")="Enter NO to bypass printing the invoices and begin verification."
@@ -47,13 +46,12 @@ ENTIRE ;Displays a list of all invoices the user can select to be verified.
  K PSASTOP W !,PSADLN
  S DIR(0)="LO^1:"_PSACNT,DIR("A")="Select invoices to verify",DIR("?",1)="Enter the number to the left of the invoice",DIR("?")="data to be verified or a range of numbers.",DIR("??")="^D SEL^PSAVER"
  W ! D ^DIR K DIR G:$G(DTOUT)!($G(DUOUT)) EXIT
- I Y="",$D(^PSD(58.811,"ASTAT","L")) D LCKCHK^PSAVER4,LOAD G EDIT
- I Y="",'$D(^PSD(58.811,"ASTAT","L")) D LOAD G EDIT
+ I Y="" D LOAD G EDIT
  S PSASEL=Y
  ;
 OKAY ;Verifies correct invoices were selected.
  W @IOF,!?21,"<<< VERIFY ENTIRE INVOICE SCREEN >>>",!,PSADLN,!
- S PSACNT=0,PSATMP="" F PSAPC=1:1 S PSA=+$P(PSASEL,",",PSAPC) Q:'PSA  D
+ S PSACNT=0 F PSAPC=1:1 S PSA=+$P(PSASEL,",",PSAPC) Q:'PSA  D
  .S PSAIEN=$P(PSAVER(PSA),"^"),PSAIEN1=$P(PSAVER(PSA),"^",2)
  .Q:'$D(^PSD(58.811,PSAIEN,1,PSAIEN1,0))
  .S PSAIN=^PSD(58.811,PSAIEN,1,PSAIEN1,0)
@@ -64,13 +62,9 @@ OKAY ;Verifies correct invoices were selected.
  ..W:$L(PSALOCN)>76 !?6,$P(PSALOCN,"(IP)",1)_"(IP)",!?23,$P(PSALOCN,"(IP)",2) W:$L(PSALOCN)<77 !?6,PSALOCN
  .I +$P(PSAIN,"^",12) W !?6,"MASTER VAULT: "_$P(^PSD(58.8,+$P(PSAIN,"^",12),0),"^")
  .W !
- .S PSAMSG="" D VERLOCK^PSAVER4 ; <== PSA*3*60 (RJS-VMP)
- .W:$L(PSAMSG) ?5,PSAMSG,!
- I PSASEL'=PSATMP S PSASEL=PSATMP K PSATMP
- I PSASEL="" S DIR(0)="E" D ^DIR G:$G(DIRUT) EXIT G ENTIRE
  S DIR(0)="Y",DIR("B")="N",DIR("A")="Are you sure "_$S(PSACNT=1:"this invoice's",1:"these invoices'")_" status should be changed to Verified"
  S DIR("?",1)="Enter YES if the list contains invoices with no corrections.",DIR("?",2)="Enter NO if the list contains at least one invoice you do not",DIR("?")="want to verify.",DIR("??")="^D VERIFY^PSAVER"
- D ^DIR K DIR D:'Y VERUNLCK^PSAVER4 G:$G(DIRUT) EXIT G:'Y ENTIRE ; <== PSA*3*60 (RJS-VMP)
+ D ^DIR K DIR G:$G(DIRUT) EXIT G:'Y ENTIRE
  ;
  ;Send entire invoices to be verified in background, delete these
  ;invoices from the list, then create a new list of remaining invoices
@@ -88,24 +82,18 @@ BKGJOB K PSAVBKG W ! F PSAPC=1:1 S PSA=+$P(PSASEL,",",PSAPC) Q:'PSA!(PSAOUT)  D
  .Q:PSAOUT
  .I '$O(PSANOVER(PSAIEN,PSAIEN1,0)) D  Q
  ..S PSAVBKG(PSAIEN,PSAIEN1)="" K PSAVER(PSA) D STATUS^PSAVER3
- ..I '+$P(^PSD(58.811,PSAIEN,1,PSAIEN1,0),"^",13),$P($G(^PSD(58.8,+$P(PSAIN,"^",5),0)),"^",14)!($P($G(^PSD(58.8,+$P(PSAIN,"^",12),0)),"^",14)) D NEWDRUG^PSAVER1 I 1 ;*50
+ ..I '+$P(^PSD(58.811,PSAIEN,1,PSAIEN1,0),"^",13),$P($G(^PSD(58.8,+$P(PSAIN,"^",5),0)),"^",14)!($P($G(^PSD(58.8,+$P(PSAIN,"^",12),0)),"^",14)) D NEWDRUG^PSAVER1
  ..W !,"   Order# "_PSAORD_" Invoice# "_PSAINV_"'s status has been changed to Verified!"
  .H 1 I $O(PSANOVER(PSAIEN,PSAIEN1,0)) D
  ..W !,"** Order# "_PSAORD_" Invoice# "_PSAINV_"'s status has not been changed to Verified."
  ..S PSAERR=0,PSAVER(PSA)=PSAIEN_"^"_PSAIEN1
  ..D PRINT^PSAVER3
- ..N PSATMP S PSATMP=PSASEL ;;<*65 RJS
- ..N PSASEL S PSASEL=PSA
- ..D VERUNLCK^PSAVER4  ;;*65 RJS>
- ..S PSAOUT=0
  ;
  ;If the invoices selected are error free, send them to the background
  ;job to complete the invoice and increment inventory.
- I $D(^PSD(58.811,"ASTAT","L")) D LCKCHK^PSAVER4
  D LOAD
  I $O(PSAVBKG(0)) D
- . K ZTSAVE S ZTDESC="Drug Acct. - Verify Prime Vendor Invoices",ZTIO="",ZTDTH=$H,ZTRTN="^PSAVER6",ZTSAVE("PSASEL")="",ZTSAVE("PSAVBKG(")="" D ^%ZTLOAD Q:$G(POP)
- ;D ^PSAVER6
+ .K ZTSAVE S ZTDESC="Drug Acct. - Verify Prime Vendor Invoices",ZTIO="",ZTDTH=$H,ZTRTN="^PSAVER6",ZTSAVE("PSASEL")="",ZTSAVE("PSAVBKG(")="" D ^%ZTLOAD Q:$G(POP)
  K PSAVBKG G:'$O(PSAEDIT(0)) EXIT
 EDIT D EDIT^PSAVER1
  ;
@@ -114,8 +102,8 @@ EXIT I $O(PSANEWD(0)) D ^PSAVER4
  K PSADATA,PSADD,PSADJ,PSADJD,PSADJFLD,PSADJN,PSADJO,PSADJOP,PSADJOV,PSADJP,PSADJPP,PSADJPV,PSADJQ,PSADJQP,PSADJQV,PSADJSUP,PSADLN,PSADRG
  K PSADRGN,PSADUOU,PSAEDIT,PSAERR,PSAFLD,PSAFLDS,PSAHOLD,PSAIEN,PSAIEN1,PSAIN,PSAINV,PSAINVDT,PSAISIT,PSAISITN,PSAKK,PSAL,PSALEN,PSALINE,PSALINEN
  K PSALINES,PSALN,PSALN0,PSALNCNT,PSALND,PSALNERR,PSALNP,PSALNSU,PSALNV,PSALOAD,PSALOC,PSALOCA,PSALOCN,PSAMENU,PSAMV,PSAMVA,PSAMVIEN,PSAMVN,PSAN10,PSANAME,PSANDC,PSANEW,PSANEWD
- K PSANO,PSANODE,PSANOVER,PSANUM,PSAONE,PSAONEMV,PSAORD,PSAORDU,PSAPHARM,PSAPRICE,PSAOSIT,PSAOSITN,PSAOU,PSAOUT,PSAPC,PSAPCF,PSAPCL,PSAPG,PSAPRINT,PSAQTY,PSALOCK,PSAMSG
- K PSAREA,PSAREC,PSARECD,PSAREORD,PSASAVE,PSASEL,PSASET,PSASLN,PSASTOCK,PSASUB,PSASUP,PSASUPP,PSATAB,PSATEMP,PSAUPC,PSAVAULT,PSAVBKG,PSAVER,PSAVSN,PSAOU,PSATMP,PSALCK
+ K PSANO,PSANODE,PSANOVER,PSANUM,PSAONE,PSAONEMV,PSAORD,PSAORDU,PSAPHARM,PSAPRICE,PSAOSIT,PSAOSITN,PSAOU,PSAOUT,PSAPC,PSAPCF,PSAPCL,PSAPG,PSAPRINT,PSAQTY
+ K PSAREA,PSAREC,PSARECD,PSAREORD,PSASAVE,PSASEL,PSASET,PSASLN,PSASTOCK,PSASUB,PSASUP,PSASUPP,PSATAB,PSATEMP,PSAUPC,PSAVAULT,PSAVBKG,PSAVER,PSAVSN,PSAOU
  K PSASS,X,X1,Y,ZTDESC,ZTDTH,ZTIO,ZTRTN,ZTSAVE
  Q
  ;

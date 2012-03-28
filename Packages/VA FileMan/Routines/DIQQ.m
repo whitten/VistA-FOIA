@@ -1,5 +1,5 @@
-DIQQ ;SFISC/GFT-VARIOUS HELPS ;10:25 AM  21 Feb 2002
- ;;22.0;VA FileMan;**97**;Mar 30, 1999
+DIQQ ;SFISC/GFT-VARIOUS HELPS ;10:25 AM  21 Feb 2002 [ 12/09/2003  4:17 PM ]
+ ;;22.0;VA FileMan;**97,1002**;Mar 30, 1999
  ;Per VHA Directive 10-93-142, this routine should not be modified.
 DIP ;
  W !?9,"TYPE '-' IN FRONT OF NUMERIC-VALUED FIELD TO SORT FROM HI TO LO"

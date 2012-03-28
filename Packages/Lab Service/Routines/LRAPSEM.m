@@ -1,4 +1,5 @@
-LRAPSEM ;AVAMC/REG - MULTIAXIAL SNOMED SEARCH ;8/15/95  09:53 ;
+LRAPSEM ; IHS/DIR/AAB - MULTIAXIAL SNOMED SEARCH 8/15/95 09:53 ;
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**72**;Sep 27, 1994
  S IOP="HOME" D ^%ZIS W @IOF,!?10,LRO(68)," multiaxial SNOMED search"
  I LRSS="AU" W $C(7),!!?26,"Not yet available" Q
@@ -41,9 +42,11 @@ E Q:$O(LRN(2,A,-1))=""  I $D(LRN(2,A,"Z")) S X=M D O Q
  Q
 O S LRF=0 F Y=0:0 S Y=$O(^LR(LRDFN,LRSS,LRI,2,T,2,X,1,Y)) Q:'Y  I Y S LRF=1 Q
  Q
-PRT S X=^LR(LRDFN,0),(LRDPF,LRA)=$P(X,"^",2),Y=$P(X,"^",3),X=^DIC(LRA,0,"GL") Q:'$D(@(X_Y_",0)"))
+PRT ;S X=^LR(LRDFN,0),(LRDPF,LRA)=$P(X,"^",2),Y=$P(X,"^",3),X=^DIC(LRA,0,"GL") Q:'$D(@(X_Y_",0)"))
+ S X=^LR(LRDFN,0),(LRDPF,LRA)=$P(X,"^",2),(DFN,Y)=$P(X,"^",3),X=^DIC(LRA,0,"GL") Q:'$D(@(X_Y_",0)"))  ;IHS/ANMC/CLS 11/1/95
  S X=@(X_Y_",0)"),LRP=$P(X,"^"),SSN=$P(X,"^",9),SEX=$P(X,"^",2),DOB=$P(X,"^",3),X1=$P(LR(4),"^"),X2=DOB D ^%DTC,SSN^LRU S AGE=X\365.25
- S ^TMP("LR",$J,LRY,LRAN)=LRAC_"^"_AGE_"^"_SEX_"^"_LRP_"^"_SSN_"^"_+$E(LR(12),4,5)_"/"_$E(LR(12),6,7)_"^"_LRA_"^"_LRDFN_"^"_LRI
+ ;S ^TMP("LR",$J,LRY,LRAN)=LRAC_"^"_AGE_"^"_SEX_"^"_LRP_"^"_SSN_"^"_+$E(LR(12),4,5)_"/"_$E(LR(12),6,7)_"^"_LRA_"^"_LRDFN_"^"_LRI
+ S ^TMP("LR",$J,LRY,LRAN)=LRAC_"^"_AGE_"^"_SEX_"^"_LRP_"^"_HRCN_"^"_+$E(LR(12),4,5)_"/"_$E(LR(12),6,7)_"^"_LRA_"^"_LRDFN_"^"_LRI  ;IHS/ANMC/CLS 11/9/95
  S ^TMP("LR",$J,"B",LRP,LRY,LRAN)="" Q
 PR S LRF=0 F X=0:0 S X=$O(^LR(LRDFN,LRSS,LRI,2,T,4,X)) Q:'X  I $P(^(X,0),"^",2)=LRO S LRF=1 Q
  Q

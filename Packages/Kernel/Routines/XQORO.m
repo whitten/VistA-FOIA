@@ -1,4 +1,5 @@
-XQORO ; SLC/KCM - Order Entry Calls ;08/24/98  12:36
+XQORO ; SLC/KCM - Order Entry Calls ;08/24/98  12:36 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1001,1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**48,56,94**;Jul 10, 1995
 ENTRY ;Setup initial 'add orders' context
  Q:$D(ORNOAD)  ;Flag for MAS protocols  Phase out by 11/90

@@ -1,5 +1,5 @@
-LRVERA ;DALOI/JMC - READ ACCESSION/UID ;2/7/91  14:49
- ;;5.2;LAB SERVICE;**153,271,286**;Sep 27, 1994
+LRVERA ;VA/DALOI/JMC - READ ACCESSION/UID ;JUL 06, 2010 3:14 PM
+ ;;5.2;LAB SERVICE;**153,271,286,1027**;NOV 01, 1997
  ;
  ;
 ACC ; Prompt for accession selection
@@ -36,7 +36,8 @@ SELPL(LR4) ; Select the performing laboratory to store with test results.
  ;
  N DIC,DTOUT,DUOUT,X,Y
  S DIC="^DIC(4,",DIC(0)="AEMOQ"
- S DIC("A")="Select Performing Laboratory: "
+ ; S DIC("A")="Select Performing Laboratory: "
+ S DIC("A")="Select Referring Laboratory: "      ; IHS/OIT/MKK - LR*5.2*1027
  I $G(LR4)>0 S DIC("B")=$$GET1^DIQ(4,LR4_",",.01)
  S DIC("S")="I $$SCRNPL^LRVERA"
  D ^DIC

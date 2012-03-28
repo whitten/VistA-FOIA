@@ -1,4 +1,6 @@
-LRAPONC ;AVAMC/REG - FIND MALIGNANCIES FOR ONCOLOGY ;5/21/91  11:43
+LRAPONC ; IHS/DIR/FJE - FIND MALIGNANCIES FOR ONCOLOGY 11:43 ; [ 5/21/91 ]
+ ;;5.2;LR;;NOV 01, 1997
+ ;
  ;;5.2;LAB SERVICE;;Sep 27, 1994
  D END W !!?31,"Find Malignancies for Oncology" D A G:'$D(Y) END D XR^LRU
  I LRSS="CY" W !!,"Include suspicious for malignancy cases " S %=1 D YN^LRU G:%<1 END S:%=1 LRB=1
@@ -26,7 +28,8 @@ AU S LRI=9999999 F T=0:0 S T=$O(^LR(LRDFN,"AY",T)) Q:'T  S LRT=+^(T,0) D AUM
  Q
 AUM F M=0:0 S M=$O(^LR(LRDFN,"AY",T,2,M)) Q:'M  S X=^(M,0),LRD=+X,LRM=$P(X,"^",2) D MX
  Q
-L S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),LRPPT=@(X_Y_",0)")
+L ;S X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),LRPPT=@(X_Y_",0)")
+ S X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=^DIC($P(X,"^",2),0,"GL"),LRPPT=@(X_Y_",0)")  ;IHS/ANMC/CLS 11/1/95
  S LRQ=0,LRP=$P(LRPPT,"^"),SEX=$P(LRPPT,"^",2),Y=$P(LRPPT,"^",3),SSN=$P(LRPPT,"^",9) D D^LRU,SSN^LRU S DOB=$S(Y[1700:"",1:Y)
  Q
 A ;

@@ -1,4 +1,5 @@
-LRCAPAM0 ;SLC/FHS - INTRO FOR MOVE WKLD DATA FROM 64.1 TO 67.9;10/14/91 08:15
+LRCAPAM0 ; IHS/DIR/AAB - INTRO FOR MOVE WKLD DATA FROM 64.1 TO 67.9 08:15 ; [ 10/14/91 ]
+ ;;5.2;LR;**1002**;JUN 01, 1998
  ;;5.2;LAB SERVICE;**81,141**;Sep 27, 1994
  D ^LRPARAM I '$P($G(LRLABKY),U,2) W !!?10,"You do not have the proper Security Key ...   Aborted ",!! G END
  L +^LRO(67.9):1 I '$T W !!?5,"Someone else is editing this file",!! G END

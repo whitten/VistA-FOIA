@@ -1,13 +1,8 @@
-LRBLJDA ;AVAMC/REG/CYM - BB UNIT DISP NEW UNIT ;10/24/96  10:41 ;
- ;;5.2;LAB SERVICE;**25,72,90,247**;Sep 27, 1994
- ;Per VHA Directive 97-033 this routine should not be modified.  Medical Device # BK970021
+LRBLJDA ; IHS/DIR/AAB - BB UNIT DISP NEW UNIT 10/24/96 10:41 ; [ 05/28/98 2:04 PM ]
+ ;;5.2;LR;**1002,1003**;JUN 01, 1998
+ ;;5.2;LAB SERVICE;**25,72,90**;Sep 27, 1994
  W !!,"New ID #: ",LRE(1)," ",LRV(1)
  S (DIC,DIE)=65,DIC(0)="FL",X=""""_LRE(1)_"""",DLAYGO=65 D ^DIC K DIC,DLAYGO S (LRR,DA)=+Y
- I LR=1 D
- . I $G(LR("CODE"))=0 D
- .. I LR(3)]"" S ^LRD(65,"C",LR(3),DA)=""
- . I $G(LR("CODE"))=1 D
- .. I LR(4)]"" S ^LRD(65,"C",LR(4),DA)=""
  S DR="[LRBLPOOL]" D ^DIE
 Y I $D(Y)!(X="@") W:$S(X="@":1,Y'="NO":1,1:0) $C(7),!!,"YOU MUST ENTER DATES",! S DR=".05;S LRK=X;.06;S LRO(2)=X" D ^DIE G Y
  I LRO(2)>LRE(6) W $C(7),!,"Expiration date exceeds original unit expiration date",!?3,LRE(3)," OK " S %=2 D YN^LRU I %'=1 S Y="NO" G Y
@@ -30,7 +25,8 @@ EN ;from LRBLJD
  I $D(LR("%")) K LR("%") W !,"Do you still want to enter disposition " S %=2 D YN^LRU I %'=1 S LR("%")=1 K LR("%3")
  F X=0:0 S X=$O(LR("%3",X)) Q:'X  S ^TMP($J,X)=LR("%3",X)
  K LR("%3") Q
-W S (LR("%"),LR("%2"))=1,X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9),X=$P(X,"^") D SSN^LRU W X," ",SSN S LR("%3",LRDFN)=X_"^"_SSN Q
+W ;S (LR("%"),LR("%2"))=1,X=^LR(LRDFN,0),Y=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9),X=$P(X,"^") D SSN^LRU W X," ",SSN S LR("%3",LRDFN)=X_"^"_SSN Q
+ S (LR("%"),LR("%2"))=1,X=^LR(LRDFN,0),(DFN,Y)=$P(X,"^",3),(LRDPF,X)=$P(X,"^",2),X=^DIC(X,0,"GL"),X=@(X_Y_",0)"),SSN=$P(X,"^",9),X=$P(X,"^") D SSN^LRU W X," ",HRCN S LR("%3",LRDFN)=X_"^"_HRCN Q  ;IHS/DIR TUC/AAB 04/29/98
 PV ;Enter new volume for units with plasma removed
  R !!,"Enter unit volume AFTER plasma removed: ",Z:DTIME I Z[U!(Z="") K Z Q
  I +Z'=Z!(Z>LRM)!('Z) W $C(7),!,"Enter a whole number less than ",LRM G PV

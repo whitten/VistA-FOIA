@@ -1,5 +1,5 @@
 VAFCDD01 ;ALB/JRP,LTL-DATA DICTIONARY UTILITIES ;05-SEP-1996
- ;;5.3;Registration;**91,149**;Jun 06, 1996
+ ;;5.3;Registration;**91,149,1012,1013**;Jun 06, 1996
 AVAFC(DFN) ;AVAFC* cross reference for PATIENT file (#2)
  ;
  ;Input  : IFN - Pointer to entry in PATIENT file (#2)
@@ -85,6 +85,7 @@ PVT4A08(DFN) ;Create entry in ADT/HL7 PIVOT file for an ADT-A08 event
  ;Create entry
  S PIVOTNUM=+$$PIVNW^VAFHPIVT(DFN,$P(DT,"."),4,VARPTR)
  Q:(PIVOTNUM<0)
+ S $P(^VAT(391.71,PIVOTNUM,9999999),U)=DUZ(2)  ;ihs/cmi/maw added for mpi per tim frazier
  ;Mark entry as requires transmission
  I $P($$SEND^VAFHUTL(),"^",2) D XMITFLAG(0,PIVOTNUM)
  ;Mark entry as transmitted field YES

@@ -1,4 +1,5 @@
-LAEKT7D ;SLC/RWF/DLG - KODAK EKTACHEM 700 BUILD DOWNLOAD FILE. ;8/15/90  15:10 ;
+LAEKT7D ; IHS/DIR/FJE - KODAK EKTACHEM 700 BUILD DOWNLOAD FILE. 8/15/90 15:10 ;
+ ;;5.2;LA;;NOV 01, 1997
  ;;5.2;AUTOMATED LAB INSTRUMENTS;;Sep 27, 1994
  ;Call with LRLL = load list to build
  ;Call with LRTRAY1 = Starting tray number
@@ -22,5 +23,6 @@ TRAY S LRECORD=$S($G(LRFORCE):$E("|"_"TRAY "_LRTRAY_"          ",1,16),1:"")
  F LRCUP=(LRCUP1-1):0 S LRCUP=$O(^LRO(68.2,LRLL,1,LRTRAY,1,LRCUP)) Q:LRCUP'>0  D SAMPLE S LRECORD=""
  Q
 PNM ;Get patient name and last 4 from an accession.
- S PNM="" Q:'$D(^LRO(68,LRAA,1,LRAD,1,LRAN,0))  S X=^(0),LRACC=^(.2),X=^LR(+X,0) I $P(X,"^",2)=2 S DFN=$P(X,"^",3) D PT^LRX S PNM=$E("|"_$E(PNM,1,20)_" "_$P(SSN,"-",3)_$J(" ",26),1,26)
+ ;S PNM="" Q:'$D(^LRO(68,LRAA,1,LRAD,1,LRAN,0))  S X=^(0),LRACC=^(.2),X=^LR(+X,0) I $P(X,"^",2)=2 S DFN=$P(X,"^",3) D PT^LRX S PNM=$E("|"_$E(PNM,1,20)_" "_$P(SSN,"-",3)_$J(" ",26),1,26)
+ S PNM="" Q:'$D(^LRO(68,LRAA,1,LRAD,1,LRAN,0))  S X=^(0),LRACC=^(.2),X=^LR(+X,0),LRDFN=$P(X,"^") I $P(X,"^",2)=2 S DFN=$P(X,"^",3) D PT^LRX S PNM=$E("|"_$E(PNM,1,20)_" "_HRCN_$J(" ",26),1,26)  ;IHS/ANMC/CLS 11/1/95
  Q

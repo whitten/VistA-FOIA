@@ -1,5 +1,5 @@
-GMTSOBH ; SLC/KER - HS Object - Help                 ; 05/22/2008
- ;;2.7;Health Summary;**58,89**;Oct 20, 1995;Build 61
+GMTSOBH ; SLC/KER - HS Object - Help                 ; 01/06/2003
+ ;;2.7;Health Summary;**58**;Oct 20, 1995
  ;
  ; External References
  ;   DBIA  10103  $$FMTE^XLFDT
@@ -170,19 +170,6 @@ SC ; Suppress Components Without Data
  W !,$G(BOLD),"               No data available",$G(NORM)
  D KATTR
  Q
-NODATA ; Overwrite No data available message
- D ATTR
- W !,"     If text is define in this field and the Suppress Components "
- W !,"     Without Data is set to Yes, If the Health Summary Report "
- W !,"     does not find data for the patient then the text define in"
- W !,"     this field will display in CPRS instead of the standard"
- W !,"     ""No data available"" message.",!
- ;W !,"          Example:",!
- ;W !,$G(BOLD),"               PN - Progress Notes",$G(NORM)
- ;W !,$G(BOLD),"               No data available",$G(NORM)
- D KATTR
- Q
- ;
 TRIM(X) ; Trim Spaces
  S X=$G(X) F  Q:$E(X,1)'=" "  S X=$E(X,2,$L(X))
  F  Q:$E(X,$L(X))'=" "  S X=$E(X,1,($L(X)-1))

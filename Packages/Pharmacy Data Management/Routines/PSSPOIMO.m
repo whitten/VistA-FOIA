@@ -1,5 +1,5 @@
-PSSPOIMO ;BIR/RTR/WRT-Edit Orderable Item Name and Inactive date ; 4/28/09 4:39pm
- ;;1.0;PHARMACY DATA MANAGEMENT;**29,32,38,47,68,102,125,141,153**;9/30/97;Build 32
+PSSPOIMO ;BIR/RTR/WRT-Edit Orderable Item Name and Inactive date ;02/04/00
+ ;;1.0;PHARMACY DATA MANAGEMENT;**29,32,38,47,68**;9/30/97
  S PSSITE=+$O(^PS(59.7,0)) I +$P($G(^PS(59.7,PSSITE,80)),"^",2)<2 W !!?3,"Orderable Item Auto-Create has not been completed yet!",! K PSSITE K DIR S DIR("A")="Press RETURN to continue",DIR(0)="E" D ^DIR K DIR Q
  K PSSITE W !!,"This option enables you to edit Orderable Item names, Formulary status,",!,"drug text, Inactive Dates, and Synonyms."
 EN I $D(PSOIEN) L -^PS(50.7,PSOIEN)
@@ -8,9 +8,8 @@ EN I $D(PSOIEN) L -^PS(50.7,PSOIEN)
  S PSS1="W ""  ""_$P(^PS(50.606,$P(^PS(50.7,+Y,0),""^"",2),0),""^"")_""  ""_$S($P($G(^PS(50.7,+Y,0)),""^"",4):$E($P(^(0),""^"",4),4,5)_""-""_$E($P(^(0),""^"",4),6,7)_""-""_$E($P(^(0),""^"",4),2,3),1:"""")"
  S PSS2=" S NF=$P($G(^PS(50.7,+Y,0)),""^"",12) I NF S NF=""   N/F"" W NF"
  S DIC("W")=PSS1_PSS2,DIC("S")="I '$P($G(^PS(50.7,+Y,0)),""^"",3)"
- ;PSO*7*102;ONLY SEARCH B AND C X-REFS
- S $P(PLINE,"-",79)="" W !! K PSOUT S DIC="^PS(50.7,",DIC(0)="QEAMZ",D="B^C" D MIX^DIC1 K DIC,PY,D G:Y<0!($D(DTOUT))!($D(DUOUT)) END
- S PSOIEN=+Y,PSOINAME=$P(Y,"^",2),PSDOSE=+$P(^PS(50.7,PSOIEN,0),"^",2) L +^PS(50.7,PSOIEN):$S($G(DILOCKTM)>0:DILOCKTM,1:3) I '$T W !,$C(7),"Another person is editing this one." Q
+ S $P(PLINE,"-",79)="" W !! K PSOUT S DIC="^PS(50.7,",DIC(0)="QEAMZ" D ^DIC K DIC,PY G:Y<0!($D(DTOUT))!($D(DUOUT)) END
+ S PSOIEN=+Y,PSOINAME=$P(Y,"^",2),PSDOSE=+$P(^PS(50.7,PSOIEN,0),"^",2) L +^PS(50.7,PSOIEN):0 I '$T W !,$C(7),"Another person is editing this one." Q
  W !!!,?5,"Orderable Item -> ",PSOINAME,!?5,"Dosage Form    -> ",$P($G(^PS(50.606,PSDOSE,0)),"^"),!
  ;I $P($G(^PS(50.7,PSOIEN,0)),"^",3) W !?3,"*** This Orderable Item is flagged for IV use! ***",!
  ;G:$P($G(^PS(50.7,PSOIEN,0)),"^",3) ADDIT
@@ -33,14 +32,12 @@ DIR K DIR S DIR(0)="F^3:40",DIR("B")=PSOINAME,DIR("A")="Orderable Item Name" D ^
  .W !,"This Orderable Item is "_$S($P($G(^PS(50.7,PSOIEN,0)),"^",12):"Non-Formulary.",1:"Formulary."),!
  .I $P($G(^PS(50.7,PSOIEN,0)),"^",10) W !,"This Orderable Item is marked as a Non-VA Med.",!
  .S DIE="^PS(50.7,",DA=PSOIEN,DR=6 S PSCREATE=1 D ^DIE K DIE,PSCREATE I $D(DTOUT)!($D(Y)) Q
- .;PSS*1*102;ADD DRUG TEXT AS SYNONYM IS REQUESTED BY USER
- .D ADDSYN^PSSPOIMP
  .K DIR S DIR(0)="DO",DIR("A")="INACTIVE DATE" D  D ^DIR K DIR I $G(Y)["^"!($D(DTOUT))!($G(DUOUT)) Q
  ..I $G(PSBEFORE) S Y=PSBEFORE D DD^%DT S DIR("B")=$G(Y)
  .I $G(PSBEFORE),'$G(Y) W ?40,"Inactive Date deleted!"
  .S PSSDTENT=$G(Y) I $G(Y) D DD^%DT W ?40,$G(Y)
  .S PSSOTH=$S($P($G(^PS(59.7,1,40.2)),"^"):1,1:0)
- .S DIE="^PS(50.7,",DA=PSOIEN,DR=".05;.06;D DFR^PSSPOIMO(PSDOSE),DFRL^PSSPOIMO;10//YES;I X=""Y"" S Y=""@1"";D PDCHK^PSSPOIMO;@1;.07;.08;7;S:'$G(PSSOTH) Y=""@2"";7.1;@2"
+ .S DIE="^PS(50.7,",DA=PSOIEN,DR=".05;.06;.07;.08;7;S:'$G(PSSOTH) Y=""@1"";7.1;@1"
  .S PSCREATE=1 D ^DIE K DIE,PSCREATE,PSSOTH
  .S $P(^PS(50.7,PSOIEN,0),"^",4)=PSSDTENT,PSAFTER=PSSDTENT
  S:PSBEFORE&('$P(^PS(50.7,PSOIEN,0),"^",4)) PSINORDE="D" S:$P(^PS(50.7,PSOIEN,0),"^",4) PSINORDE="I"
@@ -54,9 +51,6 @@ DIR K DIR S DIR(0)="F^3:40",DIR("B")=PSOINAME,DIR("A")="Orderable Item Name" D ^
  I $G(PSINORDE)="I" I $O(PSSDACT(0))!($O(PSSSACT(0)))!($O(PSSAACT(0))) D REST^PSSPOIDT(PSOIEN)
  S DIK="^PS(50.7,",DA=PSOIEN,DIK(1)=.04 D EN^DIK K DIK
  K PSBEFORE,PSAFTER,PSINORDE,PSSDTENT,PSSDACT,PSSDACTI,PSSSACT,PSSSACTI,PSSAACT,PSSAACTI
-IMMUN ;PSS*1*141 FOR 'IMMUNIZATIONS DOCUMENTATION BY BCMA'
- I $O(^PSDRUG("AOC",PSOIEN,"IM000"))'["IM" G SYN ;ASK WHEN APPROPRIATE
- W ! S DIE="^PS(50.7,",DA=PSOIEN,DR=9 D ^DIE K DIE
 SYN W ! K DIC S:'$D(^PS(50.7,PSOIEN,2,0)) ^PS(50.7,PSOIEN,2,0)="^50.72^0^0" S DIC="^PS(50.7,"_PSOIEN_",2,",DA(1)=PSOIEN,DIC(0)="QEAMZL",DIC("A")="Select SYNONYM: ",DLAYGO=50.72 D ^DIC K DIC
  I Y<0!($D(DUOUT))!($D(DTOUT)) K:'$O(^PS(50.7,PSOIEN,2,0)) ^PS(50.7,PSOIEN,2,0) D EN^PSSPOIDT(PSOIEN),EN2^PSSHL1(PSOIEN,"MUP") G EN
  W ! S DA=+Y,DIE="^PS(50.7,"_PSOIEN_",2,",DA(1)=PSOIEN,DR=.01 D ^DIE K DIE G SYN
@@ -124,63 +118,4 @@ UDMSG ; display a message if the CORRESPONDING UD field is entered
  S PSSUDMSG=$P(^PS(50.7,PSSUDMSG,0),"^")_" "_PSSUDFRM
  W !!,"The Corresponding UD Item is currently identified as: "_PSSUDMSG,!
  K PSSUDMSG,PSSUDFRM
- Q
-DFR(PSDOSE) ; dosage form med routes - called by DR string at DIR+20^PSSPOIMO
- N MCT,MR,MRNODE,XX K ^TMP("PSSMR",$J)
- S (MCT,MR)=0 F  S MR=$O(^PS(50.606,PSDOSE,"MR",MR)) Q:'MR  D
- .S XX=+$G(^PS(50.606,PSDOSE,"MR",MR,0)) Q:'XX  S MRNODE=$G(^PS(51.2,XX,0)) I $P($G(MRNODE),"^",4)'=1 Q
- .S MCT=MCT+1,^TMP("PSSMR",$J,MCT)=$P(MRNODE,U),^TMP("PSSMR",$J,"B",XX)=""
- Q
-DFRL W !!," List of med routes associated with the dosage form of the orderable item:",!
- S MCT=0 I '$O(^TMP("PSSMR",$J,MCT)) W !,?3,"NO MED ROUTE DEFINED"
- F  S MCT=$O(^TMP("PSSMR",$J,MCT)) Q:'MCT  W !,?3,$G(^(MCT))
- D EN^DDIOL(" If you answer YES to the next prompt, the DEFAULT MED ROUTE (if defined) and",,"!!")
- D EN^DDIOL(" this list (if defined) will be displayed as selectable med routes in CPRS in",,"!")
- D EN^DDIOL(" the medication ordering dialog. If you answer NO, the DEFAULT MED ROUTE ",,"!")
- D EN^DDIOL(" (if defined) and POSSIBLE MED ROUTES list will be displayed instead.",,"!") W !
- K ^TMP("PSSMR",$J)
- Q
-PDR ; possible med routes - called by DR string at DIR+20^PSSPOIMO
- N MCT,MR,MRNODE,XX K ^TMP("PSSMR",$J)
- S (XX,MCT)=0 F  S XX=$O(^PS(50.7,$S($G(PSVAR):PSVAR,1:PSOIEN),3,"B",XX)) Q:'XX  S MRNODE=$G(^PS(51.2,XX,0)),MCT=MCT+1,^TMP("PSSMR",$J,MCT)=$P(MRNODE,U)
- I $O(^TMP("PSSMR",$J,0)) D
- .W !!," List of Possible Med Routes associated with the orderable item:",!
- .S MCT=0 F  S MCT=$O(^TMP("PSSMR",$J,MCT)) Q:'MCT  W !,?3,$G(^(MCT))
- W ! K ^TMP("PSSMR",$J)
- Q
-PDCHK ; called by called by DR string at DIR+20^PSSPOIMO
- N DIC,Y,Z,D,DIE,DO,DICR,Q,DR,X,DIR
- N ANS,PSSDA,PSSX,PSSXA,PSSY,PSOUT
- S DIR(0)="PO^51.2:EMZ",DIR("A")="POSSIBLE MED ROUTES",DIR("S")="I $P(^(0),U,4)" S PSOUT=0
- S DIR("PRE")="I X=""?"" D MRTHLP^PSSPOIMO"
- F  D PDR,^DIR D  I PSOUT Q
- .I (X="")!$D(DTOUT)!$D(DUOUT) S PSOUT=1 Q
- .I X="@",$D(PSSY) S ANS=DA D:$$DASK  Q
- ..N DIK,DA S DA(1)=ANS,DIK="^PS(50.7,"_DA(1)_",3,"
- ..S DA=$O(^PS(50.7,DA(1),3,"B",PSSY,"")) I DA="" Q
- ..D ^DIK K PSSY,DIR("B")
- .I Y="" W "  ??" Q
- .I $D(^PS(50.7,DA,3,"B",+Y)) D  Q
- ..I $D(DIR("B")) K PSSY,DIR("B") Q
- ..S DIR("B")=Y(0,0),PSSY=+Y Q
- .S PSSXA=Y(0,0),PSSX=+Y D DFR(+$P(^PS(50.7,DA,0),"^",2))
- .I $G(PSSX) S ANS=$$ASK() I 'ANS Q
- .S PSSDA(50.711,"+1,"_DA_",",.01)=+PSSX
- .D UPDATE^DIE("","PSSDA")
- .K ^TMP("PSSMR",$J)
-  Q
-ASK() ; confirm adding the new entry
- N DIR,X,Y W ! S DIR(0)="YO",DIR("B")="YES"
- I '$D(^TMP("PSSMR",$J,"B",PSSX)) S DIR("B")="NO",DIR("A",1)="The selected entry does not match any of the dosage form med routes."
- W $C(7) S DIR("A")="  Are you adding '"_PSSXA_"' as a new POSSIBLE MED ROUTE" D ^DIR
- Q $S(Y=1:1,1:0)
-DASK() ; delete possible med route
- N DIR
- W $C(7) S DIR("A")="     SURE YOU WANT TO DELETE ",DIR(0)="Y" D ^DIR
- Q $S(Y=1:1,1:0)
-MRTHLP ; help of possible med route
- N DIC,RTE,D
- S RTE=0 F  S RTE=$O(^PS(50.7,DA,3,"B",RTE)) Q:'RTE   D EN^DDIOL($P($G(^PS(51.2,RTE,0)),"^"),,"!,?4")
- W ! D EN^DDIOL("Enter the most common MED ROUTE associated with this medication.",,"!,?5")
- D EN^DDIOL("ONLY MED ROUTES MARKED FOR USE BY ALL PACKAGES ARE SELECTABLE.",,"!,?5")
  Q

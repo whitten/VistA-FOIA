@@ -1,5 +1,12 @@
-TIURD3  ; SLC/JER - Reassign actions ;11/01/03
- ;;1.0;TEXT INTEGRATION UTILITIES;**61,124,113,112**;Jun 20, 1997
+TIURD3 ; SLC/JER - Reassign actions ;20-Oct-2008 11:25;MGH
+ ;;1.0;TEXT INTEGRATION UTILITIES;**61,124,1001,1005,1006**;Jun 20, 1997
+ ;IHS/ITSC/LJF 02/27/2003 added code to update visit pointer in V note when changed here
+ ;                        deleted inpatient data if changed to outpatient visit
+ ;             07/22/2004 bypass PCE coding on reassign
+ ;IHS/ITSC/LJF 01/07/2005 found another place to bypass PCE coding PATCH 1001
+ ;
+ ;IHS/MSC/MGH  08/03/2006 Changed code for reference date on reassign
+ ;IHGS/MSC/MGH 10/22/2008 Changed the code back to entered date
 REASSIGO ; Reassign an original Document
  N TIU,TIUASK,TIUDPRM
  W !!,"Please choose the correct PATIENT and CARE EPISODE:",!
@@ -10,8 +17,6 @@ REASSIGO ; Reassign an original Document
  . S TIUOUT=1
  . W !!,"No PATIENT Selected: Aborting Transaction, No Harm Done...",!
  . I $$READ^TIUU("EA","Press RETURN to continue...") ; pause
- ; --- If document is a Surgical Report, redirect processing ---
- I +$$ISA^TIULX(TIUTYPE,+$$CLASS^TIUSROI("SURGICAL REPORTS")) D REASSOP^TIUSROI(DFN,TIUDA) Q
  ; --- If moving to another pt keep retracted original ---
  I +$G(DFN)'=$P(TIUD0(0),U,2),(+$P(TIUD0(0),U,5)>5) D
  . W !!,"Moving signed document to another Patient...A RETRACTED copy will be retained.",!
@@ -80,7 +85,18 @@ REASSIGO ; Reassign an original Document
  . D DELIRT^TIUDIRT($S(+$G(TIUODA):+TIUODA,1:+TIUDA))
  . ; --- Set up the ^DIE Call ---
  . S DR=$G(DR)_".02////"_DFN_";.03////"_$S(+$P($G(TIU("VISIT")),U):$P($G(TIU("VISIT")),U),1:"@")_";.07////"_$P($G(TIU("EDT")),U)_";.08////"_$S(+$G(TIU("LDT")):$P($G(TIU("LDT")),U),1:"@")_";.13////"_$P($G(TIU("VSTR")),";",3)
- . S DR=DR_";1205////"_$P($G(TIU("LOC")),U)_";1401////"_$S($L($G(TIU("AD#"))):+$G(TIU("AD#")),1:"@")_";1402////"_$P($G(TIU("TS")),U)_";1211////"_$P($G(TIU("VLOC")),U)_";1212////"_$P($G(TIU("INST")),U)
+ . ;
+ . ;IHS/ITSC/LJF 02/27/2003 add reference date to update, delete inpt data if needed
+ . ;S DR=DR_";1205////"_$P($G(TIU("LOC")),U)_";1401////"_$G(TIU("AD#"))_";1402////"_$P($G(TIU("TS")),U)_";1211////"_$P($G(TIU("VLOC")),U) ;original code
+ . ;IHS/MSC/MGH keep the entered date as it was
+ . ;S DR=DR_";1301////"_$$NOW^TIULC
+ . ;S DR=DR_";1301////"_$S($G(TIU("VISIT")):+$G(^AUPNVSIT(+TIU("VISIT"),0)),1:"@")
+ . S DR=DR_";1205////"_$S(+$G(TIU("LOC")):$P($G(TIU("LOC")),U),1:"@")
+ . S DR=DR_";1401////"_$S(+$G(TIU("AD#")):$G(TIU("AD#")),1:"@")
+ . S DR=DR_";1402////"_$S(+$G(TIU("TS")):$P($G(TIU("TS")),U),1:"@")
+ . S DR=DR_";1211////"_$S(+$G(TIU("VLOC")):$P($G(TIU("VLOC")),U),1:"@")
+ . ;IHS/ITSC/LJF 02/27/2003 end of mods
+ . ;
  . S:+$$ISDS^TIULX(TIUTYPE) DR=DR_";1301////^S X="_$$REFDTO^TIURD2(TIUDA,.TIU)
  . ; --- Don't ask author or cosigner for documents that have been signed ---
  . S:+$P($G(^TIU(8925,+TIUDA,0)),U,5)'>5 DR=DR_";1202;1204////^S X=$P(^TIU(8925,DA,12),U,2);I '+$P($G(^TIU(8925,+TIUDA,12)),U,8) S Y=0;1208"
@@ -93,6 +109,7 @@ REASSIGO ; Reassign an original Document
  . W !!,$G(TIUNAME)," Reassigned.",!
  . ; 2. Attach document to new Visit
  . D QUE^TIUPXAP1
+ . D VNOTFIX^BTIUU1(TIUDA)        ;IHS/ITSC/LJF 02/27/2003 update V Note file
  . ; 3. Update Addenda to Document
  . D UPDTADD^TIURD2(TIUDA)
  . ; 4. Update IRT Record
@@ -104,9 +121,10 @@ REASSIGO ; Reassign an original Document
  . D AUDREASS^TIURB1(TIUDA,.TIUD0,.TIUD12)
  . ; 7. If document was retracted, register audit trail for it
  . I +$G(TIUODA) D AUDREASS^TIURB1(TIUODA,.TIUD0,.TIUD12)
- . I +$P($G(TIUD0(0)),U,3) D WKLD(.TIUD0,.TIUD12)
+ . ;I +$P($G(TIUD0(0)),U,3) D WKLD(.TIUD0,.TIUD12)   ;IHS/ITSC/LJF 01/07/2005 PATCH 1001
  . ;Finally, collect workload for target visit as appropriate
  . I (+$P(^TIU(8925,+TIUDA,0),U,5)>6),+$P(^TIU(8925,+TIUDA,0),U,11) D
+ . . Q   ;IHS/ITSC/LJF 7/22/2004  bypass PCE coding
  . . I $P(+$G(TIU("EDT")),".")'>DT D  Q:'+TIUASK
  . . . W !!,"You may now edit the encounter data for the DESTINATION Visit...",!
  . . . W !,"Patient: ",$G(TIU("PNM")),!,"  Visit: ",$P($G(TIU("EDT")),U,2)," to ",$P($G(TIU("VLOC")),U,2)
@@ -148,7 +166,7 @@ WKLD(TIUD0,TIUD12) ; Allow user to clean up workload for visit from which docume
  ;I +TIUERR<0 D  I 1
  ;. W ! I $$READ^TIUU("EA","Press RETURN to continue...") ; pause
  ;E  I +$G(TIUVSIT),(+$G(TIUVSIT)'=$P($G(^TIU(8925,+TIUDA,0)),U,3)) D
- ;.  
+ ;.
  Q
 PKGACT(TIUDA,TIUD0,TIUD12,TIUD13,TIUD14,TIUOUT) ; Get/Execute Package Reassign Action
  N TIUREASX,TIUPOP
@@ -171,7 +189,7 @@ PKGACT(TIUDA,TIUD0,TIUD12,TIUD13,TIUD14,TIUOUT) ; Get/Execute Package Reassign A
 WHOABACK(DA,TIUD0,TIUD12,TIUD13,TIUD14) ; Undo Reassign when fails
  N DIE,DR S DIE=8925
  S DR=".02////"_$P(TIUD0,U,2)_";.03////"_$P(TIUD0,U,3)_";.07////"_$P(TIUD0,U,7)_";.08////"_$P(TIUD0,U,8)_";.13////"_$P(TIUD0,U,13)
- S DR=DR_";1205////"_$P(TIUD12,U,5)_";1401////"_$P(TIUD14,U)_";1402////"_$P(TIUD14,U,2)_";1211////"_$P(TIUD12,U,11)_";1212////"_$P(TIUD12,U,12)
+ S DR=DR_";1205////"_$P(TIUD12,U,5)_";1401////"_$P(TIUD14,U)_";1402////"_$P(TIUD14,U,2)_";1211////"_$P(TIUD12,U,11)
  D ^DIE
  I +$P($G(^TIU(8925,+DA,0)),U,5)'>5 D
  . S DR="1202////"_$P(TIUD12,U,2)_";1305////"_$P(TIUD13,U,5)_";1306////"_$P(TIUD13,U,6)_";1208////"_$P(TIUD12,U,8)_";1209////"_$P(TIUD12,U,9)

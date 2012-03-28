@@ -1,4 +1,4 @@
-MCOBH1 ; GENERATED FROM 'MCARHOLTERBRPR' PRINT TEMPLATE (#1023) ; 10/04/96 ; (FILE 691.6, MARGIN=80)
+MCOBH1 ; GENERATED FROM 'MCARHOLTERBRPR' PRINT TEMPLATE (#3747) ; 11/29/04 ; (FILE 691.6, MARGIN=80)
  G BEGIN
 N W !
 T W:$X ! I '$D(DIOT(2)),DN,$D(IOSL),$S('$D(DIWF):1,$P(DIWF,"B",2):$P(DIWF,"B",2),1:1)+$Y'<IOSL,$D(^UTILITY($J,1))#2,^(1)?1U1P1E.E X ^(1)
@@ -11,13 +11,14 @@ M D @DIXX
  Q
 BEGIN ;
  S:'$D(DN) DN=1 S DISTP=$G(DISTP),DILCT=$G(DILCT)
- I $D(DXS)<9 F X=0:0 S X=$O(^DIPT(1023,"DXS",X)) Q:'X  S Y=$O(^(X,"")) F X=X:0 Q:Y=""  S DXS(X,Y)=^(Y),Y=$O(^(Y))
+ I $D(DXS)<9 M DXS=^DIPT(3747,"DXS")
+ S I(0)="^MCAR(691.6,",J(0)=691.6
  W ?0 W "HOOK-UP DATE/TIME: "
  S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,1) D DT
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "PATIENT: "
- S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U,1),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,30)
+ S Y=$P(X,U,2) S Y=$S(Y="":Y,$D(^MCAR(690,Y,0))#2:$P(^(0),U),1:Y) S Y=$S(Y="":Y,$D(^DPT(Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,30)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "REQUESTED BY: "
- S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S Y=$P(X,U,5) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "REASON FOR STUDY: "
  S I(1)=8,J(1)=691.65 F D1=0:0 Q:$O(^MCAR(691.6,D0,8,D1))'>0  X:$D(DSC(691.65)) DSC(691.65) S D1=$O(^(D1)) Q:D1'>0  D:$X>24 T Q:'DN  D A1
  G A1R
@@ -29,12 +30,13 @@ A1R ;
  S I(1)=10,J(1)=691.68 F D1=0:0 Q:$O(^MCAR(691.6,D0,10,D1))'>0  S D1=$O(^(D1)) D:$X>25 T Q:'DN  D B1
  G B1R
 B1 ;
- S X=$G(^MCAR(691.6,D0,10,D1,0)) S DIWL=1,DIWR=55 D ^DIWP
+ S X=$G(^MCAR(691.6,D0,10,D1,0)) S DIWL=26,DIWR=80 D ^DIWP
  Q
 B1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "REVIEWED BY: "
- S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,15) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U,1),1:Y) W $E(Y,1,35)
+ S X=$G(^MCAR(691.6,D0,0)) S Y=$P(X,U,15) S Y=$S(Y="":Y,$D(^VA(200,Y,0))#2:$P(^(0),U),1:Y) W $E(Y,1,35)
  D N:$X>9 Q:'DN  W ?9 W "MAXIMUM"
  S X=$G(^MCAR(691.6,D0,4)) D N:$X>32 Q:'DN  W ?32 S Y=$P(X,U,5) W:Y]"" $J(Y,4,0)
  D N:$X>9 Q:'DN  W ?9 W "AVERAGE"
@@ -57,15 +59,17 @@ B1R ;
  S I(1)=7,J(1)=691.63 F D1=0:0 Q:$O(^MCAR(691.6,D0,7,D1))'>0  S D1=$O(^(D1)) D:$X>22 T Q:'DN  D C1
  G C1R
 C1 ;
- S X=$G(^MCAR(691.6,D0,7,D1,0)) S DIWL=1,DIWR=55 D ^DIWP
+ S X=$G(^MCAR(691.6,D0,7,D1,0)) S DIWL=23,DIWR=77 D ^DIWP
  Q
 C1R ;
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "SUMMARY: "
  S X=$G(^MCAR(691.6,D0,.2)) S Y=$P(X,U,1) W:Y]"" $S($D(DXS(6,Y)):DXS(6,Y),1:Y)
  D T Q:'DN  D N D N:$X>4 Q:'DN  W ?4 W "PROCEDURE SUMMARY: "
  D N:$X>9 Q:'DN  S DIWL=10,DIWR=74 S Y=$P(X,U,2) S X=Y D ^DIWP
- D A^DIWW
+ D 0^DIWW
+ D ^DIWW
  D T Q:'DN  W ?2 S MCFILE=691.6 D DISP^MCMAG K DIP K:DN Y
  W ?13 K MCFILE K DIP K:DN Y
  K Y K DIWF

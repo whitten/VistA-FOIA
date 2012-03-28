@@ -1,5 +1,5 @@
-LEXA2 ;ISL/KER-Look-up (Loud) Select ; 02/02/2006
- ;;2.0;LEXICON UTILITY;**38**;Sep 23, 1996
+LEXA2 ; ISL Look-up (Loud) Select                ; 09-23-96
+ ;;2.0;LEXICON UTILITY;;Sep 23, 1996
  ;
 SELECT ; Select from List
  ; Display Help                 DH^LEXA3
@@ -11,7 +11,7 @@ SELECT ; Select from List
  ; Ask user for selection       ASK^LEXA2
  D ASK
  ; Interpret user response      EN^LEXAR(user response)
- D EN^LEXAR(LEXUR,$G(LEXVDT))
+ D EN^LEXAR(LEXUR)
  Q
 ASK ; Get users response
  R LEXUR:300 I '$T S LEXUR="^"

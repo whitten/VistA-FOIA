@@ -1,4 +1,5 @@
-XQOR3 ; SLC/KCM - Process Menus, Protocol Menus ;4/8/94  12:03 ;
+XQOR3 ; SLC/KCM - Process Menus, Protocol Menus ;4/8/94  12:03 ; [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
 MENU ;From: XQOR1
  S ^TMP("XQORS",$J,XQORS,"ITM")=0,XQORM=^TMP("XQORS",$J,XQORS,"VPT") S:$D(XQORM(0))[0 XQORM(0)="AD" I $D(XQORM("S")),'$L(XQORM("S")) K XQORM("S")

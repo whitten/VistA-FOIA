@@ -1,5 +1,5 @@
-DGMTU11 ;ALB/MIR,TDM,GTS - Patient Relation Retrieval Utilities ; 10/30/06
- ;;5.3;Registration;**33,45,182,311,688**;Aug 13, 1993;Build 29
+DGMTU11 ;ALB/MIR - Patient Relation Retrieval Utilities ; 24 MAR 92
+ ;;5.3;Registration;**33,45,182,311**;Aug 13, 1993
  ;
  ;
  ;=======================================================================
@@ -100,42 +100,3 @@ RESET(DFN,DGDT,DGMT) ;
  .D ^DIE
  .K DR,DA,DIE,DIC,Y,X
  Q
- ;
-GETINACD(DFN,DGREL) ; Get all INACTIVE dependents for a patient
- ;     Input -- DFN as the IEN of file 2 (for the patient)
- ;              DGREL as Array of active spouse/dependents
- ;    Output -- DGIREL("S",counter) = spouse reference
- ;              DGIREL("C",counter) = child reference
- N IEN,XCTR,TMPDGEL,XITYP,EDT,IFN,NODE
- K DGIREL
- Q:'$D(DGREL)
- S IEN=$P($G(DGREL("S")),U) S:IEN'="" TMPDGREL(IEN)=""
- S XCTR="" F  S XCTR=$O(DGREL("C",XCTR)) Q:XCTR=""  D
- . S IEN=$P(DGREL("C",XCTR),U) S:IEN'="" TMPDGREL(IEN)=""
- S IEN=0 F  S IEN=$O(^DGPR(408.12,"B",DFN,IEN)) Q:IEN=""  D
- . Q:($D(TMPDGREL(IEN)))!('$D(^DGPR(408.12,IEN,"E")))
- . S XITYP=$P($G(^DGPR(408.12,IEN,0)),U,2)
- . S XITYP=$S(XITYP=2:"S",((XITYP>2)&(XITYP<7)):"C",1:"") Q:XITYP=""
- . S EDT=$O(^DGPR(408.12,IEN,"E","AID","")) Q:EDT=""
- . S IFN=$O(^DGPR(408.12,IEN,"E","AID",EDT,"")) Q:IFN=""
- . Q:$P($G(^DGPR(408.12,IEN,"E",IFN,0)),U,2)   ;Don't want Active
- . S NODE=$G(^DGPR(408.12,IEN,0))
- . S DGIREL(XITYP,$O(DGIREL(XITYP,""),-1)+1)=IEN_U_$P(NODE,U,3)_U_(EDT*-1)
- Q
- ;
-CNTDEPS(DFN) ;Count Dependent children
- ; DG*5.3*688 - EVC changes; GTS
- ; Called by DGDEP4 and DGRPEIS1
- ;
- ;INPUT:
- ;  DFN - Patient file IEN for MT Veteran
- ;OUTPUT:
- ;  Number of child dependents
- ;
- N IEN,DEPCNT,DGX
- S DEPCNT=0
- S IEN=0
- F  S IEN=$O(^DGPR(408.12,"B",DFN,IEN)) Q:'IEN  DO
- . S DGX=$G(^DGPR(408.12,IEN,0))
- . I ($P(DGX,U,2)>2),($P(DGX,U,2)<7) S DEPCNT=DEPCNT+1
- Q DEPCNT

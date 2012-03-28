@@ -1,5 +1,5 @@
 LRBARC ;DALISC/JMC - INTERMEC 4100 1x3 LABEL FORMAT ;8/29/94  12:36
- ;;5.2;LAB SERVICE;**161**;Sep 27, 1994
+ ;;5.2T9;LR;**161,1018**;Nov 17, 2004
  ;Designed for a Intermec 4100 printer.
  ;
  Q

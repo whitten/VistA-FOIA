@@ -1,4 +1,5 @@
-XGFDEMO ;SFISC/VYD - demonstrate graphics functions ;12/30/93  10:22
+XGFDEMO ;SFISC/VYD - demonstrate graphics functions ;12/30/93  10:22 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;;Jul 10, 1995
  N NT,NL,NB,NR ;top,left,bottom,right for narrative window
  N MT,ML,MB,MR ;top,left,bottom,right for menu window

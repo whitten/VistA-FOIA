@@ -5,7 +5,7 @@ XMGAPI3 ;WASH ISC/REW/LH-Deliver Broadcast Msg & Mark for Vaporization ;04/17/20
  ; ENT    XMYB-BROADCAST-VA-WIDE
 ENT(XMTO) ; Meant to be invoked by a server.  Delivers a message
  ; either to all users or to a specific user.
- ; The message must have been sent by the POSTMASTER@FORUM.VA.GOV.
+ ; The message must have been sent by the POSTMASTER@DOMAIN.NAME.
  ; The AUTOMATIC DELETE DATE for this message is set for each user
  ; to be in 7 days; 30 days if sent to a specific user.
  ; The message is made 'information only' and 'closed'.
@@ -43,10 +43,10 @@ CLEANUP(XMKN,XMZ) ; Successfully delivered message, so remove from Postmaster Se
  D CLEANUP^XMXADDR
  D ZAPSERV^XMXMSGS1(XMKN,XMZ)
  Q
-ERR1(XMDUZ,XMKN,XMFROM) ; Send message back to sender if not POSTMASTER@FORUM
+ERR1(XMDUZ,XMKN,XMFROM) ; Send message back to sender if not POSTMASTER@DOMAIN.NAME
  N A
  S A(1)="You may not send a message to the "_XMKN_" server."
- S A(2)="Only the Postmaster at FORUM.VA.GOV has this permission."
+ S A(2)="Only the Postmaster at DOMAIN.NAME has this permission."
  D SENDMSG^XMXSEND(XMDUZ,"Sender of Message to Server Unacceptable","A",XMFROM)
  K XMERR,^TMP("XMERR",$J)
  Q

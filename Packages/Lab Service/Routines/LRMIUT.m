@@ -1,4 +1,5 @@
 LRMIUT ;SLC/CJS/BA/AVAMC/REG - MICROBIOLOGY UTILITIES ; 10/9/87  16:19 ;
+ ;;5.2T9;LR;**1018**;Nov 17, 2004
  ;;5.2;LAB SERVICE;**254,266**;Sep 27, 1994
  ;
  ; Reference to ^DIC(42 supported by IA #10039

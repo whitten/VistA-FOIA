@@ -1,5 +1,6 @@
-PSORPTS ;BHAM ISC/SAB - OUTPUT REPORTS DRIVER OPTION ; 08/13/92 17:00
+PSORPTS ;BHAM ISC/SAB - OUTPUT REPORTS DRIVER OPTION ;21-Jan-2004 18:59;PLS
  ;;7.0;OUTPATIENT PHARMACY;;DEC 1997
+ ; Modified - IHS/CIA/PLS - 01/21/04 - Added Crow Mods
  G A:$D(^DOPT("PSORPTS",10)) S ^DOPT("PSORPTS",0)="REPORT^1N" F I=1:1 S X=$T(@I) Q:X=""  S ^DOPT("PSORPTS",I,0)=$P(X,";",2,99)
  S DIK="^DOPT(""PSORPTS""," D IXALL^DIK
 A S DIC="^DOPT(""PSORPTS"",",DIC(0)="QEAM" D ^DIC Q:Y<0  G @+Y
@@ -29,4 +30,6 @@ A S DIC="^DOPT(""PSORPTS"",",DIC(0)="QEAM" D ^DIC Q:Y<0  G @+Y
  S DIC="^PSDRUG(",L=0,FLDS="[PSO N/F LIST]",BY=.01,FR="",TO="",DIS(0)="I $P(^PSDRUG(D0,0),""^"",9)",DIS(1)="S ZZ=$S($D(^PSDRUG(D0,""I"")):+^(""I""),1:0) I 'ZZ" G EN1^DIP
 10 ;NARCOTIC RX'S LIST
  W $C(7),!,"Please send output to a 132 columns printer !!",!!
+ ;IHS/BAO/DMH   added next line to screen out discontinued (edit) status prescriptions  9/13/2003  dmh
+ S DIS(0)="I $P($G(^PSRX(D0,""STA"")),""^"",1)'=15"
  S DIC="^PSRX(",L=0,FLDS="[PSO NARC LIST]",BY="[PSO NARC LIST]" G EN1^DIP

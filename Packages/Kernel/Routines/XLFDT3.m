@@ -1,4 +1,5 @@
-XLFDT3 ;SEA/RDS - Library Function Schedule ;02/09/2000  09:21
+XLFDT3 ;SEA/RDS - Library Function Schedule ;02/09/2000  09:21 [ 04/02/2003   8:29 AM ]
+ ;;8.0;KERNEL;**1002,1003,1004,1005,1007**;APR 1, 2003
  ;;8.0;KERNEL;**71,120,141**;Jul 10, 1995
  ;
 MONTH2 ;DECODE--Complex Month Increment Specification
