@@ -6,8 +6,9 @@ A W !,"Routine Print:"
  N FF,LN,ZTSK I $G(DTIME)'>0 N DTIME S DTIME=360
 A2 R !,"Want to start each routine on a new page: Yes// ",FF:DTIME,! G EXIT:FF["^" I FF["?" W !,"Enter Yes to start each routine on a new page.",!?5,"No for the old way." G A2
 A3 R !,"Want line numbers: No//",LN:DTIME,!
- G EXIT:LN["^" I LN["?" W !,"Enter Yes to have line numbers, O for offset numbers, No for no line numbers." G A3
+ G EXIT:LN["^" I LN["?" W !,"Enter Yes to have line numbers, O for offset numbers, B for Both line and offset numbers, No for no line numbers." G A3
  S FF=$TR($E(FF_"Y"),"YyNn","1100"),LN=$TR($E(LN_"N"),"YyNnOo","110022")
+ W " ( ",$S(LN=0:"No",LN=1:"Line",LN=2:"Offset",LN=3:"Both Line & Offset")," numbers )",!
  K ^UTILITY($J) X ^%ZOSF("RSEL") I $O(^UTILITY($J," "))="" W !!,"NO routines selected." G EXIT
  K %ZIS,IOP,ZTIO S %ZIS="MQ" D ^%ZIS G:POP EXIT
  I $D(IO("Q")) S ZTRTN="DQ^%ZTPP",ZTDTH="",ZTDESC="ROUTINE LIST" F I="FF","LN","^UTILITY($J," S ZTSAVE(I)=""
@@ -26,7 +27,7 @@ DQ ;FF start each routine on a new page, LN line numbers
  . D RSUM,%Z3
  . F LI=1:1:LC S X=RTN(LI,0) D:%Y'>$Y %Z3 Q:ST  S Y=$P(X," ",1),X=$P(X," ",2,999) D  ;
  . . I 'LN F J=1:1 W !,Y,?J>1+6," " W:$X>8 "--",!,?8 W $E(X,1,IOM-(J>1+8)) S X=$E(X,IOM-(J>1+7),999),Y="" Q:X=""
- . . I LN S OF=$S(LN=1:LI,$L(Y):0,1:OF+1),J1=$S(LN=1:$J(LI,3),$L(Y):"",1:"+"_OF)
+ . . I LN S OF=$S(LN=1:LI,$L(Y):0,1:OF+1),J1=$S(LN=1:$J(LI,3),LN=3:$J(LI,3)_$S(OF:" +"_OF,1:""),$L(Y):"",1:"+"_OF)
  . . I LN F J=1:1 W !,J1,?4,Y,?J>1+10," " W:$X>12 "--",!,?12 W $E(X,1,IOM-(J>1+12)) S X=$E(X,IOM-(J>1+11),999),Y="",J1="" Q:X=""
  . . Q
  . W:$Y<IOSL !
